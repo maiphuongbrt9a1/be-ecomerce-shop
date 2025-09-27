@@ -9,6 +9,27 @@ provider = "prisma-client-js"
 }
 
 datasource db {
-provider = "mysql"
+provider = "postgresql"
 url      = env("DATABASE_URL")
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+model User {
+    id BigInt @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    email String 
+    phone String @db.VarChar(10)
+    firstName String @db.VarChar(255)
+    lastName String @db.VarChar(255)
+    role Role @default(USER)
+    password String @db.VarChar(16)
+    username String @unique @db.VarChar(32)
+    isActive Boolean @default(false)
+    codeActive String @db.Uuid
+    codeActiveExpire DateTime
 }

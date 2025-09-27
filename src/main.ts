@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Sakila Api')
+    .setTitle('BE Ecomerce Shop')
     .setVersion('1.0')
     .build();
 
