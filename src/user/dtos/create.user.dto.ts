@@ -30,6 +30,9 @@ export class CreateUserDto {
   @ApiProperty({ example: 'USER' })
   role: Role;
 
+  @ApiProperty({ example: new Date() })
+  createdAt: Date;
+
   @ApiProperty({ example: 'false' })
   isActive: boolean;
 

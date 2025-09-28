@@ -12,6 +12,12 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('documentation', app, document);
+
+  (BigInt.prototype as any).toJSON = function () {
+    const int = Number.parseInt(this.toString());
+    return int ?? this.toString();
+  };
+
   await app.listen(4000);
 }
 bootstrap();

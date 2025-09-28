@@ -16,40 +16,42 @@ import { User } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
-  constructor(private actorService: UserService) {}
+  constructor(private userService: UserService) {}
 
-  @ApiOperation({ summary: 'Get actor list' })
-  @ApiResponse({ status: 201, description: '' })
+  @ApiOperation({ summary: 'Get user list' })
+  @ApiResponse({ status: 200, description: 'User list found!' })
   @Get('/')
   async getAllUsers() {
-    return await this.actorService.getAllUser();
+    return await this.userService.getAllUser();
   }
 
-  @ApiOperation({ summary: 'Get actor detail by ID' })
-  @ApiResponse({ status: 201, description: 'User found!' })
+  @ApiOperation({ summary: 'Get user detail by ID' })
+  @ApiResponse({ status: 200, description: 'User found!' })
   @Get('/:id')
   async getUserDetailById(@Param('id', ParseIntPipe) id: number) {
-    return await this.actorService.getUserDetail(id);
+    return await this.userService.getUserDetail(id);
   }
 
-  @ApiOperation({ summary: 'Delete an actor' })
+  @ApiOperation({ summary: 'Delete a user' })
   @Delete('/:id')
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {
-    return this.actorService.deleteAnUser(id);
+    return this.userService.deleteAnUser(id);
   }
 
-  @ApiOperation({ summary: 'Add a new actor' })
+  @ApiOperation({ summary: 'Add a new user' })
   @ApiBody({ type: CreateUserDto })
-  @Post('/actor')
+  @Post('/user')
   async createAnUser(@Body() createUserDto: CreateUserDto) {
-    return await this.actorService.createAnUser(createUserDto);
+    return await this.userService.createAnUser(createUserDto);
   }
 
+  @ApiOperation({ summary: 'Update a user' })
+  @ApiBody({ type: UpdateUserDto })
   @Put('/:id')
   async updateAnUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return await this.actorService.updateAnUser(id, updateUserDto);
+    return await this.userService.updateAnUser(id, updateUserDto);
   }
 }

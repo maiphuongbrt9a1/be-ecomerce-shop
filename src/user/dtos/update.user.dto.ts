@@ -25,4 +25,6 @@ export class UpdateUserDto {
   @ApiProperty({ example: 'johndoe' })
   @IsNotEmpty()
   username: string;
+
+  updatedAt: Date;
 }

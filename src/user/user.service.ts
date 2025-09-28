@@ -3,6 +3,7 @@ import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -17,7 +18,7 @@ export class UserService {
   async getUserDetail(id: number): Promise<User | null> {
     const User = await this.prismaService.user.findFirst({
       where: {
-        User_id: id,
+        id: id,
       },
     });
     if (!User) {
@@ -28,31 +29,54 @@ export class UserService {
 
   // Create an User
   async createAnUser(data: CreateUserDto): Promise<User> {
-    const { first_name, last_name, last_update } = data;
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      password,
+      username,
+      role,
+      isActive,
+    } = data;
 
     return this.prismaService.user.create({
       data: {
-        first_name,
-        last_name,
-        last_update,
+        firstName,
+        lastName,
+        email,
+        phone,
+        password,
+        username,
+        role,
+        createdAt: new Date(Date.now()),
+        isActive,
+        codeActive: uuidv4().toString(),
+        codeActiveExpire: new Date(Date.now() + 5 * 60 * 1000),
       },
     });
   }
 
   // Delete an User
   async deleteAnUser(id: number): Promise<User> {
-    return this.prismaService.user.delete({ where: { User_id: id } });
+    return this.prismaService.user.delete({ where: { id: id } });
   }
 
   // Update an User
   async updateAnUser(id: number, data: UpdateUserDto): Promise<User> {
-    const { first_name, last_name, last_update } = data;
+    const { firstName, lastName, email, phone, password, username, updatedAt } =
+      data;
+
     return this.prismaService.user.update({
-      where: { User_id: id },
+      where: { id: id },
       data: {
-        first_name,
-        last_name,
-        last_update,
+        firstName,
+        lastName,
+        email,
+        phone,
+        password,
+        username,
+        updatedAt: new Date(Date.now()),
       },
     });
   }
