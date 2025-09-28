@@ -1,18 +1,25 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { User, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { hashPasswordHelper } from 'src/helpers/utils';
+import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
   // Get the list of all User
-  async getAllUser(): Promise<User[] | []> {
-    return this.prismaService.user.findMany();
+  async getAllUser(page: number, perPage: number): Promise<User[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<User, Prisma.UserFindManyArgs>(
+      this.prismaService.user,
+      {},
+      { page: page },
+    );
+    return result.data;
   }
 
   // Get an User detail

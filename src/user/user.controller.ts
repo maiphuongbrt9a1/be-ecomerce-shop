@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from './dtos/create.user.dto';
@@ -21,8 +22,8 @@ export class UserController {
   @ApiOperation({ summary: 'Get user list' })
   @ApiResponse({ status: 200, description: 'User list found!' })
   @Get('/')
-  async getAllUsers() {
-    return await this.userService.getAllUser();
+  async getAllUsers(@Query('page') page = 1, @Query('perPage') perPage = 10) {
+    return await this.userService.getAllUser(Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get user detail by ID' })
