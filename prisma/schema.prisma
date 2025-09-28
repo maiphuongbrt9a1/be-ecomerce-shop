@@ -27,7 +27,7 @@ model User {
     firstName String @db.VarChar(255)
     lastName String @db.VarChar(255)
     role Role @default(USER)
-    password String @db.VarChar(16)
+    password String 
     username String @unique @db.VarChar(32)
     isActive Boolean @default(false)
     codeActive String @db.Uuid

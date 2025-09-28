@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dtos/create.user.dto';
 import { UpdateUserDto } from './dtos/update.user.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { hashPasswordHelper } from 'src/helpers/utils';
 
 @Injectable()
 export class UserService {
@@ -40,13 +41,18 @@ export class UserService {
       isActive,
     } = data;
 
+    const hashPassword = await hashPasswordHelper(password);
+    if (!hashPassword) {
+      throw new Error('Hash password for create user failed!');
+    }
+
     return this.prismaService.user.create({
       data: {
         firstName,
         lastName,
         email,
         phone,
-        password,
+        password: hashPassword,
         username,
         role,
         createdAt: new Date(Date.now()),
@@ -67,6 +73,11 @@ export class UserService {
     const { firstName, lastName, email, phone, password, username, updatedAt } =
       data;
 
+    const hashPassword = await hashPasswordHelper(password);
+    if (!hashPassword) {
+      throw new Error('Hash password for create user failed!');
+    }
+
     return this.prismaService.user.update({
       where: { id: id },
       data: {
@@ -74,7 +85,7 @@ export class UserService {
         lastName,
         email,
         phone,
-        password,
+        password: hashPassword,
         username,
         updatedAt: new Date(Date.now()),
       },
