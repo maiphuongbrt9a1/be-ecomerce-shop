@@ -1,4 +1,4 @@
-import { UserService } from './user.service';
+import { UserService } from '@/user/user.service';
 import {
   Body,
   Controller,
@@ -11,9 +11,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { CreateUserDto } from './dtos/create.user.dto';
-import { UpdateUserDto } from './dtos/update.user.dto';
-import { User } from '@prisma/client';
+import { CreateUserDto } from '@/user/dtos/create.user.dto';
+import { UpdateUserDto } from '@/user/dtos/update.user.dto';
 
 @Controller('user')
 export class UserController {
