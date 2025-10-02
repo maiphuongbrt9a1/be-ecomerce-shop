@@ -19,7 +19,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid Username or Password');
     }
 
-    const isValidPassword = comparePasswordHelper(pass, user.password);
+    const isValidPassword = await comparePasswordHelper(pass, user.password);
     if (!isValidPassword) {
       throw new UnauthorizedException('Invalid Username or Password');
     }
