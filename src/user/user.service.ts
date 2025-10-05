@@ -8,10 +8,16 @@ import { hashPasswordHelper } from '@/helpers/utils';
 import { createPaginator } from 'prisma-pagination';
 import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import dayjs from 'dayjs';
+import { ConfigService } from '@nestjs/config';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService,
+    private readonly mailerService: MailerService,
+  ) {}
 
   // Get the list of all User
   async getAllUser(page: number, perPage: number): Promise<User[] | []> {
@@ -164,6 +170,30 @@ export class UserService {
         codeActiveExpire: dayjs().add(5, 'minutes').toDate(),
       },
     });
+
+    let fullname = user.email;
+    if (user.firstName && user.lastName) {
+      fullname = user.firstName + ' ' + user.lastName;
+    }
+
+    this.mailerService
+      .sendMail({
+        to: user.email,
+        from: this.configService.get<string>('MAIL_FROM'),
+        subject: 'Activate your account at E-commerce shop',
+        text: 'Please use the code to activate your account',
+        template: 'register',
+        context: {
+          name: fullname,
+          activationCode: user.codeActive,
+        },
+      })
+      .then(() => {
+        return 'Send email from ecommerce shop successfully!';
+      })
+      .catch(() => {
+        throw new Error('Send email failed!');
+      });
 
     return user;
   }
