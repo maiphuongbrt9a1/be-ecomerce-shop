@@ -4,12 +4,13 @@ import { AppService } from './app.service';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { UserModule } from '@/user/user.module';
 import { AuthModule } from '@/auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { MailModule } from './mail/mail.module';
+import { TransformInterceptor } from './core/transform.interceptor';
 
 @Module({
   imports: [
@@ -54,6 +55,10 @@ import { MailModule } from './mail/mail.module';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
   ],
 })
