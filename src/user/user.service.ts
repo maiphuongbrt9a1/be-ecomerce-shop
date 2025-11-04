@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { User, Prisma, Role } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateUserDto } from '@/user/dtos/create.user.dto';
@@ -6,7 +10,11 @@ import { UpdateUserDto } from '@/user/dtos/update.user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { hashPasswordHelper } from '@/helpers/utils';
 import { createPaginator } from 'prisma-pagination';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import {
+  ChangePasswordAuthDto,
+  CodeAuthDto,
+  CreateAuthDto,
+} from '@/auth/dto/create-auth.dto';
 import dayjs from 'dayjs';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -150,6 +158,15 @@ export class UserService {
     const { firstName, lastName, email, phone, password, username } =
       registerDto;
 
+    const isExist = await this.prismaService.user.findUnique({
+      where: { email: email },
+    });
+    if (isExist) {
+      throw new BadRequestException(
+        `Email is existed: ${email}. Please use another email.`,
+      );
+    }
+
     const hashPassword = await hashPasswordHelper(password);
     if (!hashPassword) {
       throw new Error('Hash password for create user failed!');
@@ -196,5 +213,154 @@ export class UserService {
       });
 
     return user;
+  }
+
+  async handleActive(data: CodeAuthDto) {
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        id: data.id,
+        codeActive: data.codeActive,
+      },
+    });
+    if (!user) {
+      throw new BadRequestException('Code active is expired or invalid');
+    }
+
+    //check expire code
+    const isBeforeCheck = dayjs().isBefore(user.codeActiveExpire);
+
+    if (isBeforeCheck) {
+      //valid => update user
+      const userAfterUpdate = await this.prismaService.user.update({
+        where: {
+          id: data.id,
+          codeActive: data.codeActive,
+        },
+        data: {
+          isActive: true,
+        },
+      });
+      return { userAfterUpdate };
+    } else {
+      throw new BadRequestException('Code active is expired or invalid');
+    }
+  }
+
+  async retryActive(email: string) {
+    //check email
+    const user = await this.prismaService.user.findUnique({
+      where: { email: email },
+    });
+
+    if (!user) {
+      throw new BadRequestException('This account does not exist!');
+    }
+    if (user.isActive) {
+      throw new BadRequestException('This account has been activated!');
+    }
+
+    //send Email
+    const codeActive = uuidv4().toString();
+
+    //update user
+    const userAfterUpdate = await this.prismaService.user.update({
+      where: {
+        id: user.id,
+      },
+
+      data: {
+        codeActive: codeActive,
+        codeActiveExpire: dayjs().add(5, 'minutes').toDate(),
+      },
+    });
+
+    //send email
+    this.mailerService.sendMail({
+      to: user.email, // list of receivers
+      subject: 'Activate your account at BK E-commerce shop', // Subject line
+      template: 'register',
+      context: {
+        name: user?.lastName ?? user.email,
+        activationCode: codeActive,
+      },
+    });
+    return { id: user.id };
+  }
+
+  async retryPassword(email: string) {
+    //check email
+    const user = await this.prismaService.user.findUnique({
+      where: { email: email },
+    });
+
+    if (!user) {
+      throw new BadRequestException('This account does not exist!');
+    }
+
+    //send Email
+    const codeActive = uuidv4().toString();
+
+    //update user
+    const userAfterUpdate = await this.prismaService.user.update({
+      where: {
+        id: user.id,
+      },
+
+      data: {
+        codeActive: codeActive,
+        codeActiveExpire: dayjs().add(5, 'minutes').toDate(),
+      },
+    });
+
+    //send email
+    this.mailerService.sendMail({
+      to: user.email, // list of receivers
+      subject: 'Change your password account at BK E-commerce shop', // Subject line
+      template: 'register',
+      context: {
+        name: user?.lastName ?? user.email,
+        activationCode: codeActive,
+      },
+    });
+    return { id: user.id, email: user.email };
+  }
+
+  async changePassword(data: ChangePasswordAuthDto) {
+    if (data.confirmPassword !== data.password) {
+      throw new BadRequestException(
+        'Password / Confirm password does not match.',
+      );
+    }
+
+    //check email
+    const user = await this.prismaService.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Account does not exist!');
+    }
+
+    //check expire code
+    const isBeforeCheck = dayjs().isBefore(user.codeActiveExpire);
+
+    if (isBeforeCheck) {
+      //valid => update password
+      const newPassword = await hashPasswordHelper(data.password);
+      const userAfterUpdate = await this.prismaService.user.update({
+        where: {
+          email: data.email,
+        },
+        data: {
+          password: newPassword,
+        },
+      });
+
+      return userAfterUpdate.id;
+    } else {
+      throw new BadRequestException(
+        'Activation code is invalid or has expired',
+      );
+    }
   }
 }

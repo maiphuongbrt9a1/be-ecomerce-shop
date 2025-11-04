@@ -20,6 +20,12 @@ async function bootstrap() {
     return int ?? this.toString();
   };
 
+  app.enableCors({
+    origin: 'http://localhost:3000', // Allow your Next.js frontend
+    methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
+    credentials: true, // Allow cookies/auth headers
+  });
+
   await app.listen(4000);
 }
 bootstrap();

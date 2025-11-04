@@ -33,3 +33,25 @@ export class CreateAuthDto {
   codeActive: string;
   codeActiveExpire: Date;
 }
+
+export class CodeAuthDto {
+  @IsNotEmpty({ message: 'Id is required!' })
+  id: bigint;
+
+  @IsNotEmpty({ message: 'code active is required!' })
+  codeActive: string;
+}
+
+export class ChangePasswordAuthDto {
+  @IsNotEmpty({ message: 'code active is required!' })
+  codeActive: string;
+
+  @IsNotEmpty({ message: 'password is required!' })
+  password: string;
+
+  @IsNotEmpty({ message: 'confirmPassword is required!' })
+  confirmPassword: string;
+
+  @IsNotEmpty({ message: 'email is required!' })
+  email: string;
+}
