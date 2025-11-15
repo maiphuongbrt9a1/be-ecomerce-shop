@@ -16,20 +16,346 @@ url      = env("DATABASE_URL")
 enum Role {
     USER
     ADMIN
+    OPERATOR
+}
+
+enum Gender {
+    MALE
+    FEMALE
+    OTHER
+}
+
+enum OrderStatus {
+    PENDING
+    PROCESSING
+    SHIPPED
+    DELIVERED
+    CANCELLED
+    RETURNED
+}
+
+enum ShipmentStatus {
+    WAITING_FOR_PICKUP
+    IN_TRANSIT
+    OUT_FOR_DELIVERY
+    DELIVERED
+    DELIVERED_FAILED
+    RETURNED_TO_SENDER
+}
+
+enum PaymentStatus {
+    PENDING
+    PAID
+    FAILED
+    REFUNDED
+}
+
+enum VoucherStatus {
+    AVAILABLE
+    SAVED
+    USED
+    EXPIRED
+}
+
+enum DiscountType {
+    PERCENTAGE
+    FIXED_AMOUNT
+}
+
+enum RequestStatus {
+    PENDING
+    IN_PROGRESS
+    APPROVED
+    REJECTED
 }
 
 model User {
-    id BigInt @db.BigInt @id @default(autoincrement())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    email String @unique
-    phone String? @db.VarChar(10)
-    firstName String? @db.VarChar(255)
-    lastName String? @db.VarChar(255)
-    role Role @default(USER)
-    password String 
-    username String @unique @db.VarChar(32)
-    isActive Boolean @default(false)
-    codeActive String @db.Uuid
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    firstName   String?     @db.VarChar(255)
+    lastName    String?     @db.VarChar(255)
+    gender      Gender?     @default(OTHER)
+    email       String      @unique
+    phone       String?     @db.VarChar(10)
+    username    String      @unique @db.VarChar(32)
+    password    String 
+    role        Role        @default(USER)
+    isActive    Boolean     @default(false)
+    codeActive  String      @db.Uuid
     codeActiveExpire DateTime
+    points      Int         @default(0)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+
+    staff       Staff?
+    customer    Customer?
+    address   Address[]
+    userMedia   Media[]
+    
+}
+
+model Staff {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    User        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    userId      BigInt      @unique @db.BigInt
+    staffCode   String      @unique @db.VarChar(50)
+    isAdmin     Boolean     @default(false)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    vouchers    Vouchers[]
+}
+
+model Customer {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    User        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    userId      BigInt      @unique @db.BigInt
+    loyaltyCard String?     @db.VarChar(50)
+    points      Int         @default(0)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    sizeProfiles SizeProfiles[]
+    reviews     Reviews[]
+    orders      Orders[]
+    cart        Cart?
+    userVouchers UserVouchers[]
+    requests    Requests[]
+}
+
+model Address {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    user        User?     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    userId      BigInt?      @db.BigInt
+    street      String      @db.VarChar(255)
+    ward       String      @db.VarChar(100)
+    district        String      @db.VarChar(100)
+    province       String      @db.VarChar(100)
+    zipCode     String      @db.VarChar(20)
+    country     String      @db.VarChar(100)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    order       Orders[]
+}
+
+model SizeProfiles {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    customerId      BigInt      @db.BigInt
+    heightCm      Float
+    weightKg      Float
+    chestCm       Float
+    hipCm       Float
+    hipsCm        Float
+    sleeveLengthCm Float
+    inseamCm      Float
+    shoulderLengthCm Float
+    bodyType    String?     @db.VarChar(100)
+    description String?     @db.Text
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+}
+
+model Products {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    name        String      @db.VarChar(255)
+    description String?     @db.Text
+    price       Float
+    stockKeepingUnit         String      @unique @db.VarChar(100)
+    stock       Int         @default(0)
+    category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+    categoryId    BigInt?      @db.BigInt
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    productVariants    ProductVariants[]
+    reviews     Reviews[]
+}
+
+model Category {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    name        String      @unique @db.VarChar(100)
+    description String?     @db.Text
+    products    Products[]
+    subCategories Category[]  @relation("CategoryToCategory")
+    
+    categoryParent Category?   @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+    parentId    BigInt?     @db.BigInt
+    
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+}
+
+model ProductVariants {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    product     Products    @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    productId   BigInt      @db.BigInt
+    orderItem   OrderItems?
+    variantName String      @db.VarChar(100)
+    variantColor String     @db.VarChar(100)
+    variantSize String     @db.VarChar(100)
+    price Float   @default(0)
+    stock       Int         @default(0)
+    stockKeepingUnit         String      @unique @db.VarChar(100)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    reviews     Reviews[]
+    media       Media[]
+    cartItems   CartItems[]
+}
+
+model Reviews {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    product     Products    @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    productId   BigInt      @db.BigInt
+    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    customerId  BigInt      @db.BigInt
+    productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    productVariantId BigInt  @db.BigInt
+    rating      Int
+    comment     String?     @db.Text
+    media       Media[]
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+}
+
+model Media {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    url         String      @db.Text @unique
+    type        String      @db.VarChar(50) @default("image")
+    review      Reviews?     @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    reviewId    BigInt?      @db.BigInt
+    user        User?        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    userId      BigInt?      @db.BigInt
+    productVariant ProductVariants? @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    productVariantId BigInt?  @db.BigInt
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+}
+
+model Orders {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    shippingAddress Address @relation(fields: [shippingAddressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    shippingAddressId BigInt  @db.BigInt
+    customerId  BigInt      @db.BigInt
+    orderDate   DateTime    @default(now())
+    status      OrderStatus      @default(PENDING)
+    subTotal    Float
+    shippingFee Float
+    discount    Float       @default(0)
+    totalAmount Float
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    orderItems  OrderItems[]
+    shipments   Shipments[]
+    payment     Payments?
+    requests Requests[]
+}
+
+
+model OrderItems {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    orderId     BigInt      @db.BigInt
+    productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    productVariantId BigInt  @db.BigInt @unique
+    quantity    Int
+    unitPrice   Float
+    totalPrice  Float
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+}
+
+model Shipments {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    orderId     BigInt      @db.BigInt @unique
+    estimatedDelivery DateTime
+    deliveredAt DateTime?
+    estimatedShipDate DateTime
+    shippedAt   DateTime?
+    carrier     String      @db.VarChar(100)
+    trackingNumber String   @unique @db.VarChar(100)
+    status      ShipmentStatus      @default(WAITING_FOR_PICKUP)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+}
+
+model Payments {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    orderId     BigInt      @db.BigInt @unique
+    transactionId String    @unique @db.VarChar(100)
+    paymentMethod String    @db.VarChar(100)
+    paymentDate DateTime    @default(now())
+    amount      Float
+    status      PaymentStatus      @default(PENDING)
+}
+
+model Cart {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    customerId  BigInt      @db.BigInt @unique
+    cartItems   CartItems[]
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+}
+
+model CartItems {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    cart        Cart        @relation(fields: [cartId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    cartId      BigInt      @db.BigInt
+    productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    productVariantId BigInt  @db.BigInt
+    quantity    Int
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+}
+
+model Vouchers {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    code        String      @unique @db.VarChar(50)
+    description String?     @db.Text
+    discountType DiscountType     @default(FIXED_AMOUNT)
+    discountValue Float
+    validFrom   DateTime
+    validTo     DateTime
+    usageLimit  Int?
+    timesUsed   Int         @default(0)
+    isActive    Boolean     @default(true)
+    createdAt   DateTime    @default(now())
+    user        Staff        @relation(fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    createdBy   BigInt     @db.BigInt
+    updatedAt   DateTime    @updatedAt
+    userVouchers UserVouchers[]
+}
+
+model UserVouchers {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    customerId  BigInt      @db.BigInt
+    voucher     Vouchers    @relation(fields: [voucherId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    voucherId   BigInt      @db.BigInt
+    useVoucherAt  DateTime?
+    saveVoucherAt   DateTime    @default(now())
+    voucherStatus VoucherStatus      @default(SAVED)
+}
+
+model Requests {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    customerId  BigInt      @db.BigInt
+    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    orderId     BigInt      @db.BigInt @unique
+    subject     String      @db.VarChar(255)
+    description String      @db.Text
+    status      RequestStatus      @default(PENDING)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    returnRequest ReturnRequests[]
+}
+
+model ReturnRequests {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    request     Requests    @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    requestId   BigInt      @db.BigInt @unique
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
 }
