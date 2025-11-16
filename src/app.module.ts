@@ -11,6 +11,23 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { MailModule } from './mail/mail.module';
 import { TransformInterceptor } from './core/transform.interceptor';
+import { ProductsModule } from './products/products.module';
+import { CategoryModule } from './category/category.module';
+import { AddressModule } from './address/address.module';
+import { SizeProfilesModule } from './size-profiles/size-profiles.module';
+import { ProductVariantsModule } from './product-variants/product-variants.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { MediaModule } from './media/media.module';
+import { OrdersModule } from './orders/orders.module';
+import { OrderItemsModule } from './order-items/order-items.module';
+import { ShipmentsModule } from './shipments/shipments.module';
+import { PaymentsModule } from './payments/payments.module';
+import { CartModule } from './cart/cart.module';
+import { CartItemsModule } from './cart-items/cart-items.module';
+import { VouchersModule } from './vouchers/vouchers.module';
+import { UserVouchersModule } from './user-vouchers/user-vouchers.module';
+import { RequestsModule } from './requests/requests.module';
+import { ReturnRequestsModule } from './return-requests/return-requests.module';
 
 @Module({
   imports: [
@@ -47,6 +64,23 @@ import { TransformInterceptor } from './core/transform.interceptor';
       inject: [ConfigService],
     }),
     MailModule,
+    ProductsModule,
+    CategoryModule,
+    AddressModule,
+    SizeProfilesModule,
+    ProductVariantsModule,
+    ReviewsModule,
+    MediaModule,
+    OrdersModule,
+    OrderItemsModule,
+    ShipmentsModule,
+    PaymentsModule,
+    CartModule,
+    CartItemsModule,
+    VouchersModule,
+    UserVouchersModule,
+    RequestsModule,
+    ReturnRequestsModule,
   ],
 
   controllers: [AppController],
