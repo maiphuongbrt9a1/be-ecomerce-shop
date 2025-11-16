@@ -70,6 +70,7 @@ enum RequestStatus {
 }
 
 model User {
+    // Base user fields
     id          BigInt      @db.BigInt @id @default(autoincrement())
     firstName   String?     @db.VarChar(255)
     lastName    String?     @db.VarChar(255)
@@ -85,40 +86,31 @@ model User {
     points      Int         @default(0)
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
-
-    staff       Staff?
-    customer    Customer?
+    
+    // base relations of user
     address   Address[]
     userMedia   Media[]
     
-}
-
-model Staff {
-    id          BigInt      @db.BigInt @id @default(autoincrement())
-    User        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    userId      BigInt      @unique @db.BigInt
-    staffCode   String      @unique @db.VarChar(50)
+    // Staff fields if user is staff
+    staffCode   String?      @unique @db.VarChar(50)
     isAdmin     Boolean     @default(false)
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @updatedAt
-    vouchers    Vouchers[]
-}
 
-model Customer {
-    id          BigInt      @db.BigInt @id @default(autoincrement())
-    User        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    userId      BigInt      @unique @db.BigInt
+    // relations of staff
+    vouchers    Vouchers[]
+
+    // Customer fields if user is customer
     loyaltyCard String?     @db.VarChar(50)
-    points      Int         @default(0)
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @updatedAt
+
+    // relations of customer
     sizeProfiles SizeProfiles[]
     reviews     Reviews[]
     orders      Orders[]
     cart        Cart?
     userVouchers UserVouchers[]
     requests    Requests[]
+    
 }
+
 
 model Address {
     id          BigInt      @db.BigInt @id @default(autoincrement())
@@ -137,8 +129,8 @@ model Address {
 
 model SizeProfiles {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    customerId      BigInt      @db.BigInt
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    userId      BigInt      @db.BigInt
     heightCm      Float
     weightKg      Float
     chestCm       Float
@@ -204,8 +196,8 @@ model Reviews {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     product     Products    @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productId   BigInt      @db.BigInt
-    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    customerId  BigInt      @db.BigInt
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    userId  BigInt      @db.BigInt
     productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productVariantId BigInt  @db.BigInt
     rating      Int
@@ -231,10 +223,10 @@ model Media {
 
 model Orders {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     shippingAddress Address @relation(fields: [shippingAddressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     shippingAddressId BigInt  @db.BigInt
-    customerId  BigInt      @db.BigInt
+    userId  BigInt      @db.BigInt
     orderDate   DateTime    @default(now())
     status      OrderStatus      @default(PENDING)
     subTotal    Float
@@ -291,8 +283,8 @@ model Payments {
 
 model Cart {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    customerId  BigInt      @db.BigInt @unique
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    userId  BigInt      @db.BigInt @unique
     cartItems   CartItems[]
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
@@ -321,7 +313,7 @@ model Vouchers {
     timesUsed   Int         @default(0)
     isActive    Boolean     @default(true)
     createdAt   DateTime    @default(now())
-    user        Staff        @relation(fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    user        User        @relation(fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Cascade)
     createdBy   BigInt     @db.BigInt
     updatedAt   DateTime    @updatedAt
     userVouchers UserVouchers[]
@@ -329,8 +321,8 @@ model Vouchers {
 
 model UserVouchers {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    customerId  BigInt      @db.BigInt
+    user        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    userId      BigInt      @db.BigInt
     voucher     Vouchers    @relation(fields: [voucherId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     voucherId   BigInt      @db.BigInt
     useVoucherAt  DateTime?
@@ -340,8 +332,8 @@ model UserVouchers {
 
 model Requests {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    customerId  BigInt      @db.BigInt
+    user        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    userId      BigInt      @db.BigInt
     order       Orders      @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     orderId     BigInt      @db.BigInt @unique
     subject     String      @db.VarChar(255)

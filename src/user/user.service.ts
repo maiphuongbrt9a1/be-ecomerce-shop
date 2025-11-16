@@ -32,7 +32,7 @@ export class UserService {
     const paginate = createPaginator({ perPage: perPage });
     const result = await paginate<User, Prisma.UserFindManyArgs>(
       this.prismaService.user,
-      {},
+      { orderBy: { id: 'asc' } },
       { page: page },
     );
     return result.data;
