@@ -35,33 +35,51 @@ export class UserService {
       { orderBy: { id: 'asc' } },
       { page: page },
     );
+
+    if (result) {
+      // set password to null to protect password information
+      result.data.forEach((user) => {
+        user.password = '';
+      });
+    }
+
     return result.data;
   }
 
   // Get an User by id
   async getUserDetail(id: number): Promise<User | null> {
-    const User = await this.prismaService.user.findFirst({
+    const user = await this.prismaService.user.findFirst({
       where: {
         id: id,
       },
     });
-    if (!User) {
+
+    if (!user) {
       throw new NotFoundException('User not found!');
     }
-    return User;
+
+    // set password to null to protect password information
+    user.password = '';
+
+    return user;
   }
 
   // Get an User by email
   async getUserByEmail(email: string): Promise<User | null> {
-    const User = await this.prismaService.user.findFirst({
+    const user = await this.prismaService.user.findFirst({
       where: {
         email: email,
       },
     });
-    if (!User) {
+
+    if (!user) {
       throw new NotFoundException('User not found!');
     }
-    return User;
+
+    // set password to null to protect password information
+    user.password = '';
+
+    return user;
   }
 
   // Get an User by phone
@@ -71,9 +89,14 @@ export class UserService {
         phone: phone,
       },
     });
+
     if (!User) {
       throw new NotFoundException('User not found!');
     }
+
+    // set password to null to protect password information
+    User.password = '';
+
     return User;
   }
 
@@ -84,9 +107,14 @@ export class UserService {
         username: username,
       },
     });
+
     if (!User) {
       throw new NotFoundException('User not found!');
     }
+
+    // set password to null to protect password information
+    User.password = '';
+
     return User;
   }
 
@@ -108,7 +136,7 @@ export class UserService {
       throw new Error('Hash password for create user failed!');
     }
 
-    return this.prismaService.user.create({
+    const newUser = await this.prismaService.user.create({
       data: {
         firstName,
         lastName,
@@ -118,11 +146,16 @@ export class UserService {
         username,
         role: role ?? Role.USER,
         createdAt: new Date(Date.now()),
-        isActive,
+        isActive: false,
         codeActive: uuidv4().toString(),
         codeActiveExpire: new Date(Date.now() + 5 * 60 * 1000),
       },
     });
+
+    // set password to null to protect password information
+    newUser.password = '';
+
+    return newUser;
   }
 
   // Delete an User
@@ -140,7 +173,7 @@ export class UserService {
       throw new Error('Hash password for create user failed!');
     }
 
-    return this.prismaService.user.update({
+    const newUser = await this.prismaService.user.update({
       where: { id: id },
       data: {
         firstName,
@@ -152,6 +185,11 @@ export class UserService {
         updatedAt: new Date(Date.now()),
       },
     });
+
+    // set password to null to protect password information
+    newUser.password = '';
+
+    return newUser;
   }
 
   async handleRegister(registerDto: CreateAuthDto): Promise<User> {
@@ -212,6 +250,9 @@ export class UserService {
         throw new Error('Send email failed!');
       });
 
+    // set password to null to protect password information
+    user.password = '';
+
     return user;
   }
 
@@ -240,7 +281,11 @@ export class UserService {
           isActive: true,
         },
       });
-      return { userAfterUpdate };
+
+      // set password to null to protect password information
+      userAfterUpdate.password = '';
+
+      return userAfterUpdate;
     } else {
       throw new BadRequestException('Code active is expired or invalid');
     }
@@ -284,7 +329,11 @@ export class UserService {
         activationCode: codeActive,
       },
     });
-    return { id: user.id };
+
+    // set password to null to protect password information
+    userAfterUpdate.password = '';
+
+    return userAfterUpdate;
   }
 
   async retryPassword(email: string) {
@@ -322,7 +371,11 @@ export class UserService {
         activationCode: codeActive,
       },
     });
-    return { id: user.id, email: user.email };
+
+    // set password to null to protect password information
+    userAfterUpdate.password = '';
+
+    return userAfterUpdate;
   }
 
   async changePassword(data: ChangePasswordAuthDto) {
@@ -356,7 +409,10 @@ export class UserService {
         },
       });
 
-      return userAfterUpdate.id;
+      // set password to null to protect password information
+      userAfterUpdate.password = '';
+
+      return userAfterUpdate;
     } else {
       throw new BadRequestException(
         'Activation code is invalid or has expired',
