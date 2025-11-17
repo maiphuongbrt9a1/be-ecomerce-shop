@@ -38,35 +38,35 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('signup')
   @Public()
-  @ResponseMessage('User registered successfully')
+  @ResponseMessage('User register')
   register(@Body() registerDto: CreateAuthDto) {
     return this.authService.handleRegister(registerDto);
   }
 
   @Post('check-code')
   @Public()
-  @ResponseMessage('Check code active account successfully')
+  @ResponseMessage('Check code active account')
   checkCode(@Body() registerDto: CodeAuthDto) {
     return this.authService.checkCode(registerDto);
   }
 
   @Post('retry-active')
   @Public()
-  @ResponseMessage('Retry active account successfully')
+  @ResponseMessage('Retry active account')
   retryActive(@Body('email') email: string) {
     return this.authService.retryActive(email);
   }
 
   @Post('retry-password')
   @Public()
-  @ResponseMessage('User retry password successfully')
+  @ResponseMessage('User retry password')
   retryPassword(@Body('email') email: string) {
     return this.authService.retryPassword(email);
   }
 
   @Post('change-password')
   @Public()
-  @ResponseMessage('User change password successfully')
+  @ResponseMessage('User change password')
   changePassword(@Body() data: ChangePasswordAuthDto) {
     return this.authService.changePassword(data);
   }

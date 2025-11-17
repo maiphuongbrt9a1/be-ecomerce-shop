@@ -25,24 +25,30 @@ export class AuthService {
     if (!isValidPassword) {
       throw new UnauthorizedException('Invalid Username or Password');
     }
-
     return user;
   }
 
   async login(user: any) {
-    const payload = { username: user.email, sub: user.id };
+    const payload = {
+      username: user.email,
+      sub: user.id,
+      role: user.role,
+      isAdmin: user.isAdmin,
+    };
     return {
       user: {
-        email: user.email,
         id: user.id,
-        name: user.lastName,
+        name: user.firstName + ' ' + user.lastName,
+        email: user.email,
+        role: user.role,
+        isAdmin: user.isAdmin,
       },
       access_token: this.jwtService.sign(payload),
     };
   }
 
   async handleRegister(registerDto: CreateAuthDto) {
-    return this.userService.handleRegister(registerDto);
+    return await this.userService.handleRegister(registerDto);
   }
 
   checkCode = async (data: CodeAuthDto) => {

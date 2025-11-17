@@ -9,10 +9,13 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from '@/user/dtos/create.user.dto';
 import { UpdateUserDto } from '@/user/dtos/update.user.dto';
+import { RolesGuard } from '@/auth/passport/permission.guard';
+import { Roles } from '@/decorator/customize';
 
 @Controller('user')
 export class UserController {
@@ -20,6 +23,8 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get user list' })
   @ApiResponse({ status: 200, description: 'User list found!' })
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN') // please check role is in Role enum of prisma schema
   @Get('/')
   async getAllUsers(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.userService.getAllUser(Number(page), Number(perPage));

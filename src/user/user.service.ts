@@ -36,13 +36,6 @@ export class UserService {
       { page: page },
     );
 
-    if (result) {
-      // set password to null to protect password information
-      result.data.forEach((user) => {
-        user.password = '';
-      });
-    }
-
     return result.data;
   }
 
@@ -57,9 +50,6 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found!');
     }
-
-    // set password to null to protect password information
-    user.password = '';
 
     return user;
   }
@@ -76,9 +66,6 @@ export class UserService {
       throw new NotFoundException('User not found!');
     }
 
-    // set password to null to protect password information
-    user.password = '';
-
     return user;
   }
 
@@ -94,9 +81,6 @@ export class UserService {
       throw new NotFoundException('User not found!');
     }
 
-    // set password to null to protect password information
-    User.password = '';
-
     return User;
   }
 
@@ -111,9 +95,6 @@ export class UserService {
     if (!User) {
       throw new NotFoundException('User not found!');
     }
-
-    // set password to null to protect password information
-    User.password = '';
 
     return User;
   }
@@ -152,9 +133,6 @@ export class UserService {
       },
     });
 
-    // set password to null to protect password information
-    newUser.password = '';
-
     return newUser;
   }
 
@@ -185,9 +163,6 @@ export class UserService {
         updatedAt: new Date(Date.now()),
       },
     });
-
-    // set password to null to protect password information
-    newUser.password = '';
 
     return newUser;
   }
@@ -250,9 +225,6 @@ export class UserService {
         throw new Error('Send email failed!');
       });
 
-    // set password to null to protect password information
-    user.password = '';
-
     return user;
   }
 
@@ -281,9 +253,6 @@ export class UserService {
           isActive: true,
         },
       });
-
-      // set password to null to protect password information
-      userAfterUpdate.password = '';
 
       return userAfterUpdate;
     } else {
@@ -330,9 +299,6 @@ export class UserService {
       },
     });
 
-    // set password to null to protect password information
-    userAfterUpdate.password = '';
-
     return userAfterUpdate;
   }
 
@@ -372,9 +338,6 @@ export class UserService {
       },
     });
 
-    // set password to null to protect password information
-    userAfterUpdate.password = '';
-
     return userAfterUpdate;
   }
 
@@ -408,9 +371,6 @@ export class UserService {
           password: newPassword,
         },
       });
-
-      // set password to null to protect password information
-      userAfterUpdate.password = '';
 
       return userAfterUpdate;
     } else {

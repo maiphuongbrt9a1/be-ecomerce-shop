@@ -1,5 +1,9 @@
 import { IS_PUBLIC_KEY } from '@/decorator/customize';
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -18,5 +22,18 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return true;
     }
     return super.canActivate(context);
+  }
+
+  handleRequest(err, user, info) {
+    // You can throw an exception based on either "info" or "err" arguments
+    if (err || !user) {
+      throw (
+        err ||
+        new UnauthorizedException(
+          'Access Token is invalid or has expired or not provided in header.',
+        )
+      );
+    }
+    return user;
   }
 }
