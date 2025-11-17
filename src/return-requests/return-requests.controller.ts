@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ReturnRequestsService } from './return-requests.service';
 import { CreateReturnRequestDto } from './dto/create-return-request.dto';
 import { UpdateReturnRequestDto } from './dto/update-return-request.dto';
@@ -22,8 +30,11 @@ export class ReturnRequestsController {
     return this.returnRequestsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReturnRequestDto: UpdateReturnRequestDto) {
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateReturnRequestDto: UpdateReturnRequestDto,
+  ) {
     return this.returnRequestsService.update(+id, updateReturnRequestDto);
   }
 

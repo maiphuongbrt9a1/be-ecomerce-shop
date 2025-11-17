@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SizeProfilesService } from './size-profiles.service';
 import { CreateSizeProfileDto } from './dto/create-size-profile.dto';
 import { UpdateSizeProfileDto } from './dto/update-size-profile.dto';
@@ -22,8 +30,11 @@ export class SizeProfilesController {
     return this.sizeProfilesService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSizeProfileDto: UpdateSizeProfileDto) {
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateSizeProfileDto: UpdateSizeProfileDto,
+  ) {
     return this.sizeProfilesService.update(+id, updateSizeProfileDto);
   }
 

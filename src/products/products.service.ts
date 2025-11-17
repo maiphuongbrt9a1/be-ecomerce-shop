@@ -28,8 +28,8 @@ export class ProductsService {
     return result.data;
   }
 
-  findOne(id: number): Promise<Products | null> {
-    const product = this.prismaService.products.findFirst({
+  async findOne(id: number): Promise<Products | null> {
+    const product = await this.prismaService.products.findFirst({
       where: { id: id },
     });
 
@@ -40,16 +40,19 @@ export class ProductsService {
     return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto): Promise<Products> {
-    const product = this.prismaService.products.update({
+  async update(
+    id: number,
+    updateProductDto: UpdateProductDto,
+  ): Promise<Products> {
+    const product = await this.prismaService.products.update({
       where: { id: id },
       data: { ...updateProductDto },
     });
     return product;
   }
 
-  remove(id: number): Promise<Products> {
-    return this.prismaService.products.delete({
+  async remove(id: number): Promise<Products> {
+    return await this.prismaService.products.delete({
       where: { id: id },
     });
   }

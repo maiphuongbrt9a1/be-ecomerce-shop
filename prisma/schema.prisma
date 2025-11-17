@@ -25,6 +25,12 @@ enum Gender {
     OTHER
 }
 
+enum MediaType {
+    IMAGE
+    VIDEO
+    DOCUMENT
+}
+
 enum OrderStatus {
     PENDING
     PROCESSING
@@ -224,7 +230,7 @@ model Reviews {
 model Media {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     url         String      @db.Text @unique
-    type        String      @db.VarChar(50) @default("image")
+    type        MediaType      @default(IMAGE)
     review      Reviews?     @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     reviewId    BigInt?      @db.BigInt
     user        User?        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
