@@ -21,6 +21,10 @@ export class CreateProductDto {
   @ApiProperty({ example: 'Sample product stock' })
   stock: number;
 
+  @IsNotEmpty()
+  @ApiProperty({ example: 'User ID of staff who created the product' })
+  createByUserId: bigint;
+
   @IsOptional()
   @IsDate()
   createdAt: Date;
