@@ -4,6 +4,8 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Prisma, Products } from '@prisma/client';
+import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
 export class ProductsService {
@@ -13,23 +15,44 @@ export class ProductsService {
     private readonly mailerService: MailerService,
   ) {}
 
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  async create(createProductDto: CreateProductDto): Promise<Products> {
+    const product = await this.prismaService.products.create({
+      data: { ...createProductDto },
+    });
+
+    return product;
   }
 
-  findAll() {
-    return `This action returns all products`;
+  async findAll(page: number, perPage: number): Promise<Products[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Products, Prisma.ProductsFindManyArgs>(
+      this.prismaService.products,
+      { orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  findOne(id: number): Promise<Products | null> {
+    const product = this.prismaService.products.findFirst({
+      where: { id: id },
+    });
+
+    return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  update(id: number, updateProductDto: UpdateProductDto): Promise<Products> {
+    const product = this.prismaService.products.update({
+      where: { id: id },
+      data: { ...updateProductDto },
+    });
+    return product;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  remove(id: number): Promise<Products> {
+    return this.prismaService.products.delete({
+      where: { id: id },
+    });
   }
 }

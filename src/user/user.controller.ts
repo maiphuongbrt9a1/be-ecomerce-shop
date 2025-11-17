@@ -25,7 +25,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'User list found!' })
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema
-  @Get('/')
+  @Get()
   async getAllUsers(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.userService.getAllUser(Number(page), Number(perPage));
   }
@@ -45,7 +45,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Add a new user' })
   @ApiBody({ type: CreateUserDto })
-  @Post('/user')
+  @Post()
   async createAnUser(@Body() createUserDto: CreateUserDto) {
     return await this.userService.createAnUser(createUserDto);
   }
