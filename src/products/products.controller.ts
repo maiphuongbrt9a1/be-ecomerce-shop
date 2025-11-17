@@ -3,11 +3,11 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Query,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -36,9 +36,9 @@ export class ProductsController {
     return await this.productsService.findAll(Number(page), Number(perPage));
   }
 
-  @Get('/:id')
   @ApiOperation({ summary: 'Get one product' })
   @ApiResponse({ status: 200, description: 'Get one product' })
+  @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.productsService.findOne(+id);
   }
@@ -47,7 +47,7 @@ export class ProductsController {
   @ApiResponse({ status: 200, description: 'Update one product' })
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  @Patch('/:id')
+  @Put('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,

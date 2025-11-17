@@ -1,19 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { ConfigService } from '@nestjs/config';
-import { MailerService } from '@nestjs-modules/mailer';
 import { Prisma, Products } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
 export class ProductsService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly configService: ConfigService,
-    private readonly mailerService: MailerService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createProductDto: CreateProductDto): Promise<Products> {
     const product = await this.prismaService.products.create({
@@ -38,6 +32,10 @@ export class ProductsService {
     const product = this.prismaService.products.findFirst({
       where: { id: id },
     });
+
+    if (!product) {
+      throw new NotFoundException('Product not found!');
+    }
 
     return product;
   }
