@@ -25,17 +25,17 @@ export class VouchersController {
     return this.vouchersService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.vouchersService.findOne(+id);
   }
 
-  @Put(':id')
+  @Put('/:id')
   update(@Param('id') id: string, @Body() updateVoucherDto: UpdateVoucherDto) {
     return this.vouchersService.update(+id, updateVoucherDto);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.vouchersService.remove(+id);
   }

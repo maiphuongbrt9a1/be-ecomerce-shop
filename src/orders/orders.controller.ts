@@ -25,17 +25,17 @@ export class OrdersController {
     return this.ordersService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(+id);
   }
 
-  @Put(':id')
+  @Put('/:id')
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(+id, updateOrderDto);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.ordersService.remove(+id);
   }

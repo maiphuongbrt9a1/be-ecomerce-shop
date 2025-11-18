@@ -25,12 +25,12 @@ export class UserVouchersController {
     return this.userVouchersService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.userVouchersService.findOne(+id);
   }
 
-  @Put(':id')
+  @Put('/:id')
   update(
     @Param('id') id: string,
     @Body() updateUserVoucherDto: UpdateUserVoucherDto,
@@ -38,7 +38,7 @@ export class UserVouchersController {
     return this.userVouchersService.update(+id, updateUserVoucherDto);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.userVouchersService.remove(+id);
   }

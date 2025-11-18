@@ -25,12 +25,12 @@ export class ReturnRequestsController {
     return this.returnRequestsService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.returnRequestsService.findOne(+id);
   }
 
-  @Put(':id')
+  @Put('/:id')
   update(
     @Param('id') id: string,
     @Body() updateReturnRequestDto: UpdateReturnRequestDto,
@@ -38,7 +38,7 @@ export class ReturnRequestsController {
     return this.returnRequestsService.update(+id, updateReturnRequestDto);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.returnRequestsService.remove(+id);
   }

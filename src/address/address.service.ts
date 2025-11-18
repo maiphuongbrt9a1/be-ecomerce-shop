@@ -1,26 +1,62 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Address, Prisma } from '@prisma/client';
+import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
 export class AddressService {
-  create(createAddressDto: CreateAddressDto) {
-    return 'This action adds a new address';
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async create(createAddressDto: CreateAddressDto): Promise<Address> {
+    const address = await this.prismaService.address.create({
+      data: { ...createAddressDto },
+    });
+
+    return address;
   }
 
-  findAll() {
-    return `This action returns all address`;
+  async findAll(page: number, perPage: number): Promise<Address[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Address, Prisma.AddressFindManyArgs>(
+      this.prismaService.address,
+      { orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} address`;
+  async findOne(id: number): Promise<Address | null> {
+    const address = await this.prismaService.address.findFirst({
+      where: { id: id },
+    });
+
+    if (!address) {
+      throw new NotFoundException('Address not found!');
+    }
+
+    return address;
   }
 
-  update(id: number, updateAddressDto: UpdateAddressDto) {
-    return `This action updates a #${id} address`;
+  async update(
+    id: number,
+    updateAddressDto: UpdateAddressDto,
+  ): Promise<Address> {
+    const address = await this.prismaService.address.update({
+      where: { id: id },
+      data: { ...updateAddressDto },
+    });
+
+    return address;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} address`;
+  async remove(id: number): Promise<Address> {
+    const address = await this.prismaService.address.delete({
+      where: { id: id },
+    });
+
+    return address;
   }
 }

@@ -1,26 +1,59 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Category, Prisma } from '@prisma/client';
+import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
 export class CategoryService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+    const result = await this.prismaService.category.create({
+      data: { ...createCategoryDto },
+    });
+
+    return result;
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll(page: number, perPage: number): Promise<Category[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Category, Prisma.CategoryFindManyArgs>(
+      this.prismaService.category,
+      { orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: number): Promise<Category | null> {
+    const result = await this.prismaService.category.findFirst({
+      where: { id: id },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Category not found!');
+    }
+
+    return result;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(
+    id: number,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category> {
+    const result = await this.prismaService.category.update({
+      where: { id: id },
+      data: { ...updateCategoryDto },
+    });
+    return result;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number): Promise<Category> {
+    return await this.prismaService.category.delete({
+      where: { id: id },
+    });
   }
 }

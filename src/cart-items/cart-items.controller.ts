@@ -25,12 +25,12 @@ export class CartItemsController {
     return this.cartItemsService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.cartItemsService.findOne(+id);
   }
 
-  @Put(':id')
+  @Put('/:id')
   update(
     @Param('id') id: string,
     @Body() updateCartItemDto: UpdateCartItemDto,
@@ -38,7 +38,7 @@ export class CartItemsController {
     return this.cartItemsService.update(+id, updateCartItemDto);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.cartItemsService.remove(+id);
   }

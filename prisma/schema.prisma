@@ -143,14 +143,13 @@ model SizeProfiles {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     userId      BigInt      @db.BigInt
-    heightCm      Float
-    weightKg      Float
-    chestCm       Float
-    hipCm       Float
-    hipsCm        Float
-    sleeveLengthCm Float
-    inseamCm      Float
-    shoulderLengthCm Float
+    heightCm      Float?
+    weightKg      Float?
+    chestCm       Float?
+    hipCm       Float?
+    sleeveLengthCm Float?
+    inseamCm      Float?
+    shoulderLengthCm Float?
     bodyType    String?     @db.VarChar(100)
     description String?     @db.Text
     createdAt   DateTime    @default(now())
@@ -166,7 +165,7 @@ model Products {
     stock       Int         @default(0)
     category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull, onUpdate: Cascade)
     categoryId    BigInt?      @db.BigInt
-    createByUser        User        @relation(fields: [createByUserId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
+    createByUser        User        @relation(fields: [createByUserId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     createByUserId      BigInt      @db.BigInt
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
@@ -181,10 +180,10 @@ model Category {
     products    Products[]
     subCategories Category[]  @relation("CategoryToCategory")
     
-    categoryParent Category?   @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+    categoryParent Category?   @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
     parentId    BigInt?     @db.BigInt
     
-    createByUser        User        @relation("CategoryCreatedByUser", fields: [createByUserId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
+    createByUser        User        @relation("CategoryCreatedByUser", fields: [createByUserId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     createByUserId      BigInt      @db.BigInt
     
     createdAt   DateTime    @default(now())
@@ -196,7 +195,7 @@ model ProductVariants {
     product     Products    @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productId   BigInt      @db.BigInt
     orderItem   OrderItems?
-    createByUser        User        @relation("ProductVariantCreatedByUser", fields: [createByUserId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
+    createByUser        User        @relation("ProductVariantCreatedByUser", fields: [createByUserId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     createByUserId      BigInt      @db.BigInt
     
     variantName String      @db.VarChar(100)
@@ -216,7 +215,7 @@ model Reviews {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     product     Products    @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productId   BigInt      @db.BigInt
-    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    user    User    @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     userId  BigInt      @db.BigInt
     productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productVariantId BigInt  @db.BigInt
@@ -243,11 +242,11 @@ model Media {
 
 model Orders {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    shippingAddress Address @relation(fields: [shippingAddressId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    user    User    @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    shippingAddress Address @relation(fields: [shippingAddressId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     shippingAddressId BigInt  @db.BigInt
     userId  BigInt      @db.BigInt
-    processByStaff        User        @relation("OrderProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
+    processByStaff        User        @relation("OrderProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     processByStaffId      BigInt      @db.BigInt 
     
     orderDate   DateTime    @default(now())
@@ -267,9 +266,9 @@ model Orders {
 
 model OrderItems {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     orderId     BigInt      @db.BigInt
-    productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     productVariantId BigInt  @db.BigInt @unique
     quantity    Int
     unitPrice   Float
@@ -280,9 +279,9 @@ model OrderItems {
 
 model Shipments {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     orderId     BigInt      @db.BigInt @unique
-    processByStaff        User        @relation("OrderShippedByStaff", fields: [processByStaffId], references: [id], onDelete: SetDefault, onUpdate: Cascade)
+    processByStaff        User        @relation("OrderShippedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     processByStaffId      BigInt      @db.BigInt
     
     estimatedDelivery DateTime
@@ -298,7 +297,7 @@ model Shipments {
 
 model Payments {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     orderId     BigInt      @db.BigInt @unique
     transactionId String    @unique @db.VarChar(100)
     paymentMethod String    @db.VarChar(100)
@@ -339,7 +338,7 @@ model Vouchers {
     timesUsed   Int         @default(0)
     isActive    Boolean     @default(true)
     createdAt   DateTime    @default(now())
-    user        User        @relation(fields: [createdBy], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    user        User        @relation(fields: [createdBy], references: [id], onDelete: Restrict, onUpdate: Cascade)
     createdBy   BigInt     @db.BigInt
     updatedAt   DateTime    @updatedAt
     userVouchers UserVouchers[]
@@ -358,11 +357,11 @@ model UserVouchers {
 
 model Requests {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    user        User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    user        User        @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     userId      BigInt      @db.BigInt
-    processByStaff        User        @relation("RequestsProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    processByStaff        User        @relation("RequestsProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     processByStaffId      BigInt      @db.BigInt
-    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     orderId     BigInt      @db.BigInt @unique
     subject     String      @db.VarChar(255)
     description String      @db.Text
@@ -374,7 +373,7 @@ model Requests {
 
 model ReturnRequests {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    request     Requests    @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    request     Requests    @relation(fields: [requestId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     requestId   BigInt      @db.BigInt @unique
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
