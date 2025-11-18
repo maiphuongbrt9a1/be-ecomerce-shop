@@ -1,26 +1,59 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Prisma, Vouchers } from '@prisma/client';
+import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
 export class VouchersService {
-  create(createVoucherDto: CreateVoucherDto) {
-    return 'This action adds a new voucher';
+  constructor(private readonly prismaService: PrismaService) {}
+
+  async create(createVoucherDto: CreateVoucherDto): Promise<Vouchers> {
+    const result = await this.prismaService.vouchers.create({
+      data: { ...createVoucherDto },
+    });
+
+    return result;
   }
 
-  findAll() {
-    return `This action returns all vouchers`;
+  async findAll(page: number, perPage: number): Promise<Vouchers[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Vouchers, Prisma.VouchersFindManyArgs>(
+      this.prismaService.vouchers,
+      { orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} voucher`;
+  async findOne(id: number): Promise<Vouchers | null> {
+    const result = await this.prismaService.vouchers.findFirst({
+      where: { id: id },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Voucher not found!');
+    }
+
+    return result;
   }
 
-  update(id: number, updateVoucherDto: UpdateVoucherDto) {
-    return `This action updates a #${id} voucher`;
+  async update(
+    id: number,
+    updateVoucherDto: UpdateVoucherDto,
+  ): Promise<Vouchers> {
+    const result = await this.prismaService.vouchers.update({
+      where: { id: id },
+      data: { ...updateVoucherDto },
+    });
+    return result;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} voucher`;
+  async remove(id: number): Promise<Vouchers> {
+    return await this.prismaService.vouchers.delete({
+      where: { id: id },
+    });
   }
 }

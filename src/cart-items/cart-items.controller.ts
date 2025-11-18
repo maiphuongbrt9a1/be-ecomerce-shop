@@ -6,40 +6,65 @@ import {
   Put,
   Param,
   Delete,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CartItemsService } from './cart-items.service';
 import { CreateCartItemDto } from './dto/create-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { RolesGuard } from '@/auth/passport/permission.guard';
+import { Roles } from '@/decorator/customize';
 
 @Controller('cart-items')
 export class CartItemsController {
   constructor(private readonly cartItemsService: CartItemsService) {}
 
+  @ApiOperation({ summary: 'Create a new cart item' })
+  @ApiResponse({ status: 201, description: 'Create a new cart item' })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Post()
-  create(@Body() createCartItemDto: CreateCartItemDto) {
-    return this.cartItemsService.create(createCartItemDto);
+  async create(@Body() createCartItemDto: CreateCartItemDto) {
+    return await this.cartItemsService.create(createCartItemDto);
   }
 
+  @ApiOperation({ summary: 'Get all cart items' })
+  @ApiResponse({ status: 200, description: 'Get all cart items' })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Get()
-  findAll() {
-    return this.cartItemsService.findAll();
+  async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
+    return await this.cartItemsService.findAll(Number(page), Number(perPage));
   }
 
+  @ApiOperation({ summary: 'Get one cart item' })
+  @ApiResponse({ status: 200, description: 'Get one cart item' })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Get('/:id')
-  findOne(@Param('id') id: string) {
-    return this.cartItemsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.cartItemsService.findOne(+id);
   }
 
+  @ApiOperation({ summary: 'Update one cart item' })
+  @ApiResponse({ status: 200, description: 'Update one cart item' })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Put('/:id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateCartItemDto: UpdateCartItemDto,
   ) {
-    return this.cartItemsService.update(+id, updateCartItemDto);
+    return await this.cartItemsService.update(+id, updateCartItemDto);
   }
 
+  @ApiOperation({ summary: 'Delete one cart item' })
+  @ApiResponse({ status: 200, description: 'Delete one cart item' })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Delete('/:id')
-  remove(@Param('id') id: string) {
-    return this.cartItemsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.cartItemsService.remove(+id);
   }
 }

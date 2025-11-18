@@ -16,30 +16,30 @@ export class UserVouchersController {
   constructor(private readonly userVouchersService: UserVouchersService) {}
 
   @Post()
-  create(@Body() createUserVoucherDto: CreateUserVoucherDto) {
-    return this.userVouchersService.create(createUserVoucherDto);
+  async create(@Body() createUserVoucherDto: CreateUserVoucherDto) {
+    return await this.userVouchersService.create(createUserVoucherDto);
   }
 
   @Get()
-  findAll() {
-    return this.userVouchersService.findAll();
+  async findAll() {
+    return await this.userVouchersService.findAll();
   }
 
   @Get('/:id')
-  findOne(@Param('id') id: string) {
-    return this.userVouchersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.userVouchersService.findOne(+id);
   }
 
   @Put('/:id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateUserVoucherDto: UpdateUserVoucherDto,
   ) {
-    return this.userVouchersService.update(+id, updateUserVoucherDto);
+    return await this.userVouchersService.update(+id, updateUserVoucherDto);
   }
 
   @Delete('/:id')
-  remove(@Param('id') id: string) {
-    return this.userVouchersService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.userVouchersService.remove(+id);
   }
 }

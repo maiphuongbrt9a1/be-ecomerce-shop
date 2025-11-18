@@ -6,40 +6,52 @@ import {
   Put,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { OrderItemsService } from './order-items.service';
 import { CreateOrderItemDto } from './dto/create-order-item.dto';
 import { UpdateOrderItemDto } from './dto/update-order-item.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('order-items')
 export class OrderItemsController {
   constructor(private readonly orderItemsService: OrderItemsService) {}
 
+  @ApiOperation({ summary: 'Create a new order item' })
+  @ApiResponse({ status: 201, description: 'Create a new order item' })
   @Post()
-  create(@Body() createOrderItemDto: CreateOrderItemDto) {
-    return this.orderItemsService.create(createOrderItemDto);
+  async create(@Body() createOrderItemDto: CreateOrderItemDto) {
+    return await this.orderItemsService.create(createOrderItemDto);
   }
 
+  @ApiOperation({ summary: 'Get all order items' })
+  @ApiResponse({ status: 200, description: 'Get all order items' })
   @Get()
-  findAll() {
-    return this.orderItemsService.findAll();
+  async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
+    return await this.orderItemsService.findAll(Number(page), Number(perPage));
   }
 
+  @ApiOperation({ summary: 'Get one order item' })
+  @ApiResponse({ status: 200, description: 'Get one order item' })
   @Get('/:id')
-  findOne(@Param('id') id: string) {
-    return this.orderItemsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.orderItemsService.findOne(+id);
   }
 
+  @ApiOperation({ summary: 'Update one order item' })
+  @ApiResponse({ status: 200, description: 'Update one order item' })
   @Put('/:id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateOrderItemDto: UpdateOrderItemDto,
   ) {
-    return this.orderItemsService.update(+id, updateOrderItemDto);
+    return await this.orderItemsService.update(+id, updateOrderItemDto);
   }
 
+  @ApiOperation({ summary: 'Delete one order item' })
+  @ApiResponse({ status: 200, description: 'Delete one order item' })
   @Delete('/:id')
-  remove(@Param('id') id: string) {
-    return this.orderItemsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.orderItemsService.remove(+id);
   }
 }
