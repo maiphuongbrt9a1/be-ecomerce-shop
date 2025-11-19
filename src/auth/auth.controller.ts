@@ -15,6 +15,7 @@ import {
 import { Public, ResponseMessage } from '@/decorator/customize';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { JwtAuthGuard } from './passport/jwt-auth.guard';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
