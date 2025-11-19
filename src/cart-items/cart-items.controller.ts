@@ -12,7 +12,7 @@ import {
 import { CartItemsService } from './cart-items.service';
 import { CreateCartItemDto } from './dto/create-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -24,6 +24,7 @@ export class CartItemsController {
   @ApiResponse({ status: 201, description: 'Create a new cart item' })
   @UseGuards(RolesGuard)
   @Roles('USER')
+  @ApiBody({ type: CreateCartItemDto })
   @Post()
   async create(@Body() createCartItemDto: CreateCartItemDto) {
     return await this.cartItemsService.create(createCartItemDto);
@@ -51,6 +52,7 @@ export class CartItemsController {
   @ApiResponse({ status: 200, description: 'Update one cart item' })
   @UseGuards(RolesGuard)
   @Roles('USER')
+  @ApiBody({ type: UpdateCartItemDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

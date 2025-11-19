@@ -96,3 +96,6 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+///////////////////////////// Note: //////////////////////
+19/11/2025: Phuong: issue #01: Voucher được tạo ra hiện tại chưa có cột dữ liệu cho khóa ngoại liên kết đến product / category---> cái này nếu có được dùng để add hàng loạt voucher hiện tại đến product list hoặc category list

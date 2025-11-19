@@ -12,7 +12,7 @@ import {
 import { ProductVariantsService } from './product-variants.service';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -26,6 +26,7 @@ export class ProductVariantsController {
   @ApiResponse({ status: 201, description: 'Create a new product variant' })
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @ApiBody({ type: CreateProductVariantDto })
   @Post()
   async create(@Body() createProductVariantDto: CreateProductVariantDto) {
     return await this.productVariantsService.create(createProductVariantDto);
@@ -52,6 +53,7 @@ export class ProductVariantsController {
   @ApiResponse({ status: 200, description: 'Update a product variant' })
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @ApiBody({ type: UpdateProductVariantDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

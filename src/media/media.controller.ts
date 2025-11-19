@@ -11,7 +11,7 @@ import {
 import { MediaService } from './media.service';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('media')
 export class MediaController {
@@ -19,6 +19,7 @@ export class MediaController {
 
   @ApiOperation({ summary: 'Create a new media file' })
   @ApiResponse({ status: 201, description: 'Create a new media file' })
+  @ApiBody({ type: CreateMediaDto })
   @Post()
   async create(@Body() createMediaDto: CreateMediaDto) {
     return await this.mediaService.create(createMediaDto);
@@ -40,6 +41,7 @@ export class MediaController {
 
   @ApiOperation({ summary: 'Update one media file' })
   @ApiResponse({ status: 200, description: 'Update one media file' })
+  @ApiBody({ type: UpdateMediaDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

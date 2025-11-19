@@ -11,7 +11,7 @@ import {
 import { SizeProfilesService } from './size-profiles.service';
 import { CreateSizeProfileDto } from './dto/create-size-profile.dto';
 import { UpdateSizeProfileDto } from './dto/update-size-profile.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('size-profiles')
 export class SizeProfilesController {
@@ -19,6 +19,7 @@ export class SizeProfilesController {
 
   @ApiOperation({ summary: 'Create a new size profile' })
   @ApiResponse({ status: 201, description: 'Create a new size profile' })
+  @ApiBody({ type: CreateSizeProfileDto })
   @Post()
   async create(@Body() createSizeProfileDto: CreateSizeProfileDto) {
     return await this.sizeProfilesService.create(createSizeProfileDto);
@@ -43,6 +44,7 @@ export class SizeProfilesController {
 
   @ApiOperation({ summary: 'Update one size profile' })
   @ApiResponse({ status: 200, description: 'Update one size profile' })
+  @ApiBody({ type: UpdateSizeProfileDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

@@ -10,29 +10,32 @@ export class CreateProductDto {
   description: string;
 
   @IsNotEmpty()
-  @ApiProperty({ example: 'Sample product price' })
+  @ApiProperty({ example: 12 })
   price: number;
 
   @IsNotEmpty()
-  @ApiProperty({ example: 'Sample product SKU' })
+  @ApiProperty({ example: 'ADSFDSAF1463218FA' })
   stockKeepingUnit: string;
 
   @IsNotEmpty()
-  @ApiProperty({ example: 'Sample product stock' })
+  @ApiProperty({ example: 25 })
   stock: number;
 
   @IsNotEmpty()
-  @ApiProperty({ example: 'User ID of staff who created the product' })
+  @ApiProperty({ example: 1231 })
   createByUserId: bigint;
 
+  @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
   createdAt: Date;
 
+  @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
   updatedAt: Date;
 
+  @ApiProperty({ example: 1325 })
   @IsOptional()
   categoryId: bigint;
 }

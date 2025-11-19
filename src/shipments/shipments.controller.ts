@@ -12,7 +12,7 @@ import {
 import { ShipmentsService } from './shipments.service';
 import { CreateShipmentDto } from './dto/create-shipment.dto';
 import { UpdateShipmentDto } from './dto/update-shipment.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -22,6 +22,7 @@ export class ShipmentsController {
 
   @ApiOperation({ summary: 'Create a new shipment' })
   @ApiResponse({ status: 201, description: 'Create a new shipment' })
+  @ApiBody({ type: CreateShipmentDto })
   @Post()
   async create(@Body() createShipmentDto: CreateShipmentDto) {
     return await this.shipmentsService.create(createShipmentDto);
@@ -45,6 +46,7 @@ export class ShipmentsController {
   @ApiResponse({ status: 200, description: 'Update one shipment' })
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
+  @ApiBody({ type: UpdateShipmentDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

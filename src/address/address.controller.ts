@@ -11,7 +11,7 @@ import {
 import { AddressService } from './address.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('address')
 export class AddressController {
@@ -19,6 +19,7 @@ export class AddressController {
 
   @ApiOperation({ summary: 'Create a new address' })
   @ApiResponse({ status: 201, description: 'Create a new address' })
+  @ApiBody({ type: CreateAddressDto })
   @Post()
   async create(@Body() createAddressDto: CreateAddressDto) {
     return await this.addressService.create(createAddressDto);
@@ -40,6 +41,7 @@ export class AddressController {
 
   @ApiOperation({ summary: 'Update an address' })
   @ApiResponse({ status: 200, description: 'Update an address' })
+  @ApiBody({ type: UpdateAddressDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

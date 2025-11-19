@@ -6,40 +6,66 @@ import {
   Put,
   Param,
   Delete,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ReturnRequestsService } from './return-requests.service';
 import { CreateReturnRequestDto } from './dto/create-return-request.dto';
 import { UpdateReturnRequestDto } from './dto/update-return-request.dto';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { RolesGuard } from '@/auth/passport/permission.guard';
+import { Roles } from '@/decorator/customize';
 
 @Controller('return-requests')
 export class ReturnRequestsController {
   constructor(private readonly returnRequestsService: ReturnRequestsService) {}
 
+  @ApiOperation({ summary: 'Create a new return request' })
+  @ApiResponse({ status: 201, description: 'Create a new return request' })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
+  @ApiBody({ type: CreateReturnRequestDto })
   @Post()
-  create(@Body() createReturnRequestDto: CreateReturnRequestDto) {
-    return this.returnRequestsService.create(createReturnRequestDto);
+  async create(@Body() createReturnRequestDto: CreateReturnRequestDto) {
+    return await this.returnRequestsService.create(createReturnRequestDto);
   }
 
+  @ApiOperation({ summary: 'Get all return requests' })
+  @ApiResponse({ status: 200, description: 'Get all return requests' })
   @Get()
-  findAll() {
-    return this.returnRequestsService.findAll();
+  async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
+    return await this.returnRequestsService.findAll(
+      Number(page),
+      Number(perPage),
+    );
   }
 
+  @ApiOperation({ summary: 'Get one return request' })
+  @ApiResponse({ status: 200, description: 'Get one return request' })
   @Get('/:id')
-  findOne(@Param('id') id: string) {
-    return this.returnRequestsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.returnRequestsService.findOne(+id);
   }
 
+  @ApiOperation({ summary: 'Update one return request' })
+  @ApiResponse({ status: 200, description: 'Update one return request' })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
+  @ApiBody({ type: UpdateReturnRequestDto })
   @Put('/:id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateReturnRequestDto: UpdateReturnRequestDto,
   ) {
-    return this.returnRequestsService.update(+id, updateReturnRequestDto);
+    return await this.returnRequestsService.update(+id, updateReturnRequestDto);
   }
 
+  @ApiOperation({ summary: 'Delete one return request' })
+  @ApiResponse({ status: 200, description: 'Delete one return request' })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Delete('/:id')
-  remove(@Param('id') id: string) {
-    return this.returnRequestsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.returnRequestsService.remove(+id);
   }
 }

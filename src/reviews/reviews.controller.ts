@@ -11,7 +11,7 @@ import {
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -19,6 +19,7 @@ export class ReviewsController {
 
   @ApiOperation({ summary: 'Create a new review' })
   @ApiResponse({ status: 201, description: 'Create a new review' })
+  @ApiBody({ type: CreateReviewDto })
   @Post()
   async create(@Body() createReviewDto: CreateReviewDto) {
     return await this.reviewsService.create(createReviewDto);
@@ -40,6 +41,7 @@ export class ReviewsController {
 
   @ApiOperation({ summary: 'Update a review' })
   @ApiResponse({ status: 200, description: 'Update a review' })
+  @ApiBody({ type: UpdateReviewDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

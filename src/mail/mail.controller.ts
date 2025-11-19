@@ -1,16 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Put,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { CreateMailDto } from './dto/create-mail.dto';
-import { UpdateMailDto } from './dto/update-mail.dto';
-import { Public } from '@/decorator/customize';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('mail')
 export class MailController {
@@ -22,6 +13,7 @@ export class MailController {
   }
 
   @Post()
+  @ApiBody({ type: CreateMailDto })
   create(@Body() createMailDto: CreateMailDto) {
     return this.mailService.create(createMailDto);
   }

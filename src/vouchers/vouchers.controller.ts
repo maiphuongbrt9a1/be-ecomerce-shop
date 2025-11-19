@@ -12,7 +12,7 @@ import {
 import { VouchersService } from './vouchers.service';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -24,6 +24,7 @@ export class VouchersController {
   @ApiResponse({ status: 201, description: 'Create a new voucher' })
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @ApiBody({ type: CreateVoucherDto })
   @Post()
   async create(@Body() createVoucherDto: CreateVoucherDto) {
     return await this.vouchersService.create(createVoucherDto);
@@ -47,6 +48,7 @@ export class VouchersController {
   @ApiResponse({ status: 200, description: 'Update a voucher' })
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @ApiBody({ type: UpdateVoucherDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

@@ -11,7 +11,7 @@ import {
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('payments')
 export class PaymentsController {
@@ -19,6 +19,7 @@ export class PaymentsController {
 
   @ApiOperation({ summary: 'Create a new payment' })
   @ApiResponse({ status: 201, description: 'Create a new payment' })
+  @ApiBody({ type: CreatePaymentDto })
   @Post()
   async create(@Body() createPaymentDto: CreatePaymentDto) {
     return await this.paymentsService.create(createPaymentDto);
@@ -40,6 +41,7 @@ export class PaymentsController {
 
   @ApiOperation({ summary: 'Update one payment' })
   @ApiResponse({ status: 200, description: 'Update one payment' })
+  @ApiBody({ type: UpdatePaymentDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

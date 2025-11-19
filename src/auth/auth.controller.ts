@@ -40,6 +40,7 @@ export class AuthController {
   @Post('signup')
   @Public()
   @ResponseMessage('User register')
+  @ApiBody({ type: CreateAuthDto })
   register(@Body() registerDto: CreateAuthDto) {
     return this.authService.handleRegister(registerDto);
   }
@@ -47,6 +48,7 @@ export class AuthController {
   @Post('check-code')
   @Public()
   @ResponseMessage('Check code active account')
+  @ApiBody({ type: CodeAuthDto })
   checkCode(@Body() registerDto: CodeAuthDto) {
     return this.authService.checkCode(registerDto);
   }
@@ -68,6 +70,7 @@ export class AuthController {
   @Post('change-password')
   @Public()
   @ResponseMessage('User change password')
+  @ApiBody({ type: ChangePasswordAuthDto })
   changePassword(@Body() data: ChangePasswordAuthDto) {
     return this.authService.changePassword(data);
   }

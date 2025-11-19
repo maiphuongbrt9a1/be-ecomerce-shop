@@ -11,7 +11,7 @@ import {
 import { OrderItemsService } from './order-items.service';
 import { CreateOrderItemDto } from './dto/create-order-item.dto';
 import { UpdateOrderItemDto } from './dto/update-order-item.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('order-items')
 export class OrderItemsController {
@@ -19,6 +19,7 @@ export class OrderItemsController {
 
   @ApiOperation({ summary: 'Create a new order item' })
   @ApiResponse({ status: 201, description: 'Create a new order item' })
+  @ApiBody({ type: CreateOrderItemDto })
   @Post()
   async create(@Body() createOrderItemDto: CreateOrderItemDto) {
     return await this.orderItemsService.create(createOrderItemDto);
@@ -40,6 +41,7 @@ export class OrderItemsController {
 
   @ApiOperation({ summary: 'Update one order item' })
   @ApiResponse({ status: 200, description: 'Update one order item' })
+  @ApiBody({ type: UpdateOrderItemDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

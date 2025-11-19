@@ -12,7 +12,7 @@ import {
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -24,6 +24,7 @@ export class CategoryController {
   @ApiResponse({ status: 201, description: 'Create a new category' })
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @ApiBody({ type: CreateCategoryDto })
   @Post()
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return await this.categoryService.create(createCategoryDto);
@@ -47,6 +48,7 @@ export class CategoryController {
   @ApiResponse({ status: 201, description: 'Update a category' })
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @ApiBody({ type: UpdateCategoryDto })
   @Put('/:id')
   async update(
     @Param('id') id: string,

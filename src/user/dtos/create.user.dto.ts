@@ -20,6 +20,7 @@ export class CreateUserDto {
   @IsString()
   lastName: string;
 
+  @ApiProperty({ example: 'MALE | FEMALE | OTHER' })
   @IsOptional()
   gender: Gender;
 
@@ -44,7 +45,7 @@ export class CreateUserDto {
   @IsString()
   username: string;
 
-  @ApiProperty({ example: 'USER' })
+  @ApiProperty({ example: 'USER | ADMIN | OPERATOR' })
   role: Role;
 
   @ApiProperty({ example: new Date() })
@@ -55,20 +56,25 @@ export class CreateUserDto {
   @IsBoolean()
   isActive: boolean;
 
+  @ApiProperty({ example: false })
   @IsString()
   codeActive: string;
 
+  @ApiProperty({ example: new Date() })
   @IsDate()
   codeActiveExpire: Date;
 
+  @ApiProperty({ example: 'ADFASFD-4654231-DAFDS' })
   @IsOptional()
   @IsString()
   staffCode: string;
 
+  @ApiProperty({ example: false })
   @IsOptional()
   @IsBoolean()
   isAdmin: boolean;
 
+  @ApiProperty({ example: '0987985465231' })
   @IsOptional()
   @IsString()
   loyaltyCard: string;
