@@ -38,4 +38,8 @@ export class CreateProductDto {
   @ApiProperty({ example: 1325 })
   @IsOptional()
   categoryId: bigint;
+
+  @ApiProperty({ example: 1325 })
+  @IsOptional()
+  voucherId: bigint;
 }

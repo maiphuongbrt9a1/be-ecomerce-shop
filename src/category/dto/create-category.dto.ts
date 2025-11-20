@@ -20,6 +20,10 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   createByUserId: bigint;
 
+  @ApiProperty({ example: 1325 })
+  @IsOptional()
+  voucherId: bigint;
+
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()

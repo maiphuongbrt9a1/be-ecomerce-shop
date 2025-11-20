@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["Ecommerce"]
+  "cSpell.words": ["Ecommerce"],
+  "prisma.pinToPrisma6": true
 }

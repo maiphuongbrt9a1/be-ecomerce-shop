@@ -171,6 +171,8 @@ model Products {
     updatedAt   DateTime    @updatedAt
     productVariants    ProductVariants[]
     reviews     Reviews[]
+    voucher Vouchers? @relation(fields: [voucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    voucherId BigInt?
 }
 
 model Category {
@@ -186,6 +188,9 @@ model Category {
     createByUser        User        @relation("CategoryCreatedByUser", fields: [createByUserId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     createByUserId      BigInt      @db.BigInt
     
+    voucher Vouchers? @relation(fields: [voucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    voucherId BigInt?
+
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 }
@@ -209,6 +214,9 @@ model ProductVariants {
     reviews     Reviews[]
     media       Media[]
     cartItems   CartItems[]
+    
+    voucher Vouchers? @relation(fields: [voucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    voucherId BigInt? 
 }
 
 model Reviews {
@@ -342,6 +350,9 @@ model Vouchers {
     createdBy   BigInt     @db.BigInt
     updatedAt   DateTime    @updatedAt
     userVouchers UserVouchers[]
+    voucherForProduct Products[]
+    voucherForCategory Category[]
+    voucherForSpecialProductVariant ProductVariants[]
 }
 
 model UserVouchers {
