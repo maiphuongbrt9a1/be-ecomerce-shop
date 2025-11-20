@@ -127,6 +127,7 @@ model User {
 
 model ShopOffice {
     id BigInt @db.BigInt @id @default(autoincrement())
+    shopName String @db.VarChar(255)
     staffs User[]
     address Address?
     products Products[]
@@ -217,7 +218,7 @@ model ProductVariants {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     product     Products    @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productId   BigInt      @db.BigInt
-    orderItem   OrderItems?
+    orderItem   OrderItems[]
     createByUser        User        @relation("ProductVariantCreatedByUser", fields: [createByUserId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     createByUserId      BigInt      @db.BigInt
     
@@ -285,7 +286,7 @@ model Orders {
     updatedAt   DateTime    @updatedAt
     orderItems  OrderItems[]
     shipments   Shipments[]
-    payment     Payments?
+    payment     Payments[]
     requests Requests[]
 }
 
@@ -295,7 +296,7 @@ model OrderItems {
     order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     orderId     BigInt      @db.BigInt
     productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-    productVariantId BigInt  @db.BigInt @unique
+    productVariantId BigInt  @db.BigInt 
     quantity    Int
     unitPrice   Float
     totalPrice  Float
@@ -306,7 +307,7 @@ model OrderItems {
 model Shipments {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-    orderId     BigInt      @db.BigInt @unique
+    orderId     BigInt      @db.BigInt
     processByStaff        User        @relation("OrderShippedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     processByStaffId      BigInt      @db.BigInt
     
@@ -315,7 +316,7 @@ model Shipments {
     estimatedShipDate DateTime
     shippedAt   DateTime?
     carrier     String      @db.VarChar(100)
-    trackingNumber String   @unique @db.VarChar(100)
+    trackingNumber String   @db.VarChar(100)
     status      ShipmentStatus      @default(WAITING_FOR_PICKUP)
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
@@ -324,7 +325,7 @@ model Shipments {
 model Payments {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-    orderId     BigInt      @db.BigInt @unique
+    orderId     BigInt      @db.BigInt
     transactionId String    @unique @db.VarChar(100)
     paymentMethod String    @db.VarChar(100)
     paymentDate DateTime    @default(now())
@@ -391,7 +392,7 @@ model Requests {
     processByStaff        User        @relation("RequestsProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     processByStaffId      BigInt      @db.BigInt
     order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-    orderId     BigInt      @db.BigInt @unique
+    orderId     BigInt      @db.BigInt
     subject     String      @db.VarChar(255)
     description String      @db.Text
     status      RequestStatus      @default(PENDING)
