@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   Query,
@@ -45,7 +45,7 @@ export class UserVouchersController {
   @ApiOperation({ summary: 'Update one user voucher' })
   @ApiResponse({ status: 200, description: 'Update one user voucher' })
   @ApiBody({ type: UpdateUserVoucherDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateUserVoucherDto: UpdateUserVoucherDto,

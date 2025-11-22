@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   Query,
@@ -42,7 +42,7 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Update one payment' })
   @ApiResponse({ status: 200, description: 'Update one payment' })
   @ApiBody({ type: UpdatePaymentDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updatePaymentDto: UpdatePaymentDto,

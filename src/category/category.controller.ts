@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   UseGuards,
@@ -49,7 +49,7 @@ export class CategoryController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: UpdateCategoryDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,

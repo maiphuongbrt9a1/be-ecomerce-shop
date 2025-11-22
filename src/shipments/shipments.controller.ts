@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   Query,
@@ -47,7 +47,7 @@ export class ShipmentsController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
   @ApiBody({ type: UpdateShipmentDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateShipmentDto: UpdateShipmentDto,

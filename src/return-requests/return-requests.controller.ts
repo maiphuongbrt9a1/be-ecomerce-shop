@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   UseGuards,
@@ -52,7 +52,7 @@ export class ReturnRequestsController {
   @UseGuards(RolesGuard)
   @Roles('USER')
   @ApiBody({ type: UpdateReturnRequestDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateReturnRequestDto: UpdateReturnRequestDto,
