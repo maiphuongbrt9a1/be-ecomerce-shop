@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   UseGuards,
@@ -49,7 +49,7 @@ export class VouchersController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: UpdateVoucherDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateVoucherDto: UpdateVoucherDto,

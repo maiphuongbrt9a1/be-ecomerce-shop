@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   Query,
@@ -45,7 +45,7 @@ export class SizeProfilesController {
   @ApiOperation({ summary: 'Update one size profile' })
   @ApiResponse({ status: 200, description: 'Update one size profile' })
   @ApiBody({ type: UpdateSizeProfileDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateSizeProfileDto: UpdateSizeProfileDto,

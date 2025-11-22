@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   Query,
@@ -42,7 +42,7 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Update a review' })
   @ApiResponse({ status: 200, description: 'Update a review' })
   @ApiBody({ type: UpdateReviewDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateReviewDto: UpdateReviewDto,

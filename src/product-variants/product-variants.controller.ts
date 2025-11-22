@@ -5,7 +5,7 @@ import {
   Body,
   Param,
   Delete,
-  Put,
+  Patch,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -54,7 +54,7 @@ export class ProductVariantsController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: UpdateProductVariantDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateProductVariantDto: UpdateProductVariantDto,

@@ -5,7 +5,7 @@ import {
   Body,
   Param,
   Delete,
-  Put,
+  Patch,
   Query,
 } from '@nestjs/common';
 import { MediaService } from './media.service';
@@ -42,7 +42,7 @@ export class MediaController {
   @ApiOperation({ summary: 'Update one media file' })
   @ApiResponse({ status: 200, description: 'Update one media file' })
   @ApiBody({ type: UpdateMediaDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateMediaDto: UpdateMediaDto,

@@ -7,7 +7,7 @@ import {
   Delete,
   Query,
   UseGuards,
-  Put,
+  Patch,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -49,7 +49,7 @@ export class ProductsController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: UpdateProductDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,

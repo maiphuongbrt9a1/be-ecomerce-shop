@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   Query,
@@ -42,7 +42,7 @@ export class AddressController {
   @ApiOperation({ summary: 'Update an address' })
   @ApiResponse({ status: 200, description: 'Update an address' })
   @ApiBody({ type: UpdateAddressDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updateAddressDto: UpdateAddressDto,

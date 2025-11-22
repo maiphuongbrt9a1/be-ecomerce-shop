@@ -7,7 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Put,
+  Patch,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -52,7 +52,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Update a user' })
   @ApiBody({ type: UpdateUserDto })
-  @Put('/:id')
+  @Patch('/:id')
   async updateAnUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,

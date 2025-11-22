@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Put,
+  Patch,
   Param,
   Delete,
   UseGuards,
@@ -43,7 +43,7 @@ export class CartController {
   @UseGuards(RolesGuard)
   @Roles('USER')
   @ApiBody({ type: UpdateCartDto })
-  @Put('/:id')
+  @Patch('/:id')
   async update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
     return await this.cartService.update(+id, updateCartDto);
   }
