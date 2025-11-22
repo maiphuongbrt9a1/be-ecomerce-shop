@@ -143,28 +143,32 @@ export class UserService {
 
   // Update an User
   async updateAnUser(id: number, data: UpdateUserDto): Promise<User> {
-    const { firstName, lastName, email, phone, password, username, updatedAt } =
-      data;
+    const { firstName, lastName, email, phone, password, username } = data;
 
-    const hashPassword = await hashPasswordHelper(password);
-    if (!hashPassword) {
-      throw new Error('Hash password for create user failed!');
+    // Build update payload without password first
+    const updateData: Prisma.UserUpdateInput = {
+      firstName,
+      lastName,
+      email,
+      phone,
+      username,
+      updatedAt: new Date(Date.now()),
+    };
+
+    if (password && password.trim().length > 0) {
+      const hashed = await hashPasswordHelper(password);
+      if (!hashed) {
+        throw new Error('Hash password for update user failed!');
+      }
+      updateData.password = hashed;
     }
 
-    const newUser = await this.prismaService.user.update({
-      where: { id: id },
-      data: {
-        firstName,
-        lastName,
-        email,
-        phone,
-        password: hashPassword,
-        username,
-        updatedAt: new Date(Date.now()),
-      },
+    const updatedUser = await this.prismaService.user.update({
+      where: { id },
+      data: updateData,
     });
 
-    return newUser;
+    return updatedUser;
   }
 
   async handleRegister(registerDto: CreateAuthDto): Promise<User> {

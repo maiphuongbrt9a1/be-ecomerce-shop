@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -52,7 +53,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Update a user' })
   @ApiBody({ type: UpdateUserDto })
-  @Put('/:id')
+  @Patch('/:id')
   async updateAnUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,

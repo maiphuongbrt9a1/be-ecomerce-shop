@@ -9,27 +9,27 @@ import {
 
 export class UpdateUserDto {
   @ApiProperty({ example: 'John' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   firstName: string;
 
   @ApiProperty({ example: 'Doe' })
-  @IsNotEmpty()
+  @IsOptional()
   lastName: string;
 
   @ApiProperty({ example: 'john.doe@example.com' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsEmail()
   email: string;
 
   @ApiProperty({ example: '1234567890' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   phone: string;
 
   @ApiProperty({ example: 'password123' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   password: string;
 
