@@ -28,6 +28,7 @@ import { VouchersModule } from './vouchers/vouchers.module';
 import { UserVouchersModule } from './user-vouchers/user-vouchers.module';
 import { RequestsModule } from './requests/requests.module';
 import { ReturnRequestsModule } from './return-requests/return-requests.module';
+import { AwsS3Module } from './aws-s3/aws-s3.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { ReturnRequestsModule } from './return-requests/return-requests.module';
     UserVouchersModule,
     RequestsModule,
     ReturnRequestsModule,
+    AwsS3Module,
   ],
 
   controllers: [AppController],
