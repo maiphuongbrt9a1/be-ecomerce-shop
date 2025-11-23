@@ -59,4 +59,278 @@ export class UserController {
   ) {
     return await this.userService.updateAnUser(id, updateUserDto);
   }
+
+  @ApiOperation({ summary: 'Get address list of a user' })
+  @ApiResponse({ status: 200, description: 'User address list found!' })
+  @Get('/:id/address-list')
+  async getAddressOfUser(
+    @Param('id', ParseIntPipe) userId: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAddressOfUser(
+      userId,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get shop office of a user' })
+  @ApiResponse({ status: 200, description: 'User shop office found!' })
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
+  @Get('/:id/shop-office')
+  async getShopOfficeOfUser(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.getShopOfficeOfUser(id);
+  }
+
+  @ApiOperation({ summary: 'Get avatar of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get avatar of user',
+  })
+  @Get('/:id/avatar')
+  async getAvatarOfUser(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.getAvatarOfUser(id);
+  }
+
+  @ApiOperation({ summary: 'Get vouchers are created by a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get vouchers are created by a user',
+  })
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
+  @Get('/:id/created-voucher-list')
+  async getAllVouchersCreatedByUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllVouchersCreatedByUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get products are created by a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get products are created by a user',
+  })
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
+  @Get('/:id/product-list')
+  async getAllProductsCreatedByUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllProductsCreatedByUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get product variants are created by a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get product variants are created by a user',
+  })
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
+  @Get('/:id/product-variant-list')
+  async getAllProductVariantsCreatedByUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllProductVariantsCreatedByUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get categories are created by a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get categories are created by a user',
+  })
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
+  @Get('/:id/category-list')
+  async getAllCategoryCreatedByUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllCategoryCreatedByUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get orders are created by a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get orders are created by a user',
+  })
+  @Get('/:id/order-list')
+  async getAllOrdersCreatedByUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllOrdersCreatedByUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get orders are processed by a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get orders are processed by a user',
+  })
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
+  @Get('/:id/processed-order-list')
+  async getAllOrdersProcessedByUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllOrdersProcessedByUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get shipments are processed by a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get shipments are processed by a user',
+  })
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
+  @Get('/:id/processed-shipment-list')
+  async getAllShipmentsProcessedByUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllShipmentsProcessedByUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get requests of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get requests of user',
+  })
+  @Get('/:id/request-list')
+  async getRequestsOfUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getRequestsOfUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get processed requests of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get processed requests of user',
+  })
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
+  @Get('/:id/processed-request-list')
+  async getRequestsProcessedByUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getRequestsProcessedByUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get size-profiles of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get size-profiles of user',
+  })
+  @Get('/:id/size-profile-list')
+  async getSizeProfilesOfUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getSizeProfilesOfUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get reviews of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get reviews of user',
+  })
+  @Get('/:id/review-list')
+  async getReviewsOfUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getReviewsOfUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get cart of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get cart of user',
+  })
+  @Get('/:id/cart')
+  async getCartOfUser(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.getCartOfUser(id);
+  }
+
+  @ApiOperation({ summary: 'Get saved vouchers of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get saved vouchers of user',
+  })
+  @Get('/:id/saved-voucher-list')
+  async getSavedVouchersOfUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getSavedVouchersOfUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
 }

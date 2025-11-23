@@ -3,7 +3,24 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { User, Prisma, Role } from '@prisma/client';
+import {
+  User,
+  Prisma,
+  Role,
+  Address,
+  ShopOffice,
+  Vouchers,
+  Products,
+  ProductVariants,
+  Category,
+  Orders,
+  Shipments,
+  Requests,
+  SizeProfiles,
+  Reviews,
+  Cart,
+  UserVouchers,
+} from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateUserDto } from '@/user/dtos/create.user.dto';
 import { UpdateUserDto } from '@/user/dtos/update.user.dto';
@@ -18,6 +35,7 @@ import {
 import dayjs from 'dayjs';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ShopOfficeWithStaffs } from '@/helpers/types/types';
 
 @Injectable()
 export class UserService {
@@ -382,5 +400,259 @@ export class UserService {
         'Activation code is invalid or has expired',
       );
     }
+  }
+
+  async getAddressOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Address[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Address, Prisma.AddressFindManyArgs>(
+      this.prismaService.address,
+      { where: { userId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getShopOfficeOfUser(userId: number): Promise<ShopOfficeWithStaffs> {
+    const shopInformation = await this.prismaService.shopOffice.findFirst({
+      include: {
+        staffs: {
+          where: {
+            id: userId,
+          },
+        },
+      },
+    });
+
+    if (!shopInformation) {
+      throw new NotFoundException('Shop Information not found!');
+    }
+
+    return shopInformation;
+  }
+
+  async getAvatarOfUser(userId: number): Promise<string> {
+    const mediaInformation = await this.prismaService.media.findFirst({
+      where: {
+        userId: userId,
+        reviewId: null,
+        productVariantId: null,
+      },
+    });
+
+    if (!mediaInformation) {
+      throw new NotFoundException('User avatar not found!');
+    }
+
+    return mediaInformation.url;
+  }
+
+  async getAllVouchersCreatedByUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Vouchers[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Vouchers, Prisma.VouchersFindManyArgs>(
+      this.prismaService.vouchers,
+      { where: { createdBy: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getAllProductsCreatedByUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Products[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Products, Prisma.ProductsFindManyArgs>(
+      this.prismaService.products,
+      { where: { createByUserId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getAllProductVariantsCreatedByUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<ProductVariants[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<
+      ProductVariants,
+      Prisma.ProductVariantsFindManyArgs
+    >(
+      this.prismaService.productVariants,
+      { where: { createByUserId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getAllCategoryCreatedByUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Category[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Category, Prisma.CategoryFindManyArgs>(
+      this.prismaService.category,
+      { where: { createByUserId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getAllOrdersCreatedByUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Orders[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Orders, Prisma.OrdersFindManyArgs>(
+      this.prismaService.orders,
+      { where: { userId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getAllOrdersProcessedByUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Orders[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Orders, Prisma.OrdersFindManyArgs>(
+      this.prismaService.orders,
+      { where: { processByStaffId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getAllShipmentsProcessedByUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Shipments[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Shipments, Prisma.ShipmentsFindManyArgs>(
+      this.prismaService.shipments,
+      { where: { processByStaffId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getRequestsOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Requests[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Requests, Prisma.RequestsFindManyArgs>(
+      this.prismaService.requests,
+      { where: { userId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getRequestsProcessedByUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Requests[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Requests, Prisma.RequestsFindManyArgs>(
+      this.prismaService.requests,
+      { where: { processByStaffId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getSizeProfilesOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<SizeProfiles[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<
+      SizeProfiles,
+      Prisma.SizeProfilesFindManyArgs
+    >(
+      this.prismaService.sizeProfiles,
+      { where: { userId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getReviewsOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<Reviews[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Reviews, Prisma.ReviewsFindManyArgs>(
+      this.prismaService.reviews,
+      { where: { userId: userId }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getCartOfUser(userId: number): Promise<Cart> {
+    const result = await this.prismaService.cart.findFirst({
+      where: { userId: userId },
+      orderBy: { id: 'asc' },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Cart not found!');
+    }
+
+    return result;
+  }
+
+  async getSavedVouchersOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<UserVouchers[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<
+      UserVouchers,
+      Prisma.UserVouchersFindManyArgs
+    >(
+      this.prismaService.userVouchers,
+      {
+        where: { userId: userId, voucherStatus: 'SAVED' },
+        orderBy: { id: 'asc' },
+      },
+      { page: page },
+    );
+
+    return result.data;
   }
 }
