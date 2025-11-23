@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RequestStatus } from '@prisma/client';
-import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateRequestDto {
   @ApiProperty({ example: 4741 })
@@ -29,6 +35,7 @@ export class CreateRequestDto {
 
   @ApiProperty({ example: 'PENDING' })
   @IsNotEmpty()
+  @IsEnum(RequestStatus)
   status: RequestStatus;
 
   @ApiProperty({ example: new Date() })

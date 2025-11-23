@@ -3,6 +3,7 @@ import { DiscountType } from '@prisma/client';
 import {
   IsBoolean,
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -22,6 +23,7 @@ export class CreateVoucherDto {
 
   @ApiProperty({ example: 'FIXED_AMOUNT' })
   @IsNotEmpty()
+  @IsEnum(DiscountType)
   discountType: DiscountType;
 
   @ApiProperty({ example: 465 })

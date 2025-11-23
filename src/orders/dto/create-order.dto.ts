@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderStatus } from '@prisma/client';
-import { IsDate, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
+import { Order } from '../entities/order.entity';
 
 export class CreateOrderDto {
   @ApiProperty({ example: 851 })
@@ -22,6 +29,7 @@ export class CreateOrderDto {
 
   @ApiProperty({ example: 'PENDING' })
   @IsNotEmpty()
+  @IsEnum(OrderStatus)
   status: OrderStatus;
 
   @ApiProperty({ example: 851 })

@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsDate,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -22,6 +23,7 @@ export class CreateUserDto {
 
   @ApiProperty({ example: 'MALE | FEMALE | OTHER' })
   @IsOptional()
+  @IsEnum(Gender)
   gender: Gender;
 
   @ApiProperty({ example: 'john.doe@example.com' })
@@ -46,6 +48,7 @@ export class CreateUserDto {
   username: string;
 
   @ApiProperty({ example: 'USER | ADMIN | OPERATOR' })
+  @IsEnum(Role)
   role: Role;
 
   @ApiProperty({ example: new Date() })

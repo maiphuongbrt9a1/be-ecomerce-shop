@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaType } from '@prisma/client';
-import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateMediaDto {
   @ApiProperty({
@@ -13,6 +19,7 @@ export class CreateMediaDto {
 
   @ApiProperty({ example: 'VIDEO | IMAGE | DOCUMENT' })
   @IsNotEmpty()
+  @IsEnum(MediaType)
   type: MediaType;
 
   @ApiProperty({ example: 851 })

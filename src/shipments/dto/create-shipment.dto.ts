@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ShipmentStatus } from '@prisma/client';
-import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateShipmentDto {
   @ApiProperty({ example: 455 })
@@ -43,6 +49,7 @@ export class CreateShipmentDto {
 
   @ApiProperty({ example: 'PENDING' })
   @IsNotEmpty()
+  @IsEnum(ShipmentStatus)
   status: ShipmentStatus;
 
   @ApiProperty({ example: new Date() })
