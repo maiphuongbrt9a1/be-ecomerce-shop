@@ -65,4 +65,32 @@ export class ProductsController {
   async remove(@Param('id') id: string) {
     return await this.productsService.remove(+id);
   }
+
+  @ApiOperation({ summary: 'Get all product-variants of this product' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all product-variants of this product',
+  })
+  @Get('/:id/product-variants')
+  async getAllProductVariantsOfProduct(@Param('id') id: string) {
+    return await this.productsService.getAllProductVariantsOfProduct(+id);
+  }
+
+  @ApiOperation({ summary: 'Get all reviews of this product' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all reviews of this product',
+  })
+  @Get('/:id/reviews')
+  async getAllReviewsOfProduct(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.productsService.getAllReviewsOfProduct(
+      +id,
+      Number(page),
+      Number(perPage),
+    );
+  }
 }

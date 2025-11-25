@@ -11,3 +11,9 @@ export type UserWithUserMedia = Prisma.UserGetPayload<{
     userMedia: true;
   };
 }>;
+
+export type ProductsOfCategoryOfShopOffice = Prisma.ShopOfficeGetPayload<{
+  select: {
+    products: true;
+  };
+}>;

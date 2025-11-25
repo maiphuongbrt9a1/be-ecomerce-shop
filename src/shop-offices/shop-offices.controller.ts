@@ -63,4 +63,75 @@ export class ShopOfficesController {
   async remove(@Param('id') id: string) {
     return await this.shopOfficesService.remove(+id);
   }
+
+  @ApiOperation({ summary: 'Get shop office"s manager list by ID shop office' })
+  @ApiResponse({
+    status: 200,
+    description: 'shop office"s manager list found!',
+  })
+  @Get('/:id/manager-list')
+  async findAllManagersOfShopOffice(@Param('id') id: string) {
+    return await this.shopOfficesService.findAllManagersOfShopOffice(+id);
+  }
+
+  @ApiOperation({ summary: 'Get shop office"s address by ID shop office' })
+  @ApiResponse({
+    status: 200,
+    description: 'shop office"s address found!',
+  })
+  @Get('/:id/address')
+  async findAddressOfShopOffice(@Param('id') id: string) {
+    return await this.shopOfficesService.findAddressOfShopOffice(+id);
+  }
+
+  @ApiOperation({ summary: 'Get shop office"s products by ID shop office' })
+  @ApiResponse({
+    status: 200,
+    description: 'shop office"s products found!',
+  })
+  @Get('/:id/product-list')
+  async findAllProductsOfShopOffice(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.shopOfficesService.findAllProductsOfShopOffice(
+      +id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get shop office"s categories by ID shop office' })
+  @ApiResponse({
+    status: 200,
+    description: 'shop office"s categories found!',
+  })
+  @Get('/:id/category-list')
+  async findAllCategoryOfShopOffice(@Param('id') id: string) {
+    return await this.shopOfficesService.findAllCategoryOfShopOffice(+id);
+  }
+
+  @ApiOperation({
+    summary:
+      'Get shop office"s products of one category by ID shop office and ID category',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'shop office"s products of category found!',
+  })
+  @Get('/:shopId/category/:categoryId/product-list')
+  async findAllProductsOfCategoryOfShopOffice(
+    @Param('shopId') shopId: string,
+    @Param('categoryId') categoryId: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.shopOfficesService.findAllProductsOfCategoryOfShopOffice(
+      +shopId,
+      +categoryId,
+      Number(page),
+      Number(perPage),
+    );
+  }
 }

@@ -56,4 +56,16 @@ export class CategoryService {
       where: { id: id },
     });
   }
+
+  async getAllSubCategoriesOfCategory(id: number): Promise<Category[] | []> {
+    const result = await this.prismaService.category.findMany({
+      where: { parentId: id },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Sub-category not found!');
+    }
+
+    return result;
+  }
 }
