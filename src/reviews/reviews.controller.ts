@@ -56,4 +56,19 @@ export class ReviewsController {
   async remove(@Param('id') id: string) {
     return await this.reviewsService.remove(+id);
   }
+
+  @ApiOperation({ summary: 'Get all media of review' })
+  @ApiResponse({ status: 200, description: 'Get all media of review' })
+  @Get('/:id/media-list')
+  async getAllMediaOfReview(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.reviewsService.getAllMediaOfReview(
+      +id,
+      Number(page),
+      Number(perPage),
+    );
+  }
 }

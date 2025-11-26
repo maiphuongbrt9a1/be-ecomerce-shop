@@ -4,6 +4,10 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Orders, Prisma } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import {
+  OrderWithFullInformation,
+  OrderWithFullInformationInclude,
+} from '@/helpers/types/types';
 
 @Injectable()
 export class OrdersService {
@@ -52,5 +56,40 @@ export class OrdersService {
     return await this.prismaService.orders.delete({
       where: { id: id },
     });
+  }
+
+  async getOrderDetailInformation(
+    id: number,
+  ): Promise<OrderWithFullInformation | null> {
+    const result = await this.prismaService.orders.findFirst({
+      where: { id: id },
+      include: OrderWithFullInformationInclude,
+    });
+
+    if (!result) {
+      throw new NotFoundException('Order not found!');
+    }
+
+    return result;
+  }
+
+  async getAllOrdersWithDetailInformation(
+    page: number,
+    perPage: number,
+  ): Promise<OrderWithFullInformation[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<
+      OrderWithFullInformation,
+      Prisma.OrdersFindManyArgs
+    >(
+      this.prismaService.orders,
+      {
+        include: OrderWithFullInformationInclude,
+        orderBy: { id: 'asc' },
+      },
+      { page: page },
+    );
+
+    return result.data;
   }
 }

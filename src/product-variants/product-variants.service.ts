@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma, ProductVariants } from '@prisma/client';
+import { Media, Prisma, ProductVariants, Reviews } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
@@ -66,5 +66,35 @@ export class ProductVariantsService {
     });
 
     return productVariant;
+  }
+
+  async getReviewsOfProductVariant(
+    id: number,
+    page: number,
+    perPage: number,
+  ): Promise<Reviews[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Reviews, Prisma.ReviewsFindManyArgs>(
+      this.prismaService.reviews,
+      { where: { productVariantId: id }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getAllMediaOfProductVariant(
+    id: number,
+    page: number,
+    perPage: number,
+  ): Promise<Media[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Media, Prisma.MediaFindManyArgs>(
+      this.prismaService.media,
+      { where: { productVariantId: id }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
   }
 }

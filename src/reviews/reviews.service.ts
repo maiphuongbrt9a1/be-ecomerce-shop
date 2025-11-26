@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma, Reviews } from '@prisma/client';
+import { Media, Prisma, Reviews } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
@@ -52,5 +52,20 @@ export class ReviewsService {
     return await this.prismaService.reviews.delete({
       where: { id: id },
     });
+  }
+
+  async getAllMediaOfReview(
+    id: number,
+    page: number,
+    perPage: number,
+  ): Promise<Media[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Media, Prisma.MediaFindManyArgs>(
+      this.prismaService.media,
+      { where: { reviewId: id }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    return result.data;
   }
 }

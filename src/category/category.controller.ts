@@ -72,4 +72,19 @@ export class CategoryController {
   async getAllSubCategoriesOfCategory(@Param('id') id: string) {
     return await this.categoryService.getAllSubCategoriesOfCategory(+id);
   }
+
+  @ApiOperation({ summary: 'Get all products of category' })
+  @ApiResponse({ status: 200, description: 'Get all products of category' })
+  @Get('/:id/products')
+  async getAllProductsOfCategory(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.categoryService.getAllProductsOfCategory(
+      +id,
+      Number(page),
+      Number(perPage),
+    );
+  }
 }

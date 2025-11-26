@@ -32,6 +32,22 @@ export class OrdersController {
     return await this.ordersService.findAll(Number(page), Number(perPage));
   }
 
+  @ApiOperation({ summary: 'Get all orders with their detail information' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all orders with their detail information',
+  })
+  @Get('/order-detail-list')
+  async getAllOrdersWithDetailInformation(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.ordersService.getAllOrdersWithDetailInformation(
+      Number(page),
+      Number(perPage),
+    );
+  }
+
   @ApiOperation({ summary: 'Get one order' })
   @ApiResponse({ status: 200, description: 'Get one order' })
   @Get('/:id')
@@ -55,5 +71,15 @@ export class OrdersController {
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.ordersService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'Get order detail information of one order' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get order detail information of one order',
+  })
+  @Get('/:id/order-detail')
+  async getOrderDetailInformation(@Param('id') id: string) {
+    return await this.ordersService.getOrderDetailInformation(+id);
   }
 }
