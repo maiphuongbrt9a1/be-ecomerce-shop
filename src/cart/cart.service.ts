@@ -3,6 +3,7 @@ import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Cart } from '@prisma/client';
+import { UserCartDetailInformation } from '@/helpers/types/types';
 
 @Injectable()
 export class CartService {
@@ -33,6 +34,29 @@ export class CartService {
       where: { id: id },
       data: { ...updateCartDto },
     });
+    return result;
+  }
+
+  async getCartDetails(id: number): Promise<UserCartDetailInformation | null> {
+    const result = await this.prismaService.cart.findFirst({
+      where: { id: id },
+      include: {
+        cartItems: {
+          include: {
+            productVariant: {
+              include: {
+                media: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Cart detail not found!');
+    }
+
     return result;
   }
 }

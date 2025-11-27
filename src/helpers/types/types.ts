@@ -75,3 +75,44 @@ export const OrderWithFullInformationInclude =
 export type OrderWithFullInformation = Prisma.OrdersGetPayload<{
   include: typeof OrderWithFullInformationInclude;
 }>;
+
+export type UserCartDetailInformation = Prisma.CartGetPayload<{
+  include: {
+    cartItems: {
+      include: {
+        productVariant: {
+          include: {
+            media: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
+export type UserVoucherDetailInformation = Prisma.UserVouchersGetPayload<{
+  include: {
+    voucher: true;
+  };
+}>;
+
+export type VoucherWithAllAppliedCategoriesDetailInformation =
+  Prisma.VouchersGetPayload<{
+    include: {
+      voucherForCategory: true;
+    };
+  }>;
+
+export type VoucherWithAllAppliedProductsDetailInformation =
+  Prisma.VouchersGetPayload<{
+    include: {
+      voucherForProduct: true;
+    };
+  }>;
+
+export type VoucherWithAllAppliedProductVariantsDetailInformation =
+  Prisma.VouchersGetPayload<{
+    include: {
+      voucherForSpecialProductVariant: true;
+    };
+  }>;

@@ -2,7 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Orders, Prisma } from '@prisma/client';
+import {
+  OrderItems,
+  Orders,
+  Payments,
+  Prisma,
+  Requests,
+  Shipments,
+} from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import {
   OrderWithFullInformation,
@@ -91,5 +98,60 @@ export class OrdersService {
     );
 
     return result.data;
+  }
+
+  async getOrderItemListDetailInformation(
+    id: number,
+  ): Promise<OrderItems[] | []> {
+    const result = await this.prismaService.orderItems.findMany({
+      where: { orderId: id },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Order items not found!');
+    }
+
+    return result;
+  }
+
+  async getOrderShipmentsDetailInformation(
+    id: number,
+  ): Promise<Shipments[] | []> {
+    const result = await this.prismaService.shipments.findMany({
+      where: { orderId: id },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Order shipments not found!');
+    }
+
+    return result;
+  }
+
+  async getOrderPaymentDetailInformation(id: number): Promise<Payments[] | []> {
+    const result = await this.prismaService.payments.findMany({
+      where: { orderId: id },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Order payments not found!');
+    }
+
+    return result;
+  }
+
+  async getOrderRequestDetailInformation(id: number): Promise<Requests[] | []> {
+    const result = await this.prismaService.requests.findMany({
+      where: { orderId: id },
+      include: {
+        returnRequest: true,
+      },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Order requests not found!');
+    }
+
+    return result;
   }
 }

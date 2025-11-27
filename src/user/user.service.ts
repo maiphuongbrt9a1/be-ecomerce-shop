@@ -35,7 +35,10 @@ import {
 import dayjs from 'dayjs';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
-import { ShopOfficeWithStaffs } from '@/helpers/types/types';
+import {
+  ShopOfficeWithStaffs,
+  UserVoucherDetailInformation,
+} from '@/helpers/types/types';
 
 @Injectable()
 export class UserService {
@@ -639,15 +642,18 @@ export class UserService {
     userId: number,
     page: number,
     perPage: number,
-  ): Promise<UserVouchers[] | []> {
+  ): Promise<UserVoucherDetailInformation[] | []> {
     const paginate = createPaginator({ perPage: perPage });
     const result = await paginate<
-      UserVouchers,
+      UserVoucherDetailInformation,
       Prisma.UserVouchersFindManyArgs
     >(
       this.prismaService.userVouchers,
       {
         where: { userId: userId, voucherStatus: 'SAVED' },
+        include: {
+          voucher: true,
+        },
         orderBy: { id: 'asc' },
       },
       { page: page },

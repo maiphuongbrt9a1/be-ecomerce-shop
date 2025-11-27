@@ -82,4 +82,52 @@ export class OrdersController {
   async getOrderDetailInformation(@Param('id') id: string) {
     return await this.ordersService.getOrderDetailInformation(+id);
   }
+
+  @ApiOperation({
+    summary: 'Get order item list detail information of one order',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Get order item list detail information of one order',
+  })
+  @Get('/:id/order-item-list-detail')
+  async getOrderItemListDetailInformation(@Param('id') id: string) {
+    return await this.ordersService.getOrderItemListDetailInformation(+id);
+  }
+
+  @ApiOperation({
+    summary: 'Get order shipments detail information of one order',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Get order shipments detail information of one order',
+  })
+  @Get('/:id/order-shipments-detail')
+  async getOrderShipmentsDetailInformation(@Param('id') id: string) {
+    return await this.ordersService.getOrderShipmentsDetailInformation(+id);
+  }
+
+  @ApiOperation({
+    summary: 'Get order payment detail information of one order',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Get order payment detail information of one order',
+  })
+  @Get('/:id/order-payment-detail')
+  async getOrderPaymentDetailInformation(@Param('id') id: string) {
+    return await this.ordersService.getOrderPaymentDetailInformation(+id);
+  }
+
+  @ApiOperation({
+    summary: 'Get order request detail information of one order',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Get order request detail information of one order',
+  })
+  @Get('/:id/order-request-detail')
+  async getOrderRequestDetailInformation(@Param('id') id: string) {
+    return await this.ordersService.getOrderRequestDetailInformation(+id);
+  }
 }
