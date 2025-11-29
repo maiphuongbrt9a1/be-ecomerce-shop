@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Category, Prisma } from '@prisma/client';
+import { Category, Prisma, Products } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
@@ -55,5 +55,36 @@ export class CategoryService {
     return await this.prismaService.category.delete({
       where: { id: id },
     });
+  }
+
+  async getAllSubCategoriesOfCategory(id: number): Promise<Category[] | []> {
+    const result = await this.prismaService.category.findMany({
+      where: { parentId: id },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Sub-category not found!');
+    }
+
+    return result;
+  }
+
+  async getAllProductsOfCategory(
+    id: number,
+    page: number,
+    perPage: number,
+  ): Promise<Products[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Products, Prisma.ProductsFindManyArgs>(
+      this.prismaService.products,
+      { where: { categoryId: id }, orderBy: { id: 'asc' } },
+      { page: page },
+    );
+
+    if (!result) {
+      throw new NotFoundException('Products not found!');
+    }
+
+    return result.data;
   }
 }

@@ -4,6 +4,11 @@ import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma, Vouchers } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import {
+  VoucherWithAllAppliedCategoriesDetailInformation,
+  VoucherWithAllAppliedProductsDetailInformation,
+  VoucherWithAllAppliedProductVariantsDetailInformation,
+} from '@/helpers/types/types';
 
 @Injectable()
 export class VouchersService {
@@ -55,5 +60,68 @@ export class VouchersService {
     return await this.prismaService.vouchers.delete({
       where: { id: id },
     });
+  }
+
+  async getAllCategoriesAreAppliedThisVoucher(
+    id: number,
+    page: number,
+    perPage: number,
+  ): Promise<VoucherWithAllAppliedCategoriesDetailInformation[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<
+      VoucherWithAllAppliedCategoriesDetailInformation,
+      Prisma.VouchersFindManyArgs
+    >(
+      this.prismaService.vouchers,
+      {
+        where: { id: id },
+        orderBy: { id: 'asc' },
+      },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getAllProductsAreAppliedThisVoucher(
+    id: number,
+    page: number,
+    perPage: number,
+  ): Promise<VoucherWithAllAppliedProductsDetailInformation[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<
+      VoucherWithAllAppliedProductsDetailInformation,
+      Prisma.VouchersFindManyArgs
+    >(
+      this.prismaService.vouchers,
+      {
+        where: { id: id },
+        orderBy: { id: 'asc' },
+      },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getAllProductVariantsAreAppliedThisVoucher(
+    id: number,
+    page: number,
+    perPage: number,
+  ): Promise<VoucherWithAllAppliedProductVariantsDetailInformation[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<
+      VoucherWithAllAppliedProductVariantsDetailInformation,
+      Prisma.VouchersFindManyArgs
+    >(
+      this.prismaService.vouchers,
+      {
+        where: { id: id },
+        orderBy: { id: 'asc' },
+      },
+      { page: page },
+    );
+
+    return result.data;
   }
 }

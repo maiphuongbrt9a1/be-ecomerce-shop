@@ -2,8 +2,19 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Orders, Prisma } from '@prisma/client';
+import {
+  OrderItems,
+  Orders,
+  Payments,
+  Prisma,
+  Requests,
+  Shipments,
+} from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import {
+  OrderWithFullInformation,
+  OrderWithFullInformationInclude,
+} from '@/helpers/types/types';
 
 @Injectable()
 export class OrdersService {
@@ -52,5 +63,95 @@ export class OrdersService {
     return await this.prismaService.orders.delete({
       where: { id: id },
     });
+  }
+
+  async getOrderDetailInformation(
+    id: number,
+  ): Promise<OrderWithFullInformation | null> {
+    const result = await this.prismaService.orders.findFirst({
+      where: { id: id },
+      include: OrderWithFullInformationInclude,
+    });
+
+    if (!result) {
+      throw new NotFoundException('Order not found!');
+    }
+
+    return result;
+  }
+
+  async getAllOrdersWithDetailInformation(
+    page: number,
+    perPage: number,
+  ): Promise<OrderWithFullInformation[] | []> {
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<
+      OrderWithFullInformation,
+      Prisma.OrdersFindManyArgs
+    >(
+      this.prismaService.orders,
+      {
+        include: OrderWithFullInformationInclude,
+        orderBy: { id: 'asc' },
+      },
+      { page: page },
+    );
+
+    return result.data;
+  }
+
+  async getOrderItemListDetailInformation(
+    id: number,
+  ): Promise<OrderItems[] | []> {
+    const result = await this.prismaService.orderItems.findMany({
+      where: { orderId: id },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Order items not found!');
+    }
+
+    return result;
+  }
+
+  async getOrderShipmentsDetailInformation(
+    id: number,
+  ): Promise<Shipments[] | []> {
+    const result = await this.prismaService.shipments.findMany({
+      where: { orderId: id },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Order shipments not found!');
+    }
+
+    return result;
+  }
+
+  async getOrderPaymentDetailInformation(id: number): Promise<Payments[] | []> {
+    const result = await this.prismaService.payments.findMany({
+      where: { orderId: id },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Order payments not found!');
+    }
+
+    return result;
+  }
+
+  async getOrderRequestDetailInformation(id: number): Promise<Requests[] | []> {
+    const result = await this.prismaService.requests.findMany({
+      where: { orderId: id },
+      include: {
+        returnRequest: true,
+      },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Order requests not found!');
+    }
+
+    return result;
   }
 }

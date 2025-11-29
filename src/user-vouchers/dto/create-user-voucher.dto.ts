@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { VoucherStatus } from '@prisma/client';
-import { IsDate, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateUserVoucherDto {
   @ApiProperty({ example: 4741 })
@@ -23,5 +23,6 @@ export class CreateUserVoucherDto {
 
   @ApiProperty({ example: 'AVAILABLE' })
   @IsOptional()
+  @IsEnum(VoucherStatus)
   voucherStatus: VoucherStatus;
 }

@@ -73,4 +73,40 @@ export class ProductVariantsController {
   async remove(@Param('id') id: string) {
     return await this.productVariantsService.remove(+id);
   }
+
+  @ApiOperation({ summary: 'Get all reviews of product variant' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all reviews of product variant',
+  })
+  @Get('/:id/review-list')
+  async getReviewsOfProductVariant(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.productVariantsService.getReviewsOfProductVariant(
+      +id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all medias of product variant' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all medias of product variant',
+  })
+  @Get('/:id/media-list')
+  async getAllMediaOfProductVariant(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.productVariantsService.getAllMediaOfProductVariant(
+      +id,
+      Number(page),
+      Number(perPage),
+    );
+  }
 }

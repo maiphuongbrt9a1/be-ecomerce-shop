@@ -47,4 +47,16 @@ export class CartController {
   async update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
     return await this.cartService.update(+id, updateCartDto);
   }
+
+  @ApiOperation({ summary: 'Get user cart with cart items detail' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get user cart with cart items detail',
+  })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
+  @Get('/:id/cart-details')
+  async getCartDetails(@Param('id') id: string) {
+    return await this.cartService.getCartDetails(+id);
+  }
 }

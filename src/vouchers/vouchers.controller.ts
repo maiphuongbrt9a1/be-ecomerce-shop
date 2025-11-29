@@ -65,4 +65,60 @@ export class VouchersController {
   async remove(@Param('id') id: string) {
     return await this.vouchersService.remove(+id);
   }
+
+  @ApiOperation({ summary: 'Get all categories are applied this voucher' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all categories are applied this voucher',
+  })
+  @Get('/:id/all-categories-applied')
+  async getAllCategoriesAreAppliedThisVoucher(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.vouchersService.getAllCategoriesAreAppliedThisVoucher(
+      +id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all products are applied this voucher' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all products are applied this voucher',
+  })
+  @Get('/:id/all-products-applied')
+  async getAllProductsAreAppliedThisVoucher(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.vouchersService.getAllProductsAreAppliedThisVoucher(
+      +id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({
+    summary: 'Get all product-variants are applied this voucher',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all product-variants are applied this voucher',
+  })
+  @Get('/:id/all-product-variants-applied')
+  async getAllProductVariantsAreAppliedThisVoucher(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.vouchersService.getAllProductVariantsAreAppliedThisVoucher(
+      +id,
+      Number(page),
+      Number(perPage),
+    );
+  }
 }
