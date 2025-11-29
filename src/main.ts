@@ -15,10 +15,14 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('BE Ecomerce Shop')
     .setVersion('1.0')
+    .addServer('http://localhost:4000', 'Development server')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('documentation', app, document);
+  SwaggerModule.setup('documentation', app, document, {
+    jsonDocumentUrl: 'documentation-json',
+  });
 
   (BigInt.prototype as any).toJSON = function () {
     const int = Number.parseInt(this.toString());

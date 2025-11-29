@@ -8,7 +8,6 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Patch,
   Query,
   UseGuards,
 } from '@nestjs/common';

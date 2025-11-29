@@ -2,10 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDate,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Gender } from '@prisma/client';
 
 export class UpdateUserDto {
   @ApiProperty({ example: 'John' })
@@ -16,6 +18,11 @@ export class UpdateUserDto {
   @ApiProperty({ example: 'Doe' })
   @IsOptional()
   lastName: string;
+
+  @ApiProperty({ example: 'MALE', enum: Gender })
+  @IsOptional()
+  @IsEnum(Gender)
+  gender: Gender;
 
   @ApiProperty({ example: 'john.doe@example.com' })
   @IsOptional()

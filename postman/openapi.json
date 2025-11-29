@@ -1,0 +1,4105 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Hello word!",
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/user": {
+      "get": {
+        "operationId": "UserController_getAllUsers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User list found!"
+          }
+        },
+        "summary": "Get user list",
+        "tags": [
+          "User"
+        ]
+      },
+      "post": {
+        "operationId": "UserController_createAnUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Add a new user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "operationId": "UserController_getUserDetailById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found!"
+          }
+        },
+        "summary": "Get user detail by ID",
+        "tags": [
+          "User"
+        ]
+      },
+      "delete": {
+        "operationId": "UserController_deleteUserById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a user",
+        "tags": [
+          "User"
+        ]
+      },
+      "patch": {
+        "operationId": "UserController_updateAnUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_handleLogin",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Login account",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get profile of account",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAuthDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Register a new user",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/check-code": {
+      "post": {
+        "operationId": "AuthController_checkCode",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CodeAuthDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Check code active account",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/retry-active": {
+      "post": {
+        "operationId": "AuthController_retryActive",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Retry active account",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/retry-password": {
+      "post": {
+        "operationId": "AuthController_retryPassword",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "User retry password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordAuthDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "User change password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/mail/hello-mail": {
+      "post": {
+        "operationId": "MailController_sendHelloMail",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Send hello mail from shop",
+        "tags": [
+          "Mail"
+        ]
+      }
+    },
+    "/mail": {
+      "post": {
+        "operationId": "MailController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Send custom mail",
+        "tags": [
+          "Mail"
+        ]
+      }
+    },
+    "/products": {
+      "post": {
+        "operationId": "ProductsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new product"
+          }
+        },
+        "summary": "Create a new product",
+        "tags": [
+          "Products"
+        ]
+      },
+      "get": {
+        "operationId": "ProductsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all products"
+          }
+        },
+        "summary": "Get all products",
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "operationId": "ProductsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one product"
+          }
+        },
+        "summary": "Get one product",
+        "tags": [
+          "Products"
+        ]
+      },
+      "patch": {
+        "operationId": "ProductsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one product"
+          }
+        },
+        "summary": "Update one product",
+        "tags": [
+          "Products"
+        ]
+      },
+      "delete": {
+        "operationId": "ProductsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one product"
+          }
+        },
+        "summary": "Delete one product",
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/category": {
+      "post": {
+        "operationId": "CategoryController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new category"
+          }
+        },
+        "summary": "Create a new category",
+        "tags": [
+          "Category"
+        ]
+      },
+      "get": {
+        "operationId": "CategoryController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all categories"
+          }
+        },
+        "summary": "Get all categories",
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/category/{id}": {
+      "get": {
+        "operationId": "CategoryController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get a category"
+          }
+        },
+        "summary": "Get a category",
+        "tags": [
+          "Category"
+        ]
+      },
+      "patch": {
+        "operationId": "CategoryController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Update a category"
+          }
+        },
+        "summary": "Update a category",
+        "tags": [
+          "Category"
+        ]
+      },
+      "delete": {
+        "operationId": "CategoryController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Delete a category"
+          }
+        },
+        "summary": "Delete a category",
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/address": {
+      "post": {
+        "operationId": "AddressController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAddressDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new address"
+          }
+        },
+        "summary": "Create a new address",
+        "tags": [
+          "Address"
+        ]
+      },
+      "get": {
+        "operationId": "AddressController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all addresses"
+          }
+        },
+        "summary": "Get all addresses",
+        "tags": [
+          "Address"
+        ]
+      }
+    },
+    "/address/{id}": {
+      "get": {
+        "operationId": "AddressController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get an address"
+          }
+        },
+        "summary": "Get an address",
+        "tags": [
+          "Address"
+        ]
+      },
+      "patch": {
+        "operationId": "AddressController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAddressDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update an address"
+          }
+        },
+        "summary": "Update an address",
+        "tags": [
+          "Address"
+        ]
+      },
+      "delete": {
+        "operationId": "AddressController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete an address"
+          }
+        },
+        "summary": "Delete an address",
+        "tags": [
+          "Address"
+        ]
+      }
+    },
+    "/size-profiles": {
+      "post": {
+        "operationId": "SizeProfilesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSizeProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new size profile"
+          }
+        },
+        "summary": "Create a new size profile",
+        "tags": [
+          "SizeProfiles"
+        ]
+      },
+      "get": {
+        "operationId": "SizeProfilesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all size profiles"
+          }
+        },
+        "summary": "Get all size profiles",
+        "tags": [
+          "SizeProfiles"
+        ]
+      }
+    },
+    "/size-profiles/{id}": {
+      "get": {
+        "operationId": "SizeProfilesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one size profile"
+          }
+        },
+        "summary": "Get one size profile",
+        "tags": [
+          "SizeProfiles"
+        ]
+      },
+      "patch": {
+        "operationId": "SizeProfilesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSizeProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one size profile"
+          }
+        },
+        "summary": "Update one size profile",
+        "tags": [
+          "SizeProfiles"
+        ]
+      },
+      "delete": {
+        "operationId": "SizeProfilesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one size profile"
+          }
+        },
+        "summary": "Delete one size profile",
+        "tags": [
+          "SizeProfiles"
+        ]
+      }
+    },
+    "/product-variants": {
+      "post": {
+        "operationId": "ProductVariantsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductVariantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new product variant"
+          }
+        },
+        "summary": "Create a new product variant",
+        "tags": [
+          "ProductVariants"
+        ]
+      },
+      "get": {
+        "operationId": "ProductVariantsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all product variant"
+          }
+        },
+        "summary": "Get all product variant",
+        "tags": [
+          "ProductVariants"
+        ]
+      }
+    },
+    "/product-variants/{id}": {
+      "get": {
+        "operationId": "ProductVariantsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one product variant"
+          }
+        },
+        "summary": "Get one product variant",
+        "tags": [
+          "ProductVariants"
+        ]
+      },
+      "patch": {
+        "operationId": "ProductVariantsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductVariantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update a product variant"
+          }
+        },
+        "summary": "Update a product variant",
+        "tags": [
+          "ProductVariants"
+        ]
+      },
+      "delete": {
+        "operationId": "ProductVariantsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete a product variant"
+          }
+        },
+        "summary": "Delete a product variant",
+        "tags": [
+          "ProductVariants"
+        ]
+      }
+    },
+    "/reviews": {
+      "post": {
+        "operationId": "ReviewsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new review"
+          }
+        },
+        "summary": "Create a new review",
+        "tags": [
+          "Reviews"
+        ]
+      },
+      "get": {
+        "operationId": "ReviewsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all reviews"
+          }
+        },
+        "summary": "Get all reviews",
+        "tags": [
+          "Reviews"
+        ]
+      }
+    },
+    "/reviews/{id}": {
+      "get": {
+        "operationId": "ReviewsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get a review"
+          }
+        },
+        "summary": "Get a review",
+        "tags": [
+          "Reviews"
+        ]
+      },
+      "patch": {
+        "operationId": "ReviewsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update a review"
+          }
+        },
+        "summary": "Update a review",
+        "tags": [
+          "Reviews"
+        ]
+      },
+      "delete": {
+        "operationId": "ReviewsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete a review"
+          }
+        },
+        "summary": "Delete a review",
+        "tags": [
+          "Reviews"
+        ]
+      }
+    },
+    "/media": {
+      "post": {
+        "operationId": "MediaController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMediaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new media file"
+          }
+        },
+        "summary": "Create a new media file",
+        "tags": [
+          "Media"
+        ]
+      },
+      "get": {
+        "operationId": "MediaController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all media files"
+          }
+        },
+        "summary": "Get all media files",
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/media/{id}": {
+      "get": {
+        "operationId": "MediaController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one media file"
+          }
+        },
+        "summary": "Get one media file",
+        "tags": [
+          "Media"
+        ]
+      },
+      "patch": {
+        "operationId": "MediaController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMediaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one media file"
+          }
+        },
+        "summary": "Update one media file",
+        "tags": [
+          "Media"
+        ]
+      },
+      "delete": {
+        "operationId": "MediaController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one media file"
+          }
+        },
+        "summary": "Delete one media file",
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/orders": {
+      "post": {
+        "operationId": "OrdersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new order"
+          }
+        },
+        "summary": "Create a new order",
+        "tags": [
+          "Orders"
+        ]
+      },
+      "get": {
+        "operationId": "OrdersController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all orders"
+          }
+        },
+        "summary": "Get all orders",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "operationId": "OrdersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one order"
+          }
+        },
+        "summary": "Get one order",
+        "tags": [
+          "Orders"
+        ]
+      },
+      "patch": {
+        "operationId": "OrdersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one order"
+          }
+        },
+        "summary": "Update one order",
+        "tags": [
+          "Orders"
+        ]
+      },
+      "delete": {
+        "operationId": "OrdersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one order"
+          }
+        },
+        "summary": "Delete one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/order-items": {
+      "post": {
+        "operationId": "OrderItemsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new order item"
+          }
+        },
+        "summary": "Create a new order item",
+        "tags": [
+          "OrderItems"
+        ]
+      },
+      "get": {
+        "operationId": "OrderItemsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all order items"
+          }
+        },
+        "summary": "Get all order items",
+        "tags": [
+          "OrderItems"
+        ]
+      }
+    },
+    "/order-items/{id}": {
+      "get": {
+        "operationId": "OrderItemsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one order item"
+          }
+        },
+        "summary": "Get one order item",
+        "tags": [
+          "OrderItems"
+        ]
+      },
+      "patch": {
+        "operationId": "OrderItemsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrderItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one order item"
+          }
+        },
+        "summary": "Update one order item",
+        "tags": [
+          "OrderItems"
+        ]
+      },
+      "delete": {
+        "operationId": "OrderItemsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one order item"
+          }
+        },
+        "summary": "Delete one order item",
+        "tags": [
+          "OrderItems"
+        ]
+      }
+    },
+    "/shipments": {
+      "post": {
+        "operationId": "ShipmentsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateShipmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new shipment"
+          }
+        },
+        "summary": "Create a new shipment",
+        "tags": [
+          "Shipments"
+        ]
+      },
+      "get": {
+        "operationId": "ShipmentsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all shipments"
+          }
+        },
+        "summary": "Get all shipments",
+        "tags": [
+          "Shipments"
+        ]
+      }
+    },
+    "/shipments/{id}": {
+      "get": {
+        "operationId": "ShipmentsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one shipment"
+          }
+        },
+        "summary": "Get one shipment",
+        "tags": [
+          "Shipments"
+        ]
+      },
+      "patch": {
+        "operationId": "ShipmentsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateShipmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one shipment"
+          }
+        },
+        "summary": "Update one shipment",
+        "tags": [
+          "Shipments"
+        ]
+      },
+      "delete": {
+        "operationId": "ShipmentsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one shipment"
+          }
+        },
+        "summary": "Delete one shipment",
+        "tags": [
+          "Shipments"
+        ]
+      }
+    },
+    "/payments": {
+      "post": {
+        "operationId": "PaymentsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new payment"
+          }
+        },
+        "summary": "Create a new payment",
+        "tags": [
+          "Payments"
+        ]
+      },
+      "get": {
+        "operationId": "PaymentsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all payments"
+          }
+        },
+        "summary": "Get all payments",
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/payments/{id}": {
+      "get": {
+        "operationId": "PaymentsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one payment"
+          }
+        },
+        "summary": "Get one payment",
+        "tags": [
+          "Payments"
+        ]
+      },
+      "patch": {
+        "operationId": "PaymentsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one payment"
+          }
+        },
+        "summary": "Update one payment",
+        "tags": [
+          "Payments"
+        ]
+      },
+      "delete": {
+        "operationId": "PaymentsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one payment"
+          }
+        },
+        "summary": "Delete one payment",
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/cart": {
+      "post": {
+        "operationId": "CartController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new cart"
+          }
+        },
+        "summary": "Create a new cart",
+        "tags": [
+          "Cart"
+        ]
+      }
+    },
+    "/cart/{id}": {
+      "get": {
+        "operationId": "CartController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one cart"
+          }
+        },
+        "summary": "Get one cart",
+        "tags": [
+          "Cart"
+        ]
+      },
+      "patch": {
+        "operationId": "CartController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one cart"
+          }
+        },
+        "summary": "Update one cart",
+        "tags": [
+          "Cart"
+        ]
+      }
+    },
+    "/cart-items": {
+      "post": {
+        "operationId": "CartItemsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCartItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new cart item"
+          }
+        },
+        "summary": "Create a new cart item",
+        "tags": [
+          "CartItems"
+        ]
+      },
+      "get": {
+        "operationId": "CartItemsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all cart items"
+          }
+        },
+        "summary": "Get all cart items",
+        "tags": [
+          "CartItems"
+        ]
+      }
+    },
+    "/cart-items/{id}": {
+      "get": {
+        "operationId": "CartItemsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one cart item"
+          }
+        },
+        "summary": "Get one cart item",
+        "tags": [
+          "CartItems"
+        ]
+      },
+      "patch": {
+        "operationId": "CartItemsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCartItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one cart item"
+          }
+        },
+        "summary": "Update one cart item",
+        "tags": [
+          "CartItems"
+        ]
+      },
+      "delete": {
+        "operationId": "CartItemsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one cart item"
+          }
+        },
+        "summary": "Delete one cart item",
+        "tags": [
+          "CartItems"
+        ]
+      }
+    },
+    "/vouchers": {
+      "post": {
+        "operationId": "VouchersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVoucherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new voucher"
+          }
+        },
+        "summary": "Create a new voucher",
+        "tags": [
+          "Vouchers"
+        ]
+      },
+      "get": {
+        "operationId": "VouchersController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all vouchers"
+          }
+        },
+        "summary": "Get all vouchers",
+        "tags": [
+          "Vouchers"
+        ]
+      }
+    },
+    "/vouchers/{id}": {
+      "get": {
+        "operationId": "VouchersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get a voucher"
+          }
+        },
+        "summary": "Get a voucher",
+        "tags": [
+          "Vouchers"
+        ]
+      },
+      "patch": {
+        "operationId": "VouchersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVoucherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update a voucher"
+          }
+        },
+        "summary": "Update a voucher",
+        "tags": [
+          "Vouchers"
+        ]
+      },
+      "delete": {
+        "operationId": "VouchersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete a voucher"
+          }
+        },
+        "summary": "Delete a voucher",
+        "tags": [
+          "Vouchers"
+        ]
+      }
+    },
+    "/user-vouchers": {
+      "post": {
+        "operationId": "UserVouchersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserVoucherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new user voucher"
+          }
+        },
+        "summary": "Create a new user voucher",
+        "tags": [
+          "UserVouchers"
+        ]
+      },
+      "get": {
+        "operationId": "UserVouchersController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all user vouchers"
+          }
+        },
+        "summary": "Get all user vouchers",
+        "tags": [
+          "UserVouchers"
+        ]
+      }
+    },
+    "/user-vouchers/{id}": {
+      "get": {
+        "operationId": "UserVouchersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one user voucher"
+          }
+        },
+        "summary": "Get one user voucher",
+        "tags": [
+          "UserVouchers"
+        ]
+      },
+      "patch": {
+        "operationId": "UserVouchersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserVoucherDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one user voucher"
+          }
+        },
+        "summary": "Update one user voucher",
+        "tags": [
+          "UserVouchers"
+        ]
+      },
+      "delete": {
+        "operationId": "UserVouchersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one user voucher"
+          }
+        },
+        "summary": "Delete one user voucher",
+        "tags": [
+          "UserVouchers"
+        ]
+      }
+    },
+    "/requests": {
+      "post": {
+        "operationId": "RequestsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new request"
+          }
+        },
+        "summary": "Create a new request",
+        "tags": [
+          "Requests"
+        ]
+      },
+      "get": {
+        "operationId": "RequestsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all requests"
+          }
+        },
+        "summary": "Get all requests",
+        "tags": [
+          "Requests"
+        ]
+      }
+    },
+    "/requests/{id}": {
+      "get": {
+        "operationId": "RequestsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one request"
+          }
+        },
+        "summary": "Get one request",
+        "tags": [
+          "Requests"
+        ]
+      },
+      "patch": {
+        "operationId": "RequestsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one request"
+          }
+        },
+        "summary": "Update one request",
+        "tags": [
+          "Requests"
+        ]
+      },
+      "delete": {
+        "operationId": "RequestsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one request"
+          }
+        },
+        "summary": "Delete one request",
+        "tags": [
+          "Requests"
+        ]
+      }
+    },
+    "/return-requests": {
+      "post": {
+        "operationId": "ReturnRequestsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReturnRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new return request"
+          }
+        },
+        "summary": "Create a new return request",
+        "tags": [
+          "ReturnRequests"
+        ]
+      },
+      "get": {
+        "operationId": "ReturnRequestsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all return requests"
+          }
+        },
+        "summary": "Get all return requests",
+        "tags": [
+          "ReturnRequests"
+        ]
+      }
+    },
+    "/return-requests/{id}": {
+      "get": {
+        "operationId": "ReturnRequestsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get one return request"
+          }
+        },
+        "summary": "Get one return request",
+        "tags": [
+          "ReturnRequests"
+        ]
+      },
+      "patch": {
+        "operationId": "ReturnRequestsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateReturnRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one return request"
+          }
+        },
+        "summary": "Update one return request",
+        "tags": [
+          "ReturnRequests"
+        ]
+      },
+      "delete": {
+        "operationId": "ReturnRequestsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete one return request"
+          }
+        },
+        "summary": "Delete one return request",
+        "tags": [
+          "ReturnRequests"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "BE Ecomerce Shop",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "gender": {
+            "type": "string",
+            "example": "MALE | FEMALE | OTHER"
+          },
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          },
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "role": {
+            "type": "string",
+            "example": "USER | ADMIN | OPERATOR"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.262Z"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": "false"
+          },
+          "codeActive": {
+            "type": "string",
+            "example": false
+          },
+          "codeActiveExpire": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.262Z"
+          },
+          "staffCode": {
+            "type": "string",
+            "example": "ADFASFD-4654231-DAFDS"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": false
+          },
+          "loyaltyCard": {
+            "type": "string",
+            "example": "0987985465231"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "gender",
+          "email",
+          "phone",
+          "password",
+          "username",
+          "role",
+          "createdAt",
+          "isActive",
+          "codeActive",
+          "codeActiveExpire",
+          "staffCode",
+          "isAdmin",
+          "loyaltyCard"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          },
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.263Z"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "email",
+          "phone",
+          "password",
+          "username",
+          "updatedAt"
+        ]
+      },
+      "CreateAuthDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "JohnDoe465465"
+          },
+          "email": {
+            "type": "string",
+            "example": "xample@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "JohnDoe465465454"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "phone": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "role": {
+            "type": "string",
+            "example": "USER"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.302Z"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": false
+          },
+          "codeActive": {
+            "type": "string",
+            "example": "fddsafds4564521dfsaf"
+          },
+          "codeActiveExpire": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.302Z"
+          }
+        },
+        "required": [
+          "username",
+          "email",
+          "password",
+          "firstName",
+          "lastName",
+          "phone",
+          "role",
+          "createdAt",
+          "isActive",
+          "codeActive",
+          "codeActiveExpire"
+        ]
+      },
+      "CodeAuthDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4654
+          },
+          "codeActive": {
+            "type": "string",
+            "example": "fdsafdiuowuroi465872dsafd"
+          }
+        },
+        "required": [
+          "id",
+          "codeActive"
+        ]
+      },
+      "ChangePasswordAuthDto": {
+        "type": "object",
+        "properties": {
+          "codeActive": {
+            "type": "string",
+            "example": "safdsafdewr4656121"
+          },
+          "password": {
+            "type": "string",
+            "example": "JohnDoe465465"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "example": "JohnDoe465465"
+          },
+          "email": {
+            "type": "string",
+            "example": "xample@gmail.com"
+          }
+        },
+        "required": [
+          "codeActive",
+          "password",
+          "confirmPassword",
+          "email"
+        ]
+      },
+      "CreateMailDto": {
+        "type": "object",
+        "properties": {
+          "to_email": {
+            "type": "string",
+            "example": "xample@gmail.com"
+          },
+          "from_email": {
+            "type": "string",
+            "example": "xample@gmail.com"
+          },
+          "subject": {
+            "type": "string",
+            "example": "Activation email for your account"
+          },
+          "text": {
+            "type": "string",
+            "example": "Hello John Doe"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "activationCode": {
+            "type": "string",
+            "example": "1234567"
+          }
+        },
+        "required": [
+          "to_email",
+          "from_email",
+          "subject",
+          "text",
+          "name",
+          "activationCode"
+        ]
+      },
+      "CreateProductDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Sample product name"
+          },
+          "description": {
+            "type": "string",
+            "example": "Sample product description"
+          },
+          "price": {
+            "type": "number",
+            "example": 12
+          },
+          "stockKeepingUnit": {
+            "type": "string",
+            "example": "ADSFDSAF1463218FA"
+          },
+          "stock": {
+            "type": "number",
+            "example": 25
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1231
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.374Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.374Z"
+          },
+          "categoryId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "price",
+          "stockKeepingUnit",
+          "stock",
+          "createByUserId",
+          "createdAt",
+          "updatedAt",
+          "categoryId",
+          "voucherId"
+        ]
+      },
+      "UpdateProductDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Sample product name"
+          },
+          "description": {
+            "type": "string",
+            "example": "Sample product description"
+          },
+          "price": {
+            "type": "number",
+            "example": 12
+          },
+          "stockKeepingUnit": {
+            "type": "string",
+            "example": "ADSFDSAF1463218FA"
+          },
+          "stock": {
+            "type": "number",
+            "example": 25
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1231
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.374Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.374Z"
+          },
+          "categoryId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          }
+        }
+      },
+      "CreateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "sample name of category"
+          },
+          "description": {
+            "type": "string",
+            "example": "description for category"
+          },
+          "parentId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1231
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 12314
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.398Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.398Z"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "parentId",
+          "createByUserId",
+          "voucherId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "sample name of category"
+          },
+          "description": {
+            "type": "string",
+            "example": "description for category"
+          },
+          "parentId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1231
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 12314
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.398Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.398Z"
+          }
+        }
+      },
+      "CreateAddressDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "street": {
+            "type": "string",
+            "example": "Ho Xuan Huong Street"
+          },
+          "ward": {
+            "type": "string",
+            "example": "Dong Hoa"
+          },
+          "district": {
+            "type": "string",
+            "example": "Di An"
+          },
+          "province": {
+            "type": "string",
+            "example": "Binh Duong"
+          },
+          "zipCode": {
+            "type": "string",
+            "example": "ADSAFD797654FDAFD"
+          },
+          "country": {
+            "type": "string",
+            "example": "Binh Duong"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.402Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.402Z"
+          }
+        },
+        "required": [
+          "userId",
+          "street",
+          "ward",
+          "district",
+          "province",
+          "zipCode",
+          "country",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateAddressDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "street": {
+            "type": "string",
+            "example": "Ho Xuan Huong Street"
+          },
+          "ward": {
+            "type": "string",
+            "example": "Dong Hoa"
+          },
+          "district": {
+            "type": "string",
+            "example": "Di An"
+          },
+          "province": {
+            "type": "string",
+            "example": "Binh Duong"
+          },
+          "zipCode": {
+            "type": "string",
+            "example": "ADSAFD797654FDAFD"
+          },
+          "country": {
+            "type": "string",
+            "example": "Binh Duong"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.402Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.402Z"
+          }
+        }
+      },
+      "CreateSizeProfileDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1321546
+          },
+          "heightCm": {
+            "type": "number",
+            "example": 135.5
+          },
+          "weightKg": {
+            "type": "number",
+            "example": 85.5
+          },
+          "chestCm": {
+            "type": "number",
+            "example": 86.5
+          },
+          "hipCm": {
+            "type": "number",
+            "example": 87.5
+          },
+          "sleeveLengthCm": {
+            "type": "number",
+            "example": 112.2
+          },
+          "shoulderLengthCm": {
+            "type": "number",
+            "example": 86
+          },
+          "inseamCm": {
+            "type": "number",
+            "example": 90
+          },
+          "bodyType": {
+            "type": "string",
+            "example": "Body fat"
+          },
+          "description": {
+            "type": "string",
+            "example": "This is profile of John. He like wide t shirt and long trouser"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.407Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.407Z"
+          }
+        },
+        "required": [
+          "userId",
+          "heightCm",
+          "weightKg",
+          "chestCm",
+          "hipCm",
+          "sleeveLengthCm",
+          "shoulderLengthCm",
+          "inseamCm",
+          "bodyType",
+          "description",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateSizeProfileDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1321546
+          },
+          "heightCm": {
+            "type": "number",
+            "example": 135.5
+          },
+          "weightKg": {
+            "type": "number",
+            "example": 85.5
+          },
+          "chestCm": {
+            "type": "number",
+            "example": 86.5
+          },
+          "hipCm": {
+            "type": "number",
+            "example": 87.5
+          },
+          "sleeveLengthCm": {
+            "type": "number",
+            "example": 112.2
+          },
+          "shoulderLengthCm": {
+            "type": "number",
+            "example": 86
+          },
+          "inseamCm": {
+            "type": "number",
+            "example": 90
+          },
+          "bodyType": {
+            "type": "string",
+            "example": "Body fat"
+          },
+          "description": {
+            "type": "string",
+            "example": "This is profile of John. He like wide t shirt and long trouser"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.407Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.407Z"
+          }
+        }
+      },
+      "CreateProductVariantDto": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1315
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 852
+          },
+          "variantName": {
+            "type": "string",
+            "example": "name of product variant"
+          },
+          "variantColor": {
+            "type": "string",
+            "example": "red"
+          },
+          "variantSize": {
+            "type": "string",
+            "example": "XL"
+          },
+          "price": {
+            "type": "number",
+            "example": 46546
+          },
+          "stock": {
+            "type": "number",
+            "example": 851
+          },
+          "stockKeepingUnit": {
+            "type": "string",
+            "example": "EWDGDSED715545D"
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.412Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.412Z"
+          }
+        },
+        "required": [
+          "productId",
+          "createByUserId",
+          "variantName",
+          "variantColor",
+          "variantSize",
+          "price",
+          "stock",
+          "stockKeepingUnit",
+          "voucherId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateProductVariantDto": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1315
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 852
+          },
+          "variantName": {
+            "type": "string",
+            "example": "name of product variant"
+          },
+          "variantColor": {
+            "type": "string",
+            "example": "red"
+          },
+          "variantSize": {
+            "type": "string",
+            "example": "XL"
+          },
+          "price": {
+            "type": "number",
+            "example": 46546
+          },
+          "stock": {
+            "type": "number",
+            "example": 851
+          },
+          "stockKeepingUnit": {
+            "type": "string",
+            "example": "EWDGDSED715545D"
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.412Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.412Z"
+          }
+        }
+      },
+      "CreateReviewDto": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "rating": {
+            "type": "number",
+            "example": 5
+          },
+          "comment": {
+            "type": "string",
+            "example": "Perfect"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.416Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.416Z"
+          }
+        },
+        "required": [
+          "productId",
+          "userId",
+          "productVariantId",
+          "rating",
+          "comment",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateReviewDto": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "rating": {
+            "type": "number",
+            "example": 5
+          },
+          "comment": {
+            "type": "string",
+            "example": "Perfect"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.416Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.416Z"
+          }
+        }
+      },
+      "CreateMediaDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://i.ytimg.com/vi/yYDE9gMvMbU/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCn1eyWanaA18fPw7QhCCTftHALFA"
+          },
+          "type": {
+            "type": "string",
+            "example": "VIDEO | IMAGE | DOCUMENT"
+          },
+          "reviewId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.420Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.420Z"
+          }
+        },
+        "required": [
+          "url",
+          "type",
+          "reviewId",
+          "userId",
+          "productVariantId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateMediaDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://i.ytimg.com/vi/yYDE9gMvMbU/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCn1eyWanaA18fPw7QhCCTftHALFA"
+          },
+          "type": {
+            "type": "string",
+            "example": "VIDEO | IMAGE | DOCUMENT"
+          },
+          "reviewId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.420Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.420Z"
+          }
+        }
+      },
+      "CreateOrderDto": {
+        "type": "object",
+        "properties": {
+          "shippingAddressId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "orderDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.425Z"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "subTotal": {
+            "type": "number",
+            "example": 851
+          },
+          "shippingFee": {
+            "type": "number",
+            "example": 851
+          },
+          "discount": {
+            "type": "number",
+            "example": 851
+          },
+          "totalAmount": {
+            "type": "number",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.425Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.425Z"
+          }
+        },
+        "required": [
+          "shippingAddressId",
+          "userId",
+          "processByStaffId",
+          "orderDate",
+          "status",
+          "subTotal",
+          "shippingFee",
+          "discount",
+          "totalAmount",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateOrderDto": {
+        "type": "object",
+        "properties": {
+          "shippingAddressId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "orderDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.425Z"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "subTotal": {
+            "type": "number",
+            "example": 851
+          },
+          "shippingFee": {
+            "type": "number",
+            "example": 851
+          },
+          "discount": {
+            "type": "number",
+            "example": 851
+          },
+          "totalAmount": {
+            "type": "number",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.425Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.425Z"
+          }
+        }
+      },
+      "CreateOrderItemDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "quantity": {
+            "type": "number",
+            "example": 851
+          },
+          "unitPrice": {
+            "type": "number",
+            "example": 851
+          },
+          "totalPrice": {
+            "type": "number",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.430Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.430Z"
+          }
+        },
+        "required": [
+          "orderId",
+          "productVariantId",
+          "quantity",
+          "unitPrice",
+          "totalPrice",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateOrderItemDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "quantity": {
+            "type": "number",
+            "example": 851
+          },
+          "unitPrice": {
+            "type": "number",
+            "example": 851
+          },
+          "totalPrice": {
+            "type": "number",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.430Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.430Z"
+          }
+        }
+      },
+      "CreateShipmentDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 455
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 455
+          },
+          "estimatedDelivery": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          },
+          "deliveredAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          },
+          "estimatedShipDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          },
+          "shippedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          },
+          "carrier": {
+            "type": "string",
+            "example": "Important and quick"
+          },
+          "trackingNumber": {
+            "type": "string",
+            "example": "kjhkjdsfhds65442324sdfds"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          }
+        },
+        "required": [
+          "orderId",
+          "processByStaffId",
+          "estimatedDelivery",
+          "deliveredAt",
+          "estimatedShipDate",
+          "shippedAt",
+          "carrier",
+          "trackingNumber",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateShipmentDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 455
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 455
+          },
+          "estimatedDelivery": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          },
+          "deliveredAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          },
+          "estimatedShipDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          },
+          "shippedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          },
+          "carrier": {
+            "type": "string",
+            "example": "Important and quick"
+          },
+          "trackingNumber": {
+            "type": "string",
+            "example": "kjhkjdsfhds65442324sdfds"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.434Z"
+          }
+        }
+      },
+      "CreatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "transactionId": {
+            "type": "string",
+            "example": "fdsafhdsakjfh56465ewrewr"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "example": "COD | VNPAY | MOMO"
+          },
+          "paymentDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.439Z"
+          },
+          "amount": {
+            "type": "number",
+            "example": 4741
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          }
+        },
+        "required": [
+          "orderId",
+          "transactionId",
+          "paymentMethod",
+          "paymentDate",
+          "amount",
+          "status"
+        ]
+      },
+      "UpdatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "transactionId": {
+            "type": "string",
+            "example": "fdsafhdsakjfh56465ewrewr"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "example": "COD | VNPAY | MOMO"
+          },
+          "paymentDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.439Z"
+          },
+          "amount": {
+            "type": "number",
+            "example": 4741
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          }
+        }
+      },
+      "CreateCartDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.443Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.443Z"
+          }
+        },
+        "required": [
+          "userId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateCartDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.443Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.443Z"
+          }
+        }
+      },
+      "CreateCartItemDto": {
+        "type": "object",
+        "properties": {
+          "cartId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "quantity": {
+            "type": "number",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.447Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.447Z"
+          }
+        },
+        "required": [
+          "cartId",
+          "productVariantId",
+          "quantity",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateCartItemDto": {
+        "type": "object",
+        "properties": {
+          "cartId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "quantity": {
+            "type": "number",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.447Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.447Z"
+          }
+        }
+      },
+      "CreateVoucherDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "fdsakjfhds4655456ewrew"
+          },
+          "description": {
+            "type": "string",
+            "example": "free ship"
+          },
+          "discountType": {
+            "type": "string",
+            "example": "FIXED_AMOUNT"
+          },
+          "discountValue": {
+            "type": "number",
+            "example": 465
+          },
+          "validFrom": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.453Z"
+          },
+          "validTo": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.453Z"
+          },
+          "usageLimit": {
+            "type": "number",
+            "example": 4741
+          },
+          "timesUsed": {
+            "type": "number",
+            "example": 4741
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": false
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.453Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.453Z"
+          },
+          "createdBy": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4567
+          }
+        },
+        "required": [
+          "code",
+          "description",
+          "discountType",
+          "discountValue",
+          "validFrom",
+          "validTo",
+          "usageLimit",
+          "timesUsed",
+          "isActive",
+          "createdAt",
+          "updatedAt",
+          "createdBy"
+        ]
+      },
+      "UpdateVoucherDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "fdsakjfhds4655456ewrew"
+          },
+          "description": {
+            "type": "string",
+            "example": "free ship"
+          },
+          "discountType": {
+            "type": "string",
+            "example": "FIXED_AMOUNT"
+          },
+          "discountValue": {
+            "type": "number",
+            "example": 465
+          },
+          "validFrom": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.453Z"
+          },
+          "validTo": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.453Z"
+          },
+          "usageLimit": {
+            "type": "number",
+            "example": 4741
+          },
+          "timesUsed": {
+            "type": "number",
+            "example": 4741
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": false
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.453Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.453Z"
+          },
+          "createdBy": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4567
+          }
+        }
+      },
+      "CreateUserVoucherDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "useVoucherAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.458Z"
+          },
+          "saveVoucherAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.458Z"
+          },
+          "voucherStatus": {
+            "type": "string",
+            "example": "AVAILABLE"
+          }
+        },
+        "required": [
+          "userId",
+          "voucherId",
+          "useVoucherAt",
+          "saveVoucherAt",
+          "voucherStatus"
+        ]
+      },
+      "UpdateUserVoucherDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "useVoucherAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.458Z"
+          },
+          "saveVoucherAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.458Z"
+          },
+          "voucherStatus": {
+            "type": "string",
+            "example": "AVAILABLE"
+          }
+        }
+      },
+      "CreateRequestDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "subject": {
+            "type": "string",
+            "example": "return request"
+          },
+          "description": {
+            "type": "string",
+            "example": "I want to return this product in order. Because it\"s wide"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.463Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.463Z"
+          }
+        },
+        "required": [
+          "userId",
+          "processByStaffId",
+          "orderId",
+          "subject",
+          "description",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateRequestDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "subject": {
+            "type": "string",
+            "example": "return request"
+          },
+          "description": {
+            "type": "string",
+            "example": "I want to return this product in order. Because it\"s wide"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.463Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.463Z"
+          }
+        }
+      },
+      "CreateReturnRequestDto": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.468Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.468Z"
+          }
+        },
+        "required": [
+          "requestId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateReturnRequestDto": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.468Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-27T16:22:20.468Z"
+          }
+        }
+      }
+    }
+  }
+}

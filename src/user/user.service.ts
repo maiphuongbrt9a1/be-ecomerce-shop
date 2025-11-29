@@ -143,12 +143,14 @@ export class UserService {
 
   // Update an User
   async updateAnUser(id: number, data: UpdateUserDto): Promise<User> {
-    const { firstName, lastName, email, phone, password, username } = data;
+    const { firstName, lastName, gender, email, phone, password, username } =
+      data;
 
     // Build update payload without password first
     const updateData: Prisma.UserUpdateInput = {
       firstName,
       lastName,
+      gender,
       email,
       phone,
       username,
