@@ -639,7 +639,9 @@ export class UserService {
     return result;
   }
 
-  async AddANewCart(createCartItemDto: CreateCartItemDto): Promise<Cart> {
+  async AddANewCart(
+    createCartItemDto: CreateCartItemDto,
+  ): Promise<UserCartDetailInformation> {
     return this.prismaService.$transaction(async (tx) => {
       let existCartItem = await tx.cartItems.findFirst({
         where: {
@@ -667,7 +669,15 @@ export class UserService {
       const result = await tx.cart.findFirst({
         where: { id: createCartItemDto.cartId },
         include: {
-          cartItems: true,
+          cartItems: {
+            include: {
+              productVariant: {
+                include: {
+                  media: true,
+                },
+              },
+            },
+          },
         },
       });
 
