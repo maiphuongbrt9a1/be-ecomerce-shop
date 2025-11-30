@@ -10,6 +10,7 @@
             "description": ""
           }
         },
+        "summary": "Hello word!",
         "tags": [
           "App"
         ]
@@ -98,7 +99,7 @@
           "User"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "UserController_updateAnUser",
         "parameters": [
           {
@@ -131,6 +132,494 @@
         ]
       }
     },
+    "/user/{id}/address-list": {
+      "get": {
+        "operationId": "UserController_getAddressOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User address list found!"
+          }
+        },
+        "summary": "Get address list of a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/shop-office": {
+      "get": {
+        "operationId": "UserController_getShopOfficeOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User shop office found!"
+          }
+        },
+        "summary": "Get shop office of a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/avatar": {
+      "get": {
+        "operationId": "UserController_getAvatarOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get avatar of user"
+          }
+        },
+        "summary": "Get avatar of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/created-voucher-list": {
+      "get": {
+        "operationId": "UserController_getAllVouchersCreatedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get vouchers are created by a user"
+          }
+        },
+        "summary": "Get vouchers are created by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/product-list": {
+      "get": {
+        "operationId": "UserController_getAllProductsCreatedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get products are created by a user"
+          }
+        },
+        "summary": "Get products are created by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/product-variant-list": {
+      "get": {
+        "operationId": "UserController_getAllProductVariantsCreatedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get product variants are created by a user"
+          }
+        },
+        "summary": "Get product variants are created by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/category-list": {
+      "get": {
+        "operationId": "UserController_getAllCategoryCreatedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get categories are created by a user"
+          }
+        },
+        "summary": "Get categories are created by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/order-list": {
+      "get": {
+        "operationId": "UserController_getAllOrdersCreatedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get orders are created by a user"
+          }
+        },
+        "summary": "Get orders are created by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/processed-order-list": {
+      "get": {
+        "operationId": "UserController_getAllOrdersProcessedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get orders are processed by a user"
+          }
+        },
+        "summary": "Get orders are processed by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/processed-shipment-list": {
+      "get": {
+        "operationId": "UserController_getAllShipmentsProcessedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get shipments are processed by a user"
+          }
+        },
+        "summary": "Get shipments are processed by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/request-list": {
+      "get": {
+        "operationId": "UserController_getRequestsOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get requests of user"
+          }
+        },
+        "summary": "Get requests of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/processed-request-list": {
+      "get": {
+        "operationId": "UserController_getRequestsProcessedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get processed requests of user"
+          }
+        },
+        "summary": "Get processed requests of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/size-profile-list": {
+      "get": {
+        "operationId": "UserController_getSizeProfilesOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get size-profiles of user"
+          }
+        },
+        "summary": "Get size-profiles of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/review-list": {
+      "get": {
+        "operationId": "UserController_getReviewsOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get reviews of user"
+          }
+        },
+        "summary": "Get reviews of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/cart": {
+      "post": {
+        "operationId": "UserController_createANewCart",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new cart (only initial id user in cart table. Do not add any cart items)"
+          }
+        },
+        "summary": "Create a new cart (only initial id user in cart table. Do not add any cart items)",
+        "tags": [
+          "User"
+        ]
+      },
+      "get": {
+        "operationId": "UserController_getCartIdOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get cart id of user (only get id user in cart table. Do not get any cart items)"
+          }
+        },
+        "summary": "Get cart id of user (only get id user in cart table. Do not get any cart items)",
+        "tags": [
+          "User"
+        ]
+      },
+      "patch": {
+        "operationId": "UserController_updateUserCart",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one cart (only update id user in cart table. Do not add any cart items)"
+          }
+        },
+        "summary": "Update one cart (only update id user in cart table. Do not add any cart items)",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/cart/cart-item": {
+      "post": {
+        "operationId": "UserController_AddANewCart",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCartItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Add a new product variant (cart item) to cart"
+          }
+        },
+        "summary": "Add a new product variant (cart item) to cart",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/cart/cart-details": {
+      "get": {
+        "operationId": "UserController_getUserCartDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user cart with cart items detail"
+          }
+        },
+        "summary": "Get user cart with cart items detail",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/saved-voucher-list": {
+      "get": {
+        "operationId": "UserController_getSavedVouchersOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get saved vouchers of user"
+          }
+        },
+        "summary": "Get saved vouchers of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "AuthController_handleLogin",
@@ -140,6 +629,7 @@
             "description": ""
           }
         },
+        "summary": "Login account",
         "tags": [
           "Auth"
         ]
@@ -154,6 +644,7 @@
             "description": ""
           }
         },
+        "summary": "Get profile of account",
         "tags": [
           "Auth"
         ]
@@ -178,6 +669,7 @@
             "description": ""
           }
         },
+        "summary": "Register a new user",
         "tags": [
           "Auth"
         ]
@@ -202,6 +694,7 @@
             "description": ""
           }
         },
+        "summary": "Check code active account",
         "tags": [
           "Auth"
         ]
@@ -216,6 +709,7 @@
             "description": ""
           }
         },
+        "summary": "Retry active account",
         "tags": [
           "Auth"
         ]
@@ -230,6 +724,7 @@
             "description": ""
           }
         },
+        "summary": "User retry password",
         "tags": [
           "Auth"
         ]
@@ -254,20 +749,22 @@
             "description": ""
           }
         },
+        "summary": "User change password",
         "tags": [
           "Auth"
         ]
       }
     },
     "/mail/hello-mail": {
-      "get": {
+      "post": {
         "operationId": "MailController_sendHelloMail",
         "parameters": [],
         "responses": {
-          "200": {
+          "201": {
             "description": ""
           }
         },
+        "summary": "Send hello mail from shop",
         "tags": [
           "Mail"
         ]
@@ -292,6 +789,7 @@
             "description": ""
           }
         },
+        "summary": "Send custom mail",
         "tags": [
           "Mail"
         ]
@@ -358,7 +856,7 @@
           "Products"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "ProductsController_update",
         "parameters": [
           {
@@ -413,6 +911,54 @@
         ]
       }
     },
+    "/products/{id}/product-variants": {
+      "get": {
+        "operationId": "ProductsController_getAllProductVariantsOfProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all product-variants of this product"
+          }
+        },
+        "summary": "Get all product-variants of this product",
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/products/{id}/reviews": {
+      "get": {
+        "operationId": "ProductsController_getAllReviewsOfProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all reviews of this product"
+          }
+        },
+        "summary": "Get all reviews of this product",
+        "tags": [
+          "Products"
+        ]
+      }
+    },
     "/category": {
       "post": {
         "operationId": "CategoryController_create",
@@ -429,9 +975,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new category"
           }
         },
+        "summary": "Create a new category",
         "tags": [
           "Category"
         ]
@@ -441,9 +988,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all categories"
           }
         },
+        "summary": "Get all categories",
         "tags": [
           "Category"
         ]
@@ -464,14 +1012,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get a category"
           }
         },
+        "summary": "Get a category",
         "tags": [
           "Category"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "CategoryController_update",
         "parameters": [
           {
@@ -494,10 +1043,11 @@
           }
         },
         "responses": {
-          "200": {
-            "description": ""
+          "201": {
+            "description": "Update a category"
           }
         },
+        "summary": "Update a category",
         "tags": [
           "Category"
         ]
@@ -515,10 +1065,59 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": ""
+          "201": {
+            "description": "Delete a category"
           }
         },
+        "summary": "Delete a category",
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/category/{id}/sub-categories": {
+      "get": {
+        "operationId": "CategoryController_getAllSubCategoriesOfCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all sub-category of category"
+          }
+        },
+        "summary": "Get all sub-category of category",
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/category/{id}/products": {
+      "get": {
+        "operationId": "CategoryController_getAllProductsOfCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all products of category"
+          }
+        },
+        "summary": "Get all products of category",
         "tags": [
           "Category"
         ]
@@ -540,9 +1139,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new address"
           }
         },
+        "summary": "Create a new address",
         "tags": [
           "Address"
         ]
@@ -552,9 +1152,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all addresses"
           }
         },
+        "summary": "Get all addresses",
         "tags": [
           "Address"
         ]
@@ -575,14 +1176,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get an address"
           }
         },
+        "summary": "Get an address",
         "tags": [
           "Address"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "AddressController_update",
         "parameters": [
           {
@@ -606,9 +1208,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update an address"
           }
         },
+        "summary": "Update an address",
         "tags": [
           "Address"
         ]
@@ -627,9 +1230,10 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete an address"
           }
         },
+        "summary": "Delete an address",
         "tags": [
           "Address"
         ]
@@ -651,9 +1255,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new size profile"
           }
         },
+        "summary": "Create a new size profile",
         "tags": [
           "SizeProfiles"
         ]
@@ -663,9 +1268,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all size profiles"
           }
         },
+        "summary": "Get all size profiles",
         "tags": [
           "SizeProfiles"
         ]
@@ -686,14 +1292,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get one size profile"
           }
         },
+        "summary": "Get one size profile",
         "tags": [
           "SizeProfiles"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "SizeProfilesController_update",
         "parameters": [
           {
@@ -717,9 +1324,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update one size profile"
           }
         },
+        "summary": "Update one size profile",
         "tags": [
           "SizeProfiles"
         ]
@@ -738,9 +1346,10 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete one size profile"
           }
         },
+        "summary": "Delete one size profile",
         "tags": [
           "SizeProfiles"
         ]
@@ -807,7 +1416,7 @@
           "ProductVariants"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "ProductVariantsController_update",
         "parameters": [
           {
@@ -862,6 +1471,54 @@
         ]
       }
     },
+    "/product-variants/{id}/review-list": {
+      "get": {
+        "operationId": "ProductVariantsController_getReviewsOfProductVariant",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all reviews of product variant"
+          }
+        },
+        "summary": "Get all reviews of product variant",
+        "tags": [
+          "ProductVariants"
+        ]
+      }
+    },
+    "/product-variants/{id}/media-list": {
+      "get": {
+        "operationId": "ProductVariantsController_getAllMediaOfProductVariant",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all medias of product variant"
+          }
+        },
+        "summary": "Get all medias of product variant",
+        "tags": [
+          "ProductVariants"
+        ]
+      }
+    },
     "/reviews": {
       "post": {
         "operationId": "ReviewsController_create",
@@ -878,9 +1535,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new review"
           }
         },
+        "summary": "Create a new review",
         "tags": [
           "Reviews"
         ]
@@ -890,9 +1548,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all reviews"
           }
         },
+        "summary": "Get all reviews",
         "tags": [
           "Reviews"
         ]
@@ -913,14 +1572,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get a review"
           }
         },
+        "summary": "Get a review",
         "tags": [
           "Reviews"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "ReviewsController_update",
         "parameters": [
           {
@@ -944,9 +1604,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update a review"
           }
         },
+        "summary": "Update a review",
         "tags": [
           "Reviews"
         ]
@@ -965,9 +1626,34 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete a review"
           }
         },
+        "summary": "Delete a review",
+        "tags": [
+          "Reviews"
+        ]
+      }
+    },
+    "/reviews/{id}/media-list": {
+      "get": {
+        "operationId": "ReviewsController_getAllMediaOfReview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all media of review"
+          }
+        },
+        "summary": "Get all media of review",
         "tags": [
           "Reviews"
         ]
@@ -1034,7 +1720,7 @@
           "Media"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "MediaController_update",
         "parameters": [
           {
@@ -1105,9 +1791,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new order"
           }
         },
+        "summary": "Create a new order",
         "tags": [
           "Orders"
         ]
@@ -1117,9 +1804,25 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all orders"
           }
         },
+        "summary": "Get all orders",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/order-detail-list": {
+      "get": {
+        "operationId": "OrdersController_getAllOrdersWithDetailInformation",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all orders with their detail information"
+          }
+        },
+        "summary": "Get all orders with their detail information",
         "tags": [
           "Orders"
         ]
@@ -1140,14 +1843,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get one order"
           }
         },
+        "summary": "Get one order",
         "tags": [
           "Orders"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "OrdersController_update",
         "parameters": [
           {
@@ -1171,9 +1875,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update one order"
           }
         },
+        "summary": "Update one order",
         "tags": [
           "Orders"
         ]
@@ -1192,9 +1897,130 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete one order"
           }
         },
+        "summary": "Delete one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/order-detail": {
+      "get": {
+        "operationId": "OrdersController_getOrderDetailInformation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order detail information of one order"
+          }
+        },
+        "summary": "Get order detail information of one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/order-item-list-detail": {
+      "get": {
+        "operationId": "OrdersController_getOrderItemListDetailInformation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order item list detail information of one order"
+          }
+        },
+        "summary": "Get order item list detail information of one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/order-shipments-detail": {
+      "get": {
+        "operationId": "OrdersController_getOrderShipmentsDetailInformation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order shipments detail information of one order"
+          }
+        },
+        "summary": "Get order shipments detail information of one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/order-payment-detail": {
+      "get": {
+        "operationId": "OrdersController_getOrderPaymentDetailInformation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order payment detail information of one order"
+          }
+        },
+        "summary": "Get order payment detail information of one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/order-request-detail": {
+      "get": {
+        "operationId": "OrdersController_getOrderRequestDetailInformation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order request detail information of one order"
+          }
+        },
+        "summary": "Get order request detail information of one order",
         "tags": [
           "Orders"
         ]
@@ -1216,9 +2042,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new order item"
           }
         },
+        "summary": "Create a new order item",
         "tags": [
           "OrderItems"
         ]
@@ -1228,9 +2055,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all order items"
           }
         },
+        "summary": "Get all order items",
         "tags": [
           "OrderItems"
         ]
@@ -1251,14 +2079,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get one order item"
           }
         },
+        "summary": "Get one order item",
         "tags": [
           "OrderItems"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "OrderItemsController_update",
         "parameters": [
           {
@@ -1282,9 +2111,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update one order item"
           }
         },
+        "summary": "Update one order item",
         "tags": [
           "OrderItems"
         ]
@@ -1303,9 +2133,10 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete one order item"
           }
         },
+        "summary": "Delete one order item",
         "tags": [
           "OrderItems"
         ]
@@ -1327,9 +2158,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new shipment"
           }
         },
+        "summary": "Create a new shipment",
         "tags": [
           "Shipments"
         ]
@@ -1339,9 +2171,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all shipments"
           }
         },
+        "summary": "Get all shipments",
         "tags": [
           "Shipments"
         ]
@@ -1362,14 +2195,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get one shipment"
           }
         },
+        "summary": "Get one shipment",
         "tags": [
           "Shipments"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "ShipmentsController_update",
         "parameters": [
           {
@@ -1393,9 +2227,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update one shipment"
           }
         },
+        "summary": "Update one shipment",
         "tags": [
           "Shipments"
         ]
@@ -1414,9 +2249,10 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete one shipment"
           }
         },
+        "summary": "Delete one shipment",
         "tags": [
           "Shipments"
         ]
@@ -1438,9 +2274,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new payment"
           }
         },
+        "summary": "Create a new payment",
         "tags": [
           "Payments"
         ]
@@ -1450,9 +2287,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all payments"
           }
         },
+        "summary": "Get all payments",
         "tags": [
           "Payments"
         ]
@@ -1473,14 +2311,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get one payment"
           }
         },
+        "summary": "Get one payment",
         "tags": [
           "Payments"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "PaymentsController_update",
         "parameters": [
           {
@@ -1504,9 +2343,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update one payment"
           }
         },
+        "summary": "Update one payment",
         "tags": [
           "Payments"
         ]
@@ -1525,122 +2365,12 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete one payment"
           }
         },
+        "summary": "Delete one payment",
         "tags": [
           "Payments"
-        ]
-      }
-    },
-    "/cart": {
-      "post": {
-        "operationId": "CartController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCartDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Cart"
-        ]
-      },
-      "get": {
-        "operationId": "CartController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Cart"
-        ]
-      }
-    },
-    "/cart/{id}": {
-      "get": {
-        "operationId": "CartController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Cart"
-        ]
-      },
-      "put": {
-        "operationId": "CartController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCartDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Cart"
-        ]
-      },
-      "delete": {
-        "operationId": "CartController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Cart"
         ]
       }
     },
@@ -1660,9 +2390,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new cart item"
           }
         },
+        "summary": "Create a new cart item",
         "tags": [
           "CartItems"
         ]
@@ -1672,9 +2403,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all cart items"
           }
         },
+        "summary": "Get all cart items",
         "tags": [
           "CartItems"
         ]
@@ -1695,14 +2427,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get one cart item"
           }
         },
+        "summary": "Get one cart item",
         "tags": [
           "CartItems"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "CartItemsController_update",
         "parameters": [
           {
@@ -1726,9 +2459,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update one cart item"
           }
         },
+        "summary": "Update one cart item",
         "tags": [
           "CartItems"
         ]
@@ -1747,9 +2481,10 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete one cart item"
           }
         },
+        "summary": "Delete one cart item",
         "tags": [
           "CartItems"
         ]
@@ -1771,9 +2506,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new voucher"
           }
         },
+        "summary": "Create a new voucher",
         "tags": [
           "Vouchers"
         ]
@@ -1783,9 +2519,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all vouchers"
           }
         },
+        "summary": "Get all vouchers",
         "tags": [
           "Vouchers"
         ]
@@ -1806,14 +2543,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get a voucher"
           }
         },
+        "summary": "Get a voucher",
         "tags": [
           "Vouchers"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "VouchersController_update",
         "parameters": [
           {
@@ -1837,9 +2575,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update a voucher"
           }
         },
+        "summary": "Update a voucher",
         "tags": [
           "Vouchers"
         ]
@@ -1858,9 +2597,82 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete a voucher"
           }
         },
+        "summary": "Delete a voucher",
+        "tags": [
+          "Vouchers"
+        ]
+      }
+    },
+    "/vouchers/{id}/all-categories-applied": {
+      "get": {
+        "operationId": "VouchersController_getAllCategoriesAreAppliedThisVoucher",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all categories are applied this voucher"
+          }
+        },
+        "summary": "Get all categories are applied this voucher",
+        "tags": [
+          "Vouchers"
+        ]
+      }
+    },
+    "/vouchers/{id}/all-products-applied": {
+      "get": {
+        "operationId": "VouchersController_getAllProductsAreAppliedThisVoucher",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all products are applied this voucher"
+          }
+        },
+        "summary": "Get all products are applied this voucher",
+        "tags": [
+          "Vouchers"
+        ]
+      }
+    },
+    "/vouchers/{id}/all-product-variants-applied": {
+      "get": {
+        "operationId": "VouchersController_getAllProductVariantsAreAppliedThisVoucher",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all product-variants are applied this voucher"
+          }
+        },
+        "summary": "Get all product-variants are applied this voucher",
         "tags": [
           "Vouchers"
         ]
@@ -1882,9 +2694,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new user voucher"
           }
         },
+        "summary": "Create a new user voucher",
         "tags": [
           "UserVouchers"
         ]
@@ -1894,9 +2707,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all user vouchers"
           }
         },
+        "summary": "Get all user vouchers",
         "tags": [
           "UserVouchers"
         ]
@@ -1917,14 +2731,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get one user voucher"
           }
         },
+        "summary": "Get one user voucher",
         "tags": [
           "UserVouchers"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "UserVouchersController_update",
         "parameters": [
           {
@@ -1948,9 +2763,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update one user voucher"
           }
         },
+        "summary": "Update one user voucher",
         "tags": [
           "UserVouchers"
         ]
@@ -1969,9 +2785,10 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete one user voucher"
           }
         },
+        "summary": "Delete one user voucher",
         "tags": [
           "UserVouchers"
         ]
@@ -1993,9 +2810,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new request"
           }
         },
+        "summary": "Create a new request",
         "tags": [
           "Requests"
         ]
@@ -2005,9 +2823,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all requests"
           }
         },
+        "summary": "Get all requests",
         "tags": [
           "Requests"
         ]
@@ -2028,14 +2847,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get one request"
           }
         },
+        "summary": "Get one request",
         "tags": [
           "Requests"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "RequestsController_update",
         "parameters": [
           {
@@ -2059,9 +2879,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update one request"
           }
         },
+        "summary": "Update one request",
         "tags": [
           "Requests"
         ]
@@ -2080,9 +2901,10 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Delete one request"
           }
         },
+        "summary": "Delete one request",
         "tags": [
           "Requests"
         ]
@@ -2104,9 +2926,10 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Create a new return request"
           }
         },
+        "summary": "Create a new return request",
         "tags": [
           "ReturnRequests"
         ]
@@ -2116,9 +2939,10 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get all return requests"
           }
         },
+        "summary": "Get all return requests",
         "tags": [
           "ReturnRequests"
         ]
@@ -2139,14 +2963,15 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Get one return request"
           }
         },
+        "summary": "Get one return request",
         "tags": [
           "ReturnRequests"
         ]
       },
-      "put": {
+      "patch": {
         "operationId": "ReturnRequestsController_update",
         "parameters": [
           {
@@ -2170,9 +2995,10 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Update one return request"
           }
         },
+        "summary": "Update one return request",
         "tags": [
           "ReturnRequests"
         ]
@@ -2191,11 +3017,270 @@
         ],
         "responses": {
           "200": {
+            "description": "Delete one return request"
+          }
+        },
+        "summary": "Delete one return request",
+        "tags": [
+          "ReturnRequests"
+        ]
+      }
+    },
+    "/aws-s3/upload": {
+      "post": {
+        "operationId": "AwsS3Controller_upload",
+        "parameters": [],
+        "responses": {
+          "201": {
             "description": ""
           }
         },
         "tags": [
-          "ReturnRequests"
+          "AwsS3"
+        ]
+      }
+    },
+    "/shop-offices": {
+      "post": {
+        "operationId": "ShopOfficesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateShopOfficeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Add new a shop office"
+          }
+        },
+        "summary": "Add new a shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      },
+      "get": {
+        "operationId": "ShopOfficesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": " shop office list found!"
+          }
+        },
+        "summary": "Get shop office list",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{id}": {
+      "get": {
+        "operationId": "ShopOfficesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office found!"
+          }
+        },
+        "summary": "Get shop office detail by ID",
+        "tags": [
+          "ShopOffices"
+        ]
+      },
+      "patch": {
+        "operationId": "ShopOfficesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateShopOfficeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update a shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      },
+      "delete": {
+        "operationId": "ShopOfficesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{id}/manager-list": {
+      "get": {
+        "operationId": "ShopOfficesController_findAllManagersOfShopOffice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office\"s manager list found!"
+          }
+        },
+        "summary": "Get shop office\"s manager list by ID shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{id}/address": {
+      "get": {
+        "operationId": "ShopOfficesController_findAddressOfShopOffice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office\"s address found!"
+          }
+        },
+        "summary": "Get shop office\"s address by ID shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{id}/product-list": {
+      "get": {
+        "operationId": "ShopOfficesController_findAllProductsOfShopOffice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office\"s products found!"
+          }
+        },
+        "summary": "Get shop office\"s products by ID shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{id}/category-list": {
+      "get": {
+        "operationId": "ShopOfficesController_findAllCategoryOfShopOffice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office\"s categories found!"
+          }
+        },
+        "summary": "Get shop office\"s categories by ID shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{shopId}/category/{categoryId}/product-list": {
+      "get": {
+        "operationId": "ShopOfficesController_findAllProductsOfCategoryOfShopOffice",
+        "parameters": [
+          {
+            "name": "shopId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office\"s products of category found!"
+          }
+        },
+        "summary": "Get shop office\"s products of one category by ID shop office and ID category",
+        "tags": [
+          "ShopOffices"
         ]
       }
     }
@@ -2221,6 +3306,10 @@
             "type": "string",
             "example": "Doe"
           },
+          "gender": {
+            "type": "string",
+            "example": "MALE | FEMALE | OTHER"
+          },
           "email": {
             "type": "string",
             "example": "john.doe@example.com"
@@ -2239,28 +3328,55 @@
           },
           "role": {
             "type": "string",
-            "example": "USER"
+            "example": "USER | ADMIN | OPERATOR"
           },
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-18T17:36:23.136Z"
+            "example": "2025-11-30T09:56:43.935Z"
           },
           "isActive": {
             "type": "boolean",
             "example": "false"
+          },
+          "codeActive": {
+            "type": "string",
+            "example": false
+          },
+          "codeActiveExpire": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:43.935Z"
+          },
+          "staffCode": {
+            "type": "string",
+            "example": "ADFASFD-4654231-DAFDS"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": false
+          },
+          "loyaltyCard": {
+            "type": "string",
+            "example": "0987985465231"
           }
         },
         "required": [
           "firstName",
           "lastName",
+          "gender",
           "email",
           "phone",
           "password",
           "username",
           "role",
           "createdAt",
-          "isActive"
+          "isActive",
+          "codeActive",
+          "codeActiveExpire",
+          "staffCode",
+          "isAdmin",
+          "loyaltyCard"
         ]
       },
       "UpdateUserDto": {
@@ -2273,6 +3389,15 @@
           "lastName": {
             "type": "string",
             "example": "Doe"
+          },
+          "gender": {
+            "type": "string",
+            "example": "MALE",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ]
           },
           "email": {
             "type": "string",
@@ -2293,12 +3418,13 @@
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-18T17:36:23.143Z"
+            "example": "2025-11-30T09:56:43.947Z"
           }
         },
         "required": [
           "firstName",
           "lastName",
+          "gender",
           "email",
           "phone",
           "password",
@@ -2306,9 +3432,102 @@
           "updatedAt"
         ]
       },
+      "CreateCartDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:43.969Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:43.969Z"
+          }
+        },
+        "required": [
+          "userId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateCartItemDto": {
+        "type": "object",
+        "properties": {
+          "cartId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "quantity": {
+            "type": "number",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:43.987Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:43.987Z"
+          }
+        },
+        "required": [
+          "cartId",
+          "productVariantId",
+          "quantity",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateCartDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:43.969Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:43.969Z"
+          }
+        }
+      },
       "CreateAuthDto": {
         "type": "object",
         "properties": {
+          "username": {
+            "type": "string",
+            "example": "JohnDoe465465"
+          },
+          "email": {
+            "type": "string",
+            "example": "xample@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "JohnDoe465465454"
+          },
           "firstName": {
             "type": "string",
             "example": "John"
@@ -2328,39 +3547,92 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-18T17:36:23.249Z"
+            "example": "2025-11-30T09:56:44.157Z"
           },
           "isActive": {
             "type": "boolean",
-            "example": "false"
+            "example": false
+          },
+          "codeActive": {
+            "type": "string",
+            "example": "fddsafds4564521dfsaf"
           },
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-18T17:36:23.249Z"
+            "example": "2025-11-30T09:56:44.157Z"
           }
         },
         "required": [
+          "username",
+          "email",
+          "password",
           "firstName",
           "lastName",
           "phone",
           "role",
           "createdAt",
           "isActive",
+          "codeActive",
           "codeActiveExpire"
         ]
       },
       "CodeAuthDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4654
+          },
+          "codeActive": {
+            "type": "string",
+            "example": "fdsafdiuowuroi465872dsafd"
+          }
+        },
+        "required": [
+          "id",
+          "codeActive"
+        ]
       },
       "ChangePasswordAuthDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "codeActive": {
+            "type": "string",
+            "example": "safdsafdewr4656121"
+          },
+          "password": {
+            "type": "string",
+            "example": "JohnDoe465465"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "example": "JohnDoe465465"
+          },
+          "email": {
+            "type": "string",
+            "example": "xample@gmail.com"
+          }
+        },
+        "required": [
+          "codeActive",
+          "password",
+          "confirmPassword",
+          "email"
+        ]
       },
       "CreateMailDto": {
         "type": "object",
         "properties": {
+          "to_email": {
+            "type": "string",
+            "example": "xample@gmail.com"
+          },
+          "from_email": {
+            "type": "string",
+            "example": "xample@gmail.com"
+          },
           "subject": {
             "type": "string",
             "example": "Activation email for your account"
@@ -2379,6 +3651,8 @@
           }
         },
         "required": [
+          "to_email",
+          "from_email",
           "subject",
           "text",
           "name",
@@ -2398,20 +3672,40 @@
           },
           "price": {
             "type": "number",
-            "example": "Sample product price"
+            "example": 12
           },
           "stockKeepingUnit": {
             "type": "string",
-            "example": "Sample product SKU"
+            "example": "ADSFDSAF1463218FA"
           },
           "stock": {
             "type": "number",
-            "example": "Sample product stock"
+            "example": 25
           },
           "createByUserId": {
             "format": "int64",
             "type": "integer",
-            "example": "User ID of staff who created the product"
+            "example": 1231
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.526Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.526Z"
+          },
+          "categoryId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
           }
         },
         "required": [
@@ -2420,7 +3714,11 @@
           "price",
           "stockKeepingUnit",
           "stock",
-          "createByUserId"
+          "createByUserId",
+          "createdAt",
+          "updatedAt",
+          "categoryId",
+          "voucherId"
         ]
       },
       "UpdateProductDto": {
@@ -2436,148 +3734,1415 @@
           },
           "price": {
             "type": "number",
-            "example": "Sample product price"
+            "example": 12
           },
           "stockKeepingUnit": {
             "type": "string",
-            "example": "Sample product SKU"
+            "example": "ADSFDSAF1463218FA"
           },
           "stock": {
             "type": "number",
-            "example": "Sample product stock"
+            "example": 25
           },
           "createByUserId": {
             "format": "int64",
             "type": "integer",
-            "example": "User ID of staff who created the product"
+            "example": 1231
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.526Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.526Z"
+          },
+          "categoryId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
           }
         }
       },
       "CreateCategoryDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "sample name of category"
+          },
+          "description": {
+            "type": "string",
+            "example": "description for category"
+          },
+          "parentId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1231
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 12314
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.626Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.627Z"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "parentId",
+          "createByUserId",
+          "voucherId",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateCategoryDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "sample name of category"
+          },
+          "description": {
+            "type": "string",
+            "example": "description for category"
+          },
+          "parentId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1231
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 12314
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.626Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.627Z"
+          }
+        }
       },
       "CreateAddressDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "street": {
+            "type": "string",
+            "example": "Ho Xuan Huong Street"
+          },
+          "ward": {
+            "type": "string",
+            "example": "Dong Hoa"
+          },
+          "district": {
+            "type": "string",
+            "example": "Di An"
+          },
+          "province": {
+            "type": "string",
+            "example": "Binh Duong"
+          },
+          "zipCode": {
+            "type": "string",
+            "example": "ADSAFD797654FDAFD"
+          },
+          "country": {
+            "type": "string",
+            "example": "Binh Duong"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.707Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.707Z"
+          }
+        },
+        "required": [
+          "userId",
+          "street",
+          "ward",
+          "district",
+          "province",
+          "zipCode",
+          "country",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateAddressDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "street": {
+            "type": "string",
+            "example": "Ho Xuan Huong Street"
+          },
+          "ward": {
+            "type": "string",
+            "example": "Dong Hoa"
+          },
+          "district": {
+            "type": "string",
+            "example": "Di An"
+          },
+          "province": {
+            "type": "string",
+            "example": "Binh Duong"
+          },
+          "zipCode": {
+            "type": "string",
+            "example": "ADSAFD797654FDAFD"
+          },
+          "country": {
+            "type": "string",
+            "example": "Binh Duong"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.707Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.707Z"
+          }
+        }
       },
       "CreateSizeProfileDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1321546
+          },
+          "heightCm": {
+            "type": "number",
+            "example": 135.5
+          },
+          "weightKg": {
+            "type": "number",
+            "example": 85.5
+          },
+          "chestCm": {
+            "type": "number",
+            "example": 86.5
+          },
+          "hipCm": {
+            "type": "number",
+            "example": 87.5
+          },
+          "sleeveLengthCm": {
+            "type": "number",
+            "example": 112.2
+          },
+          "shoulderLengthCm": {
+            "type": "number",
+            "example": 86
+          },
+          "inseamCm": {
+            "type": "number",
+            "example": 90
+          },
+          "bodyType": {
+            "type": "string",
+            "example": "Body fat"
+          },
+          "description": {
+            "type": "string",
+            "example": "This is profile of John. He like wide t shirt and long trouser"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.806Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.806Z"
+          }
+        },
+        "required": [
+          "userId",
+          "heightCm",
+          "weightKg",
+          "chestCm",
+          "hipCm",
+          "sleeveLengthCm",
+          "shoulderLengthCm",
+          "inseamCm",
+          "bodyType",
+          "description",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateSizeProfileDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1321546
+          },
+          "heightCm": {
+            "type": "number",
+            "example": 135.5
+          },
+          "weightKg": {
+            "type": "number",
+            "example": 85.5
+          },
+          "chestCm": {
+            "type": "number",
+            "example": 86.5
+          },
+          "hipCm": {
+            "type": "number",
+            "example": 87.5
+          },
+          "sleeveLengthCm": {
+            "type": "number",
+            "example": 112.2
+          },
+          "shoulderLengthCm": {
+            "type": "number",
+            "example": 86
+          },
+          "inseamCm": {
+            "type": "number",
+            "example": 90
+          },
+          "bodyType": {
+            "type": "string",
+            "example": "Body fat"
+          },
+          "description": {
+            "type": "string",
+            "example": "This is profile of John. He like wide t shirt and long trouser"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.806Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.806Z"
+          }
+        }
       },
       "CreateProductVariantDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "productId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1315
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 852
+          },
+          "variantName": {
+            "type": "string",
+            "example": "name of product variant"
+          },
+          "variantColor": {
+            "type": "string",
+            "example": "red"
+          },
+          "variantSize": {
+            "type": "string",
+            "example": "XL"
+          },
+          "price": {
+            "type": "number",
+            "example": 46546
+          },
+          "stock": {
+            "type": "number",
+            "example": 851
+          },
+          "stockKeepingUnit": {
+            "type": "string",
+            "example": "EWDGDSED715545D"
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.915Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.915Z"
+          }
+        },
+        "required": [
+          "productId",
+          "createByUserId",
+          "variantName",
+          "variantColor",
+          "variantSize",
+          "price",
+          "stock",
+          "stockKeepingUnit",
+          "voucherId",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateProductVariantDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "productId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1315
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 852
+          },
+          "variantName": {
+            "type": "string",
+            "example": "name of product variant"
+          },
+          "variantColor": {
+            "type": "string",
+            "example": "red"
+          },
+          "variantSize": {
+            "type": "string",
+            "example": "XL"
+          },
+          "price": {
+            "type": "number",
+            "example": 46546
+          },
+          "stock": {
+            "type": "number",
+            "example": 851
+          },
+          "stockKeepingUnit": {
+            "type": "string",
+            "example": "EWDGDSED715545D"
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.915Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:44.915Z"
+          }
+        }
       },
       "CreateReviewDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "productId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "rating": {
+            "type": "number",
+            "example": 5
+          },
+          "comment": {
+            "type": "string",
+            "example": "Perfect"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.000Z"
+          }
+        },
+        "required": [
+          "productId",
+          "userId",
+          "productVariantId",
+          "rating",
+          "comment",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateReviewDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "productId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "rating": {
+            "type": "number",
+            "example": 5
+          },
+          "comment": {
+            "type": "string",
+            "example": "Perfect"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.000Z"
+          }
+        }
       },
       "CreateMediaDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://i.ytimg.com/vi/yYDE9gMvMbU/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCn1eyWanaA18fPw7QhCCTftHALFA"
+          },
+          "type": {
+            "type": "string",
+            "example": "VIDEO | IMAGE | DOCUMENT"
+          },
+          "reviewId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.073Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.073Z"
+          }
+        },
+        "required": [
+          "url",
+          "type",
+          "reviewId",
+          "userId",
+          "productVariantId",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateMediaDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://i.ytimg.com/vi/yYDE9gMvMbU/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCn1eyWanaA18fPw7QhCCTftHALFA"
+          },
+          "type": {
+            "type": "string",
+            "example": "VIDEO | IMAGE | DOCUMENT"
+          },
+          "reviewId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.073Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.073Z"
+          }
+        }
       },
       "CreateOrderDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "shippingAddressId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "orderDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.916Z"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "subTotal": {
+            "type": "number",
+            "example": 851
+          },
+          "shippingFee": {
+            "type": "number",
+            "example": 851
+          },
+          "discount": {
+            "type": "number",
+            "example": 851
+          },
+          "totalAmount": {
+            "type": "number",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.916Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.916Z"
+          }
+        },
+        "required": [
+          "shippingAddressId",
+          "userId",
+          "processByStaffId",
+          "orderDate",
+          "status",
+          "subTotal",
+          "shippingFee",
+          "discount",
+          "totalAmount",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateOrderDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "shippingAddressId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "orderDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.916Z"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "subTotal": {
+            "type": "number",
+            "example": 851
+          },
+          "shippingFee": {
+            "type": "number",
+            "example": 851
+          },
+          "discount": {
+            "type": "number",
+            "example": 851
+          },
+          "totalAmount": {
+            "type": "number",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.916Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.916Z"
+          }
+        }
       },
       "CreateOrderItemDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "quantity": {
+            "type": "number",
+            "example": 851
+          },
+          "unitPrice": {
+            "type": "number",
+            "example": 851
+          },
+          "totalPrice": {
+            "type": "number",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.993Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.993Z"
+          }
+        },
+        "required": [
+          "orderId",
+          "productVariantId",
+          "quantity",
+          "unitPrice",
+          "totalPrice",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateOrderItemDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 851
+          },
+          "quantity": {
+            "type": "number",
+            "example": 851
+          },
+          "unitPrice": {
+            "type": "number",
+            "example": 851
+          },
+          "totalPrice": {
+            "type": "number",
+            "example": 851
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.993Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:45.993Z"
+          }
+        }
       },
       "CreateShipmentDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 455
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 455
+          },
+          "estimatedDelivery": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.063Z"
+          },
+          "deliveredAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.063Z"
+          },
+          "estimatedShipDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.063Z"
+          },
+          "shippedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.064Z"
+          },
+          "carrier": {
+            "type": "string",
+            "example": "Important and quick"
+          },
+          "trackingNumber": {
+            "type": "string",
+            "example": "kjhkjdsfhds65442324sdfds"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.064Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.064Z"
+          }
+        },
+        "required": [
+          "orderId",
+          "processByStaffId",
+          "estimatedDelivery",
+          "deliveredAt",
+          "estimatedShipDate",
+          "shippedAt",
+          "carrier",
+          "trackingNumber",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateShipmentDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 455
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 455
+          },
+          "estimatedDelivery": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.063Z"
+          },
+          "deliveredAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.063Z"
+          },
+          "estimatedShipDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.063Z"
+          },
+          "shippedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.064Z"
+          },
+          "carrier": {
+            "type": "string",
+            "example": "Important and quick"
+          },
+          "trackingNumber": {
+            "type": "string",
+            "example": "kjhkjdsfhds65442324sdfds"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.064Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.064Z"
+          }
+        }
       },
       "CreatePaymentDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "transactionId": {
+            "type": "string",
+            "example": "fdsafhdsakjfh56465ewrewr"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "example": "COD | VNPAY | MOMO"
+          },
+          "paymentDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.134Z"
+          },
+          "amount": {
+            "type": "number",
+            "example": 4741
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          }
+        },
+        "required": [
+          "orderId",
+          "transactionId",
+          "paymentMethod",
+          "paymentDate",
+          "amount",
+          "status"
+        ]
       },
       "UpdatePaymentDto": {
         "type": "object",
-        "properties": {}
-      },
-      "CreateCartDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateCartDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "CreateCartItemDto": {
-        "type": "object",
-        "properties": {}
+        "properties": {
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "transactionId": {
+            "type": "string",
+            "example": "fdsafhdsakjfh56465ewrewr"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "example": "COD | VNPAY | MOMO"
+          },
+          "paymentDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.134Z"
+          },
+          "amount": {
+            "type": "number",
+            "example": 4741
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          }
+        }
       },
       "UpdateCartItemDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "cartId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "quantity": {
+            "type": "number",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:43.987Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:43.987Z"
+          }
+        }
       },
       "CreateVoucherDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "fdsakjfhds4655456ewrew"
+          },
+          "description": {
+            "type": "string",
+            "example": "free ship"
+          },
+          "discountType": {
+            "type": "string",
+            "example": "FIXED_AMOUNT"
+          },
+          "discountValue": {
+            "type": "number",
+            "example": 465
+          },
+          "validFrom": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.276Z"
+          },
+          "validTo": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.276Z"
+          },
+          "usageLimit": {
+            "type": "number",
+            "example": 4741
+          },
+          "timesUsed": {
+            "type": "number",
+            "example": 4741
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": false
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.276Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.276Z"
+          },
+          "createdBy": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4567
+          }
+        },
+        "required": [
+          "code",
+          "description",
+          "discountType",
+          "discountValue",
+          "validFrom",
+          "validTo",
+          "usageLimit",
+          "timesUsed",
+          "isActive",
+          "createdAt",
+          "updatedAt",
+          "createdBy"
+        ]
       },
       "UpdateVoucherDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "fdsakjfhds4655456ewrew"
+          },
+          "description": {
+            "type": "string",
+            "example": "free ship"
+          },
+          "discountType": {
+            "type": "string",
+            "example": "FIXED_AMOUNT"
+          },
+          "discountValue": {
+            "type": "number",
+            "example": 465
+          },
+          "validFrom": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.276Z"
+          },
+          "validTo": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.276Z"
+          },
+          "usageLimit": {
+            "type": "number",
+            "example": 4741
+          },
+          "timesUsed": {
+            "type": "number",
+            "example": 4741
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": false
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.276Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.276Z"
+          },
+          "createdBy": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4567
+          }
+        }
       },
       "CreateUserVoucherDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "useVoucherAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.362Z"
+          },
+          "saveVoucherAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.362Z"
+          },
+          "voucherStatus": {
+            "type": "string",
+            "example": "AVAILABLE"
+          }
+        },
+        "required": [
+          "userId",
+          "voucherId",
+          "useVoucherAt",
+          "saveVoucherAt",
+          "voucherStatus"
+        ]
       },
       "UpdateUserVoucherDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "useVoucherAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.362Z"
+          },
+          "saveVoucherAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.362Z"
+          },
+          "voucherStatus": {
+            "type": "string",
+            "example": "AVAILABLE"
+          }
+        }
       },
       "CreateRequestDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "subject": {
+            "type": "string",
+            "example": "return request"
+          },
+          "description": {
+            "type": "string",
+            "example": "I want to return this product in order. Because it\"s wide"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.683Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.683Z"
+          }
+        },
+        "required": [
+          "userId",
+          "processByStaffId",
+          "orderId",
+          "subject",
+          "description",
+          "status",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateRequestDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "orderId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "subject": {
+            "type": "string",
+            "example": "return request"
+          },
+          "description": {
+            "type": "string",
+            "example": "I want to return this product in order. Because it\"s wide"
+          },
+          "status": {
+            "type": "string",
+            "example": "PENDING"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.683Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.683Z"
+          }
+        }
       },
       "CreateReturnRequestDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "requestId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.879Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.879Z"
+          }
+        },
+        "required": [
+          "requestId",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateReturnRequestDto": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.879Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:46.879Z"
+          }
+        }
+      },
+      "CreateShopOfficeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateShopOfficeDto": {
         "type": "object",
         "properties": {}
       }

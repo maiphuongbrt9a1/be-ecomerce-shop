@@ -132,6 +132,494 @@
         ]
       }
     },
+    "/user/{id}/address-list": {
+      "get": {
+        "operationId": "UserController_getAddressOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User address list found!"
+          }
+        },
+        "summary": "Get address list of a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/shop-office": {
+      "get": {
+        "operationId": "UserController_getShopOfficeOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User shop office found!"
+          }
+        },
+        "summary": "Get shop office of a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/avatar": {
+      "get": {
+        "operationId": "UserController_getAvatarOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get avatar of user"
+          }
+        },
+        "summary": "Get avatar of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/created-voucher-list": {
+      "get": {
+        "operationId": "UserController_getAllVouchersCreatedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get vouchers are created by a user"
+          }
+        },
+        "summary": "Get vouchers are created by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/product-list": {
+      "get": {
+        "operationId": "UserController_getAllProductsCreatedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get products are created by a user"
+          }
+        },
+        "summary": "Get products are created by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/product-variant-list": {
+      "get": {
+        "operationId": "UserController_getAllProductVariantsCreatedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get product variants are created by a user"
+          }
+        },
+        "summary": "Get product variants are created by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/category-list": {
+      "get": {
+        "operationId": "UserController_getAllCategoryCreatedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get categories are created by a user"
+          }
+        },
+        "summary": "Get categories are created by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/order-list": {
+      "get": {
+        "operationId": "UserController_getAllOrdersCreatedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get orders are created by a user"
+          }
+        },
+        "summary": "Get orders are created by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/processed-order-list": {
+      "get": {
+        "operationId": "UserController_getAllOrdersProcessedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get orders are processed by a user"
+          }
+        },
+        "summary": "Get orders are processed by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/processed-shipment-list": {
+      "get": {
+        "operationId": "UserController_getAllShipmentsProcessedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get shipments are processed by a user"
+          }
+        },
+        "summary": "Get shipments are processed by a user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/request-list": {
+      "get": {
+        "operationId": "UserController_getRequestsOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get requests of user"
+          }
+        },
+        "summary": "Get requests of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/processed-request-list": {
+      "get": {
+        "operationId": "UserController_getRequestsProcessedByUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get processed requests of user"
+          }
+        },
+        "summary": "Get processed requests of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/size-profile-list": {
+      "get": {
+        "operationId": "UserController_getSizeProfilesOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get size-profiles of user"
+          }
+        },
+        "summary": "Get size-profiles of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/review-list": {
+      "get": {
+        "operationId": "UserController_getReviewsOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get reviews of user"
+          }
+        },
+        "summary": "Get reviews of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/cart": {
+      "post": {
+        "operationId": "UserController_createANewCart",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a new cart (only initial id user in cart table. Do not add any cart items)"
+          }
+        },
+        "summary": "Create a new cart (only initial id user in cart table. Do not add any cart items)",
+        "tags": [
+          "User"
+        ]
+      },
+      "get": {
+        "operationId": "UserController_getCartIdOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get cart id of user (only get id user in cart table. Do not get any cart items)"
+          }
+        },
+        "summary": "Get cart id of user (only get id user in cart table. Do not get any cart items)",
+        "tags": [
+          "User"
+        ]
+      },
+      "patch": {
+        "operationId": "UserController_updateUserCart",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update one cart (only update id user in cart table. Do not add any cart items)"
+          }
+        },
+        "summary": "Update one cart (only update id user in cart table. Do not add any cart items)",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/cart/cart-item": {
+      "post": {
+        "operationId": "UserController_AddANewCart",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCartItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Add a new product variant (cart item) to cart"
+          }
+        },
+        "summary": "Add a new product variant (cart item) to cart",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/cart/cart-details": {
+      "get": {
+        "operationId": "UserController_getUserCartDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user cart with cart items detail"
+          }
+        },
+        "summary": "Get user cart with cart items detail",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/{id}/saved-voucher-list": {
+      "get": {
+        "operationId": "UserController_getSavedVouchersOfUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get saved vouchers of user"
+          }
+        },
+        "summary": "Get saved vouchers of user",
+        "tags": [
+          "User"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "AuthController_handleLogin",
@@ -423,6 +911,54 @@
         ]
       }
     },
+    "/products/{id}/product-variants": {
+      "get": {
+        "operationId": "ProductsController_getAllProductVariantsOfProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all product-variants of this product"
+          }
+        },
+        "summary": "Get all product-variants of this product",
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/products/{id}/reviews": {
+      "get": {
+        "operationId": "ProductsController_getAllReviewsOfProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all reviews of this product"
+          }
+        },
+        "summary": "Get all reviews of this product",
+        "tags": [
+          "Products"
+        ]
+      }
+    },
     "/category": {
       "post": {
         "operationId": "CategoryController_create",
@@ -534,6 +1070,54 @@
           }
         },
         "summary": "Delete a category",
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/category/{id}/sub-categories": {
+      "get": {
+        "operationId": "CategoryController_getAllSubCategoriesOfCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all sub-category of category"
+          }
+        },
+        "summary": "Get all sub-category of category",
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/category/{id}/products": {
+      "get": {
+        "operationId": "CategoryController_getAllProductsOfCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all products of category"
+          }
+        },
+        "summary": "Get all products of category",
         "tags": [
           "Category"
         ]
@@ -887,6 +1471,54 @@
         ]
       }
     },
+    "/product-variants/{id}/review-list": {
+      "get": {
+        "operationId": "ProductVariantsController_getReviewsOfProductVariant",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all reviews of product variant"
+          }
+        },
+        "summary": "Get all reviews of product variant",
+        "tags": [
+          "ProductVariants"
+        ]
+      }
+    },
+    "/product-variants/{id}/media-list": {
+      "get": {
+        "operationId": "ProductVariantsController_getAllMediaOfProductVariant",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all medias of product variant"
+          }
+        },
+        "summary": "Get all medias of product variant",
+        "tags": [
+          "ProductVariants"
+        ]
+      }
+    },
     "/reviews": {
       "post": {
         "operationId": "ReviewsController_create",
@@ -998,6 +1630,30 @@
           }
         },
         "summary": "Delete a review",
+        "tags": [
+          "Reviews"
+        ]
+      }
+    },
+    "/reviews/{id}/media-list": {
+      "get": {
+        "operationId": "ReviewsController_getAllMediaOfReview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all media of review"
+          }
+        },
+        "summary": "Get all media of review",
         "tags": [
           "Reviews"
         ]
@@ -1157,6 +1813,21 @@
         ]
       }
     },
+    "/orders/order-detail-list": {
+      "get": {
+        "operationId": "OrdersController_getAllOrdersWithDetailInformation",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all orders with their detail information"
+          }
+        },
+        "summary": "Get all orders with their detail information",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
     "/orders/{id}": {
       "get": {
         "operationId": "OrdersController_findOne",
@@ -1230,6 +1901,126 @@
           }
         },
         "summary": "Delete one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/order-detail": {
+      "get": {
+        "operationId": "OrdersController_getOrderDetailInformation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order detail information of one order"
+          }
+        },
+        "summary": "Get order detail information of one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/order-item-list-detail": {
+      "get": {
+        "operationId": "OrdersController_getOrderItemListDetailInformation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order item list detail information of one order"
+          }
+        },
+        "summary": "Get order item list detail information of one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/order-shipments-detail": {
+      "get": {
+        "operationId": "OrdersController_getOrderShipmentsDetailInformation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order shipments detail information of one order"
+          }
+        },
+        "summary": "Get order shipments detail information of one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/order-payment-detail": {
+      "get": {
+        "operationId": "OrdersController_getOrderPaymentDetailInformation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order payment detail information of one order"
+          }
+        },
+        "summary": "Get order payment detail information of one order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/order-request-detail": {
+      "get": {
+        "operationId": "OrdersController_getOrderRequestDetailInformation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order request detail information of one order"
+          }
+        },
+        "summary": "Get order request detail information of one order",
         "tags": [
           "Orders"
         ]
@@ -1583,87 +2374,6 @@
         ]
       }
     },
-    "/cart": {
-      "post": {
-        "operationId": "CartController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCartDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Create a new cart"
-          }
-        },
-        "summary": "Create a new cart",
-        "tags": [
-          "Cart"
-        ]
-      }
-    },
-    "/cart/{id}": {
-      "get": {
-        "operationId": "CartController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Get one cart"
-          }
-        },
-        "summary": "Get one cart",
-        "tags": [
-          "Cart"
-        ]
-      },
-      "patch": {
-        "operationId": "CartController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCartDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Update one cart"
-          }
-        },
-        "summary": "Update one cart",
-        "tags": [
-          "Cart"
-        ]
-      }
-    },
     "/cart-items": {
       "post": {
         "operationId": "CartItemsController_create",
@@ -1891,6 +2601,78 @@
           }
         },
         "summary": "Delete a voucher",
+        "tags": [
+          "Vouchers"
+        ]
+      }
+    },
+    "/vouchers/{id}/all-categories-applied": {
+      "get": {
+        "operationId": "VouchersController_getAllCategoriesAreAppliedThisVoucher",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all categories are applied this voucher"
+          }
+        },
+        "summary": "Get all categories are applied this voucher",
+        "tags": [
+          "Vouchers"
+        ]
+      }
+    },
+    "/vouchers/{id}/all-products-applied": {
+      "get": {
+        "operationId": "VouchersController_getAllProductsAreAppliedThisVoucher",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all products are applied this voucher"
+          }
+        },
+        "summary": "Get all products are applied this voucher",
+        "tags": [
+          "Vouchers"
+        ]
+      }
+    },
+    "/vouchers/{id}/all-product-variants-applied": {
+      "get": {
+        "operationId": "VouchersController_getAllProductVariantsAreAppliedThisVoucher",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get all product-variants are applied this voucher"
+          }
+        },
+        "summary": "Get all product-variants are applied this voucher",
         "tags": [
           "Vouchers"
         ]
@@ -2243,6 +3025,264 @@
           "ReturnRequests"
         ]
       }
+    },
+    "/aws-s3/upload": {
+      "post": {
+        "operationId": "AwsS3Controller_upload",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/shop-offices": {
+      "post": {
+        "operationId": "ShopOfficesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateShopOfficeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Add new a shop office"
+          }
+        },
+        "summary": "Add new a shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      },
+      "get": {
+        "operationId": "ShopOfficesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": " shop office list found!"
+          }
+        },
+        "summary": "Get shop office list",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{id}": {
+      "get": {
+        "operationId": "ShopOfficesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office found!"
+          }
+        },
+        "summary": "Get shop office detail by ID",
+        "tags": [
+          "ShopOffices"
+        ]
+      },
+      "patch": {
+        "operationId": "ShopOfficesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateShopOfficeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update a shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      },
+      "delete": {
+        "operationId": "ShopOfficesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{id}/manager-list": {
+      "get": {
+        "operationId": "ShopOfficesController_findAllManagersOfShopOffice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office\"s manager list found!"
+          }
+        },
+        "summary": "Get shop office\"s manager list by ID shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{id}/address": {
+      "get": {
+        "operationId": "ShopOfficesController_findAddressOfShopOffice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office\"s address found!"
+          }
+        },
+        "summary": "Get shop office\"s address by ID shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{id}/product-list": {
+      "get": {
+        "operationId": "ShopOfficesController_findAllProductsOfShopOffice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office\"s products found!"
+          }
+        },
+        "summary": "Get shop office\"s products by ID shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{id}/category-list": {
+      "get": {
+        "operationId": "ShopOfficesController_findAllCategoryOfShopOffice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office\"s categories found!"
+          }
+        },
+        "summary": "Get shop office\"s categories by ID shop office",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
+    },
+    "/shop-offices/{shopId}/category/{categoryId}/product-list": {
+      "get": {
+        "operationId": "ShopOfficesController_findAllProductsOfCategoryOfShopOffice",
+        "parameters": [
+          {
+            "name": "shopId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "shop office\"s products of category found!"
+          }
+        },
+        "summary": "Get shop office\"s products of one category by ID shop office and ID category",
+        "tags": [
+          "ShopOffices"
+        ]
+      }
     }
   },
   "info": {
@@ -2305,7 +3345,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.262Z"
+            "example": "2025-11-30T09:56:22.581Z"
           },
           "isActive": {
             "type": "boolean",
@@ -2318,7 +3358,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.262Z"
+            "example": "2025-11-30T09:56:22.582Z"
           },
           "staffCode": {
             "type": "string",
@@ -2362,6 +3402,15 @@
             "type": "string",
             "example": "Doe"
           },
+          "gender": {
+            "type": "string",
+            "example": "MALE",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "OTHER"
+            ]
+          },
           "email": {
             "type": "string",
             "example": "john.doe@example.com"
@@ -2381,18 +3430,100 @@
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.263Z"
+            "example": "2025-11-30T09:56:22.587Z"
           }
         },
         "required": [
           "firstName",
           "lastName",
+          "gender",
           "email",
           "phone",
           "password",
           "username",
           "updatedAt"
         ]
+      },
+      "CreateCartDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:22.599Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:22.599Z"
+          }
+        },
+        "required": [
+          "userId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateCartItemDto": {
+        "type": "object",
+        "properties": {
+          "cartId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "quantity": {
+            "type": "number",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:22.613Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:22.613Z"
+          }
+        },
+        "required": [
+          "cartId",
+          "productVariantId",
+          "quantity",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateCartDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 4741
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:22.599Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-11-30T09:56:22.599Z"
+          }
+        }
       },
       "CreateAuthDto": {
         "type": "object",
@@ -2428,7 +3559,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.302Z"
+            "example": "2025-11-30T09:56:22.838Z"
           },
           "isActive": {
             "type": "boolean",
@@ -2441,7 +3572,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.302Z"
+            "example": "2025-11-30T09:56:22.838Z"
           }
         },
         "required": [
@@ -2571,12 +3702,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.374Z"
+            "example": "2025-11-30T09:56:23.383Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.374Z"
+            "example": "2025-11-30T09:56:23.383Z"
           },
           "categoryId": {
             "format": "int64",
@@ -2633,12 +3764,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.374Z"
+            "example": "2025-11-30T09:56:23.383Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.374Z"
+            "example": "2025-11-30T09:56:23.383Z"
           },
           "categoryId": {
             "format": "int64",
@@ -2681,12 +3812,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.398Z"
+            "example": "2025-11-30T09:56:23.416Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.398Z"
+            "example": "2025-11-30T09:56:23.416Z"
           }
         },
         "required": [
@@ -2728,12 +3859,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.398Z"
+            "example": "2025-11-30T09:56:23.416Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.398Z"
+            "example": "2025-11-30T09:56:23.416Z"
           }
         }
       },
@@ -2772,12 +3903,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.402Z"
+            "example": "2025-11-30T09:56:23.453Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.402Z"
+            "example": "2025-11-30T09:56:23.453Z"
           }
         },
         "required": [
@@ -2827,12 +3958,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.402Z"
+            "example": "2025-11-30T09:56:23.453Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.402Z"
+            "example": "2025-11-30T09:56:23.453Z"
           }
         }
       },
@@ -2883,12 +4014,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.407Z"
+            "example": "2025-11-30T09:56:23.483Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.407Z"
+            "example": "2025-11-30T09:56:23.483Z"
           }
         },
         "required": [
@@ -2953,12 +4084,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.407Z"
+            "example": "2025-11-30T09:56:23.483Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.407Z"
+            "example": "2025-11-30T09:56:23.483Z"
           }
         }
       },
@@ -3007,12 +4138,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.412Z"
+            "example": "2025-11-30T09:56:23.522Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.412Z"
+            "example": "2025-11-30T09:56:23.522Z"
           }
         },
         "required": [
@@ -3074,12 +4205,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.412Z"
+            "example": "2025-11-30T09:56:23.522Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.412Z"
+            "example": "2025-11-30T09:56:23.522Z"
           }
         }
       },
@@ -3112,12 +4243,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.416Z"
+            "example": "2025-11-30T09:56:23.556Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.416Z"
+            "example": "2025-11-30T09:56:23.556Z"
           }
         },
         "required": [
@@ -3159,12 +4290,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.416Z"
+            "example": "2025-11-30T09:56:23.556Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.416Z"
+            "example": "2025-11-30T09:56:23.556Z"
           }
         }
       },
@@ -3197,12 +4328,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.420Z"
+            "example": "2025-11-30T09:56:23.588Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.420Z"
+            "example": "2025-11-30T09:56:23.588Z"
           }
         },
         "required": [
@@ -3244,12 +4375,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.420Z"
+            "example": "2025-11-30T09:56:23.588Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.420Z"
+            "example": "2025-11-30T09:56:23.588Z"
           }
         }
       },
@@ -3274,7 +4405,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.425Z"
+            "example": "2025-11-30T09:56:23.623Z"
           },
           "status": {
             "type": "string",
@@ -3299,12 +4430,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.425Z"
+            "example": "2025-11-30T09:56:23.623Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.425Z"
+            "example": "2025-11-30T09:56:23.623Z"
           }
         },
         "required": [
@@ -3342,7 +4473,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.425Z"
+            "example": "2025-11-30T09:56:23.623Z"
           },
           "status": {
             "type": "string",
@@ -3367,12 +4498,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.425Z"
+            "example": "2025-11-30T09:56:23.623Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.425Z"
+            "example": "2025-11-30T09:56:23.623Z"
           }
         }
       },
@@ -3404,12 +4535,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.430Z"
+            "example": "2025-11-30T09:56:23.653Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.430Z"
+            "example": "2025-11-30T09:56:23.653Z"
           }
         },
         "required": [
@@ -3450,12 +4581,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.430Z"
+            "example": "2025-11-30T09:56:23.653Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.430Z"
+            "example": "2025-11-30T09:56:23.653Z"
           }
         }
       },
@@ -3475,22 +4606,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           },
           "carrier": {
             "type": "string",
@@ -3507,12 +4638,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           }
         },
         "required": [
@@ -3545,22 +4676,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           },
           "carrier": {
             "type": "string",
@@ -3577,12 +4708,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.434Z"
+            "example": "2025-11-30T09:56:23.695Z"
           }
         }
       },
@@ -3605,7 +4736,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.439Z"
+            "example": "2025-11-30T09:56:23.728Z"
           },
           "amount": {
             "type": "number",
@@ -3644,7 +4775,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.439Z"
+            "example": "2025-11-30T09:56:23.728Z"
           },
           "amount": {
             "type": "number",
@@ -3655,87 +4786,6 @@
             "example": "PENDING"
           }
         }
-      },
-      "CreateCartDto": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 4741
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2025-11-27T16:22:20.443Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2025-11-27T16:22:20.443Z"
-          }
-        },
-        "required": [
-          "userId",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "UpdateCartDto": {
-        "type": "object",
-        "properties": {
-          "userId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 4741
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2025-11-27T16:22:20.443Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2025-11-27T16:22:20.443Z"
-          }
-        }
-      },
-      "CreateCartItemDto": {
-        "type": "object",
-        "properties": {
-          "cartId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 4741
-          },
-          "productVariantId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 4741
-          },
-          "quantity": {
-            "type": "number",
-            "example": 4741
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2025-11-27T16:22:20.447Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2025-11-27T16:22:20.447Z"
-          }
-        },
-        "required": [
-          "cartId",
-          "productVariantId",
-          "quantity",
-          "createdAt",
-          "updatedAt"
-        ]
       },
       "UpdateCartItemDto": {
         "type": "object",
@@ -3757,12 +4807,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.447Z"
+            "example": "2025-11-30T09:56:22.613Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.447Z"
+            "example": "2025-11-30T09:56:22.613Z"
           }
         }
       },
@@ -3788,12 +4838,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.453Z"
+            "example": "2025-11-30T09:56:23.808Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.453Z"
+            "example": "2025-11-30T09:56:23.808Z"
           },
           "usageLimit": {
             "type": "number",
@@ -3810,12 +4860,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.453Z"
+            "example": "2025-11-30T09:56:23.808Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.453Z"
+            "example": "2025-11-30T09:56:23.808Z"
           },
           "createdBy": {
             "format": "int64",
@@ -3860,12 +4910,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.453Z"
+            "example": "2025-11-30T09:56:23.808Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.453Z"
+            "example": "2025-11-30T09:56:23.808Z"
           },
           "usageLimit": {
             "type": "number",
@@ -3882,12 +4932,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.453Z"
+            "example": "2025-11-30T09:56:23.808Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.453Z"
+            "example": "2025-11-30T09:56:23.808Z"
           },
           "createdBy": {
             "format": "int64",
@@ -3912,12 +4962,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.458Z"
+            "example": "2025-11-30T09:56:23.840Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.458Z"
+            "example": "2025-11-30T09:56:23.840Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -3948,12 +4998,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.458Z"
+            "example": "2025-11-30T09:56:23.840Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.458Z"
+            "example": "2025-11-30T09:56:23.840Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -3994,12 +5044,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.463Z"
+            "example": "2025-11-30T09:56:23.880Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.463Z"
+            "example": "2025-11-30T09:56:23.880Z"
           }
         },
         "required": [
@@ -4046,12 +5096,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.463Z"
+            "example": "2025-11-30T09:56:23.880Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.463Z"
+            "example": "2025-11-30T09:56:23.880Z"
           }
         }
       },
@@ -4066,12 +5116,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.468Z"
+            "example": "2025-11-30T09:56:23.914Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.468Z"
+            "example": "2025-11-30T09:56:23.914Z"
           }
         },
         "required": [
@@ -4091,14 +5141,22 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.468Z"
+            "example": "2025-11-30T09:56:23.914Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-27T16:22:20.468Z"
+            "example": "2025-11-30T09:56:23.914Z"
           }
         }
+      },
+      "CreateShopOfficeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateShopOfficeDto": {
+        "type": "object",
+        "properties": {}
       }
     }
   }
