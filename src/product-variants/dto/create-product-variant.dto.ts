@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsNotEmpty,
@@ -34,11 +35,13 @@ export class CreateProductVariantDto {
   @ApiProperty({ example: 46546 })
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   price: number;
 
   @ApiProperty({ example: 851 })
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   stock: number;
 
   @ApiProperty({ example: 'EWDGDSED715545D' })
@@ -53,10 +56,12 @@ export class CreateProductVariantDto {
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   createdAt: Date;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   updatedAt: Date;
 }

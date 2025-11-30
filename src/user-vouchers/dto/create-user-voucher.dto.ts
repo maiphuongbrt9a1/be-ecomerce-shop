@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { VoucherStatus } from '@prisma/client';
+import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateUserVoucherDto {
@@ -14,11 +15,13 @@ export class CreateUserVoucherDto {
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   useVoucherAt: Date;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   saveVoucherAt: Date;
 
   @ApiProperty({ example: 'AVAILABLE' })

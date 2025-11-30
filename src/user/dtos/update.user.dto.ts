@@ -8,6 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 import { Gender } from '@prisma/client';
+import { Type } from 'class-transformer';
 
 export class UpdateUserDto {
   @ApiProperty({ example: 'John' })
@@ -48,5 +49,6 @@ export class UpdateUserDto {
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   updatedAt: Date;
 }

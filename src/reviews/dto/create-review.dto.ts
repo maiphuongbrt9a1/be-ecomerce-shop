@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsNotEmpty,
@@ -23,6 +24,7 @@ export class CreateReviewDto {
   @ApiProperty({ example: 5 })
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   rating: number;
 
   @ApiProperty({ example: 'Perfect' })
@@ -33,10 +35,12 @@ export class CreateReviewDto {
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   createdAt: Date;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   updatedAt: Date;
 }

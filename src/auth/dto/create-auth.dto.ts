@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -43,15 +45,18 @@ export class CreateAuthDto {
 
   @ApiProperty({ example: 'USER' })
   @IsOptional()
+  @IsEnum(Role)
   role: Role;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()
+  @Type(() => Date)
   createdAt: Date;
 
   @ApiProperty({ example: false })
   @IsBoolean()
   @IsOptional()
+  @Type(() => Boolean)
   isActive: boolean;
 
   @ApiProperty({ example: 'fddsafds4564521dfsaf' })
@@ -62,6 +67,7 @@ export class CreateAuthDto {
   @ApiProperty({ example: new Date() })
   @IsDate()
   @IsOptional()
+  @Type(() => Date)
   codeActiveExpire: Date;
 }
 

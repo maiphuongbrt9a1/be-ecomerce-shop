@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaType } from '@prisma/client';
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEnum,
@@ -37,10 +38,12 @@ export class CreateMediaDto {
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   createdAt: Date;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   updatedAt: Date;
 }

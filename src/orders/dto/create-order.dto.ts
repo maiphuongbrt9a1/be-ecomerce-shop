@@ -7,7 +7,7 @@ import {
   IsNumber,
   IsOptional,
 } from 'class-validator';
-import { Order } from '../entities/order.entity';
+import { Type } from 'class-transformer';
 
 export class CreateOrderDto {
   @ApiProperty({ example: 851 })
@@ -25,6 +25,7 @@ export class CreateOrderDto {
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   orderDate: Date;
 
   @ApiProperty({ example: 'PENDING' })
@@ -35,30 +36,36 @@ export class CreateOrderDto {
   @ApiProperty({ example: 851 })
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   subTotal: number;
 
   @ApiProperty({ example: 851 })
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   shippingFee: number;
 
   @ApiProperty({ example: 851 })
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   discount: number;
 
   @ApiProperty({ example: 851 })
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   totalAmount: number;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   createdAt: Date;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   updatedAt: Date;
 }

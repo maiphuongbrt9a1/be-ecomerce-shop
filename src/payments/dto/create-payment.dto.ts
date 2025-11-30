@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PaymentStatus } from '@prisma/client';
-import { IsDate, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class CreatePaymentDto {
   @ApiProperty({ example: 4741 })
@@ -20,16 +27,17 @@ export class CreatePaymentDto {
   @ApiProperty({ example: new Date() })
   @IsNotEmpty()
   @IsDate()
+  @Type(() => Date)
   paymentDate: Date;
 
   @ApiProperty({ example: 4741 })
   @IsNotEmpty()
-  @IsDate()
+  @IsNumber()
+  @Type(() => Number)
   amount: number;
 
   @ApiProperty({ example: 'PENDING' })
   @IsNotEmpty()
-  @IsDate()
   @IsEnum(PaymentStatus)
   status: PaymentStatus;
 }

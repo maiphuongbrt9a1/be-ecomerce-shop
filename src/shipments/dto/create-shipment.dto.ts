@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ShipmentStatus } from '@prisma/client';
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEnum,
@@ -20,21 +21,25 @@ export class CreateShipmentDto {
   @ApiProperty({ example: new Date() })
   @IsNotEmpty()
   @IsDate()
+  @Type(() => Date)
   estimatedDelivery: Date;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   deliveredAt: Date;
 
   @ApiProperty({ example: new Date() })
   @IsNotEmpty()
   @IsDate()
+  @Type(() => Date)
   estimatedShipDate: Date;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   shippedAt: Date;
 
   @ApiProperty({ example: 'Important and quick' })
@@ -55,10 +60,12 @@ export class CreateShipmentDto {
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   createdAt: Date;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
+  @Type(() => Date)
   updatedAt: Date;
 }
