@@ -37,8 +37,12 @@ import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
 import {
   ShopOfficeWithStaffs,
+  UserCartDetailInformation,
   UserVoucherDetailInformation,
 } from '@/helpers/types/types';
+import { UpdateCartDto } from '@/cart/dto/update-cart.dto';
+import { CreateCartDto } from '@/cart/dto/create-cart.dto';
+import { CreateCartItemDto } from '@/cart-items/dto/create-cart-item.dto';
 
 @Injectable()
 export class UserService {
@@ -627,7 +631,55 @@ export class UserService {
     return result.data;
   }
 
-  async getCartOfUser(userId: number): Promise<Cart> {
+  async createANewCart(createCartDto: CreateCartDto): Promise<Cart> {
+    const result = await this.prismaService.cart.create({
+      data: { ...createCartDto },
+    });
+
+    return result;
+  }
+
+  async AddANewCart(createCartItemDto: CreateCartItemDto): Promise<Cart> {
+    return this.prismaService.$transaction(async (tx) => {
+      let existCartItem = await tx.cartItems.findFirst({
+        where: {
+          cartId: createCartItemDto.cartId,
+          productVariantId: createCartItemDto.productVariantId,
+        },
+      });
+
+      if (existCartItem) {
+        existCartItem = await tx.cartItems.update({
+          where: { id: existCartItem.id },
+          data: {
+            quantity:
+              Number(existCartItem.quantity) +
+              Number(createCartItemDto.quantity),
+          },
+        });
+      } else {
+        createCartItemDto.quantity = Number(createCartItemDto.quantity);
+        const newCartItem = await tx.cartItems.create({
+          data: { ...createCartItemDto },
+        });
+      }
+
+      const result = await tx.cart.findFirst({
+        where: { id: createCartItemDto.cartId },
+        include: {
+          cartItems: true,
+        },
+      });
+
+      if (!result) {
+        throw new NotFoundException('Cart not found!');
+      }
+
+      return result;
+    });
+  }
+
+  async getCartIdOfUser(userId: number): Promise<Cart> {
     const result = await this.prismaService.cart.findFirst({
       where: { userId: userId },
       orderBy: { id: 'asc' },
@@ -635,6 +687,42 @@ export class UserService {
 
     if (!result) {
       throw new NotFoundException('Cart not found!');
+    }
+
+    return result;
+  }
+
+  async updateUserCart(
+    id: number,
+    updateCartDto: UpdateCartDto,
+  ): Promise<Cart> {
+    const result = await this.prismaService.cart.update({
+      where: { userId: id },
+      data: { ...updateCartDto },
+    });
+    return result;
+  }
+
+  async getUserCartDetails(
+    id: number,
+  ): Promise<UserCartDetailInformation | null> {
+    const result = await this.prismaService.cart.findFirst({
+      where: { userId: id },
+      include: {
+        cartItems: {
+          include: {
+            productVariant: {
+              include: {
+                media: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!result) {
+      throw new NotFoundException('Cart detail not found!');
     }
 
     return result;

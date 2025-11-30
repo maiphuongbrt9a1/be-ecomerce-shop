@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateCartItemDto {
   @ApiProperty({ example: 4741 })
@@ -13,6 +14,7 @@ export class CreateCartItemDto {
   @ApiProperty({ example: 4741 })
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   quantity: number;
 
   @ApiProperty({ example: new Date() })

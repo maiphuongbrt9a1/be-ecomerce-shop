@@ -16,6 +16,9 @@ import { CreateUserDto } from '@/user/dtos/create.user.dto';
 import { UpdateUserDto } from '@/user/dtos/update.user.dto';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { CreateCartDto } from '@/cart/dto/create-cart.dto';
+import { UpdateCartDto } from '@/cart/dto/update-cart.dto';
+import { CreateCartItemDto } from '@/cart-items/dto/create-cart-item.dto';
 
 @Controller('user')
 export class UserController {
@@ -306,14 +309,82 @@ export class UserController {
     );
   }
 
-  @ApiOperation({ summary: 'Get cart of user' })
+  @ApiOperation({
+    summary:
+      'Create a new cart (only initial id user in cart table. Do not add any cart items)',
+  })
+  @ApiResponse({
+    status: 201,
+    description:
+      'Create a new cart (only initial id user in cart table. Do not add any cart items)',
+  })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
+  @ApiBody({ type: CreateCartDto })
+  @Post('/:id/cart')
+  async createANewCart(@Body() createCartDto: CreateCartDto) {
+    return await this.userService.createANewCart(createCartDto);
+  }
+
+  @ApiOperation({
+    summary: 'Add a new product variant (cart item) to cart',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Add a new product variant (cart item) to cart',
+  })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
+  @ApiBody({ type: CreateCartItemDto })
+  @Post('/:id/cart/cart-item')
+  async AddANewCart(@Body() createCartItemDto: CreateCartItemDto) {
+    return await this.userService.AddANewCart(createCartItemDto);
+  }
+
+  @ApiOperation({
+    summary:
+      'Get cart id of user (only get id user in cart table. Do not get any cart items)',
+  })
   @ApiResponse({
     status: 200,
-    description: 'Get cart of user',
+    description:
+      'Get cart id of user (only get id user in cart table. Do not get any cart items)',
   })
   @Get('/:id/cart')
-  async getCartOfUser(@Param('id', ParseIntPipe) id: number) {
-    return await this.userService.getCartOfUser(id);
+  async getCartIdOfUser(@Param('id', ParseIntPipe) id: number) {
+    return await this.userService.getCartIdOfUser(id);
+  }
+
+  @ApiOperation({
+    summary:
+      'Update one cart (only update id user in cart table. Do not add any cart items)',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Update one cart (only update id user in cart table. Do not add any cart items)',
+  })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
+  @ApiBody({ type: UpdateCartDto })
+  @Patch('/:id/cart')
+  async updateUserCart(
+    @Param('id') id: string,
+    @Body() updateCartDto: UpdateCartDto,
+  ) {
+    return await this.userService.updateUserCart(+id, updateCartDto);
+  }
+
+  @ApiOperation({ summary: 'Get user cart with cart items detail' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get user cart with cart items detail',
+  })
+  @UseGuards(RolesGuard)
+  @Roles('USER')
+  @Get('/:id/cart/cart-details')
+  async getUserCartDetails(@Param('id') id: string) {
+    return await this.userService.getUserCartDetails(+id);
   }
 
   @ApiOperation({ summary: 'Get saved vouchers of user' })
