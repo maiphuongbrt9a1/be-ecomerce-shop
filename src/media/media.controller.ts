@@ -17,8 +17,15 @@ import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
-  @ApiOperation({ summary: 'Create a new media file' })
-  @ApiResponse({ status: 201, description: 'Create a new media file' })
+  @ApiOperation({
+    summary:
+      'Create a new media file. Please use upload file functions in aws-s3 instead',
+  })
+  @ApiResponse({
+    status: 201,
+    description:
+      'Create a new media file. Please use upload file functions in aws-s3 instead',
+  })
   @ApiBody({ type: CreateMediaDto })
   @Post()
   async create(@Body() createMediaDto: CreateMediaDto) {

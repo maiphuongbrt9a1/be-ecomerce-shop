@@ -263,6 +263,10 @@ model Media {
     userId      BigInt?      @db.BigInt
     productVariant ProductVariants? @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productVariantId BigInt?  @db.BigInt
+    isShopLogo Boolean    @default(false)
+    isShopBanner Boolean   @default(false)
+    isCategoryFile Boolean @default(false)
+    isAvatarFile Boolean  @default(false)
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 }

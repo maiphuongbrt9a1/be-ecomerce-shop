@@ -451,6 +451,7 @@ export class UserService {
         reviewId: null,
         productVariantId: null,
       },
+      orderBy: { id: 'desc' },
     });
 
     if (!mediaInformation) {

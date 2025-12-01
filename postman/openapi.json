@@ -1675,10 +1675,10 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new media file"
+            "description": "Create a new media file. Please use upload file functions in aws-s3 instead"
           }
         },
-        "summary": "Create a new media file",
+        "summary": "Create a new media file. Please use upload file functions in aws-s3 instead",
         "tags": [
           "Media"
         ]
@@ -3026,15 +3026,321 @@
         ]
       }
     },
-    "/aws-s3/upload": {
-      "post": {
-        "operationId": "AwsS3Controller_upload",
-        "parameters": [],
+    "/aws-s3/admin/list-files": {
+      "get": {
+        "operationId": "AwsS3Controller_listFiles",
+        "parameters": [
+          {
+            "name": "folderUrl",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Get all files from one folder of server Do not contain / character in last. And folder url is in url field of media table. And folder url is in url field of media table but delete file name by front-end"
           }
         },
+        "summary": "Get all files from one folder of server. Do not contain / character in last. And folder url is in url field of media table but delete file name by front-end",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/admin/download-file": {
+      "get": {
+        "operationId": "AwsS3Controller_downloadFile",
+        "parameters": [
+          {
+            "name": "targetFileUrl",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Download file from server. And target file url is in url field of media table"
+          }
+        },
+        "summary": "Download file from server. And target file url is in url field of media table",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/build-public-media-url": {
+      "get": {
+        "operationId": "AwsS3Controller_buildPublicMediaUrl",
+        "parameters": [
+          {
+            "name": "key",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Build a https link for media file stored in S3 bucket using its key"
+          }
+        },
+        "summary": "Build a https link for media file stored in S3 bucket using its key",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/admin/{adminId}/upload-logo-shop-file": {
+      "post": {
+        "operationId": "AwsS3Controller_uploadLogoShopFile",
+        "parameters": [
+          {
+            "name": "adminId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upload logo shop file to server"
+          }
+        },
+        "summary": "Upload logo shop file to server",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/admin/{adminId}/upload-banner-shop-file": {
+      "post": {
+        "operationId": "AwsS3Controller_uploadBannerShopFile",
+        "parameters": [
+          {
+            "name": "adminId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upload banner shop file to server"
+          }
+        },
+        "summary": "Upload banner shop file to server",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/admin/{adminId}/upload-one-product-file/{productVariantId}": {
+      "post": {
+        "operationId": "AwsS3Controller_uploadOneProductFile",
+        "parameters": [
+          {
+            "name": "adminId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "productVariantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upload one product file to server"
+          }
+        },
+        "summary": "Upload one product file to server",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/admin/{adminId}/upload-many-product-file/{productVariantId}": {
+      "post": {
+        "operationId": "AwsS3Controller_uploadManyProductFile",
+        "parameters": [
+          {
+            "name": "adminId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "productVariantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upload many product file to server"
+          }
+        },
+        "summary": "Upload many product file to server",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/admin/{adminId}/upload-one-category-file": {
+      "post": {
+        "operationId": "AwsS3Controller_uploadOneCategoryFile",
+        "parameters": [
+          {
+            "name": "adminId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upload one category file to server"
+          }
+        },
+        "summary": "Upload one category file to server",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/user/{userId}/upload-one-user-avatar-file": {
+      "post": {
+        "operationId": "AwsS3Controller_uploadOneUserAvatarFile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upload one user avatar file to server"
+          }
+        },
+        "summary": "Upload one user avatar file to server",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/user/{userId}/upload-many-user-avatar-file": {
+      "post": {
+        "operationId": "AwsS3Controller_uploadManyUserAvatarFile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upload many user avatar file to server"
+          }
+        },
+        "summary": "Upload many user avatar file to server",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/user/{userId}/upload-one-review-file/{reviewId}": {
+      "post": {
+        "operationId": "AwsS3Controller_uploadOneProductReviewFile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reviewId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upload one review file to server"
+          }
+        },
+        "summary": "Upload one review file to server",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/user/{userId}/upload-many-review-file/{reviewId}": {
+      "post": {
+        "operationId": "AwsS3Controller_uploadManyReviewFile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "reviewId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upload many review product file to server"
+          }
+        },
+        "summary": "Upload many review product file to server",
         "tags": [
           "AwsS3"
         ]
@@ -3345,7 +3651,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.581Z"
+            "example": "2025-12-01T10:11:23.042Z"
           },
           "isActive": {
             "type": "boolean",
@@ -3358,7 +3664,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.582Z"
+            "example": "2025-12-01T10:11:23.042Z"
           },
           "staffCode": {
             "type": "string",
@@ -3430,7 +3736,7 @@
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.587Z"
+            "example": "2025-12-01T10:11:23.047Z"
           }
         },
         "required": [
@@ -3455,12 +3761,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.599Z"
+            "example": "2025-12-01T10:11:23.059Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.599Z"
+            "example": "2025-12-01T10:11:23.059Z"
           }
         },
         "required": [
@@ -3489,12 +3795,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.613Z"
+            "example": "2025-12-01T10:11:23.072Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.613Z"
+            "example": "2025-12-01T10:11:23.072Z"
           }
         },
         "required": [
@@ -3516,12 +3822,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.599Z"
+            "example": "2025-12-01T10:11:23.059Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.599Z"
+            "example": "2025-12-01T10:11:23.059Z"
           }
         }
       },
@@ -3559,7 +3865,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.838Z"
+            "example": "2025-12-01T10:11:25.834Z"
           },
           "isActive": {
             "type": "boolean",
@@ -3572,7 +3878,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.838Z"
+            "example": "2025-12-01T10:11:25.834Z"
           }
         },
         "required": [
@@ -3702,12 +4008,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.383Z"
+            "example": "2025-12-01T10:11:29.892Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.383Z"
+            "example": "2025-12-01T10:11:29.892Z"
           },
           "categoryId": {
             "format": "int64",
@@ -3764,12 +4070,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.383Z"
+            "example": "2025-12-01T10:11:29.892Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.383Z"
+            "example": "2025-12-01T10:11:29.892Z"
           },
           "categoryId": {
             "format": "int64",
@@ -3812,12 +4118,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.416Z"
+            "example": "2025-12-01T10:11:29.914Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.416Z"
+            "example": "2025-12-01T10:11:29.914Z"
           }
         },
         "required": [
@@ -3859,12 +4165,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.416Z"
+            "example": "2025-12-01T10:11:29.914Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.416Z"
+            "example": "2025-12-01T10:11:29.914Z"
           }
         }
       },
@@ -3903,12 +4209,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.453Z"
+            "example": "2025-12-01T10:11:29.934Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.453Z"
+            "example": "2025-12-01T10:11:29.934Z"
           }
         },
         "required": [
@@ -3958,12 +4264,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.453Z"
+            "example": "2025-12-01T10:11:29.934Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.453Z"
+            "example": "2025-12-01T10:11:29.934Z"
           }
         }
       },
@@ -4014,12 +4320,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.483Z"
+            "example": "2025-12-01T10:11:29.956Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.483Z"
+            "example": "2025-12-01T10:11:29.956Z"
           }
         },
         "required": [
@@ -4084,12 +4390,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.483Z"
+            "example": "2025-12-01T10:11:29.956Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.483Z"
+            "example": "2025-12-01T10:11:29.956Z"
           }
         }
       },
@@ -4138,12 +4444,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.522Z"
+            "example": "2025-12-01T10:11:29.977Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.522Z"
+            "example": "2025-12-01T10:11:29.977Z"
           }
         },
         "required": [
@@ -4205,12 +4511,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.522Z"
+            "example": "2025-12-01T10:11:29.977Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.522Z"
+            "example": "2025-12-01T10:11:29.977Z"
           }
         }
       },
@@ -4243,12 +4549,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.556Z"
+            "example": "2025-12-01T10:11:30.003Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.556Z"
+            "example": "2025-12-01T10:11:30.003Z"
           }
         },
         "required": [
@@ -4290,12 +4596,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.556Z"
+            "example": "2025-12-01T10:11:30.003Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.556Z"
+            "example": "2025-12-01T10:11:30.003Z"
           }
         }
       },
@@ -4325,15 +4631,27 @@
             "type": "integer",
             "example": 851
           },
+          "isShopLogo": {
+            "type": "boolean",
+            "example": false
+          },
+          "isShopBanner": {
+            "type": "boolean",
+            "example": false
+          },
+          "isCategoryFile": {
+            "type": "boolean",
+            "example": false
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.588Z"
+            "example": "2025-12-01T10:11:30.029Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.588Z"
+            "example": "2025-12-01T10:11:30.029Z"
           }
         },
         "required": [
@@ -4342,6 +4660,9 @@
           "reviewId",
           "userId",
           "productVariantId",
+          "isShopLogo",
+          "isShopBanner",
+          "isCategoryFile",
           "createdAt",
           "updatedAt"
         ]
@@ -4372,15 +4693,27 @@
             "type": "integer",
             "example": 851
           },
+          "isShopLogo": {
+            "type": "boolean",
+            "example": false
+          },
+          "isShopBanner": {
+            "type": "boolean",
+            "example": false
+          },
+          "isCategoryFile": {
+            "type": "boolean",
+            "example": false
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.588Z"
+            "example": "2025-12-01T10:11:30.029Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.588Z"
+            "example": "2025-12-01T10:11:30.029Z"
           }
         }
       },
@@ -4405,7 +4738,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.623Z"
+            "example": "2025-12-01T10:11:30.057Z"
           },
           "status": {
             "type": "string",
@@ -4430,12 +4763,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.623Z"
+            "example": "2025-12-01T10:11:30.057Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.623Z"
+            "example": "2025-12-01T10:11:30.058Z"
           }
         },
         "required": [
@@ -4473,7 +4806,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.623Z"
+            "example": "2025-12-01T10:11:30.057Z"
           },
           "status": {
             "type": "string",
@@ -4498,12 +4831,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.623Z"
+            "example": "2025-12-01T10:11:30.057Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.623Z"
+            "example": "2025-12-01T10:11:30.058Z"
           }
         }
       },
@@ -4535,12 +4868,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.653Z"
+            "example": "2025-12-01T10:11:30.080Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.653Z"
+            "example": "2025-12-01T10:11:30.080Z"
           }
         },
         "required": [
@@ -4581,12 +4914,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.653Z"
+            "example": "2025-12-01T10:11:30.080Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.653Z"
+            "example": "2025-12-01T10:11:30.080Z"
           }
         }
       },
@@ -4606,22 +4939,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.101Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.101Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.101Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.101Z"
           },
           "carrier": {
             "type": "string",
@@ -4638,12 +4971,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.102Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.102Z"
           }
         },
         "required": [
@@ -4676,22 +5009,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.101Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.101Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.101Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.101Z"
           },
           "carrier": {
             "type": "string",
@@ -4708,12 +5041,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.102Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.695Z"
+            "example": "2025-12-01T10:11:30.102Z"
           }
         }
       },
@@ -4736,7 +5069,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.728Z"
+            "example": "2025-12-01T10:11:30.124Z"
           },
           "amount": {
             "type": "number",
@@ -4775,7 +5108,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.728Z"
+            "example": "2025-12-01T10:11:30.124Z"
           },
           "amount": {
             "type": "number",
@@ -4807,12 +5140,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.613Z"
+            "example": "2025-12-01T10:11:23.072Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:22.613Z"
+            "example": "2025-12-01T10:11:23.072Z"
           }
         }
       },
@@ -4838,12 +5171,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.808Z"
+            "example": "2025-12-01T10:11:30.199Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.808Z"
+            "example": "2025-12-01T10:11:30.199Z"
           },
           "usageLimit": {
             "type": "number",
@@ -4860,12 +5193,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.808Z"
+            "example": "2025-12-01T10:11:30.199Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.808Z"
+            "example": "2025-12-01T10:11:30.199Z"
           },
           "createdBy": {
             "format": "int64",
@@ -4910,12 +5243,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.808Z"
+            "example": "2025-12-01T10:11:30.199Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.808Z"
+            "example": "2025-12-01T10:11:30.199Z"
           },
           "usageLimit": {
             "type": "number",
@@ -4932,12 +5265,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.808Z"
+            "example": "2025-12-01T10:11:30.199Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.808Z"
+            "example": "2025-12-01T10:11:30.199Z"
           },
           "createdBy": {
             "format": "int64",
@@ -4962,12 +5295,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.840Z"
+            "example": "2025-12-01T10:11:30.239Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.840Z"
+            "example": "2025-12-01T10:11:30.239Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -4998,12 +5331,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.840Z"
+            "example": "2025-12-01T10:11:30.239Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.840Z"
+            "example": "2025-12-01T10:11:30.239Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -5044,12 +5377,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.880Z"
+            "example": "2025-12-01T10:11:30.267Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.880Z"
+            "example": "2025-12-01T10:11:30.267Z"
           }
         },
         "required": [
@@ -5096,12 +5429,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.880Z"
+            "example": "2025-12-01T10:11:30.267Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.880Z"
+            "example": "2025-12-01T10:11:30.267Z"
           }
         }
       },
@@ -5116,12 +5449,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.914Z"
+            "example": "2025-12-01T10:11:30.293Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.914Z"
+            "example": "2025-12-01T10:11:30.293Z"
           }
         },
         "required": [
@@ -5141,12 +5474,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.914Z"
+            "example": "2025-12-01T10:11:30.293Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-11-30T09:56:23.914Z"
+            "example": "2025-12-01T10:11:30.293Z"
           }
         }
       },

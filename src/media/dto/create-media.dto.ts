@@ -35,6 +35,21 @@ export class CreateMediaDto {
   @IsOptional()
   productVariantId: bigint;
 
+  @ApiProperty({ example: false })
+  @IsOptional()
+  @Type(() => Boolean)
+  isShopLogo: boolean;
+
+  @ApiProperty({ example: false })
+  @IsOptional()
+  @Type(() => Boolean)
+  isShopBanner: boolean;
+
+  @ApiProperty({ example: false })
+  @IsOptional()
+  @Type(() => Boolean)
+  isCategoryFile: boolean;
+
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()
