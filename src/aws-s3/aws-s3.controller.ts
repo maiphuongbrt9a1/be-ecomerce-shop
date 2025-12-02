@@ -38,7 +38,7 @@ export class AwsS3Controller {
   @Get('/admin/list-files')
   async listFiles(@Query('folderUrl') folderUrl: string): Promise<any> {
     this.logger.log('Listing content of bucket ');
-    let responseData = await this.awsS3Service.listFiles(folderUrl);
+    const responseData = await this.awsS3Service.listFiles(folderUrl);
     this.logger.log('Response Data ' + responseData);
     return responseData;
   }
@@ -59,7 +59,7 @@ export class AwsS3Controller {
     @Query('targetFileUrl') targetFileUrl: string,
   ): Promise<any> {
     this.logger.log('Downloading file from s3 bucket ');
-    let responseData = await this.awsS3Service.downloadFile(targetFileUrl);
+    const responseData = await this.awsS3Service.downloadFile(targetFileUrl);
     this.logger.log('Response Data ' + responseData);
     return responseData;
   }
@@ -76,7 +76,7 @@ export class AwsS3Controller {
   @Get('/build-public-media-url')
   async buildPublicMediaUrl(@Query('key') key: string): Promise<string> {
     this.logger.log('Building public media URL for key ' + key);
-    let responseData = this.awsS3Service.buildPublicMediaUrl(key);
+    const responseData = this.awsS3Service.buildPublicMediaUrl(key);
     this.logger.log('Response Data ' + responseData);
     return responseData;
   }

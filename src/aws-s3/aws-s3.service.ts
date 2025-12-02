@@ -98,7 +98,7 @@ export class AwsS3Service {
     };
 
     try {
-      let s3Response = await this.s3.upload(params).promise();
+      const s3Response = await this.s3.upload(params).promise();
       this.logger.log('Uploaded file successfully to s3 bucket!! ');
       return s3Response;
     } catch (e) {
@@ -112,13 +112,13 @@ export class AwsS3Service {
   async listFiles(folderUrl: string): Promise<any> {
     this.logger.log('Listing objects in S3 bucket at folder ' + folderUrl);
 
-    var params = {
+    const params = {
       Bucket: this.AWS_S3_BUCKET,
       Delimiter: '/',
       Prefix: folderUrl + '/',
     };
 
-    let result = await this.s3.listObjectsV2(params).promise();
+    const result = await this.s3.listObjectsV2(params).promise();
 
     console.log('List object: ' + result);
     return result;
@@ -127,8 +127,8 @@ export class AwsS3Service {
   async downloadFile(targetFileUrl: string): Promise<any> {
     this.logger.log('Downloading file from S3 bucket ');
 
-    var params = {
-      Bucket: this.AWS_S3_BUCKET!,
+    const params = {
+      Bucket: this.AWS_S3_BUCKET,
       Key: targetFileUrl,
       Expires: 30,
     };
