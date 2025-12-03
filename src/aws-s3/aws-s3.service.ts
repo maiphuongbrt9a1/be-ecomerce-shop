@@ -138,4 +138,58 @@ export class AwsS3Service {
     console.log('Url to download file: ' + url);
     return url;
   }
+
+  async uploadOneProductFile(
+    file: Express.Multer.File,
+    adminId: string,
+    productVariantId: string,
+  ) {
+    let targetLocation: string = 'shops/shop-products/';
+
+    // e.g. "image/png" or "video/mp4"
+    const mime = file.mimetype;
+
+    const isImage = mime.startsWith('image/');
+    const isVideo = mime.startsWith('video/');
+
+    if (!isImage && !isVideo) {
+      throw new BadRequestException('Only image or video files are allowed');
+    }
+
+    if (isImage) {
+      this.logger.log('Uploading an image file');
+      targetLocation += 'product-images/';
+    } else if (isVideo) {
+      this.logger.log('Uploading a video file');
+      targetLocation += 'product-videos/';
+    }
+
+    targetLocation +=
+      adminId.toString() + '/' + productVariantId.toString() + '/';
+
+    this.logger.log(
+      'Received request to upload file ' +
+        file +
+        ' to location ' +
+        targetLocation,
+    );
+    const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+    const newMediaInDatabase: Media = await this.saveNewMediaFileToDatabase(
+      resultUploadFile.Key,
+      isImage ? MediaType.IMAGE : MediaType.VIDEO,
+      null,
+      Number(adminId),
+      Number(productVariantId),
+      false,
+      false,
+      false,
+    );
+
+    if (!newMediaInDatabase) {
+      throw new BadRequestException('Cannot save media file to database');
+    }
+
+    return resultUploadFile;
+  }
 }

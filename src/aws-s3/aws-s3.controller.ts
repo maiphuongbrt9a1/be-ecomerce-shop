@@ -223,57 +223,11 @@ export class AwsS3Controller {
     @Param('adminId') adminId: string,
     @Param('productVariantId') productVariantId: string,
   ): Promise<AWS.S3.ManagedUpload.SendData> {
-    let targetLocation: string = 'shops/shop-products/';
-
-    // e.g. "image/png" or "video/mp4"
-    const mime = file.mimetype;
-
-    const isImage = mime.startsWith('image/');
-    const isVideo = mime.startsWith('video/');
-
-    if (!isImage && !isVideo) {
-      throw new BadRequestException('Only image or video files are allowed');
-    }
-
-    if (isImage) {
-      this.logger.log('Uploading an image file');
-      targetLocation += 'product-images/';
-    } else if (isVideo) {
-      this.logger.log('Uploading a video file');
-      targetLocation += 'product-videos/';
-    }
-
-    targetLocation +=
-      adminId.toString() + '/' + productVariantId.toString() + '/';
-
-    this.logger.log(
-      'Received request to upload file ' +
-        file +
-        ' to location ' +
-        targetLocation,
-    );
-    const resultUploadFile = await this.awsS3Service.uploadFile(
+    return await this.awsS3Service.uploadOneProductFile(
       file,
-      targetLocation,
+      adminId,
+      productVariantId,
     );
-
-    const newMediaInDatabase: Media =
-      await this.awsS3Service.saveNewMediaFileToDatabase(
-        resultUploadFile.Key,
-        isImage ? MediaType.IMAGE : MediaType.VIDEO,
-        null,
-        Number(adminId),
-        Number(productVariantId),
-        false,
-        false,
-        false,
-      );
-
-    if (!newMediaInDatabase) {
-      throw new BadRequestException('Cannot save media file to database');
-    }
-
-    return resultUploadFile;
   }
 
   @ApiOperation({ summary: 'Upload many product file to server' })

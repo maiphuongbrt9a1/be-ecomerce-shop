@@ -8,6 +8,8 @@ import {
   Patch,
   Query,
   UseGuards,
+  UploadedFile,
+  Request,
 } from '@nestjs/common';
 import { ProductVariantsService } from './product-variants.service';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
@@ -28,8 +30,16 @@ export class ProductVariantsController {
   @Roles('ADMIN')
   @ApiBody({ type: CreateProductVariantDto })
   @Post()
-  async create(@Body() createProductVariantDto: CreateProductVariantDto) {
-    return await this.productVariantsService.create(createProductVariantDto);
+  async create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createProductVariantDto: CreateProductVariantDto,
+    @Request() req,
+  ) {
+    return await this.productVariantsService.create(
+      file,
+      createProductVariantDto,
+      req.user.id,
+    );
   }
 
   @ApiOperation({ summary: 'Get all product variant' })
