@@ -12,7 +12,7 @@ import {
 import { ReturnRequestsService } from './return-requests.service';
 import { CreateReturnRequestDto } from './dto/create-return-request.dto';
 import { UpdateReturnRequestDto } from './dto/update-return-request.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -22,6 +22,7 @@ export class ReturnRequestsController {
 
   @ApiOperation({ summary: 'Create a new return request' })
   @ApiResponse({ status: 201, description: 'Create a new return request' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @ApiBody({ type: CreateReturnRequestDto })
@@ -49,6 +50,7 @@ export class ReturnRequestsController {
 
   @ApiOperation({ summary: 'Update one return request' })
   @ApiResponse({ status: 200, description: 'Update one return request' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @ApiBody({ type: UpdateReturnRequestDto })
@@ -62,6 +64,7 @@ export class ReturnRequestsController {
 
   @ApiOperation({ summary: 'Delete one return request' })
   @ApiResponse({ status: 200, description: 'Delete one return request' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @Delete('/:id')

@@ -12,7 +12,7 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -22,6 +22,7 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Create a new product' })
   @ApiResponse({ status: 201, description: 'Create a new product' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: CreateProductDto })
@@ -46,6 +47,7 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Update one product' })
   @ApiResponse({ status: 200, description: 'Update one product' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: UpdateProductDto })
@@ -59,6 +61,7 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Delete one product' })
   @ApiResponse({ status: 200, description: 'Delete one product' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @Delete('/:id')

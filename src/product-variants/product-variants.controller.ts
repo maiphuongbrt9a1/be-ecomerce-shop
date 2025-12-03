@@ -14,7 +14,7 @@ import {
 import { ProductVariantsService } from './product-variants.service';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -26,6 +26,7 @@ export class ProductVariantsController {
 
   @ApiOperation({ summary: 'Create a new product variant' })
   @ApiResponse({ status: 201, description: 'Create a new product variant' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: CreateProductVariantDto })
@@ -61,6 +62,7 @@ export class ProductVariantsController {
 
   @ApiOperation({ summary: 'Update a product variant' })
   @ApiResponse({ status: 200, description: 'Update a product variant' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: UpdateProductVariantDto })
@@ -77,6 +79,7 @@ export class ProductVariantsController {
 
   @ApiOperation({ summary: 'Delete a product variant' })
   @ApiResponse({ status: 200, description: 'Delete a product variant' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @Delete('/:id')

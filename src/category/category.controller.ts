@@ -12,7 +12,7 @@ import {
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -22,6 +22,7 @@ export class CategoryController {
 
   @ApiOperation({ summary: 'Create a new category' })
   @ApiResponse({ status: 201, description: 'Create a new category' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: CreateCategoryDto })
@@ -46,6 +47,7 @@ export class CategoryController {
 
   @ApiOperation({ summary: 'Update a category' })
   @ApiResponse({ status: 201, description: 'Update a category' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: UpdateCategoryDto })
@@ -59,6 +61,7 @@ export class CategoryController {
 
   @ApiOperation({ summary: 'Delete a category' })
   @ApiResponse({ status: 201, description: 'Delete a category' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @Delete('/:id')

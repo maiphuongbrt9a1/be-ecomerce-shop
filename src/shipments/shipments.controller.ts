@@ -12,7 +12,7 @@ import {
 import { ShipmentsService } from './shipments.service';
 import { CreateShipmentDto } from './dto/create-shipment.dto';
 import { UpdateShipmentDto } from './dto/update-shipment.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -44,6 +44,7 @@ export class ShipmentsController {
 
   @ApiOperation({ summary: 'Update one shipment' })
   @ApiResponse({ status: 200, description: 'Update one shipment' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
   @ApiBody({ type: UpdateShipmentDto })
@@ -57,6 +58,7 @@ export class ShipmentsController {
 
   @ApiOperation({ summary: 'Delete one shipment' })
   @ApiResponse({ status: 200, description: 'Delete one shipment' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @Delete('/:id')

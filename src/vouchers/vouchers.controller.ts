@@ -12,7 +12,7 @@ import {
 import { VouchersService } from './vouchers.service';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -22,6 +22,7 @@ export class VouchersController {
 
   @ApiOperation({ summary: 'Create a new voucher' })
   @ApiResponse({ status: 201, description: 'Create a new voucher' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: CreateVoucherDto })
@@ -46,6 +47,7 @@ export class VouchersController {
 
   @ApiOperation({ summary: 'Update a voucher' })
   @ApiResponse({ status: 200, description: 'Update a voucher' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: UpdateVoucherDto })
@@ -59,6 +61,7 @@ export class VouchersController {
 
   @ApiOperation({ summary: 'Delete a voucher' })
   @ApiResponse({ status: 200, description: 'Delete a voucher' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @Delete('/:id')

@@ -11,7 +11,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from '@/user/dtos/create.user.dto';
 import { UpdateUserDto } from '@/user/dtos/update.user.dto';
 import { RolesGuard } from '@/auth/passport/permission.guard';
@@ -26,6 +26,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get user list' })
   @ApiResponse({ status: 200, description: 'User list found!' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema
   @Get()
@@ -80,6 +81,7 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get shop office of a user' })
   @ApiResponse({ status: 200, description: 'User shop office found!' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/shop-office')
@@ -102,6 +104,7 @@ export class UserController {
     status: 200,
     description: 'Get vouchers are created by a user',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/created-voucher-list')
@@ -122,6 +125,7 @@ export class UserController {
     status: 200,
     description: 'Get products are created by a user',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/product-list')
@@ -142,6 +146,7 @@ export class UserController {
     status: 200,
     description: 'Get product variants are created by a user',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/product-variant-list')
@@ -162,6 +167,7 @@ export class UserController {
     status: 200,
     description: 'Get categories are created by a user',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/category-list')
@@ -200,6 +206,7 @@ export class UserController {
     status: 200,
     description: 'Get orders are processed by a user',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/processed-order-list')
@@ -220,6 +227,7 @@ export class UserController {
     status: 200,
     description: 'Get shipments are processed by a user',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/processed-shipment-list')
@@ -258,6 +266,7 @@ export class UserController {
     status: 200,
     description: 'Get processed requests of user',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/processed-request-list')
@@ -318,6 +327,7 @@ export class UserController {
     description:
       'Create a new cart (only initial id user in cart table. Do not add any cart items)',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @ApiBody({ type: CreateCartDto })
@@ -333,6 +343,7 @@ export class UserController {
     status: 201,
     description: 'Add a new product variant (cart item) to cart',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @ApiBody({ type: CreateCartItemDto })
@@ -364,6 +375,7 @@ export class UserController {
     description:
       'Update one cart (only update id user in cart table. Do not add any cart items)',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @ApiBody({ type: UpdateCartDto })
@@ -380,6 +392,7 @@ export class UserController {
     status: 200,
     description: 'Get user cart with cart items detail',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @Get('/:id/cart/cart-details')

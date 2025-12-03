@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { AwsS3Service } from './aws-s3.service';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import * as AWS from 'aws-sdk';
@@ -33,6 +33,7 @@ export class AwsS3Controller {
     description:
       'Get all files from one folder of server Do not contain / character in last. And folder url is in url field of media table. And folder url is in url field of media table but delete file name by front-end',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
   @Get('/admin/list-files')
@@ -52,6 +53,7 @@ export class AwsS3Controller {
     description:
       'Download file from server. And target file url is in url field of media table',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
   @Get('/admin/download-file')
@@ -86,6 +88,7 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload logo shop file to server',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
   @Post('/admin/:adminId/upload-logo-shop-file')
@@ -150,6 +153,7 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload banner shop file to server',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
   @Post('/admin/:adminId/upload-banner-shop-file')
@@ -214,6 +218,7 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload one product file to server',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
   @Post('/admin/:adminId/upload-one-product-file/:productVariantId')
@@ -235,6 +240,7 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload many product file to server',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
   @Post('/admin/:adminId/upload-many-product-file/:productVariantId')
@@ -311,6 +317,7 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload one category file to server',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
   @Post('/admin/:adminId/upload-one-category-file')
@@ -378,6 +385,7 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload one user avatar file to server',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
   @Post('/user/:userId/upload-one-user-avatar-file')
@@ -443,6 +451,7 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload many user avatar file to server',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
   @Post('/user/:userId/upload-many-user-avatar-file')
@@ -518,6 +527,7 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload one review file to server',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
   @Post('/user/:userId/upload-one-review-file/:reviewId')
@@ -584,6 +594,7 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload many review product file to server',
   })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
   @Post('/user/:userId/upload-many-review-file/:reviewId')

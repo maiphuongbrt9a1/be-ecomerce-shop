@@ -12,7 +12,7 @@ import {
 import { ShopOfficesService } from './shop-offices.service';
 import { CreateShopOfficeDto } from './dto/create-shop-office.dto';
 import { UpdateShopOfficeDto } from './dto/update-shop-office.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -23,6 +23,7 @@ export class ShopOfficesController {
   @ApiOperation({ summary: 'Add new a shop office' })
   @ApiResponse({ status: 200, description: 'Add new a shop office' })
   @ApiBody({ type: CreateShopOfficeDto })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema
   @Post()
@@ -46,6 +47,7 @@ export class ShopOfficesController {
 
   @ApiOperation({ summary: 'Update a shop office' })
   @ApiBody({ type: UpdateShopOfficeDto })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema
   @Patch('/:id')
@@ -57,6 +59,7 @@ export class ShopOfficesController {
   }
 
   @ApiOperation({ summary: 'Delete a shop office' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema
   @Delete('/:id')

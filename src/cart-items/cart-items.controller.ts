@@ -12,7 +12,7 @@ import {
 import { CartItemsService } from './cart-items.service';
 import { CreateCartItemDto } from './dto/create-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -22,6 +22,7 @@ export class CartItemsController {
 
   @ApiOperation({ summary: 'Create a new cart item' })
   @ApiResponse({ status: 201, description: 'Create a new cart item' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @ApiBody({ type: CreateCartItemDto })
@@ -32,6 +33,7 @@ export class CartItemsController {
 
   @ApiOperation({ summary: 'Get all cart items' })
   @ApiResponse({ status: 200, description: 'Get all cart items' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @Get()
@@ -41,6 +43,7 @@ export class CartItemsController {
 
   @ApiOperation({ summary: 'Get one cart item' })
   @ApiResponse({ status: 200, description: 'Get one cart item' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @Get('/:id')
@@ -50,6 +53,7 @@ export class CartItemsController {
 
   @ApiOperation({ summary: 'Update one cart item' })
   @ApiResponse({ status: 200, description: 'Update one cart item' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @ApiBody({ type: UpdateCartItemDto })
@@ -63,6 +67,7 @@ export class CartItemsController {
 
   @ApiOperation({ summary: 'Delete one cart item' })
   @ApiResponse({ status: 200, description: 'Delete one cart item' })
+  @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
   @Delete('/:id')
