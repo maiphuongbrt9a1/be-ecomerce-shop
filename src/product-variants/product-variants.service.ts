@@ -18,23 +18,25 @@ export class ProductVariantsService {
     createProductVariantDto: CreateProductVariantDto,
     adminId: string,
   ): Promise<ProductVariants> {
-    return this.prismaService.$transaction(async (tx) => {
-      const productVariant = await tx.productVariants.create({
-        data: { ...createProductVariantDto },
-      });
-
-      const mediaForProductVariant = await this.awsService.uploadOneProductFile(
-        file,
-        adminId,
-        productVariant.id.toString(),
-      );
-
-      if (!mediaForProductVariant) {
-        throw new NotFoundException('Failed to upload product media file');
-      }
-
-      return productVariant;
+    const productVariant = await this.prismaService.productVariants.create({
+      data: { ...createProductVariantDto },
     });
+
+    if (!productVariant) {
+      throw new NotFoundException('Failed to create product variant');
+    }
+
+    const mediaForProductVariant = await this.awsService.uploadOneProductFile(
+      file,
+      adminId,
+      productVariant.id.toString(),
+    );
+
+    if (!mediaForProductVariant) {
+      throw new NotFoundException('Failed to upload product media file');
+    }
+
+    return productVariant;
   }
 
   async findAll(

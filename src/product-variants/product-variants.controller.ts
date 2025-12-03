@@ -10,6 +10,7 @@ import {
   UseGuards,
   UploadedFile,
   Request,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductVariantsService } from './product-variants.service';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
@@ -17,6 +18,7 @@ import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('product-variants')
 export class ProductVariantsController {
@@ -30,6 +32,7 @@ export class ProductVariantsController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: CreateProductVariantDto })
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
   async create(
     @UploadedFile() file: Express.Multer.File,
@@ -39,7 +42,7 @@ export class ProductVariantsController {
     return await this.productVariantsService.create(
       file,
       createProductVariantDto,
-      req.user.id,
+      req.user.userId,
     );
   }
 
