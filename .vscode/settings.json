@@ -1,4 +1,24 @@
 {
   "cSpell.words": ["Ecommerce"],
-  "prisma.pinToPrisma6": true
+  "prisma.pinToPrisma6": true,
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#5d5402",
+    "activityBar.background": "#5d5402",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e799",
+    "activityBarBadge.background": "#039c8d",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#e7e7e799",
+    "sash.hoverBorder": "#5d5402",
+    "statusBar.background": "#2b2701",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#5d5402",
+    "statusBarItem.remoteBackground": "#2b2701",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#2b2701",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#2b270199",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.color": "#2b2701"
 }
