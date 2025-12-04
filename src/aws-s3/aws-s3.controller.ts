@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { AwsS3Service } from './aws-s3.service';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import * as AWS from 'aws-sdk';
@@ -91,6 +91,20 @@ export class AwsS3Controller {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Logo shop file (image or video)',
+        },
+      },
+      required: ['file'],
+    },
+  })
   @Post('/admin/:adminId/upload-logo-shop-file')
   @UseInterceptors(FileInterceptor('file'))
   async uploadLogoShopFile(
@@ -156,6 +170,20 @@ export class AwsS3Controller {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Banner shop file (image or video)',
+        },
+      },
+      required: ['file'],
+    },
+  })
   @Post('/admin/:adminId/upload-banner-shop-file')
   @UseInterceptors(FileInterceptor('file'))
   async uploadBannerShopFile(
@@ -221,6 +249,20 @@ export class AwsS3Controller {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Product file (image or video)',
+        },
+      },
+      required: ['file'],
+    },
+  })
   @Post('/admin/:adminId/upload-one-product-file/:productVariantId')
   @UseInterceptors(FileInterceptor('file'))
   async uploadOneProductFile(
@@ -243,6 +285,23 @@ export class AwsS3Controller {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'Product files (images or videos, max 10)',
+        },
+      },
+      required: ['files'],
+    },
+  })
   @Post('/admin/:adminId/upload-many-product-file/:productVariantId')
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadManyProductFile(
@@ -320,6 +379,20 @@ export class AwsS3Controller {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Category file (image or video)',
+        },
+      },
+      required: ['file'],
+    },
+  })
   @Post('/admin/:adminId/upload-one-category-file')
   @UseInterceptors(FileInterceptor('file'))
   async uploadOneCategoryFile(
@@ -388,6 +461,20 @@ export class AwsS3Controller {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'User avatar file (image or video)',
+        },
+      },
+      required: ['file'],
+    },
+  })
   @Post('/user/:userId/upload-one-user-avatar-file')
   @UseInterceptors(FileInterceptor('file'))
   async uploadOneUserAvatarFile(
@@ -454,6 +541,23 @@ export class AwsS3Controller {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'User avatar files (images or videos, max 10)',
+        },
+      },
+      required: ['files'],
+    },
+  })
   @Post('/user/:userId/upload-many-user-avatar-file')
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadManyUserAvatarFile(
@@ -530,6 +634,20 @@ export class AwsS3Controller {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Review file (image or video)',
+        },
+      },
+      required: ['file'],
+    },
+  })
   @Post('/user/:userId/upload-one-review-file/:reviewId')
   @UseInterceptors(FileInterceptor('file'))
   async uploadOneProductReviewFile(
@@ -597,6 +715,23 @@ export class AwsS3Controller {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'Review files (images or videos, max 10)',
+        },
+      },
+      required: ['files'],
+    },
+  })
   @Post('/user/:userId/upload-many-review-file/:reviewId')
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadManyReviewFile(
