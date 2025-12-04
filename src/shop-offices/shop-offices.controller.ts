@@ -27,7 +27,7 @@ export class ShopOfficesController {
   constructor(private readonly shopOfficesService: ShopOfficesService) {}
 
   @ApiOperation({ summary: 'Add new a shop office' })
-  @ApiResponse({ status: 200, description: 'Add new a shop office', type: ShopOfficeEntity })
+  @ApiResponse({ status: 201, description: 'Add new a shop office', type: ShopOfficeEntity })
   @ApiBody({ type: CreateShopOfficeDto })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -52,6 +52,7 @@ export class ShopOfficesController {
   }
 
   @ApiOperation({ summary: 'Update a shop office' })
+  @ApiResponse({ status: 200, description: 'Update a shop office', type: ShopOfficeEntity })
   @ApiBody({ type: UpdateShopOfficeDto })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -65,6 +66,7 @@ export class ShopOfficesController {
   }
 
   @ApiOperation({ summary: 'Delete a shop office' })
+  @ApiResponse({ status: 200, description: 'Delete a shop office', type: ShopOfficeEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema

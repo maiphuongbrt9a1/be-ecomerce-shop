@@ -37,6 +37,7 @@ export class OrdersController {
   @ApiResponse({
     status: 200,
     description: 'Get all orders with their detail information',
+    type: [OrderEntity],
   })
   @Get('/order-detail-list')
   async getAllOrdersWithDetailInformation(
@@ -78,6 +79,7 @@ export class OrdersController {
   @ApiResponse({
     status: 200,
     description: 'Get order detail information of one order',
+    type: OrderEntity,
   })
   @Get('/:id/order-detail')
   async getOrderDetailInformation(@Param('id') id: string) {
@@ -90,6 +92,7 @@ export class OrdersController {
   @ApiResponse({
     status: 200,
     description: 'Get order item list detail information of one order',
+    type: OrderEntity,
   })
   @Get('/:id/order-item-list-detail')
   async getOrderItemListDetailInformation(@Param('id') id: string) {
@@ -102,6 +105,7 @@ export class OrdersController {
   @ApiResponse({
     status: 200,
     description: 'Get order shipments detail information of one order',
+    type: OrderEntity,
   })
   @Get('/:id/order-shipments-detail')
   async getOrderShipmentsDetailInformation(@Param('id') id: string) {
@@ -114,6 +118,7 @@ export class OrdersController {
   @ApiResponse({
     status: 200,
     description: 'Get order payment detail information of one order',
+    type: OrderEntity,
   })
   @Get('/:id/order-payment-detail')
   async getOrderPaymentDetailInformation(@Param('id') id: string) {
@@ -126,6 +131,7 @@ export class OrdersController {
   @ApiResponse({
     status: 200,
     description: 'Get order request detail information of one order',
+    type: OrderEntity,
   })
   @Get('/:id/order-request-detail')
   async getOrderRequestDetailInformation(@Param('id') id: string) {

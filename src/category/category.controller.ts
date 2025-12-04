@@ -53,7 +53,7 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: 'Update a category' })
-  @ApiResponse({ status: 201, description: 'Update a category', type: CategoryEntity })
+  @ApiResponse({ status: 200, description: 'Update a category', type: CategoryEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -67,7 +67,7 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: 'Delete a category' })
-  @ApiResponse({ status: 201, description: 'Delete a category', type: CategoryEntity })
+  @ApiResponse({ status: 200, description: 'Delete a category', type: CategoryEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
