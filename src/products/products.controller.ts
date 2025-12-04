@@ -15,13 +15,14 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { ProductEntity } from './entities/product.entity';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @ApiOperation({ summary: 'Create a new product' })
-  @ApiResponse({ status: 201, description: 'Create a new product' })
+  @ApiResponse({ status: 201, description: 'Create a new product', type: ProductEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -32,21 +33,21 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: 'Get all products' })
-  @ApiResponse({ status: 200, description: 'Get all products' })
+  @ApiResponse({ status: 200, description: 'Get all products', type: [ProductEntity] })
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.productsService.findAll(Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get one product' })
-  @ApiResponse({ status: 200, description: 'Get one product' })
+  @ApiResponse({ status: 200, description: 'Get one product', type: ProductEntity })
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.productsService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update one product' })
-  @ApiResponse({ status: 200, description: 'Update one product' })
+  @ApiResponse({ status: 200, description: 'Update one product', type: ProductEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -60,7 +61,7 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: 'Delete one product' })
-  @ApiResponse({ status: 200, description: 'Delete one product' })
+  @ApiResponse({ status: 200, description: 'Delete one product', type: ProductEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
