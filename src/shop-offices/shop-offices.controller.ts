@@ -21,6 +21,10 @@ import {
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import { ShopOfficeEntity } from './entities/shop-office.entity';
+import { UserEntity } from '@/user/entities/user.entity';
+import { AddressEntity } from '@/address/entities/address.entity';
+import { ProductEntity } from '@/products/entities/product.entity';
+import { CategoryEntity } from '@/category/entities/category.entity';
 
 @Controller('shop-offices')
 export class ShopOfficesController {
@@ -79,6 +83,7 @@ export class ShopOfficesController {
   @ApiResponse({
     status: 200,
     description: 'shop office"s manager list found!',
+    type: [UserEntity],
   })
   @Get('/:id/manager-list')
   async findAllManagersOfShopOffice(@Param('id') id: string) {
@@ -89,6 +94,7 @@ export class ShopOfficesController {
   @ApiResponse({
     status: 200,
     description: 'shop office"s address found!',
+    type: AddressEntity,
   })
   @Get('/:id/address')
   async findAddressOfShopOffice(@Param('id') id: string) {
@@ -99,6 +105,7 @@ export class ShopOfficesController {
   @ApiResponse({
     status: 200,
     description: 'shop office"s products found!',
+    type: [ProductEntity],
   })
   @Get('/:id/product-list')
   async findAllProductsOfShopOffice(
@@ -117,6 +124,7 @@ export class ShopOfficesController {
   @ApiResponse({
     status: 200,
     description: 'shop office"s categories found!',
+    type: [CategoryEntity],
   })
   @Get('/:id/category-list')
   async findAllCategoryOfShopOffice(@Param('id') id: string) {
@@ -130,6 +138,7 @@ export class ShopOfficesController {
   @ApiResponse({
     status: 200,
     description: 'shop office"s products of category found!',
+    type: [ProductEntity],
   })
   @Get('/:shopId/category/:categoryId/product-list')
   async findAllProductsOfCategoryOfShopOffice(
