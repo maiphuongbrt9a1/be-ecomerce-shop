@@ -876,7 +876,14 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new product"
+            "description": "Create a new product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductEntity"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -894,7 +901,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all products"
+            "description": "Get all products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductEntity"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Get all products",
@@ -918,7 +935,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one product"
+            "description": "Get one product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Get one product",
@@ -950,7 +974,14 @@
         },
         "responses": {
           "200": {
-            "description": "Update one product"
+            "description": "Update one product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductEntity"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -977,7 +1008,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one product"
+            "description": "Delete one product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductEntity"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1055,7 +1093,14 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new category"
+            "description": "Create a new category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryEntity"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1073,7 +1118,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all categories"
+            "description": "Get all categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryEntity"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Get all categories",
@@ -1097,7 +1152,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Get a category"
+            "description": "Get a category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Get a category",
@@ -1129,7 +1191,14 @@
         },
         "responses": {
           "201": {
-            "description": "Update a category"
+            "description": "Update a category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryEntity"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1156,7 +1225,14 @@
         ],
         "responses": {
           "201": {
-            "description": "Delete a category"
+            "description": "Delete a category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryEntity"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1745,7 +1821,14 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new review"
+            "description": "Create a new review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Create a new review",
@@ -1758,7 +1841,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all reviews"
+            "description": "Get all reviews",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewEntity"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Get all reviews",
@@ -1782,7 +1875,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Get a review"
+            "description": "Get a review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Get a review",
@@ -1814,7 +1914,14 @@
         },
         "responses": {
           "200": {
-            "description": "Update a review"
+            "description": "Update a review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Update a review",
@@ -1836,7 +1943,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete a review"
+            "description": "Delete a review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Delete a review",
@@ -1885,7 +1999,14 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new media file. Please use upload file functions in aws-s3 instead"
+            "description": "Create a new media file. Please use upload file functions in aws-s3 instead",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Create a new media file. Please use upload file functions in aws-s3 instead",
@@ -1898,7 +2019,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all media files"
+            "description": "Get all media files",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MediaEntity"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Get all media files",
@@ -1922,7 +2053,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one media file"
+            "description": "Get one media file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Get one media file",
@@ -1954,7 +2092,14 @@
         },
         "responses": {
           "200": {
-            "description": "Update one media file"
+            "description": "Update one media file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Update one media file",
@@ -1976,7 +2121,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one media file"
+            "description": "Delete one media file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Delete one media file",
@@ -2001,7 +2153,14 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new order"
+            "description": "Create a new order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Create a new order",
@@ -2014,7 +2173,17 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all orders"
+            "description": "Get all orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderEntity"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Get all orders",
@@ -2053,7 +2222,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one order"
+            "description": "Get one order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Get one order",
@@ -2085,7 +2261,14 @@
         },
         "responses": {
           "200": {
-            "description": "Update one order"
+            "description": "Update one order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Update one order",
@@ -2107,7 +2290,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one order"
+            "description": "Delete one order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Delete one order",
@@ -3396,6 +3586,26 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Logo shop file (image or video)"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Upload logo shop file to server"
@@ -3425,6 +3635,26 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Banner shop file (image or video)"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Upload banner shop file to server"
@@ -3462,6 +3692,26 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Product file (image or video)"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Upload one product file to server"
@@ -3499,6 +3749,29 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Product files (images or videos, max 10)"
+                  }
+                },
+                "required": [
+                  "files"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Upload many product file to server"
@@ -3528,6 +3801,26 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Category file (image or video)"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Upload one category file to server"
@@ -3557,6 +3850,26 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "User avatar file (image or video)"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Upload one user avatar file to server"
@@ -3586,6 +3899,29 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "User avatar files (images or videos, max 10)"
+                  }
+                },
+                "required": [
+                  "files"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Upload many user avatar file to server"
@@ -3623,6 +3959,26 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Review file (image or video)"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Upload one review file to server"
@@ -3660,6 +4016,29 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Review files (images or videos, max 10)"
+                  }
+                },
+                "required": [
+                  "files"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Upload many review product file to server"
@@ -3984,7 +4363,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.363Z"
+            "example": "2025-12-04T07:03:34.057Z"
           },
           "isActive": {
             "type": "boolean",
@@ -3997,7 +4376,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.363Z"
+            "example": "2025-12-04T07:03:34.058Z"
           },
           "staffCode": {
             "type": "string",
@@ -4069,7 +4448,7 @@
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.370Z"
+            "example": "2025-12-04T07:03:34.066Z"
           }
         },
         "required": [
@@ -4094,12 +4473,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.384Z"
+            "example": "2025-12-04T07:03:34.079Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.384Z"
+            "example": "2025-12-04T07:03:34.079Z"
           }
         },
         "required": [
@@ -4128,12 +4507,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.393Z"
+            "example": "2025-12-04T07:03:34.090Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.393Z"
+            "example": "2025-12-04T07:03:34.090Z"
           }
         },
         "required": [
@@ -4155,12 +4534,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.384Z"
+            "example": "2025-12-04T07:03:34.079Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.384Z"
+            "example": "2025-12-04T07:03:34.079Z"
           }
         }
       },
@@ -4198,7 +4577,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.501Z"
+            "example": "2025-12-04T07:03:34.171Z"
           },
           "isActive": {
             "type": "boolean",
@@ -4211,7 +4590,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.501Z"
+            "example": "2025-12-04T07:03:34.171Z"
           }
         },
         "required": [
@@ -4341,12 +4720,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.698Z"
+            "example": "2025-12-04T07:03:34.349Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.698Z"
+            "example": "2025-12-04T07:03:34.349Z"
           },
           "categoryId": {
             "format": "int64",
@@ -4370,6 +4749,81 @@
           "updatedAt",
           "categoryId",
           "voucherId"
+        ]
+      },
+      "ProductEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Product Name"
+          },
+          "description": {
+            "type": "object",
+            "example": "Product description",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "example": 99.99
+          },
+          "stockKeepingUnit": {
+            "type": "string",
+            "example": "SKU123456"
+          },
+          "stock": {
+            "type": "number",
+            "example": 100
+          },
+          "categoryId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "voucherId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true
+          },
+          "shopOfficeId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "price",
+          "stockKeepingUnit",
+          "stock",
+          "categoryId",
+          "createByUserId",
+          "voucherId",
+          "shopOfficeId",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "UpdateProductDto": {
@@ -4403,12 +4857,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.698Z"
+            "example": "2025-12-04T07:03:34.349Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.698Z"
+            "example": "2025-12-04T07:03:34.349Z"
           },
           "categoryId": {
             "format": "int64",
@@ -4451,12 +4905,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.744Z"
+            "example": "2025-12-04T07:03:34.414Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.744Z"
+            "example": "2025-12-04T07:03:34.415Z"
           }
         },
         "required": [
@@ -4465,6 +4919,66 @@
           "parentId",
           "createByUserId",
           "voucherId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CategoryEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Electronics"
+          },
+          "description": {
+            "type": "object",
+            "example": "Electronic devices and accessories",
+            "nullable": true
+          },
+          "parentId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "voucherId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true
+          },
+          "shopOfficeId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "parentId",
+          "createByUserId",
+          "voucherId",
+          "shopOfficeId",
           "createdAt",
           "updatedAt"
         ]
@@ -4498,12 +5012,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.744Z"
+            "example": "2025-12-04T07:03:34.414Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.744Z"
+            "example": "2025-12-04T07:03:34.415Z"
           }
         }
       },
@@ -4542,12 +5056,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.780Z"
+            "example": "2025-12-04T07:03:34.466Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.780Z"
+            "example": "2025-12-04T07:03:34.466Z"
           }
         },
         "required": [
@@ -4597,12 +5111,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.780Z"
+            "example": "2025-12-04T07:03:34.466Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.780Z"
+            "example": "2025-12-04T07:03:34.466Z"
           }
         }
       },
@@ -4653,12 +5167,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.823Z"
+            "example": "2025-12-04T07:03:34.521Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.823Z"
+            "example": "2025-12-04T07:03:34.521Z"
           }
         },
         "required": [
@@ -4723,12 +5237,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.823Z"
+            "example": "2025-12-04T07:03:34.521Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.823Z"
+            "example": "2025-12-04T07:03:34.521Z"
           }
         }
       },
@@ -4850,12 +5364,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.213Z"
+            "example": "2025-12-04T07:03:34.869Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.213Z"
+            "example": "2025-12-04T07:03:34.869Z"
           }
         }
       },
@@ -4888,15 +5402,71 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.494Z"
+            "example": "2025-12-04T07:03:35.090Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.494Z"
+            "example": "2025-12-04T07:03:35.090Z"
           }
         },
         "required": [
+          "productId",
+          "userId",
+          "productVariantId",
+          "rating",
+          "comment",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ReviewEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "productId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "productVariantId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "rating": {
+            "type": "number",
+            "example": 5,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "object",
+            "example": "Great product!",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
           "productId",
           "userId",
           "productVariantId",
@@ -4935,12 +5505,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.494Z"
+            "example": "2025-12-04T07:03:35.090Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.494Z"
+            "example": "2025-12-04T07:03:35.090Z"
           }
         }
       },
@@ -4985,12 +5555,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.530Z"
+            "example": "2025-12-04T07:03:35.133Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.531Z"
+            "example": "2025-12-04T07:03:35.133Z"
           }
         },
         "required": [
@@ -5002,6 +5572,84 @@
           "isShopLogo",
           "isShopBanner",
           "isCategoryFile",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "MediaEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "url": {
+            "type": "string",
+            "example": "https://s3.amazonaws.com/bucket/file.jpg"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "VIDEO",
+              "DOCUMENT"
+            ],
+            "example": "IMAGE"
+          },
+          "reviewId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true
+          },
+          "userId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true
+          },
+          "productVariantId": {
+            "type": "object",
+            "example": 1,
+            "nullable": true
+          },
+          "isShopLogo": {
+            "type": "boolean",
+            "example": false
+          },
+          "isShopBanner": {
+            "type": "boolean",
+            "example": false
+          },
+          "isCategoryFile": {
+            "type": "boolean",
+            "example": false
+          },
+          "isAvatarFile": {
+            "type": "boolean",
+            "example": false
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "type",
+          "reviewId",
+          "userId",
+          "productVariantId",
+          "isShopLogo",
+          "isShopBanner",
+          "isCategoryFile",
+          "isAvatarFile",
           "createdAt",
           "updatedAt"
         ]
@@ -5047,12 +5695,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.530Z"
+            "example": "2025-12-04T07:03:35.133Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.531Z"
+            "example": "2025-12-04T07:03:35.133Z"
           }
         }
       },
@@ -5077,7 +5725,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.634Z"
+            "example": "2025-12-04T07:03:35.259Z"
           },
           "status": {
             "type": "string",
@@ -5102,17 +5750,99 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.634Z"
+            "example": "2025-12-04T07:03:35.259Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.634Z"
+            "example": "2025-12-04T07:03:35.259Z"
           }
         },
         "required": [
           "shippingAddressId",
           "userId",
+          "processByStaffId",
+          "orderDate",
+          "status",
+          "subTotal",
+          "shippingFee",
+          "discount",
+          "totalAmount",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "OrderEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "shippingAddressId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "processByStaffId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "orderDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "PROCESSING",
+              "SHIPPED",
+              "DELIVERED",
+              "CANCELLED",
+              "RETURNED"
+            ],
+            "example": "PENDING"
+          },
+          "subTotal": {
+            "type": "number",
+            "example": 100
+          },
+          "shippingFee": {
+            "type": "number",
+            "example": 10
+          },
+          "discount": {
+            "type": "number",
+            "example": 5
+          },
+          "totalAmount": {
+            "type": "number",
+            "example": 105
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "shippingAddressId",
           "processByStaffId",
           "orderDate",
           "status",
@@ -5145,7 +5875,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.634Z"
+            "example": "2025-12-04T07:03:35.259Z"
           },
           "status": {
             "type": "string",
@@ -5170,12 +5900,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.634Z"
+            "example": "2025-12-04T07:03:35.259Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.634Z"
+            "example": "2025-12-04T07:03:35.259Z"
           }
         }
       },
@@ -5207,12 +5937,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.670Z"
+            "example": "2025-12-04T07:03:35.310Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.670Z"
+            "example": "2025-12-04T07:03:35.310Z"
           }
         },
         "required": [
@@ -5253,12 +5983,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.670Z"
+            "example": "2025-12-04T07:03:35.310Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.670Z"
+            "example": "2025-12-04T07:03:35.310Z"
           }
         }
       },
@@ -5278,22 +6008,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.707Z"
+            "example": "2025-12-04T07:03:35.363Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.707Z"
+            "example": "2025-12-04T07:03:35.363Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.708Z"
+            "example": "2025-12-04T07:03:35.363Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.708Z"
+            "example": "2025-12-04T07:03:35.363Z"
           },
           "carrier": {
             "type": "string",
@@ -5310,12 +6040,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.708Z"
+            "example": "2025-12-04T07:03:35.363Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.708Z"
+            "example": "2025-12-04T07:03:35.363Z"
           }
         },
         "required": [
@@ -5348,22 +6078,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.707Z"
+            "example": "2025-12-04T07:03:35.363Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.707Z"
+            "example": "2025-12-04T07:03:35.363Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.708Z"
+            "example": "2025-12-04T07:03:35.363Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.708Z"
+            "example": "2025-12-04T07:03:35.363Z"
           },
           "carrier": {
             "type": "string",
@@ -5380,12 +6110,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.708Z"
+            "example": "2025-12-04T07:03:35.363Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.708Z"
+            "example": "2025-12-04T07:03:35.363Z"
           }
         }
       },
@@ -5408,7 +6138,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.747Z"
+            "example": "2025-12-04T07:03:35.403Z"
           },
           "amount": {
             "type": "number",
@@ -5447,7 +6177,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.747Z"
+            "example": "2025-12-04T07:03:35.403Z"
           },
           "amount": {
             "type": "number",
@@ -5479,12 +6209,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.393Z"
+            "example": "2025-12-04T07:03:34.090Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:47.393Z"
+            "example": "2025-12-04T07:03:34.090Z"
           }
         }
       },
@@ -5510,12 +6240,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.825Z"
+            "example": "2025-12-04T07:03:35.486Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.825Z"
+            "example": "2025-12-04T07:03:35.486Z"
           },
           "usageLimit": {
             "type": "number",
@@ -5532,12 +6262,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.825Z"
+            "example": "2025-12-04T07:03:35.486Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.825Z"
+            "example": "2025-12-04T07:03:35.486Z"
           },
           "createdBy": {
             "format": "int64",
@@ -5582,12 +6312,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.825Z"
+            "example": "2025-12-04T07:03:35.486Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.825Z"
+            "example": "2025-12-04T07:03:35.486Z"
           },
           "usageLimit": {
             "type": "number",
@@ -5604,12 +6334,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.825Z"
+            "example": "2025-12-04T07:03:35.486Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.825Z"
+            "example": "2025-12-04T07:03:35.486Z"
           },
           "createdBy": {
             "format": "int64",
@@ -5634,12 +6364,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.863Z"
+            "example": "2025-12-04T07:03:35.524Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.863Z"
+            "example": "2025-12-04T07:03:35.524Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -5670,12 +6400,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.863Z"
+            "example": "2025-12-04T07:03:35.524Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.863Z"
+            "example": "2025-12-04T07:03:35.524Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -5716,12 +6446,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.896Z"
+            "example": "2025-12-04T07:03:35.562Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.896Z"
+            "example": "2025-12-04T07:03:35.562Z"
           }
         },
         "required": [
@@ -5768,12 +6498,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.896Z"
+            "example": "2025-12-04T07:03:35.562Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.896Z"
+            "example": "2025-12-04T07:03:35.562Z"
           }
         }
       },
@@ -5788,12 +6518,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.927Z"
+            "example": "2025-12-04T07:03:35.599Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.927Z"
+            "example": "2025-12-04T07:03:35.599Z"
           }
         },
         "required": [
@@ -5813,12 +6543,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.927Z"
+            "example": "2025-12-04T07:03:35.599Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T06:17:48.927Z"
+            "example": "2025-12-04T07:03:35.599Z"
           }
         }
       },
