@@ -15,13 +15,14 @@ import { UpdateShipmentDto } from './dto/update-shipment.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { ShipmentEntity } from './entities/shipment.entity';
 
 @Controller('shipments')
 export class ShipmentsController {
   constructor(private readonly shipmentsService: ShipmentsService) {}
 
   @ApiOperation({ summary: 'Create a new shipment' })
-  @ApiResponse({ status: 201, description: 'Create a new shipment' })
+  @ApiResponse({ status: 201, description: 'Create a new shipment', type: ShipmentEntity })
   @ApiBody({ type: CreateShipmentDto })
   @Post()
   async create(@Body() createShipmentDto: CreateShipmentDto) {
@@ -29,21 +30,21 @@ export class ShipmentsController {
   }
 
   @ApiOperation({ summary: 'Get all shipments' })
-  @ApiResponse({ status: 200, description: 'Get all shipments' })
+  @ApiResponse({ status: 200, description: 'Get all shipments', type: [ShipmentEntity] })
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.shipmentsService.findAll(Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get one shipment' })
-  @ApiResponse({ status: 200, description: 'Get one shipment' })
+  @ApiResponse({ status: 200, description: 'Get one shipment', type: ShipmentEntity })
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.shipmentsService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update one shipment' })
-  @ApiResponse({ status: 200, description: 'Update one shipment' })
+  @ApiResponse({ status: 200, description: 'Update one shipment', type: ShipmentEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -57,7 +58,7 @@ export class ShipmentsController {
   }
 
   @ApiOperation({ summary: 'Delete one shipment' })
-  @ApiResponse({ status: 200, description: 'Delete one shipment' })
+  @ApiResponse({ status: 200, description: 'Delete one shipment', type: ShipmentEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')

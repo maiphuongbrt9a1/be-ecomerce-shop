@@ -15,13 +15,14 @@ import { UpdateReturnRequestDto } from './dto/update-return-request.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { ReturnRequestEntity } from './entities/return-request.entity';
 
 @Controller('return-requests')
 export class ReturnRequestsController {
   constructor(private readonly returnRequestsService: ReturnRequestsService) {}
 
   @ApiOperation({ summary: 'Create a new return request' })
-  @ApiResponse({ status: 201, description: 'Create a new return request' })
+  @ApiResponse({ status: 201, description: 'Create a new return request', type: ReturnRequestEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -32,7 +33,7 @@ export class ReturnRequestsController {
   }
 
   @ApiOperation({ summary: 'Get all return requests' })
-  @ApiResponse({ status: 200, description: 'Get all return requests' })
+  @ApiResponse({ status: 200, description: 'Get all return requests', type: [ReturnRequestEntity] })
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.returnRequestsService.findAll(
@@ -42,14 +43,14 @@ export class ReturnRequestsController {
   }
 
   @ApiOperation({ summary: 'Get one return request' })
-  @ApiResponse({ status: 200, description: 'Get one return request' })
+  @ApiResponse({ status: 200, description: 'Get one return request', type: ReturnRequestEntity })
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.returnRequestsService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update one return request' })
-  @ApiResponse({ status: 200, description: 'Update one return request' })
+  @ApiResponse({ status: 200, description: 'Update one return request', type: ReturnRequestEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -63,7 +64,7 @@ export class ReturnRequestsController {
   }
 
   @ApiOperation({ summary: 'Delete one return request' })
-  @ApiResponse({ status: 200, description: 'Delete one return request' })
+  @ApiResponse({ status: 200, description: 'Delete one return request', type: ReturnRequestEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')

@@ -15,13 +15,14 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { CartItemEntity } from './entities/cart-item.entity';
 
 @Controller('cart-items')
 export class CartItemsController {
   constructor(private readonly cartItemsService: CartItemsService) {}
 
   @ApiOperation({ summary: 'Create a new cart item' })
-  @ApiResponse({ status: 201, description: 'Create a new cart item' })
+  @ApiResponse({ status: 201, description: 'Create a new cart item', type: CartItemEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -32,7 +33,7 @@ export class CartItemsController {
   }
 
   @ApiOperation({ summary: 'Get all cart items' })
-  @ApiResponse({ status: 200, description: 'Get all cart items' })
+  @ApiResponse({ status: 200, description: 'Get all cart items', type: [CartItemEntity] })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -42,7 +43,7 @@ export class CartItemsController {
   }
 
   @ApiOperation({ summary: 'Get one cart item' })
-  @ApiResponse({ status: 200, description: 'Get one cart item' })
+  @ApiResponse({ status: 200, description: 'Get one cart item', type: CartItemEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -52,7 +53,7 @@ export class CartItemsController {
   }
 
   @ApiOperation({ summary: 'Update one cart item' })
-  @ApiResponse({ status: 200, description: 'Update one cart item' })
+  @ApiResponse({ status: 200, description: 'Update one cart item', type: CartItemEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -66,7 +67,7 @@ export class CartItemsController {
   }
 
   @ApiOperation({ summary: 'Delete one cart item' })
-  @ApiResponse({ status: 200, description: 'Delete one cart item' })
+  @ApiResponse({ status: 200, description: 'Delete one cart item', type: CartItemEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
