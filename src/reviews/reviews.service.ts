@@ -4,15 +4,37 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Media, Prisma, Reviews } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 
 @Injectable()
 export class ReviewsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly awsService: AwsS3Service,
+  ) {}
 
-  async create(createReviewDto: CreateReviewDto): Promise<Reviews> {
+  async create(
+    files: Express.Multer.File[],
+    createReviewDto: CreateReviewDto,
+    userId: string,
+  ): Promise<Reviews> {
     const result = await this.prismaService.reviews.create({
       data: { ...createReviewDto },
     });
+
+    if (!result) {
+      throw new NotFoundException('Failed to create review');
+    }
+
+    const mediaForReview = await this.awsService.uploadManyReviewFile(
+      files,
+      userId,
+      result.id.toString(),
+    );
+
+    if (!mediaForReview) {
+      throw new NotFoundException('Failed to upload review media file');
+    }
 
     return result;
   }

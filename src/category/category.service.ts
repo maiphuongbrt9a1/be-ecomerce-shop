@@ -4,15 +4,35 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Category, Prisma, Products } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 
 @Injectable()
 export class CategoryService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly awsService: AwsS3Service,
+  ) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async create(
+    file: Express.Multer.File,
+    createCategoryDto: CreateCategoryDto,
+    adminId: string,
+  ): Promise<Category> {
     const result = await this.prismaService.category.create({
       data: { ...createCategoryDto },
     });
+    if (!result) {
+      throw new NotFoundException('Failed to create category');
+    }
+
+    const mediaForCategory = await this.awsService.uploadOneCategoryFile(
+      file,
+      adminId,
+    );
+
+    if (!mediaForCategory) {
+      throw new NotFoundException('Failed to upload category media file');
+    }
 
     return result;
   }

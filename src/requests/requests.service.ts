@@ -4,15 +4,37 @@ import { UpdateRequestDto } from './dto/update-request.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma, Requests } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 
 @Injectable()
 export class RequestsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly awsService: AwsS3Service,
+  ) {}
 
-  async create(createRequestDto: CreateRequestDto): Promise<Requests> {
+  async create(
+    files: Express.Multer.File[],
+    createRequestDto: CreateRequestDto,
+    userId: string,
+  ): Promise<Requests> {
     const result = await this.prismaService.requests.create({
       data: { ...createRequestDto },
     });
+
+    if (!result) {
+      throw new NotFoundException('Failed to create request');
+    }
+
+    const mediaForRequest = await this.awsService.uploadManyRequestFile(
+      files,
+      userId,
+      result.id.toString(),
+    );
+
+    if (!mediaForRequest) {
+      throw new NotFoundException('Failed to upload request media file');
+    }
 
     return result;
   }

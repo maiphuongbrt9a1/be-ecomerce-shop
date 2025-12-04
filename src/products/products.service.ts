@@ -4,15 +4,37 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma, Products, ProductVariants, Reviews } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly awsService: AwsS3Service,
+  ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Products> {
+  async create(
+    files: Express.Multer.File[],
+    createProductDto: CreateProductDto,
+    adminId: string,
+  ): Promise<Products> {
     const product = await this.prismaService.products.create({
       data: { ...createProductDto },
     });
+
+    if (!product) {
+      throw new NotFoundException('Failed to create product');
+    }
+
+    const mediaForProduct = await this.awsService.uploadManyProductFile(
+      files,
+      adminId,
+      product.id.toString(),
+    );
+
+    if (!mediaForProduct) {
+      throw new NotFoundException('Failed to upload product media file');
+    }
 
     return product;
   }

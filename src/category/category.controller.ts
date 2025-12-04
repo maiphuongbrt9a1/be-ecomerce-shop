@@ -8,6 +8,9 @@ import {
   Delete,
   UseGuards,
   Query,
+  UseInterceptors,
+  UploadedFile,
+  Request,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -20,6 +23,8 @@ import {
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { FileInterceptor } from '@nestjs/platform-express';
+import type { RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Controller('category')
 export class CategoryController {
@@ -31,9 +36,18 @@ export class CategoryController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: CreateCategoryDto })
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
-  async create(@Body() createCategoryDto: CreateCategoryDto) {
-    return await this.categoryService.create(createCategoryDto);
+  async create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createCategoryDto: CreateCategoryDto,
+    @Request() req: RequestWithUserInJWTStrategy,
+  ) {
+    return await this.categoryService.create(
+      file,
+      createCategoryDto,
+      req.user.userId.toString(),
+    );
   }
 
   @ApiOperation({ summary: 'Get all categories' })

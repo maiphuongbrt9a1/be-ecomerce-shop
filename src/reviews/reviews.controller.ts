@@ -7,11 +7,16 @@ import {
   Param,
   Delete,
   Query,
+  UseInterceptors,
+  UploadedFiles,
+  Request,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import type { RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -20,9 +25,18 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Create a new review' })
   @ApiResponse({ status: 201, description: 'Create a new review' })
   @ApiBody({ type: CreateReviewDto })
+  @UseInterceptors(FilesInterceptor('files'))
   @Post()
-  async create(@Body() createReviewDto: CreateReviewDto) {
-    return await this.reviewsService.create(createReviewDto);
+  async create(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body() createReviewDto: CreateReviewDto,
+    @Request() req: RequestWithUserInJWTStrategy,
+  ) {
+    return await this.reviewsService.create(
+      files,
+      createReviewDto,
+      req.user.userId.toString(),
+    );
   }
 
   @ApiOperation({ summary: 'Get all reviews' })

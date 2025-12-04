@@ -9,7 +9,9 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -24,6 +26,7 @@ import { Roles } from '@/decorator/customize';
 import { CreateCartDto } from '@/cart/dto/create-cart.dto';
 import { UpdateCartDto } from '@/cart/dto/update-cart.dto';
 import { CreateCartItemDto } from '@/cart-items/dto/create-cart-item.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
@@ -53,10 +56,15 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Add a new user' })
+  @ApiBearerAuth()
   @ApiBody({ type: CreateUserDto })
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
-  async createAnUser(@Body() createUserDto: CreateUserDto) {
-    return await this.userService.createAnUser(createUserDto);
+  async createAnUser(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createUserDto: CreateUserDto,
+  ) {
+    return await this.userService.createAnUser(file, createUserDto);
   }
 
   @ApiOperation({ summary: 'Update a user' })

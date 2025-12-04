@@ -8,6 +8,9 @@ import {
   Query,
   UseGuards,
   Patch,
+  UseInterceptors,
+  Request,
+  UploadedFiles,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -20,6 +23,8 @@ import {
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import type { RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Controller('products')
 export class ProductsController {
@@ -31,9 +36,18 @@ export class ProductsController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({ type: CreateProductDto })
+  @UseInterceptors(FilesInterceptor('files'))
   @Post()
-  async create(@Body() createProductDto: CreateProductDto) {
-    return await this.productsService.create(createProductDto);
+  async create(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body() createProductDto: CreateProductDto,
+    @Request() req: RequestWithUserInJWTStrategy,
+  ) {
+    return await this.productsService.create(
+      files,
+      createProductDto,
+      req.user.userId.toString(),
+    );
   }
 
   @ApiOperation({ summary: 'Get all products' })

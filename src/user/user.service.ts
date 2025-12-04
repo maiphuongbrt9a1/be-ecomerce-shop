@@ -41,6 +41,7 @@ import {
 import { UpdateCartDto } from '@/cart/dto/update-cart.dto';
 import { CreateCartDto } from '@/cart/dto/create-cart.dto';
 import { CreateCartItemDto } from '@/cart-items/dto/create-cart-item.dto';
+import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 
 @Injectable()
 export class UserService {
@@ -48,6 +49,7 @@ export class UserService {
     private readonly prismaService: PrismaService,
     private readonly configService: ConfigService,
     private readonly mailerService: MailerService,
+    private readonly awsService: AwsS3Service,
   ) {}
 
   // Get the list of all User
@@ -123,7 +125,10 @@ export class UserService {
   }
 
   // Create an User
-  async createAnUser(data: CreateUserDto): Promise<User> {
+  async createAnUser(
+    file: Express.Multer.File,
+    data: CreateUserDto,
+  ): Promise<User> {
     const { firstName, lastName, email, phone, password, username, role } =
       data;
 
@@ -147,6 +152,19 @@ export class UserService {
         codeActiveExpire: new Date(Date.now() + 5 * 60 * 1000),
       },
     });
+
+    if (!newUser) {
+      throw new NotFoundException('Failed to create new user');
+    }
+
+    const mediaForUserAvatar = await this.awsService.uploadOneUserAvatarFile(
+      file,
+      newUser.id.toString(),
+    );
+
+    if (!mediaForUserAvatar) {
+      throw new NotFoundException('Failed to upload user avatar file');
+    }
 
     return newUser;
   }
