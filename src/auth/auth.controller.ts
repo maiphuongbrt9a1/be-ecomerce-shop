@@ -15,7 +15,11 @@ import {
 import { Public, ResponseMessage } from '@/decorator/customize';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { JwtAuthGuard } from './passport/jwt-auth.guard';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { LoginDto } from './dto/login.dto';
+import { LoginResponseEntity } from './entities/login-response.entity';
+import { AuthResponseEntity } from './entities/auth-response.entity';
+import { UserEntity } from '@/user/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +30,8 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @ResponseMessage('Fetch login')
   @ApiOperation({ summary: 'Login account' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ status: 201, description: 'Login successful', type: LoginResponseEntity })
   handleLogin(@Request() req) {
     return this.authService.login(req.user);
   }
@@ -34,6 +40,7 @@ export class AuthController {
   @Get('profile')
   @ResponseMessage('Fetch user profile')
   @ApiOperation({ summary: 'Get profile of account' })
+  @ApiResponse({ status: 200, description: 'User profile fetched', type: UserEntity })
   getProfile(@Request() req) {
     return req.user;
   }
@@ -44,6 +51,7 @@ export class AuthController {
   @ResponseMessage('User register')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiBody({ type: CreateAuthDto })
+  @ApiResponse({ status: 201, description: 'User registered successfully', type: AuthResponseEntity })
   register(@Body() registerDto: CreateAuthDto) {
     return this.authService.handleRegister(registerDto);
   }
@@ -53,6 +61,7 @@ export class AuthController {
   @ResponseMessage('Check code active account')
   @ApiOperation({ summary: 'Check code active account' })
   @ApiBody({ type: CodeAuthDto })
+  @ApiResponse({ status: 201, description: 'Code verified successfully', type: AuthResponseEntity })
   checkCode(@Body() registerDto: CodeAuthDto) {
     return this.authService.checkCode(registerDto);
   }
@@ -61,6 +70,8 @@ export class AuthController {
   @Public()
   @ResponseMessage('Retry active account')
   @ApiOperation({ summary: 'Retry active account' })
+  @ApiBody({ schema: { type: 'object', properties: { email: { type: 'string', example: 'user@example.com' } } } })
+  @ApiResponse({ status: 201, description: 'Activation code resent', type: AuthResponseEntity })
   retryActive(@Body('email') email: string) {
     return this.authService.retryActive(email);
   }
@@ -69,6 +80,8 @@ export class AuthController {
   @Public()
   @ResponseMessage('User retry password')
   @ApiOperation({ summary: 'User retry password' })
+  @ApiBody({ schema: { type: 'object', properties: { email: { type: 'string', example: 'user@example.com' } } } })
+  @ApiResponse({ status: 201, description: 'Password reset code sent', type: AuthResponseEntity })
   retryPassword(@Body('email') email: string) {
     return this.authService.retryPassword(email);
   }
@@ -78,6 +91,7 @@ export class AuthController {
   @ResponseMessage('User change password')
   @ApiOperation({ summary: 'User change password' })
   @ApiBody({ type: ChangePasswordAuthDto })
+  @ApiResponse({ status: 201, description: 'Password changed successfully', type: AuthResponseEntity })
   changePassword(@Body() data: ChangePasswordAuthDto) {
     return this.authService.changePassword(data);
   }
