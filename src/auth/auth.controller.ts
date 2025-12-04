@@ -20,6 +20,7 @@ import { LoginDto } from './dto/login.dto';
 import { LoginResponseEntity } from './entities/login-response.entity';
 import { AuthResponseEntity } from './entities/auth-response.entity';
 import { UserEntity } from '@/user/entities/user.entity';
+import type { RequestWithUser, RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -32,7 +33,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Login account' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({ status: 201, description: 'Login successful', type: LoginResponseEntity })
-  handleLogin(@Request() req) {
+  handleLogin(@Request() req: RequestWithUser) {
     return this.authService.login(req.user);
   }
 
@@ -41,7 +42,7 @@ export class AuthController {
   @ResponseMessage('Fetch user profile')
   @ApiOperation({ summary: 'Get profile of account' })
   @ApiResponse({ status: 200, description: 'User profile fetched', type: UserEntity })
-  getProfile(@Request() req) {
+  getProfile(@Request() req: RequestWithUserInJWTStrategy) {
     return req.user;
   }
 

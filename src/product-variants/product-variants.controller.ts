@@ -22,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductVariantEntity } from './entities/product-variant.entity';
 import { ReviewEntity } from '@/reviews/entities/review.entity';
 import { MediaEntity } from '@/media/entities/media.entity';
+import type { RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Controller('product-variants')
 export class ProductVariantsController {
@@ -64,12 +65,12 @@ export class ProductVariantsController {
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body() createProductVariantDto: CreateProductVariantDto,
-    @Request() req,
+    @Request() req: RequestWithUserInJWTStrategy,
   ) {
     return await this.productVariantsService.create(
       file,
       createProductVariantDto,
-      req.user.userId,
+      req.user.userId.toString(),
     );
   }
 
