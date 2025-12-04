@@ -15,10 +15,16 @@ import {
 import { ProductVariantsService } from './product-variants.service';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Controller('product-variants')
 export class ProductVariantsController {
@@ -37,12 +43,12 @@ export class ProductVariantsController {
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body() createProductVariantDto: CreateProductVariantDto,
-    @Request() req,
+    @Request() req: RequestWithUserInJWTStrategy,
   ) {
     return await this.productVariantsService.create(
       file,
       createProductVariantDto,
-      req.user.userId,
+      req.user.userId.toString(),
     );
   }
 

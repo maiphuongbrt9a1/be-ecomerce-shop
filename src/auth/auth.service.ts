@@ -7,6 +7,7 @@ import {
   CodeAuthDto,
   CreateAuthDto,
 } from './dto/create-auth.dto';
+import { UserInRequestWithUser } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
+  async validateUser(
+    username: string,
+    pass: string,
+  ): Promise<UserInRequestWithUser> {
     const user = await this.userService.getUserByEmail(username);
     if (!user) {
       throw new UnauthorizedException('Invalid Username or Password');
@@ -25,20 +29,37 @@ export class AuthService {
     if (!isValidPassword) {
       throw new UnauthorizedException('Invalid Username or Password');
     }
-    return user;
-  }
 
-  async login(user: any) {
-    const payload = {
-      username: user.email,
-      sub: user.id,
+    const processedUser: UserInRequestWithUser = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      name: user.firstName + ' ' + user.lastName,
+      email: user.email,
       role: user.role,
       isAdmin: user.isAdmin,
+      isActive: user.isActive,
+    };
+
+    return processedUser;
+  }
+
+  login(user: UserInRequestWithUser) {
+    const payload = {
+      sub: user.id,
+      username: user.email,
+      role: user.role,
+      isAdmin: user.isAdmin,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      name: user.name,
     };
     return {
       user: {
         id: user.id,
-        name: user.firstName + ' ' + user.lastName,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        name: user.name,
         email: user.email,
         role: user.role,
         isAdmin: user.isAdmin,

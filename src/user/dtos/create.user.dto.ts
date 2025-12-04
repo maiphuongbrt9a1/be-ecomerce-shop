@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Address, Gender, Role } from '@prisma/client';
+import { Gender, Role } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,

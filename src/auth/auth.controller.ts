@@ -16,6 +16,10 @@ import { Public, ResponseMessage } from '@/decorator/customize';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { JwtAuthGuard } from './passport/jwt-auth.guard';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import type {
+  RequestWithUser,
+  RequestWithUserInJWTStrategy,
+} from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -26,7 +30,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @ResponseMessage('Fetch login')
   @ApiOperation({ summary: 'Login account' })
-  handleLogin(@Request() req) {
+  handleLogin(@Request() req: RequestWithUser) {
     return this.authService.login(req.user);
   }
 
@@ -34,7 +38,7 @@ export class AuthController {
   @Get('profile')
   @ResponseMessage('Fetch user profile')
   @ApiOperation({ summary: 'Get profile of account' })
-  getProfile(@Request() req) {
+  getProfile(@Request() req: RequestWithUserInJWTStrategy) {
     return req.user;
   }
 
