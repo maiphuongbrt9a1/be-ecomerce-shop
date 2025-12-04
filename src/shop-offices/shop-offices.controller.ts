@@ -12,7 +12,12 @@ import {
 import { ShopOfficesService } from './shop-offices.service';
 import { CreateShopOfficeDto } from './dto/create-shop-office.dto';
 import { UpdateShopOfficeDto } from './dto/update-shop-office.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import { ShopOfficeEntity } from './entities/shop-office.entity';

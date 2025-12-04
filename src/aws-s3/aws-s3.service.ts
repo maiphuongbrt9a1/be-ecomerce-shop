@@ -1,9 +1,8 @@
-import { CreateAwsS3Dto } from './dto/create-aws-s3.dto';
-import { UpdateAwsS3Dto } from './dto/update-aws-s3.dto';
 import * as AWS from 'aws-sdk';
 import { Logger, Injectable, BadRequestException } from '@nestjs/common';
 import { Media, MediaType } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
+import { PromiseResult } from 'aws-sdk/lib/request';
 
 @Injectable()
 export class AwsS3Service {
@@ -65,7 +64,10 @@ export class AwsS3Service {
     targetLocation: string,
   ): Promise<AWS.S3.ManagedUpload.SendData> {
     this.logger.log(
-      'uploading file ' + file + ' to s3 bucket folder ' + targetLocation,
+      'uploading file ' +
+        file.originalname +
+        ' to s3 bucket folder ' +
+        targetLocation,
     );
     const { originalname } = file;
 
@@ -79,11 +81,11 @@ export class AwsS3Service {
   }
 
   async s3_upload(
-    fileBuffer,
-    bucket,
-    targetLocation,
-    name,
-    mimetype,
+    fileBuffer: Express.Multer.File['buffer'],
+    bucket: string,
+    targetLocation: string,
+    name: Express.Multer.File['originalname'],
+    mimetype: Express.Multer.File['mimetype'],
   ): Promise<AWS.S3.ManagedUpload.SendData> {
     const finalTargetLocation = targetLocation + String(name);
     const params = {
@@ -98,37 +100,37 @@ export class AwsS3Service {
     };
 
     try {
-      let s3Response = await this.s3.upload(params).promise();
+      const s3Response = await this.s3.upload(params).promise();
       this.logger.log('Uploaded file successfully to s3 bucket!! ');
       return s3Response;
     } catch (e) {
       console.log(e);
-      throw new BadRequestException(
-        `Failed to upload file to S3 bucket: ${e.message}`,
-      );
+      throw new BadRequestException(`Failed to upload file to S3 bucket: ${e}`);
     }
   }
 
-  async listFiles(folderUrl: string): Promise<any> {
+  async listFiles(
+    folderUrl: string,
+  ): Promise<PromiseResult<AWS.S3.ListObjectsV2Output, AWS.AWSError>> {
     this.logger.log('Listing objects in S3 bucket at folder ' + folderUrl);
 
-    var params = {
+    const params = {
       Bucket: this.AWS_S3_BUCKET,
       Delimiter: '/',
       Prefix: folderUrl + '/',
     };
 
-    let result = await this.s3.listObjectsV2(params).promise();
+    const result = await this.s3.listObjectsV2(params).promise();
 
-    console.log('List object: ' + result);
+    console.log('List object: ' + JSON.stringify(result.Contents));
     return result;
   }
 
-  async downloadFile(targetFileUrl: string): Promise<any> {
+  async downloadFile(targetFileUrl: string): Promise<string> {
     this.logger.log('Downloading file from S3 bucket ');
 
-    var params = {
-      Bucket: this.AWS_S3_BUCKET!,
+    const params = {
+      Bucket: this.AWS_S3_BUCKET,
       Key: targetFileUrl,
       Expires: 30,
     };
@@ -169,7 +171,7 @@ export class AwsS3Service {
 
     this.logger.log(
       'Received request to upload file ' +
-        file +
+        file.originalname +
         ' to location ' +
         targetLocation,
     );

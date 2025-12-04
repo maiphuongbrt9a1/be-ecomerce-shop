@@ -18,6 +18,7 @@ import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import * as AWS from 'aws-sdk';
 import { Media, MediaType } from '@prisma/client';
+import { PromiseResult } from 'aws-sdk/lib/request';
 
 @Controller('aws-s3')
 export class AwsS3Controller {
@@ -37,10 +38,12 @@ export class AwsS3Controller {
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
   @Get('/admin/list-files')
-  async listFiles(@Query('folderUrl') folderUrl: string): Promise<any> {
+  async listFiles(
+    @Query('folderUrl') folderUrl: string,
+  ): Promise<PromiseResult<AWS.S3.ListObjectsV2Output, AWS.AWSError>> {
     this.logger.log('Listing content of bucket ');
-    let responseData = await this.awsS3Service.listFiles(folderUrl);
-    this.logger.log('Response Data ' + responseData);
+    const responseData = await this.awsS3Service.listFiles(folderUrl);
+    this.logger.log('Response Data ' + JSON.stringify(responseData.Contents));
     return responseData;
   }
 
@@ -59,9 +62,9 @@ export class AwsS3Controller {
   @Get('/admin/download-file')
   async downloadFile(
     @Query('targetFileUrl') targetFileUrl: string,
-  ): Promise<any> {
+  ): Promise<string> {
     this.logger.log('Downloading file from s3 bucket ');
-    let responseData = await this.awsS3Service.downloadFile(targetFileUrl);
+    const responseData = await this.awsS3Service.downloadFile(targetFileUrl);
     this.logger.log('Response Data ' + responseData);
     return responseData;
   }
@@ -76,9 +79,9 @@ export class AwsS3Controller {
       'Build a https link for media file stored in S3 bucket using its key',
   })
   @Get('/build-public-media-url')
-  async buildPublicMediaUrl(@Query('key') key: string): Promise<string> {
+  buildPublicMediaUrl(@Query('key') key: string): string {
     this.logger.log('Building public media URL for key ' + key);
-    let responseData = this.awsS3Service.buildPublicMediaUrl(key);
+    const responseData = this.awsS3Service.buildPublicMediaUrl(key);
     this.logger.log('Response Data ' + responseData);
     return responseData;
   }
@@ -134,7 +137,7 @@ export class AwsS3Controller {
 
     this.logger.log(
       'Received request to upload file ' +
-        file +
+        file.originalname +
         ' to location ' +
         targetLocation,
     );
@@ -213,7 +216,7 @@ export class AwsS3Controller {
 
     this.logger.log(
       'Received request to upload file ' +
-        file +
+        file.originalname +
         ' to location ' +
         targetLocation,
     );
@@ -340,7 +343,7 @@ export class AwsS3Controller {
         adminId.toString() + '/' + productVariantId.toString() + '/';
       this.logger.log(
         'Received request to upload file ' +
-          file +
+          file.originalname +
           ' to location ' +
           targetLocation,
       );
@@ -423,7 +426,7 @@ export class AwsS3Controller {
     targetLocation += adminId.toString() + '/';
     this.logger.log(
       'Received request to upload file ' +
-        file +
+        file.originalname +
         ' to location ' +
         targetLocation,
     );
@@ -504,7 +507,7 @@ export class AwsS3Controller {
     targetLocation += userId.toString() + '/';
     this.logger.log(
       'Received request to upload file ' +
-        file +
+        file.originalname +
         ' to location ' +
         targetLocation,
     );
@@ -594,7 +597,7 @@ export class AwsS3Controller {
       targetLocation += userId.toString() + '/';
       this.logger.log(
         'Received request to upload file ' +
-          file +
+          file.originalname +
           ' to location ' +
           targetLocation,
       );
@@ -679,7 +682,7 @@ export class AwsS3Controller {
 
     this.logger.log(
       'Received request to upload file ' +
-        file +
+        file.originalname +
         ' to location ' +
         targetLocation,
     );
@@ -769,7 +772,7 @@ export class AwsS3Controller {
       targetLocation += userId.toString() + '/' + reviewId.toString() + '/';
       this.logger.log(
         'Received request to upload file ' +
-          file +
+          file.originalname +
           ' to location ' +
           targetLocation,
       );

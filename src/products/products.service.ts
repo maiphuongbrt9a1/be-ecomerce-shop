@@ -2,13 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import {
-  Prisma,
-  Products,
-  ProductVariants,
-  Reviews,
-  Vouchers,
-} from '@prisma/client';
+import { Prisma, Products, ProductVariants, Reviews } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 
 @Injectable()

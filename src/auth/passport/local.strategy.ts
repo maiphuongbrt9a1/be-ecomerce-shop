@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from '@/auth/auth.service';
+import { UserInRequestWithUser } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +14,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  async validate(username: string, password: string): Promise<any> {
+  async validate(
+    username: string,
+    password: string,
+  ): Promise<UserInRequestWithUser> {
     const user = await this.authService.validateUser(username, password);
     if (!user) {
       throw new UnauthorizedException('Username or password is incorrect');

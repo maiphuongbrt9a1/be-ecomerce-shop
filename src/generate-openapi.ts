@@ -19,12 +19,11 @@ async function generate() {
   mkdirSync(outDir, { recursive: true });
   writeFileSync(outFile, JSON.stringify(document, null, 2), 'utf-8');
   await app.close();
-  // eslint-disable-next-line no-console
+
   console.log(`OpenAPI spec exported to ${outFile}`);
 }
 
 generate().catch((err) => {
-  // eslint-disable-next-line no-console
   console.error(err);
   process.exit(1);
 });

@@ -8,7 +8,6 @@ import {
   Prisma,
   Role,
   Address,
-  ShopOffice,
   Vouchers,
   Products,
   ProductVariants,
@@ -19,7 +18,6 @@ import {
   SizeProfiles,
   Reviews,
   Cart,
-  UserVouchers,
 } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateUserDto } from '@/user/dtos/create.user.dto';
@@ -126,16 +124,8 @@ export class UserService {
 
   // Create an User
   async createAnUser(data: CreateUserDto): Promise<User> {
-    const {
-      firstName,
-      lastName,
-      email,
-      phone,
-      password,
-      username,
-      role,
-      isActive,
-    } = data;
+    const { firstName, lastName, email, phone, password, username, role } =
+      data;
 
     const hashPassword = await hashPasswordHelper(password);
     if (!hashPassword) {
@@ -320,7 +310,7 @@ export class UserService {
     });
 
     //send email
-    this.mailerService.sendMail({
+    await this.mailerService.sendMail({
       to: user.email, // list of receivers
       subject: 'Activate your account at BK E-commerce shop', // Subject line
       template: 'register',
@@ -359,7 +349,7 @@ export class UserService {
     });
 
     //send email
-    this.mailerService.sendMail({
+    await this.mailerService.sendMail({
       to: user.email, // list of receivers
       subject: 'Change your password account at BK E-commerce shop', // Subject line
       template: 'register',
@@ -665,6 +655,10 @@ export class UserService {
         const newCartItem = await tx.cartItems.create({
           data: { ...createCartItemDto },
         });
+
+        if (!newCartItem) {
+          throw new BadRequestException('Failed to add new cart item');
+        }
       }
 
       const result = await tx.cart.findFirst({
