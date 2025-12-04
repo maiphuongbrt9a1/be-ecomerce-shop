@@ -12,6 +12,7 @@ import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Public } from '@/decorator/customize';
 import { ReviewEntity } from './entities/review.entity';
 import { MediaEntity } from '@/media/entities/media.entity';
 
@@ -29,6 +30,7 @@ export class ReviewsController {
 
   @ApiOperation({ summary: 'Get all reviews' })
   @ApiResponse({ status: 200, description: 'Get all reviews', type: [ReviewEntity] })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.reviewsService.findAll(Number(page), Number(perPage));
@@ -36,6 +38,7 @@ export class ReviewsController {
 
   @ApiOperation({ summary: 'Get a review' })
   @ApiResponse({ status: 200, description: 'Get a review', type: ReviewEntity })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.reviewsService.findOne(+id);
@@ -61,6 +64,7 @@ export class ReviewsController {
 
   @ApiOperation({ summary: 'Get all media of review' })
   @ApiResponse({ status: 200, description: 'Get all media of review', type: [MediaEntity] })
+  @Public()
   @Get('/:id/media-list')
   async getAllMediaOfReview(
     @Param('id') id: string,

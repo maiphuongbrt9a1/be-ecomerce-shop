@@ -19,7 +19,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
-import { Roles } from '@/decorator/customize';
+import { Roles, Public, ResponseMessage } from '@/decorator/customize';
 import { ProductEntity } from './entities/product.entity';
 import { ProductVariantEntity } from '@/product-variants/entities/product-variant.entity';
 import { ReviewEntity } from '@/reviews/entities/review.entity';
@@ -41,6 +41,7 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 200, description: 'Get all products', type: [ProductEntity] })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.productsService.findAll(Number(page), Number(perPage));
@@ -48,6 +49,7 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Get one product' })
   @ApiResponse({ status: 200, description: 'Get one product', type: ProductEntity })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.productsService.findOne(+id);
@@ -83,6 +85,7 @@ export class ProductsController {
     description: 'Get all product-variants of this product',
     type: [ProductVariantEntity],
   })
+  @Public()
   @Get('/:id/product-variants')
   async getAllProductVariantsOfProduct(@Param('id') id: string) {
     return await this.productsService.getAllProductVariantsOfProduct(+id);
@@ -94,6 +97,7 @@ export class ProductsController {
     description: 'Get all reviews of this product',
     type: [ReviewEntity],
   })
+  @Public()
   @Get('/:id/reviews')
   async getAllReviewsOfProduct(
     @Param('id') id: string,

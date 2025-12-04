@@ -12,6 +12,7 @@ import { SizeProfilesService } from './size-profiles.service';
 import { CreateSizeProfileDto } from './dto/create-size-profile.dto';
 import { UpdateSizeProfileDto } from './dto/update-size-profile.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Public } from '@/decorator/customize';
 import { SizeProfileEntity } from './entities/size-profile.entity';
 
 @Controller('size-profiles')
@@ -28,6 +29,7 @@ export class SizeProfilesController {
 
   @ApiOperation({ summary: 'Get all size profiles' })
   @ApiResponse({ status: 200, description: 'Get all size profiles', type: [SizeProfileEntity] })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.sizeProfilesService.findAll(
@@ -38,6 +40,7 @@ export class SizeProfilesController {
 
   @ApiOperation({ summary: 'Get one size profile' })
   @ApiResponse({ status: 200, description: 'Get one size profile', type: SizeProfileEntity })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.sizeProfilesService.findOne(+id);

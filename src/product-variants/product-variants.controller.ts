@@ -17,7 +17,7 @@ import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
-import { Roles } from '@/decorator/customize';
+import { Roles, Public } from '@/decorator/customize';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductVariantEntity } from './entities/product-variant.entity';
 import { ReviewEntity } from '@/reviews/entities/review.entity';
@@ -76,6 +76,7 @@ export class ProductVariantsController {
 
   @ApiOperation({ summary: 'Get all product variant' })
   @ApiResponse({ status: 200, description: 'Get all product variant', type: [ProductVariantEntity] })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.productVariantsService.findAll(
@@ -86,6 +87,7 @@ export class ProductVariantsController {
 
   @ApiOperation({ summary: 'Get one product variant' })
   @ApiResponse({ status: 200, description: 'Get one product variant', type: ProductVariantEntity })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.productVariantsService.findOne(+id);
@@ -124,6 +126,7 @@ export class ProductVariantsController {
     description: 'Get all reviews of product variant',
     type: [ReviewEntity],
   })
+  @Public()
   @Get('/:id/review-list')
   async getReviewsOfProductVariant(
     @Param('id') id: string,
@@ -143,6 +146,7 @@ export class ProductVariantsController {
     description: 'Get all medias of product variant',
     type: [MediaEntity],
   })
+  @Public()
   @Get('/:id/media-list')
   async getAllMediaOfProductVariant(
     @Param('id') id: string,

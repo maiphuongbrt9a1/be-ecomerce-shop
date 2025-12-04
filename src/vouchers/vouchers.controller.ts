@@ -19,7 +19,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
-import { Roles } from '@/decorator/customize';
+import { Roles, Public } from '@/decorator/customize';
 import { VoucherEntity } from './entities/voucher.entity';
 
 @Controller('vouchers')
@@ -39,6 +39,7 @@ export class VouchersController {
 
   @ApiOperation({ summary: 'Get all vouchers' })
   @ApiResponse({ status: 200, description: 'Get all vouchers', type: [VoucherEntity] })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.vouchersService.findAll(Number(page), Number(perPage));
@@ -46,6 +47,7 @@ export class VouchersController {
 
   @ApiOperation({ summary: 'Get a voucher' })
   @ApiResponse({ status: 200, description: 'Get a voucher', type: VoucherEntity })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.vouchersService.findOne(+id);
@@ -80,6 +82,7 @@ export class VouchersController {
     status: 200,
     description: 'Get all categories are applied this voucher',
   })
+  @Public()
   @Get('/:id/all-categories-applied')
   async getAllCategoriesAreAppliedThisVoucher(
     @Param('id') id: string,
@@ -98,6 +101,7 @@ export class VouchersController {
     status: 200,
     description: 'Get all products are applied this voucher',
   })
+  @Public()
   @Get('/:id/all-products-applied')
   async getAllProductsAreAppliedThisVoucher(
     @Param('id') id: string,
@@ -118,6 +122,7 @@ export class VouchersController {
     status: 200,
     description: 'Get all product-variants are applied this voucher',
   })
+  @Public()
   @Get('/:id/all-product-variants-applied')
   async getAllProductVariantsAreAppliedThisVoucher(
     @Param('id') id: string,

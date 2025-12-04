@@ -19,7 +19,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
-import { Roles } from '@/decorator/customize';
+import { Roles, Public } from '@/decorator/customize';
 import { ShopOfficeEntity } from './entities/shop-office.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { AddressEntity } from '@/address/entities/address.entity';
@@ -43,6 +43,7 @@ export class ShopOfficesController {
 
   @ApiOperation({ summary: 'Get shop office list' })
   @ApiResponse({ status: 200, description: ' shop office list found!', type: [ShopOfficeEntity] })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.shopOfficesService.findAll(Number(page), Number(perPage));
@@ -50,6 +51,7 @@ export class ShopOfficesController {
 
   @ApiOperation({ summary: 'Get shop office detail by ID' })
   @ApiResponse({ status: 200, description: 'shop office found!', type: ShopOfficeEntity })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.shopOfficesService.findOne(+id);
@@ -85,6 +87,7 @@ export class ShopOfficesController {
     description: 'shop office"s manager list found!',
     type: [UserEntity],
   })
+  @Public()
   @Get('/:id/manager-list')
   async findAllManagersOfShopOffice(@Param('id') id: string) {
     return await this.shopOfficesService.findAllManagersOfShopOffice(+id);
@@ -96,6 +99,7 @@ export class ShopOfficesController {
     description: 'shop office"s address found!',
     type: AddressEntity,
   })
+  @Public()
   @Get('/:id/address')
   async findAddressOfShopOffice(@Param('id') id: string) {
     return await this.shopOfficesService.findAddressOfShopOffice(+id);
@@ -107,6 +111,7 @@ export class ShopOfficesController {
     description: 'shop office"s products found!',
     type: [ProductEntity],
   })
+  @Public()
   @Get('/:id/product-list')
   async findAllProductsOfShopOffice(
     @Param('id') id: string,
@@ -126,6 +131,7 @@ export class ShopOfficesController {
     description: 'shop office"s categories found!',
     type: [CategoryEntity],
   })
+  @Public()
   @Get('/:id/category-list')
   async findAllCategoryOfShopOffice(@Param('id') id: string) {
     return await this.shopOfficesService.findAllCategoryOfShopOffice(+id);
@@ -140,6 +146,7 @@ export class ShopOfficesController {
     description: 'shop office"s products of category found!',
     type: [ProductEntity],
   })
+  @Public()
   @Get('/:shopId/category/:categoryId/product-list')
   async findAllProductsOfCategoryOfShopOffice(
     @Param('shopId') shopId: string,
