@@ -906,9 +906,26 @@
       "post": {
         "operationId": "AuthController_handleLogin",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Login account",
@@ -923,7 +940,14 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "User profile fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Get profile of account",
@@ -948,7 +972,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Register a new user",
@@ -973,7 +1004,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Code verified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Check code active account",
@@ -986,9 +1024,32 @@
       "post": {
         "operationId": "AuthController_retryActive",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Activation code resent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Retry active account",
@@ -1001,9 +1062,32 @@
       "post": {
         "operationId": "AuthController_retryPassword",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "user@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Password reset code sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseEntity"
+                }
+              }
+            }
           }
         },
         "summary": "User retry password",
@@ -1028,7 +1112,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Password changed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseEntity"
+                }
+              }
+            }
           }
         },
         "summary": "User change password",
@@ -1043,7 +1134,14 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": ""
+            "description": "Hello mail sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailResponseEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Send hello mail from shop",
@@ -1068,7 +1166,14 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Custom mail sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MailResponseEntity"
+                }
+              }
+            }
           }
         },
         "summary": "Send custom mail",
@@ -5181,7 +5286,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.360Z"
+            "example": "2025-12-04T07:45:53.616Z"
           },
           "isActive": {
             "type": "boolean",
@@ -5194,7 +5299,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.360Z"
+            "example": "2025-12-04T07:45:53.616Z"
           },
           "staffCode": {
             "type": "string",
@@ -5266,7 +5371,7 @@
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.368Z"
+            "example": "2025-12-04T07:45:53.624Z"
           }
         },
         "required": [
@@ -6117,12 +6222,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.381Z"
+            "example": "2025-12-04T07:45:53.640Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.382Z"
+            "example": "2025-12-04T07:45:53.640Z"
           }
         },
         "required": [
@@ -6182,12 +6287,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.393Z"
+            "example": "2025-12-04T07:45:53.657Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.393Z"
+            "example": "2025-12-04T07:45:53.657Z"
           }
         },
         "required": [
@@ -6251,12 +6356,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.381Z"
+            "example": "2025-12-04T07:45:53.640Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.382Z"
+            "example": "2025-12-04T07:45:53.640Z"
           }
         }
       },
@@ -6308,6 +6413,89 @@
           "voucherStatus"
         ]
       },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "Email or username"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "description": "Password"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "LoginUserData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1,
+            "description": "User ID"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "User full name"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "User email"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "USER",
+              "ADMIN",
+              "OPERATOR"
+            ],
+            "description": "User role"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": false,
+            "description": "Is admin flag"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "role",
+          "isAdmin"
+        ]
+      },
+      "LoginResponseEntity": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "description": "User information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LoginUserData"
+              }
+            ]
+          },
+          "access_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "description": "JWT access token"
+          }
+        },
+        "required": [
+          "user",
+          "access_token"
+        ]
+      },
       "CreateAuthDto": {
         "type": "object",
         "properties": {
@@ -6342,7 +6530,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.562Z"
+            "example": "2025-12-04T07:45:53.851Z"
           },
           "isActive": {
             "type": "boolean",
@@ -6355,7 +6543,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.562Z"
+            "example": "2025-12-04T07:45:53.851Z"
           }
         },
         "required": [
@@ -6370,6 +6558,26 @@
           "isActive",
           "codeActive",
           "codeActiveExpire"
+        ]
+      },
+      "AuthResponseEntity": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Operation successful",
+            "description": "Response message"
+          },
+          "data": {
+            "type": "object",
+            "example": {
+              "id": 1
+            },
+            "description": "Response data"
+          }
+        },
+        "required": [
+          "message"
         ]
       },
       "CodeAuthDto": {
@@ -6415,6 +6623,19 @@
           "password",
           "confirmPassword",
           "email"
+        ]
+      },
+      "MailResponseEntity": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Send email from ecommerce shop successfully!",
+            "description": "Response message"
+          }
+        },
+        "required": [
+          "message"
         ]
       },
       "CreateMailDto": {
@@ -6485,12 +6706,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.734Z"
+            "example": "2025-12-04T07:45:54.031Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.734Z"
+            "example": "2025-12-04T07:45:54.031Z"
           },
           "categoryId": {
             "format": "int64",
@@ -6547,12 +6768,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.734Z"
+            "example": "2025-12-04T07:45:54.031Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.734Z"
+            "example": "2025-12-04T07:45:54.031Z"
           },
           "categoryId": {
             "format": "int64",
@@ -6595,12 +6816,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.788Z"
+            "example": "2025-12-04T07:45:54.082Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.788Z"
+            "example": "2025-12-04T07:45:54.082Z"
           }
         },
         "required": [
@@ -6642,12 +6863,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.788Z"
+            "example": "2025-12-04T07:45:54.082Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.788Z"
+            "example": "2025-12-04T07:45:54.082Z"
           }
         }
       },
@@ -6686,12 +6907,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.831Z"
+            "example": "2025-12-04T07:45:54.123Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.831Z"
+            "example": "2025-12-04T07:45:54.123Z"
           }
         },
         "required": [
@@ -6741,12 +6962,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.831Z"
+            "example": "2025-12-04T07:45:54.123Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.831Z"
+            "example": "2025-12-04T07:45:54.123Z"
           }
         }
       },
@@ -6797,12 +7018,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.875Z"
+            "example": "2025-12-04T07:45:54.175Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.875Z"
+            "example": "2025-12-04T07:45:54.175Z"
           }
         },
         "required": [
@@ -6867,12 +7088,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.875Z"
+            "example": "2025-12-04T07:45:54.175Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.875Z"
+            "example": "2025-12-04T07:45:54.175Z"
           }
         }
       },
@@ -6921,12 +7142,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.191Z"
+            "example": "2025-12-04T07:45:54.476Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.191Z"
+            "example": "2025-12-04T07:45:54.476Z"
           }
         }
       },
@@ -6959,12 +7180,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.398Z"
+            "example": "2025-12-04T07:45:54.693Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.398Z"
+            "example": "2025-12-04T07:45:54.693Z"
           }
         },
         "required": [
@@ -7006,12 +7227,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.398Z"
+            "example": "2025-12-04T07:45:54.693Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.398Z"
+            "example": "2025-12-04T07:45:54.693Z"
           }
         }
       },
@@ -7056,12 +7277,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.435Z"
+            "example": "2025-12-04T07:45:54.736Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.435Z"
+            "example": "2025-12-04T07:45:54.736Z"
           }
         },
         "required": [
@@ -7118,12 +7339,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.435Z"
+            "example": "2025-12-04T07:45:54.736Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.435Z"
+            "example": "2025-12-04T07:45:54.736Z"
           }
         }
       },
@@ -7148,7 +7369,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.550Z"
+            "example": "2025-12-04T07:45:54.849Z"
           },
           "status": {
             "type": "string",
@@ -7173,12 +7394,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.551Z"
+            "example": "2025-12-04T07:45:54.849Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.551Z"
+            "example": "2025-12-04T07:45:54.849Z"
           }
         },
         "required": [
@@ -7216,7 +7437,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.550Z"
+            "example": "2025-12-04T07:45:54.849Z"
           },
           "status": {
             "type": "string",
@@ -7241,12 +7462,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.551Z"
+            "example": "2025-12-04T07:45:54.849Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.551Z"
+            "example": "2025-12-04T07:45:54.849Z"
           }
         }
       },
@@ -7278,12 +7499,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.594Z"
+            "example": "2025-12-04T07:45:54.892Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.594Z"
+            "example": "2025-12-04T07:45:54.892Z"
           }
         },
         "required": [
@@ -7376,12 +7597,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.594Z"
+            "example": "2025-12-04T07:45:54.892Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.594Z"
+            "example": "2025-12-04T07:45:54.892Z"
           }
         }
       },
@@ -7401,22 +7622,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           },
           "carrier": {
             "type": "string",
@@ -7433,12 +7654,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           }
         },
         "required": [
@@ -7471,22 +7692,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           },
           "carrier": {
             "type": "string",
@@ -7503,12 +7724,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.644Z"
+            "example": "2025-12-04T07:45:54.936Z"
           }
         }
       },
@@ -7531,7 +7752,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.682Z"
+            "example": "2025-12-04T07:45:54.975Z"
           },
           "amount": {
             "type": "number",
@@ -7621,7 +7842,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.682Z"
+            "example": "2025-12-04T07:45:54.975Z"
           },
           "amount": {
             "type": "number",
@@ -7653,12 +7874,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.393Z"
+            "example": "2025-12-04T07:45:53.657Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:41.393Z"
+            "example": "2025-12-04T07:45:53.657Z"
           }
         }
       },
@@ -7684,12 +7905,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.772Z"
+            "example": "2025-12-04T07:45:55.066Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.772Z"
+            "example": "2025-12-04T07:45:55.066Z"
           },
           "usageLimit": {
             "type": "number",
@@ -7706,12 +7927,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.772Z"
+            "example": "2025-12-04T07:45:55.066Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.772Z"
+            "example": "2025-12-04T07:45:55.066Z"
           },
           "createdBy": {
             "format": "int64",
@@ -7756,12 +7977,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.772Z"
+            "example": "2025-12-04T07:45:55.066Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.772Z"
+            "example": "2025-12-04T07:45:55.066Z"
           },
           "usageLimit": {
             "type": "number",
@@ -7778,12 +7999,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.772Z"
+            "example": "2025-12-04T07:45:55.066Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.772Z"
+            "example": "2025-12-04T07:45:55.066Z"
           },
           "createdBy": {
             "format": "int64",
@@ -7808,12 +8029,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.810Z"
+            "example": "2025-12-04T07:45:55.105Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.810Z"
+            "example": "2025-12-04T07:45:55.105Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -7844,12 +8065,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.810Z"
+            "example": "2025-12-04T07:45:55.105Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.810Z"
+            "example": "2025-12-04T07:45:55.105Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -7890,12 +8111,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.848Z"
+            "example": "2025-12-04T07:45:55.146Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.848Z"
+            "example": "2025-12-04T07:45:55.146Z"
           }
         },
         "required": [
@@ -7942,12 +8163,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.848Z"
+            "example": "2025-12-04T07:45:55.146Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.848Z"
+            "example": "2025-12-04T07:45:55.146Z"
           }
         }
       },
@@ -7962,12 +8183,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.890Z"
+            "example": "2025-12-04T07:45:55.180Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.890Z"
+            "example": "2025-12-04T07:45:55.180Z"
           }
         },
         "required": [
@@ -8018,12 +8239,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.890Z"
+            "example": "2025-12-04T07:45:55.180Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T07:22:42.890Z"
+            "example": "2025-12-04T07:45:55.180Z"
           }
         }
       },
