@@ -13,25 +13,12 @@ export class CategoryService {
     private readonly awsService: AwsS3Service,
   ) {}
 
-  async create(
-    file: Express.Multer.File,
-    createCategoryDto: CreateCategoryDto,
-    adminId: string,
-  ): Promise<Category> {
+  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     const result = await this.prismaService.category.create({
       data: { ...createCategoryDto },
     });
     if (!result) {
       throw new NotFoundException('Failed to create category');
-    }
-
-    const mediaForCategory = await this.awsService.uploadOneCategoryFile(
-      file,
-      adminId,
-    );
-
-    if (!mediaForCategory) {
-      throw new NotFoundException('Failed to upload category media file');
     }
 
     return result;
