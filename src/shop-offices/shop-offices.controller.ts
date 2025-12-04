@@ -15,13 +15,14 @@ import { UpdateShopOfficeDto } from './dto/update-shop-office.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { ShopOfficeEntity } from './entities/shop-office.entity';
 
 @Controller('shop-offices')
 export class ShopOfficesController {
   constructor(private readonly shopOfficesService: ShopOfficesService) {}
 
   @ApiOperation({ summary: 'Add new a shop office' })
-  @ApiResponse({ status: 200, description: 'Add new a shop office' })
+  @ApiResponse({ status: 200, description: 'Add new a shop office', type: ShopOfficeEntity })
   @ApiBody({ type: CreateShopOfficeDto })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -32,14 +33,14 @@ export class ShopOfficesController {
   }
 
   @ApiOperation({ summary: 'Get shop office list' })
-  @ApiResponse({ status: 200, description: ' shop office list found!' })
+  @ApiResponse({ status: 200, description: ' shop office list found!', type: [ShopOfficeEntity] })
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.shopOfficesService.findAll(Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get shop office detail by ID' })
-  @ApiResponse({ status: 200, description: 'shop office found!' })
+  @ApiResponse({ status: 200, description: 'shop office found!', type: ShopOfficeEntity })
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.shopOfficesService.findOne(+id);

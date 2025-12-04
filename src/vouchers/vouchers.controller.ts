@@ -15,13 +15,14 @@ import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { VoucherEntity } from './entities/voucher.entity';
 
 @Controller('vouchers')
 export class VouchersController {
   constructor(private readonly vouchersService: VouchersService) {}
 
   @ApiOperation({ summary: 'Create a new voucher' })
-  @ApiResponse({ status: 201, description: 'Create a new voucher' })
+  @ApiResponse({ status: 201, description: 'Create a new voucher', type: VoucherEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -32,21 +33,21 @@ export class VouchersController {
   }
 
   @ApiOperation({ summary: 'Get all vouchers' })
-  @ApiResponse({ status: 200, description: 'Get all vouchers' })
+  @ApiResponse({ status: 200, description: 'Get all vouchers', type: [VoucherEntity] })
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.vouchersService.findAll(Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get a voucher' })
-  @ApiResponse({ status: 200, description: 'Get a voucher' })
+  @ApiResponse({ status: 200, description: 'Get a voucher', type: VoucherEntity })
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.vouchersService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update a voucher' })
-  @ApiResponse({ status: 200, description: 'Update a voucher' })
+  @ApiResponse({ status: 200, description: 'Update a voucher', type: VoucherEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -60,7 +61,7 @@ export class VouchersController {
   }
 
   @ApiOperation({ summary: 'Delete a voucher' })
-  @ApiResponse({ status: 200, description: 'Delete a voucher' })
+  @ApiResponse({ status: 200, description: 'Delete a voucher', type: VoucherEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
