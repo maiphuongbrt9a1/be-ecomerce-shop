@@ -13,6 +13,7 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ReviewEntity } from './entities/review.entity';
+import { MediaEntity } from '@/media/entities/media.entity';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -59,7 +60,7 @@ export class ReviewsController {
   }
 
   @ApiOperation({ summary: 'Get all media of review' })
-  @ApiResponse({ status: 200, description: 'Get all media of review' })
+  @ApiResponse({ status: 200, description: 'Get all media of review', type: [MediaEntity] })
   @Get('/:id/media-list')
   async getAllMediaOfReview(
     @Param('id') id: string,

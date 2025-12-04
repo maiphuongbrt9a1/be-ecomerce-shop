@@ -16,6 +16,8 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagg
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import { ProductEntity } from './entities/product.entity';
+import { ProductVariantEntity } from '@/product-variants/entities/product-variant.entity';
+import { ReviewEntity } from '@/reviews/entities/review.entity';
 
 @Controller('products')
 export class ProductsController {
@@ -74,6 +76,7 @@ export class ProductsController {
   @ApiResponse({
     status: 200,
     description: 'Get all product-variants of this product',
+    type: [ProductVariantEntity],
   })
   @Get('/:id/product-variants')
   async getAllProductVariantsOfProduct(@Param('id') id: string) {
@@ -84,6 +87,7 @@ export class ProductsController {
   @ApiResponse({
     status: 200,
     description: 'Get all reviews of this product',
+    type: [ReviewEntity],
   })
   @Get('/:id/reviews')
   async getAllReviewsOfProduct(

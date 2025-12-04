@@ -16,6 +16,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagg
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import { CategoryEntity } from './entities/category.entity';
+import { ProductEntity } from '@/products/entities/product.entity';
 
 @Controller('category')
 export class CategoryController {
@@ -71,14 +72,14 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: 'Get all sub-category of category' })
-  @ApiResponse({ status: 200, description: 'Get all sub-category of category' })
+  @ApiResponse({ status: 200, description: 'Get all sub-category of category', type: [CategoryEntity] })
   @Get('/:id/sub-categories')
   async getAllSubCategoriesOfCategory(@Param('id') id: string) {
     return await this.categoryService.getAllSubCategoriesOfCategory(+id);
   }
 
   @ApiOperation({ summary: 'Get all products of category' })
-  @ApiResponse({ status: 200, description: 'Get all products of category' })
+  @ApiResponse({ status: 200, description: 'Get all products of category', type: [ProductEntity] })
   @Get('/:id/products')
   async getAllProductsOfCategory(
     @Param('id') id: string,

@@ -20,6 +20,8 @@ import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductVariantEntity } from './entities/product-variant.entity';
+import { ReviewEntity } from '@/reviews/entities/review.entity';
+import { MediaEntity } from '@/media/entities/media.entity';
 
 @Controller('product-variants')
 export class ProductVariantsController {
@@ -119,6 +121,7 @@ export class ProductVariantsController {
   @ApiResponse({
     status: 200,
     description: 'Get all reviews of product variant',
+    type: [ReviewEntity],
   })
   @Get('/:id/review-list')
   async getReviewsOfProductVariant(
@@ -137,6 +140,7 @@ export class ProductVariantsController {
   @ApiResponse({
     status: 200,
     description: 'Get all medias of product variant',
+    type: [MediaEntity],
   })
   @Get('/:id/media-list')
   async getAllMediaOfProductVariant(
