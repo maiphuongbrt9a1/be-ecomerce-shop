@@ -3774,7 +3774,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all categories are applied this voucher"
+            "description": "Get all categories are applied this voucher",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryEntity"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Get all categories are applied this voucher",
@@ -3798,7 +3808,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all products are applied this voucher"
+            "description": "Get all products are applied this voucher",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductEntity"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Get all products are applied this voucher",
@@ -3822,7 +3842,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all product-variants are applied this voucher"
+            "description": "Get all product-variants are applied this voucher",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductVariantEntity"
+                  }
+                }
+              }
+            }
           }
         },
         "summary": "Get all product-variants are applied this voucher",
@@ -5392,7 +5422,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.526Z"
+            "example": "2025-12-05T13:25:42.762Z"
           },
           "isActive": {
             "type": "boolean",
@@ -5405,7 +5435,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.526Z"
+            "example": "2025-12-05T13:25:42.763Z"
           },
           "staffCode": {
             "type": "string",
@@ -5477,7 +5507,7 @@
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.541Z"
+            "example": "2025-12-05T13:25:42.771Z"
           }
         },
         "required": [
@@ -6328,12 +6358,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.570Z"
+            "example": "2025-12-05T13:25:42.783Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.570Z"
+            "example": "2025-12-05T13:25:42.783Z"
           }
         },
         "required": [
@@ -6393,12 +6423,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.596Z"
+            "example": "2025-12-05T13:25:42.795Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.596Z"
+            "example": "2025-12-05T13:25:42.795Z"
           }
         },
         "required": [
@@ -6462,12 +6492,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.570Z"
+            "example": "2025-12-05T13:25:42.783Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.570Z"
+            "example": "2025-12-05T13:25:42.783Z"
           }
         }
       },
@@ -6636,7 +6666,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.013Z"
+            "example": "2025-12-05T13:25:43.000Z"
           },
           "isActive": {
             "type": "boolean",
@@ -6649,7 +6679,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.013Z"
+            "example": "2025-12-05T13:25:43.000Z"
           }
         },
         "required": [
@@ -6812,12 +6842,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.484Z"
+            "example": "2025-12-05T13:25:43.245Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.484Z"
+            "example": "2025-12-05T13:25:43.245Z"
           },
           "categoryId": {
             "format": "int64",
@@ -6874,12 +6904,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.484Z"
+            "example": "2025-12-05T13:25:43.245Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.484Z"
+            "example": "2025-12-05T13:25:43.245Z"
           },
           "categoryId": {
             "format": "int64",
@@ -6922,12 +6952,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.615Z"
+            "example": "2025-12-05T13:25:43.301Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.615Z"
+            "example": "2025-12-05T13:25:43.301Z"
           }
         },
         "required": [
@@ -6969,12 +6999,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.615Z"
+            "example": "2025-12-05T13:25:43.301Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.615Z"
+            "example": "2025-12-05T13:25:43.301Z"
           }
         }
       },
@@ -7013,12 +7043,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.717Z"
+            "example": "2025-12-05T13:25:43.339Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.717Z"
+            "example": "2025-12-05T13:25:43.339Z"
           }
         },
         "required": [
@@ -7068,12 +7098,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.717Z"
+            "example": "2025-12-05T13:25:43.339Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.717Z"
+            "example": "2025-12-05T13:25:43.339Z"
           }
         }
       },
@@ -7124,12 +7154,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.839Z"
+            "example": "2025-12-05T13:25:43.386Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.839Z"
+            "example": "2025-12-05T13:25:43.386Z"
           }
         },
         "required": [
@@ -7194,12 +7224,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.839Z"
+            "example": "2025-12-05T13:25:43.386Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.839Z"
+            "example": "2025-12-05T13:25:43.386Z"
           }
         }
       },
@@ -7248,12 +7278,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:19.613Z"
+            "example": "2025-12-05T13:25:43.853Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:19.613Z"
+            "example": "2025-12-05T13:25:43.853Z"
           }
         }
       },
@@ -7286,12 +7316,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.189Z"
+            "example": "2025-12-05T13:25:44.164Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.189Z"
+            "example": "2025-12-05T13:25:44.164Z"
           }
         },
         "required": [
@@ -7333,12 +7363,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.189Z"
+            "example": "2025-12-05T13:25:44.164Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.189Z"
+            "example": "2025-12-05T13:25:44.164Z"
           }
         }
       },
@@ -7383,12 +7413,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.279Z"
+            "example": "2025-12-05T13:25:44.203Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.279Z"
+            "example": "2025-12-05T13:25:44.203Z"
           }
         },
         "required": [
@@ -7445,12 +7475,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.279Z"
+            "example": "2025-12-05T13:25:44.203Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.279Z"
+            "example": "2025-12-05T13:25:44.203Z"
           }
         }
       },
@@ -7475,7 +7505,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.526Z"
+            "example": "2025-12-05T13:25:44.315Z"
           },
           "status": {
             "type": "string",
@@ -7500,12 +7530,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.527Z"
+            "example": "2025-12-05T13:25:44.315Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.527Z"
+            "example": "2025-12-05T13:25:44.315Z"
           }
         },
         "required": [
@@ -7543,7 +7573,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.526Z"
+            "example": "2025-12-05T13:25:44.315Z"
           },
           "status": {
             "type": "string",
@@ -7568,12 +7598,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.527Z"
+            "example": "2025-12-05T13:25:44.315Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.527Z"
+            "example": "2025-12-05T13:25:44.315Z"
           }
         }
       },
@@ -7605,12 +7635,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.619Z"
+            "example": "2025-12-05T13:25:44.356Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.619Z"
+            "example": "2025-12-05T13:25:44.356Z"
           }
         },
         "required": [
@@ -7703,12 +7733,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.619Z"
+            "example": "2025-12-05T13:25:44.356Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.619Z"
+            "example": "2025-12-05T13:25:44.356Z"
           }
         }
       },
@@ -7728,22 +7758,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.722Z"
+            "example": "2025-12-05T13:25:44.400Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-05T13:25:44.400Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-05T13:25:44.400Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-05T13:25:44.400Z"
           },
           "carrier": {
             "type": "string",
@@ -7760,12 +7790,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-05T13:25:44.400Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-05T13:25:44.400Z"
           }
         },
         "required": [
@@ -7798,22 +7828,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.722Z"
+            "example": "2025-12-05T13:25:44.400Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-05T13:25:44.400Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-05T13:25:44.400Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-05T13:25:44.400Z"
           },
           "carrier": {
             "type": "string",
@@ -7830,12 +7860,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-05T13:25:44.400Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-05T13:25:44.400Z"
           }
         }
       },
@@ -7858,7 +7888,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.807Z"
+            "example": "2025-12-05T13:25:44.441Z"
           },
           "amount": {
             "type": "number",
@@ -7948,7 +7978,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.807Z"
+            "example": "2025-12-05T13:25:44.441Z"
           },
           "amount": {
             "type": "number",
@@ -7980,12 +8010,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.596Z"
+            "example": "2025-12-05T13:25:42.795Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.596Z"
+            "example": "2025-12-05T13:25:42.795Z"
           }
         }
       },
@@ -8011,12 +8041,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-05T13:25:44.525Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-05T13:25:44.525Z"
           },
           "usageLimit": {
             "type": "number",
@@ -8033,12 +8063,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-05T13:25:44.525Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-05T13:25:44.525Z"
           },
           "createdBy": {
             "format": "int64",
@@ -8083,12 +8113,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-05T13:25:44.525Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-05T13:25:44.525Z"
           },
           "usageLimit": {
             "type": "number",
@@ -8105,12 +8135,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-05T13:25:44.525Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-05T13:25:44.525Z"
           },
           "createdBy": {
             "format": "int64",
@@ -8135,12 +8165,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.084Z"
+            "example": "2025-12-05T13:25:44.559Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.084Z"
+            "example": "2025-12-05T13:25:44.559Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -8171,12 +8201,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.084Z"
+            "example": "2025-12-05T13:25:44.559Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.084Z"
+            "example": "2025-12-05T13:25:44.559Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -8217,12 +8247,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.167Z"
+            "example": "2025-12-05T13:25:44.595Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.167Z"
+            "example": "2025-12-05T13:25:44.595Z"
           }
         },
         "required": [
@@ -8269,12 +8299,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.167Z"
+            "example": "2025-12-05T13:25:44.595Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.167Z"
+            "example": "2025-12-05T13:25:44.595Z"
           }
         }
       },
@@ -8289,12 +8319,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.254Z"
+            "example": "2025-12-05T13:25:44.631Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.254Z"
+            "example": "2025-12-05T13:25:44.631Z"
           }
         },
         "required": [
@@ -8345,12 +8375,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.254Z"
+            "example": "2025-12-05T13:25:44.631Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.254Z"
+            "example": "2025-12-05T13:25:44.631Z"
           }
         }
       },

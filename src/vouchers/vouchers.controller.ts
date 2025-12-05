@@ -21,6 +21,9 @@ import {
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles, Public } from '@/decorator/customize';
 import { VoucherEntity } from './entities/voucher.entity';
+import { CategoryEntity } from '@/category/entities/category.entity';
+import { ProductEntity } from '@/products/entities/product.entity';
+import { ProductVariantEntity } from '@/product-variants/entities/product-variant.entity';
 
 @Controller('vouchers')
 export class VouchersController {
@@ -81,6 +84,7 @@ export class VouchersController {
   @ApiResponse({
     status: 200,
     description: 'Get all categories are applied this voucher',
+    type: [CategoryEntity],
   })
   @Public()
   @Get('/:id/all-categories-applied')
@@ -100,6 +104,7 @@ export class VouchersController {
   @ApiResponse({
     status: 200,
     description: 'Get all products are applied this voucher',
+    type: [ProductEntity],
   })
   @Public()
   @Get('/:id/all-products-applied')
@@ -121,6 +126,7 @@ export class VouchersController {
   @ApiResponse({
     status: 200,
     description: 'Get all product-variants are applied this voucher',
+    type: [ProductVariantEntity],
   })
   @Public()
   @Get('/:id/all-product-variants-applied')
