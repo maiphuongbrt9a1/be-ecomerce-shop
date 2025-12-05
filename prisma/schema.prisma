@@ -84,7 +84,8 @@ model User {
     email       String      @unique
     phone       String?     @db.VarChar(10)
     username    String      @unique @db.VarChar(32)
-    password    String 
+    password    String?
+    googleId    String?     @unique @db.VarChar(255)
     role        Role        @default(USER)
     isActive    Boolean     @default(false)
     codeActive  String      @db.Uuid

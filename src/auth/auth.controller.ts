@@ -20,6 +20,7 @@ import type {
   RequestWithUser,
   RequestWithUserInJWTStrategy,
 } from '@/helpers/auth/interfaces/RequestWithUser.interface';
+import { GoogleOAuthGuard } from './passport/google-oauth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -48,8 +49,22 @@ export class AuthController {
   @ResponseMessage('User register')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiBody({ type: CreateAuthDto })
-  register(@Body() registerDto: CreateAuthDto) {
-    return this.authService.handleRegister(registerDto);
+  async register(@Body() registerDto: CreateAuthDto) {
+    return await this.authService.handleRegister(registerDto);
+  }
+
+  @Get('google')
+  @UseGuards(GoogleOAuthGuard)
+  @ResponseMessage('User login with Google account')
+  @ApiOperation({ summary: 'User login with Google account' })
+  async googleAuth(@Request() req) {}
+
+  @Get('/google/google-redirect')
+  @ResponseMessage('Redirect when User login with Google account')
+  @ApiOperation({ summary: 'Redirect when User login with Google account' })
+  @UseGuards(GoogleOAuthGuard)
+  async googleAuthRedirect(@Request() req) {
+    return await this.authService.googleLogin(req);
   }
 
   @Post('check-code')
@@ -57,24 +72,24 @@ export class AuthController {
   @ResponseMessage('Check code active account')
   @ApiOperation({ summary: 'Check code active account' })
   @ApiBody({ type: CodeAuthDto })
-  checkCode(@Body() registerDto: CodeAuthDto) {
-    return this.authService.checkCode(registerDto);
+  async checkCode(@Body() registerDto: CodeAuthDto) {
+    return await this.authService.checkCode(registerDto);
   }
 
   @Post('retry-active')
   @Public()
   @ResponseMessage('Retry active account')
   @ApiOperation({ summary: 'Retry active account' })
-  retryActive(@Body('email') email: string) {
-    return this.authService.retryActive(email);
+  async retryActive(@Body('email') email: string) {
+    return await this.authService.retryActive(email);
   }
 
   @Post('retry-password')
   @Public()
   @ResponseMessage('User retry password')
   @ApiOperation({ summary: 'User retry password' })
-  retryPassword(@Body('email') email: string) {
-    return this.authService.retryPassword(email);
+  async retryPassword(@Body('email') email: string) {
+    return await this.authService.retryPassword(email);
   }
 
   @Post('change-password')
@@ -82,7 +97,7 @@ export class AuthController {
   @ResponseMessage('User change password')
   @ApiOperation({ summary: 'User change password' })
   @ApiBody({ type: ChangePasswordAuthDto })
-  changePassword(@Body() data: ChangePasswordAuthDto) {
-    return this.authService.changePassword(data);
+  async changePassword(@Body() data: ChangePasswordAuthDto) {
+    return await this.authService.changePassword(data);
   }
 }

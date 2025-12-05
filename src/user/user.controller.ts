@@ -19,7 +19,10 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
-import { CreateUserDto } from '@/user/dtos/create.user.dto';
+import {
+  CreateUserByGoogleAccountDto,
+  CreateUserDto,
+} from '@/user/dtos/create.user.dto';
 import { UpdateUserDto } from '@/user/dtos/update.user.dto';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
@@ -65,6 +68,18 @@ export class UserController {
     @Body() createUserDto: CreateUserDto,
   ) {
     return await this.userService.createAnUser(file, createUserDto);
+  }
+
+  @ApiOperation({ summary: 'Add a new user by Google account' })
+  @ApiBearerAuth()
+  @ApiBody({ type: CreateUserByGoogleAccountDto })
+  @Post('google-account')
+  async createAnUserByGoogleAccount(
+    @Body() createUserByGoogleAccountDto: CreateUserByGoogleAccountDto,
+  ) {
+    return await this.userService.createAnUserByGoogleAccount(
+      createUserByGoogleAccountDto,
+    );
   }
 
   @ApiOperation({ summary: 'Update a user' })

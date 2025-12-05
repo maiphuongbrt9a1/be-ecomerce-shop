@@ -20,7 +20,10 @@ import {
   Cart,
 } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
-import { CreateUserDto } from '@/user/dtos/create.user.dto';
+import {
+  CreateUserByGoogleAccountDto,
+  CreateUserDto,
+} from '@/user/dtos/create.user.dto';
 import { UpdateUserDto } from '@/user/dtos/update.user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { hashPasswordHelper } from '@/helpers/utils';
@@ -164,6 +167,36 @@ export class UserService {
 
     if (!mediaForUserAvatar) {
       throw new NotFoundException('Failed to upload user avatar file');
+    }
+
+    return newUser;
+  }
+
+  // Create an User
+  async createAnUserByGoogleAccount(
+    data: CreateUserByGoogleAccountDto,
+  ): Promise<User> {
+    const { firstName, lastName, email, phone, googleId, username, role } =
+      data;
+
+    const newUser = await this.prismaService.user.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        phone,
+        googleId: googleId,
+        username,
+        role: role ?? Role.USER,
+        createdAt: new Date(Date.now()),
+        isActive: false,
+        codeActive: uuidv4().toString(),
+        codeActiveExpire: new Date(Date.now() + 5 * 60 * 1000),
+      },
+    });
+
+    if (!newUser) {
+      throw new NotFoundException('Failed to create new user');
     }
 
     return newUser;
