@@ -22,17 +22,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "User list found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserEntity"
-                  }
-                }
-              }
-            }
+            "description": "User list found!"
           }
         },
         "security": [
@@ -60,16 +50,14 @@
         },
         "responses": {
           "201": {
-            "description": "User created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Add a new user",
         "tags": [
           "User"
@@ -91,14 +79,7 @@
         ],
         "responses": {
           "200": {
-            "description": "User found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserEntity"
-                }
-              }
-            }
+            "description": "User found!"
           }
         },
         "summary": "Get user detail by ID",
@@ -120,14 +101,7 @@
         ],
         "responses": {
           "200": {
-            "description": "User deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "Delete a user",
@@ -159,14 +133,7 @@
         },
         "responses": {
           "200": {
-            "description": "User updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "Update a user",
@@ -190,17 +157,7 @@
         ],
         "responses": {
           "200": {
-            "description": "User address list found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/AddressEntity"
-                  }
-                }
-              }
-            }
+            "description": "User address list found!"
           }
         },
         "summary": "Get address list of a user",
@@ -224,14 +181,7 @@
         ],
         "responses": {
           "200": {
-            "description": "User shop office found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ShopOfficeEntity"
-                }
-              }
-            }
+            "description": "User shop office found!"
           }
         },
         "security": [
@@ -260,14 +210,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get avatar of user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MediaEntity"
-                }
-              }
-            }
+            "description": "Get avatar of user"
           }
         },
         "summary": "Get avatar of user",
@@ -291,17 +234,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get vouchers are created by a user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VoucherEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get vouchers are created by a user"
           }
         },
         "security": [
@@ -330,17 +263,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get products are created by a user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProductEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get products are created by a user"
           }
         },
         "security": [
@@ -369,17 +292,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get product variants are created by a user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProductVariantEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get product variants are created by a user"
           }
         },
         "security": [
@@ -408,17 +321,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get categories are created by a user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get categories are created by a user"
           }
         },
         "security": [
@@ -447,17 +350,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get orders are created by a user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrderEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get orders are created by a user"
           }
         },
         "summary": "Get orders are created by a user",
@@ -481,17 +374,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get orders are processed by a user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrderEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get orders are processed by a user"
           }
         },
         "security": [
@@ -520,17 +403,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get shipments are processed by a user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ShipmentEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get shipments are processed by a user"
           }
         },
         "security": [
@@ -559,17 +432,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get requests of user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RequestEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get requests of user"
           }
         },
         "summary": "Get requests of user",
@@ -593,17 +456,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get processed requests of user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RequestEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get processed requests of user"
           }
         },
         "security": [
@@ -632,17 +485,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get size-profiles of user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SizeProfileEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get size-profiles of user"
           }
         },
         "summary": "Get size-profiles of user",
@@ -666,17 +509,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get reviews of user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ReviewEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get reviews of user"
           }
         },
         "summary": "Get reviews of user",
@@ -701,14 +534,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new cart (only initial id user in cart table. Do not add any cart items)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartEntity"
-                }
-              }
-            }
+            "description": "Create a new cart (only initial id user in cart table. Do not add any cart items)"
           }
         },
         "security": [
@@ -735,14 +561,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get cart id of user (only get id user in cart table. Do not get any cart items)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartEntity"
-                }
-              }
-            }
+            "description": "Get cart id of user (only get id user in cart table. Do not get any cart items)"
           }
         },
         "summary": "Get cart id of user (only get id user in cart table. Do not get any cart items)",
@@ -774,14 +593,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one cart (only update id user in cart table. Do not add any cart items)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartEntity"
-                }
-              }
-            }
+            "description": "Update one cart (only update id user in cart table. Do not add any cart items)"
           }
         },
         "security": [
@@ -811,14 +623,7 @@
         },
         "responses": {
           "201": {
-            "description": "Add a new product variant (cart item) to cart",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartItemEntity"
-                }
-              }
-            }
+            "description": "Add a new product variant (cart item) to cart"
           }
         },
         "security": [
@@ -847,14 +652,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get user cart with cart items detail",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartEntity"
-                }
-              }
-            }
+            "description": "Get user cart with cart items detail"
           }
         },
         "security": [
@@ -883,17 +681,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get saved vouchers of user",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserVoucherEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get saved vouchers of user"
           }
         },
         "summary": "Get saved vouchers of user",
@@ -906,26 +694,9 @@
       "post": {
         "operationId": "AuthController_handleLogin",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginDto"
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
-            "description": "Login successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponseEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "Login account",
@@ -940,14 +711,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "User profile fetched",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "Get profile of account",
@@ -972,14 +736,7 @@
         },
         "responses": {
           "201": {
-            "description": "User registered successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "Register a new user",
@@ -1004,14 +761,7 @@
         },
         "responses": {
           "201": {
-            "description": "Code verified successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "Check code active account",
@@ -1024,32 +774,9 @@
       "post": {
         "operationId": "AuthController_retryActive",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "example": "user@example.com"
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
-            "description": "Activation code resent",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "Retry active account",
@@ -1062,32 +789,9 @@
       "post": {
         "operationId": "AuthController_retryPassword",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "example": "user@example.com"
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
-            "description": "Password reset code sent",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "User retry password",
@@ -1112,14 +816,7 @@
         },
         "responses": {
           "201": {
-            "description": "Password changed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthResponseEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "User change password",
@@ -1134,14 +831,7 @@
         "parameters": [],
         "responses": {
           "201": {
-            "description": "Hello mail sent",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MailResponseEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "Send hello mail from shop",
@@ -1166,14 +856,7 @@
         },
         "responses": {
           "201": {
-            "description": "Custom mail sent successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MailResponseEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "summary": "Send custom mail",
@@ -1198,14 +881,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new product",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductEntity"
-                }
-              }
-            }
+            "description": "Create a new product"
           }
         },
         "security": [
@@ -1223,17 +899,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all products",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProductEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all products"
           }
         },
         "summary": "Get all products",
@@ -1257,14 +923,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one product",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductEntity"
-                }
-              }
-            }
+            "description": "Get one product"
           }
         },
         "summary": "Get one product",
@@ -1296,14 +955,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one product",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductEntity"
-                }
-              }
-            }
+            "description": "Update one product"
           }
         },
         "security": [
@@ -1330,14 +982,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one product",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductEntity"
-                }
-              }
-            }
+            "description": "Delete one product"
           }
         },
         "security": [
@@ -1366,17 +1011,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all product-variants of this product",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProductVariantEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all product-variants of this product"
           }
         },
         "summary": "Get all product-variants of this product",
@@ -1400,17 +1035,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all reviews of this product",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ReviewEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all reviews of this product"
           }
         },
         "summary": "Get all reviews of this product",
@@ -1435,14 +1060,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new category",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryEntity"
-                }
-              }
-            }
+            "description": "Create a new category"
           }
         },
         "security": [
@@ -1460,17 +1078,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all categories",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all categories"
           }
         },
         "summary": "Get all categories",
@@ -1494,14 +1102,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get a category",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryEntity"
-                }
-              }
-            }
+            "description": "Get a category"
           }
         },
         "summary": "Get a category",
@@ -1532,15 +1133,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Update a category",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryEntity"
-                }
-              }
-            }
+          "201": {
+            "description": "Update a category"
           }
         },
         "security": [
@@ -1566,15 +1160,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Delete a category",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CategoryEntity"
-                }
-              }
-            }
+          "201": {
+            "description": "Delete a category"
           }
         },
         "security": [
@@ -1603,17 +1190,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all sub-category of category",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all sub-category of category"
           }
         },
         "summary": "Get all sub-category of category",
@@ -1637,17 +1214,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all products of category",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProductEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all products of category"
           }
         },
         "summary": "Get all products of category",
@@ -1672,14 +1239,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new address",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AddressEntity"
-                }
-              }
-            }
+            "description": "Create a new address"
           }
         },
         "summary": "Create a new address",
@@ -1692,17 +1252,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all addresses",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/AddressEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all addresses"
           }
         },
         "summary": "Get all addresses",
@@ -1726,14 +1276,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get an address",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AddressEntity"
-                }
-              }
-            }
+            "description": "Get an address"
           }
         },
         "summary": "Get an address",
@@ -1765,14 +1308,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update an address",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AddressEntity"
-                }
-              }
-            }
+            "description": "Update an address"
           }
         },
         "summary": "Update an address",
@@ -1794,14 +1330,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete an address",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AddressEntity"
-                }
-              }
-            }
+            "description": "Delete an address"
           }
         },
         "summary": "Delete an address",
@@ -1826,14 +1355,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new size profile",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SizeProfileEntity"
-                }
-              }
-            }
+            "description": "Create a new size profile"
           }
         },
         "summary": "Create a new size profile",
@@ -1846,17 +1368,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all size profiles",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SizeProfileEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all size profiles"
           }
         },
         "summary": "Get all size profiles",
@@ -1880,14 +1392,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one size profile",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SizeProfileEntity"
-                }
-              }
-            }
+            "description": "Get one size profile"
           }
         },
         "summary": "Get one size profile",
@@ -1919,14 +1424,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one size profile",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SizeProfileEntity"
-                }
-              }
-            }
+            "description": "Update one size profile"
           }
         },
         "summary": "Update one size profile",
@@ -1948,14 +1446,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one size profile",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SizeProfileEntity"
-                }
-              }
-            }
+            "description": "Delete one size profile"
           }
         },
         "summary": "Delete one size profile",
@@ -1971,85 +1462,16 @@
         "requestBody": {
           "required": true,
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Product variant image file"
-                  },
-                  "productId": {
-                    "type": "number",
-                    "example": 1315
-                  },
-                  "createByUserId": {
-                    "type": "number",
-                    "example": 852
-                  },
-                  "variantName": {
-                    "type": "string",
-                    "example": "name of product variant"
-                  },
-                  "variantColor": {
-                    "type": "string",
-                    "example": "red"
-                  },
-                  "variantSize": {
-                    "type": "string",
-                    "example": "XL"
-                  },
-                  "price": {
-                    "type": "number",
-                    "example": 46546
-                  },
-                  "stock": {
-                    "type": "number",
-                    "example": 851
-                  },
-                  "stockKeepingUnit": {
-                    "type": "string",
-                    "example": "EWDGDSED715545D"
-                  },
-                  "voucherId": {
-                    "type": "number",
-                    "example": 1325
-                  },
-                  "createdAt": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "updatedAt": {
-                    "type": "string",
-                    "format": "date-time"
-                  }
-                },
-                "required": [
-                  "file",
-                  "productId",
-                  "createByUserId",
-                  "variantName",
-                  "variantColor",
-                  "variantSize",
-                  "price",
-                  "stock",
-                  "stockKeepingUnit"
-                ]
+                "$ref": "#/components/schemas/CreateProductVariantDto"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Create a new product variant",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductVariantEntity"
-                }
-              }
-            }
+            "description": "Create a new product variant"
           }
         },
         "security": [
@@ -2067,17 +1489,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all product variant",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProductVariantEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all product variant"
           }
         },
         "summary": "Get all product variant",
@@ -2101,14 +1513,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one product variant",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductVariantEntity"
-                }
-              }
-            }
+            "description": "Get one product variant"
           }
         },
         "summary": "Get one product variant",
@@ -2140,14 +1545,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update a product variant",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductVariantEntity"
-                }
-              }
-            }
+            "description": "Update a product variant"
           }
         },
         "security": [
@@ -2174,14 +1572,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete a product variant",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductVariantEntity"
-                }
-              }
-            }
+            "description": "Delete a product variant"
           }
         },
         "security": [
@@ -2210,17 +1601,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all reviews of product variant",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ReviewEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all reviews of product variant"
           }
         },
         "summary": "Get all reviews of product variant",
@@ -2244,17 +1625,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all medias of product variant",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MediaEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all medias of product variant"
           }
         },
         "summary": "Get all medias of product variant",
@@ -2279,14 +1650,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new review",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReviewEntity"
-                }
-              }
-            }
+            "description": "Create a new review"
           }
         },
         "summary": "Create a new review",
@@ -2299,17 +1663,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all reviews",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ReviewEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all reviews"
           }
         },
         "summary": "Get all reviews",
@@ -2333,14 +1687,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get a review",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReviewEntity"
-                }
-              }
-            }
+            "description": "Get a review"
           }
         },
         "summary": "Get a review",
@@ -2372,14 +1719,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update a review",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReviewEntity"
-                }
-              }
-            }
+            "description": "Update a review"
           }
         },
         "summary": "Update a review",
@@ -2401,14 +1741,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete a review",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReviewEntity"
-                }
-              }
-            }
+            "description": "Delete a review"
           }
         },
         "summary": "Delete a review",
@@ -2432,17 +1765,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all media of review",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MediaEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all media of review"
           }
         },
         "summary": "Get all media of review",
@@ -2467,14 +1790,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new media file. Please use upload file functions in aws-s3 instead",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MediaEntity"
-                }
-              }
-            }
+            "description": "Create a new media file. Please use upload file functions in aws-s3 instead"
           }
         },
         "summary": "Create a new media file. Please use upload file functions in aws-s3 instead",
@@ -2487,17 +1803,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all media files",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MediaEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all media files"
           }
         },
         "summary": "Get all media files",
@@ -2521,14 +1827,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one media file",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MediaEntity"
-                }
-              }
-            }
+            "description": "Get one media file"
           }
         },
         "summary": "Get one media file",
@@ -2560,14 +1859,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one media file",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MediaEntity"
-                }
-              }
-            }
+            "description": "Update one media file"
           }
         },
         "summary": "Update one media file",
@@ -2589,14 +1881,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one media file",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MediaEntity"
-                }
-              }
-            }
+            "description": "Delete one media file"
           }
         },
         "summary": "Delete one media file",
@@ -2621,14 +1906,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new order",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderEntity"
-                }
-              }
-            }
+            "description": "Create a new order"
           }
         },
         "summary": "Create a new order",
@@ -2641,17 +1919,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all orders",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrderEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all orders"
           }
         },
         "summary": "Get all orders",
@@ -2666,17 +1934,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all orders with their detail information",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrderEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all orders with their detail information"
           }
         },
         "summary": "Get all orders with their detail information",
@@ -2700,14 +1958,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one order",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderEntity"
-                }
-              }
-            }
+            "description": "Get one order"
           }
         },
         "summary": "Get one order",
@@ -2739,14 +1990,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one order",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderEntity"
-                }
-              }
-            }
+            "description": "Update one order"
           }
         },
         "summary": "Update one order",
@@ -2768,14 +2012,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one order",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderEntity"
-                }
-              }
-            }
+            "description": "Delete one order"
           }
         },
         "summary": "Delete one order",
@@ -2799,14 +2036,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get order detail information of one order",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderEntity"
-                }
-              }
-            }
+            "description": "Get order detail information of one order"
           }
         },
         "summary": "Get order detail information of one order",
@@ -2830,14 +2060,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get order item list detail information of one order",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderEntity"
-                }
-              }
-            }
+            "description": "Get order item list detail information of one order"
           }
         },
         "summary": "Get order item list detail information of one order",
@@ -2861,14 +2084,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get order shipments detail information of one order",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderEntity"
-                }
-              }
-            }
+            "description": "Get order shipments detail information of one order"
           }
         },
         "summary": "Get order shipments detail information of one order",
@@ -2892,14 +2108,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get order payment detail information of one order",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderEntity"
-                }
-              }
-            }
+            "description": "Get order payment detail information of one order"
           }
         },
         "summary": "Get order payment detail information of one order",
@@ -2923,14 +2132,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get order request detail information of one order",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderEntity"
-                }
-              }
-            }
+            "description": "Get order request detail information of one order"
           }
         },
         "summary": "Get order request detail information of one order",
@@ -2955,14 +2157,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new order item",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderItemEntity"
-                }
-              }
-            }
+            "description": "Create a new order item"
           }
         },
         "summary": "Create a new order item",
@@ -2975,17 +2170,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all order items",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrderItemEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all order items"
           }
         },
         "summary": "Get all order items",
@@ -3009,14 +2194,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one order item",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderItemEntity"
-                }
-              }
-            }
+            "description": "Get one order item"
           }
         },
         "summary": "Get one order item",
@@ -3048,14 +2226,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one order item",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderItemEntity"
-                }
-              }
-            }
+            "description": "Update one order item"
           }
         },
         "summary": "Update one order item",
@@ -3077,14 +2248,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one order item",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrderItemEntity"
-                }
-              }
-            }
+            "description": "Delete one order item"
           }
         },
         "summary": "Delete one order item",
@@ -3109,14 +2273,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new shipment",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ShipmentEntity"
-                }
-              }
-            }
+            "description": "Create a new shipment"
           }
         },
         "summary": "Create a new shipment",
@@ -3129,17 +2286,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all shipments",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ShipmentEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all shipments"
           }
         },
         "summary": "Get all shipments",
@@ -3163,14 +2310,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one shipment",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ShipmentEntity"
-                }
-              }
-            }
+            "description": "Get one shipment"
           }
         },
         "summary": "Get one shipment",
@@ -3202,14 +2342,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one shipment",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ShipmentEntity"
-                }
-              }
-            }
+            "description": "Update one shipment"
           }
         },
         "security": [
@@ -3236,14 +2369,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one shipment",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ShipmentEntity"
-                }
-              }
-            }
+            "description": "Delete one shipment"
           }
         },
         "security": [
@@ -3273,14 +2399,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new payment",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaymentEntity"
-                }
-              }
-            }
+            "description": "Create a new payment"
           }
         },
         "summary": "Create a new payment",
@@ -3293,17 +2412,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all payments",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PaymentEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all payments"
           }
         },
         "summary": "Get all payments",
@@ -3327,14 +2436,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one payment",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaymentEntity"
-                }
-              }
-            }
+            "description": "Get one payment"
           }
         },
         "summary": "Get one payment",
@@ -3366,14 +2468,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one payment",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaymentEntity"
-                }
-              }
-            }
+            "description": "Update one payment"
           }
         },
         "summary": "Update one payment",
@@ -3395,14 +2490,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one payment",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaymentEntity"
-                }
-              }
-            }
+            "description": "Delete one payment"
           }
         },
         "summary": "Delete one payment",
@@ -3427,14 +2515,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new cart item",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartItemEntity"
-                }
-              }
-            }
+            "description": "Create a new cart item"
           }
         },
         "security": [
@@ -3452,17 +2533,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all cart items",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CartItemEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all cart items"
           }
         },
         "security": [
@@ -3491,14 +2562,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one cart item",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartItemEntity"
-                }
-              }
-            }
+            "description": "Get one cart item"
           }
         },
         "security": [
@@ -3535,14 +2599,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one cart item",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartItemEntity"
-                }
-              }
-            }
+            "description": "Update one cart item"
           }
         },
         "security": [
@@ -3569,14 +2626,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one cart item",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartItemEntity"
-                }
-              }
-            }
+            "description": "Delete one cart item"
           }
         },
         "security": [
@@ -3606,14 +2656,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new voucher",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VoucherEntity"
-                }
-              }
-            }
+            "description": "Create a new voucher"
           }
         },
         "security": [
@@ -3631,17 +2674,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all vouchers",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VoucherEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all vouchers"
           }
         },
         "summary": "Get all vouchers",
@@ -3665,14 +2698,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get a voucher",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VoucherEntity"
-                }
-              }
-            }
+            "description": "Get a voucher"
           }
         },
         "summary": "Get a voucher",
@@ -3704,14 +2730,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update a voucher",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VoucherEntity"
-                }
-              }
-            }
+            "description": "Update a voucher"
           }
         },
         "security": [
@@ -3738,14 +2757,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete a voucher",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VoucherEntity"
-                }
-              }
-            }
+            "description": "Delete a voucher"
           }
         },
         "security": [
@@ -3847,14 +2859,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new user voucher",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserVoucherEntity"
-                }
-              }
-            }
+            "description": "Create a new user voucher"
           }
         },
         "summary": "Create a new user voucher",
@@ -3867,17 +2872,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all user vouchers",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserVoucherEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all user vouchers"
           }
         },
         "summary": "Get all user vouchers",
@@ -3901,14 +2896,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one user voucher",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserVoucherEntity"
-                }
-              }
-            }
+            "description": "Get one user voucher"
           }
         },
         "summary": "Get one user voucher",
@@ -3940,14 +2928,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one user voucher",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserVoucherEntity"
-                }
-              }
-            }
+            "description": "Update one user voucher"
           }
         },
         "summary": "Update one user voucher",
@@ -3969,14 +2950,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one user voucher",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserVoucherEntity"
-                }
-              }
-            }
+            "description": "Delete one user voucher"
           }
         },
         "summary": "Delete one user voucher",
@@ -4001,14 +2975,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RequestEntity"
-                }
-              }
-            }
+            "description": "Create a new request"
           }
         },
         "summary": "Create a new request",
@@ -4021,17 +2988,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all requests",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RequestEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all requests"
           }
         },
         "summary": "Get all requests",
@@ -4055,14 +3012,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RequestEntity"
-                }
-              }
-            }
+            "description": "Get one request"
           }
         },
         "summary": "Get one request",
@@ -4094,14 +3044,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RequestEntity"
-                }
-              }
-            }
+            "description": "Update one request"
           }
         },
         "summary": "Update one request",
@@ -4123,14 +3066,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RequestEntity"
-                }
-              }
-            }
+            "description": "Delete one request"
           }
         },
         "summary": "Delete one request",
@@ -4155,14 +3091,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new return request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReturnRequestEntity"
-                }
-              }
-            }
+            "description": "Create a new return request"
           }
         },
         "security": [
@@ -4180,17 +3109,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Get all return requests",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ReturnRequestEntity"
-                  }
-                }
-              }
-            }
+            "description": "Get all return requests"
           }
         },
         "summary": "Get all return requests",
@@ -4214,14 +3133,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one return request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReturnRequestEntity"
-                }
-              }
-            }
+            "description": "Get one return request"
           }
         },
         "summary": "Get one return request",
@@ -4253,14 +3165,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update one return request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReturnRequestEntity"
-                }
-              }
-            }
+            "description": "Update one return request"
           }
         },
         "security": [
@@ -4287,14 +3192,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete one return request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ReturnRequestEntity"
-                }
-              }
-            }
+            "description": "Delete one return request"
           }
         },
         "security": [
@@ -4403,26 +3301,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Logo shop file (image or video)"
-                  }
-                },
-                "required": [
-                  "file"
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Upload logo shop file to server"
@@ -4452,26 +3330,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Banner shop file (image or video)"
-                  }
-                },
-                "required": [
-                  "file"
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Upload banner shop file to server"
@@ -4509,26 +3367,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Product file (image or video)"
-                  }
-                },
-                "required": [
-                  "file"
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Upload one product file to server"
@@ -4566,29 +3404,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "files": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "binary"
-                    },
-                    "description": "Product files (images or videos, max 10)"
-                  }
-                },
-                "required": [
-                  "files"
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Upload many product file to server"
@@ -4618,26 +3433,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Category file (image or video)"
-                  }
-                },
-                "required": [
-                  "file"
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Upload one category file to server"
@@ -4667,26 +3462,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "User avatar file (image or video)"
-                  }
-                },
-                "required": [
-                  "file"
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Upload one user avatar file to server"
@@ -4716,29 +3491,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "files": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "binary"
-                    },
-                    "description": "User avatar files (images or videos, max 10)"
-                  }
-                },
-                "required": [
-                  "files"
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Upload many user avatar file to server"
@@ -4776,26 +3528,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Review file (image or video)"
-                  }
-                },
-                "required": [
-                  "file"
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Upload one review file to server"
@@ -4833,29 +3565,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "files": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "binary"
-                    },
-                    "description": "Review files (images or videos, max 10)"
-                  }
-                },
-                "required": [
-                  "files"
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Upload many review product file to server"
@@ -4867,6 +3576,43 @@
           }
         ],
         "summary": "Upload many review product file to server",
+        "tags": [
+          "AwsS3"
+        ]
+      }
+    },
+    "/aws-s3/user/{userId}/upload-many-request-file/{requestId}": {
+      "post": {
+        "operationId": "AwsS3Controller_uploadManyRequestFile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "requestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Upload many media file for request to server"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload many media file for request to server",
         "tags": [
           "AwsS3"
         ]
@@ -4887,15 +3633,8 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Add new a shop office",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ShopOfficeEntity"
-                }
-              }
-            }
+          "200": {
+            "description": "Add new a shop office"
           }
         },
         "security": [
@@ -4913,17 +3652,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": " shop office list found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ShopOfficeEntity"
-                  }
-                }
-              }
-            }
+            "description": " shop office list found!"
           }
         },
         "summary": "Get shop office list",
@@ -4947,14 +3676,7 @@
         ],
         "responses": {
           "200": {
-            "description": "shop office found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ShopOfficeEntity"
-                }
-              }
-            }
+            "description": "shop office found!"
           }
         },
         "summary": "Get shop office detail by ID",
@@ -4986,14 +3708,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update a shop office",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ShopOfficeEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "security": [
@@ -5020,14 +3735,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Delete a shop office",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ShopOfficeEntity"
-                }
-              }
-            }
+            "description": ""
           }
         },
         "security": [
@@ -5056,17 +3764,7 @@
         ],
         "responses": {
           "200": {
-            "description": "shop office\"s manager list found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserEntity"
-                  }
-                }
-              }
-            }
+            "description": "shop office\"s manager list found!"
           }
         },
         "summary": "Get shop office\"s manager list by ID shop office",
@@ -5090,14 +3788,7 @@
         ],
         "responses": {
           "200": {
-            "description": "shop office\"s address found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AddressEntity"
-                }
-              }
-            }
+            "description": "shop office\"s address found!"
           }
         },
         "summary": "Get shop office\"s address by ID shop office",
@@ -5121,17 +3812,7 @@
         ],
         "responses": {
           "200": {
-            "description": "shop office\"s products found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProductEntity"
-                  }
-                }
-              }
-            }
+            "description": "shop office\"s products found!"
           }
         },
         "summary": "Get shop office\"s products by ID shop office",
@@ -5155,17 +3836,7 @@
         ],
         "responses": {
           "200": {
-            "description": "shop office\"s categories found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryEntity"
-                  }
-                }
-              }
-            }
+            "description": "shop office\"s categories found!"
           }
         },
         "summary": "Get shop office\"s categories by ID shop office",
@@ -5197,17 +3868,7 @@
         ],
         "responses": {
           "200": {
-            "description": "shop office\"s products of category found!",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProductEntity"
-                  }
-                }
-              }
-            }
+            "description": "shop office\"s products of category found!"
           }
         },
         "summary": "Get shop office\"s products of one category by ID shop office and ID category",
@@ -5224,136 +3885,21 @@
     "contact": {}
   },
   "tags": [],
-  "servers": [],
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Development server"
+    }
+  ],
   "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
     "schemas": {
-      "UserEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1,
-            "description": "User ID"
-          },
-          "firstName": {
-            "type": "string",
-            "example": "John",
-            "description": "First name"
-          },
-          "lastName": {
-            "type": "string",
-            "example": "Doe",
-            "description": "Last name"
-          },
-          "gender": {
-            "type": "string",
-            "enum": [
-              "MALE",
-              "FEMALE",
-              "OTHER"
-            ],
-            "description": "Gender"
-          },
-          "email": {
-            "type": "string",
-            "example": "user@example.com",
-            "description": "Email address"
-          },
-          "phone": {
-            "type": "string",
-            "example": "0123456789",
-            "description": "Phone number"
-          },
-          "username": {
-            "type": "string",
-            "example": "johndoe",
-            "description": "Username"
-          },
-          "password": {
-            "type": "string",
-            "example": "hashedpassword",
-            "description": "Password hash"
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "USER",
-              "ADMIN",
-              "OPERATOR"
-            ],
-            "description": "User role"
-          },
-          "isActive": {
-            "type": "boolean",
-            "example": true,
-            "description": "Account active status"
-          },
-          "codeActive": {
-            "type": "string",
-            "example": "123e4567-e89b-12d3-a456-426614174000",
-            "description": "Activation code"
-          },
-          "codeActiveExpire": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-12-31T23:59:59Z",
-            "description": "Activation code expiry"
-          },
-          "points": {
-            "type": "number",
-            "example": 100,
-            "description": "Loyalty points"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00Z",
-            "description": "Created at"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00Z",
-            "description": "Updated at"
-          },
-          "staffCode": {
-            "type": "string",
-            "example": "STF001",
-            "description": "Staff code"
-          },
-          "isAdmin": {
-            "type": "boolean",
-            "example": false,
-            "description": "Is admin"
-          },
-          "shopOfficeId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1,
-            "description": "Shop office ID"
-          },
-          "loyaltyCard": {
-            "type": "string",
-            "example": "LOYAL123",
-            "description": "Loyalty card number"
-          }
-        },
-        "required": [
-          "id",
-          "email",
-          "username",
-          "password",
-          "role",
-          "isActive",
-          "codeActive",
-          "codeActiveExpire",
-          "points",
-          "createdAt",
-          "updatedAt",
-          "isAdmin"
-        ]
-      },
       "CreateUserDto": {
         "type": "object",
         "properties": {
@@ -5392,7 +3938,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.526Z"
+            "example": "2025-12-04T10:46:26.763Z"
           },
           "isActive": {
             "type": "boolean",
@@ -5405,7 +3951,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.526Z"
+            "example": "2025-12-04T10:46:26.764Z"
           },
           "staffCode": {
             "type": "string",
@@ -5477,7 +4023,7 @@
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.541Z"
+            "example": "2025-12-04T10:46:26.770Z"
           }
         },
         "required": [
@@ -5488,832 +4034,6 @@
           "phone",
           "password",
           "username",
-          "updatedAt"
-        ]
-      },
-      "AddressEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "userId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "street": {
-            "type": "string",
-            "example": "123 Main Street"
-          },
-          "ward": {
-            "type": "string",
-            "example": "Ward 1"
-          },
-          "district": {
-            "type": "string",
-            "example": "District 1"
-          },
-          "province": {
-            "type": "string",
-            "example": "Ho Chi Minh City"
-          },
-          "zipCode": {
-            "type": "string",
-            "example": "70000"
-          },
-          "country": {
-            "type": "string",
-            "example": "Vietnam"
-          },
-          "shopOfficeId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "userId",
-          "street",
-          "ward",
-          "district",
-          "province",
-          "zipCode",
-          "country",
-          "shopOfficeId",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "ShopOfficeEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "shopName": {
-            "type": "string",
-            "example": "Main Store"
-          }
-        },
-        "required": [
-          "id",
-          "shopName"
-        ]
-      },
-      "MediaEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "url": {
-            "type": "string",
-            "example": "https://s3.amazonaws.com/bucket/file.jpg"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "IMAGE",
-              "VIDEO",
-              "DOCUMENT"
-            ],
-            "example": "IMAGE"
-          },
-          "reviewId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "userId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "productVariantId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "isShopLogo": {
-            "type": "boolean",
-            "example": false
-          },
-          "isShopBanner": {
-            "type": "boolean",
-            "example": false
-          },
-          "isCategoryFile": {
-            "type": "boolean",
-            "example": false
-          },
-          "isAvatarFile": {
-            "type": "boolean",
-            "example": false
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "url",
-          "type",
-          "reviewId",
-          "userId",
-          "productVariantId",
-          "isShopLogo",
-          "isShopBanner",
-          "isCategoryFile",
-          "isAvatarFile",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "VoucherEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "code": {
-            "type": "string",
-            "example": "SAVE20"
-          },
-          "description": {
-            "type": "object",
-            "example": "20% off on all items",
-            "nullable": true
-          },
-          "discountType": {
-            "type": "string",
-            "enum": [
-              "PERCENTAGE",
-              "FIXED_AMOUNT"
-            ],
-            "example": "FIXED_AMOUNT"
-          },
-          "discountValue": {
-            "type": "number",
-            "example": 20
-          },
-          "validFrom": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "validTo": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-12-31T23:59:59.999Z"
-          },
-          "usageLimit": {
-            "type": "object",
-            "example": 100,
-            "nullable": true
-          },
-          "timesUsed": {
-            "type": "number",
-            "example": 5
-          },
-          "isActive": {
-            "type": "boolean",
-            "example": true
-          },
-          "createdBy": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "code",
-          "description",
-          "discountType",
-          "discountValue",
-          "validFrom",
-          "validTo",
-          "usageLimit",
-          "timesUsed",
-          "isActive",
-          "createdBy",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "ProductEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "name": {
-            "type": "string",
-            "example": "Product Name"
-          },
-          "description": {
-            "type": "object",
-            "example": "Product description",
-            "nullable": true
-          },
-          "price": {
-            "type": "number",
-            "example": 99.99
-          },
-          "stockKeepingUnit": {
-            "type": "string",
-            "example": "SKU123456"
-          },
-          "stock": {
-            "type": "number",
-            "example": 100
-          },
-          "categoryId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "createByUserId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "voucherId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "shopOfficeId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "description",
-          "price",
-          "stockKeepingUnit",
-          "stock",
-          "categoryId",
-          "createByUserId",
-          "voucherId",
-          "shopOfficeId",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "ProductVariantEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "productId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1315
-          },
-          "createByUserId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 852
-          },
-          "variantName": {
-            "type": "string",
-            "example": "name of product variant"
-          },
-          "variantColor": {
-            "type": "string",
-            "example": "red"
-          },
-          "variantSize": {
-            "type": "string",
-            "example": "XL"
-          },
-          "price": {
-            "type": "number",
-            "example": 46546
-          },
-          "stock": {
-            "type": "number",
-            "example": 851
-          },
-          "stockKeepingUnit": {
-            "type": "string",
-            "example": "EWDGDSED715545D"
-          },
-          "voucherId": {
-            "type": "object",
-            "example": 1325,
-            "nullable": true
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "productId",
-          "createByUserId",
-          "variantName",
-          "variantColor",
-          "variantSize",
-          "price",
-          "stock",
-          "stockKeepingUnit",
-          "voucherId",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "CategoryEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "name": {
-            "type": "string",
-            "example": "Electronics"
-          },
-          "description": {
-            "type": "object",
-            "example": "Electronic devices and accessories",
-            "nullable": true
-          },
-          "parentId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "createByUserId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "voucherId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "shopOfficeId": {
-            "type": "object",
-            "example": 1,
-            "nullable": true
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "description",
-          "parentId",
-          "createByUserId",
-          "voucherId",
-          "shopOfficeId",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "OrderEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "userId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "shippingAddressId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "processByStaffId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "orderDate": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "PENDING",
-              "PROCESSING",
-              "SHIPPED",
-              "DELIVERED",
-              "CANCELLED",
-              "RETURNED"
-            ],
-            "example": "PENDING"
-          },
-          "subTotal": {
-            "type": "number",
-            "example": 100
-          },
-          "shippingFee": {
-            "type": "number",
-            "example": 10
-          },
-          "discount": {
-            "type": "number",
-            "example": 5
-          },
-          "totalAmount": {
-            "type": "number",
-            "example": 105
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "userId",
-          "shippingAddressId",
-          "processByStaffId",
-          "orderDate",
-          "status",
-          "subTotal",
-          "shippingFee",
-          "discount",
-          "totalAmount",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "ShipmentEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "orderId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "processByStaffId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "estimatedDelivery": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-05T00:00:00.000Z"
-          },
-          "deliveredAt": {
-            "type": "object",
-            "example": "2024-01-05T00:00:00.000Z",
-            "nullable": true
-          },
-          "estimatedShipDate": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-02T00:00:00.000Z"
-          },
-          "shippedAt": {
-            "type": "object",
-            "example": "2024-01-02T00:00:00.000Z",
-            "nullable": true
-          },
-          "carrier": {
-            "type": "string",
-            "example": "FedEx"
-          },
-          "trackingNumber": {
-            "type": "string",
-            "example": "TRACK123456"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "WAITING_FOR_PICKUP",
-              "IN_TRANSIT",
-              "OUT_FOR_DELIVERY",
-              "DELIVERED",
-              "DELIVERED_FAILED",
-              "RETURNED_TO_SENDER"
-            ],
-            "example": "WAITING_FOR_PICKUP"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "orderId",
-          "processByStaffId",
-          "estimatedDelivery",
-          "deliveredAt",
-          "estimatedShipDate",
-          "shippedAt",
-          "carrier",
-          "trackingNumber",
-          "status",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "RequestEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "userId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "processByStaffId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "orderId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "subject": {
-            "type": "string",
-            "example": "Product Return Request"
-          },
-          "description": {
-            "type": "string",
-            "example": "The product arrived damaged and I would like to return it."
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "PENDING",
-              "IN_PROGRESS",
-              "APPROVED",
-              "REJECTED"
-            ],
-            "example": "PENDING"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "userId",
-          "processByStaffId",
-          "orderId",
-          "subject",
-          "description",
-          "status",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "SizeProfileEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "userId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "heightCm": {
-            "type": "object",
-            "example": 175.5,
-            "nullable": true
-          },
-          "weightKg": {
-            "type": "object",
-            "example": 70,
-            "nullable": true
-          },
-          "chestCm": {
-            "type": "object",
-            "example": 95,
-            "nullable": true
-          },
-          "hipCm": {
-            "type": "object",
-            "example": 90,
-            "nullable": true
-          },
-          "sleeveLengthCm": {
-            "type": "object",
-            "example": 60,
-            "nullable": true
-          },
-          "inseamCm": {
-            "type": "object",
-            "example": 80,
-            "nullable": true
-          },
-          "shoulderLengthCm": {
-            "type": "object",
-            "example": 45,
-            "nullable": true
-          },
-          "bodyType": {
-            "type": "object",
-            "example": "Athletic",
-            "nullable": true
-          },
-          "description": {
-            "type": "object",
-            "example": "Regular fit preferred",
-            "nullable": true
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "userId",
-          "heightCm",
-          "weightKg",
-          "chestCm",
-          "hipCm",
-          "sleeveLengthCm",
-          "inseamCm",
-          "shoulderLengthCm",
-          "bodyType",
-          "description",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "ReviewEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "productId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "userId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "productVariantId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "rating": {
-            "type": "number",
-            "example": 5,
-            "minimum": 1,
-            "maximum": 5
-          },
-          "comment": {
-            "type": "object",
-            "example": "Great product!",
-            "nullable": true
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "productId",
-          "userId",
-          "productVariantId",
-          "rating",
-          "comment",
-          "createdAt",
           "updatedAt"
         ]
       },
@@ -6328,46 +4048,15 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.570Z"
+            "example": "2025-12-04T10:46:26.784Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.570Z"
+            "example": "2025-12-04T10:46:26.785Z"
           }
         },
         "required": [
-          "userId",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "CartEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "userId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
           "userId",
           "createdAt",
           "updatedAt"
@@ -6393,57 +4082,15 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.596Z"
+            "example": "2025-12-04T10:46:26.804Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.596Z"
+            "example": "2025-12-04T10:46:26.805Z"
           }
         },
         "required": [
-          "cartId",
-          "productVariantId",
-          "quantity",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "CartItemEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "cartId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "productVariantId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "quantity": {
-            "type": "number",
-            "example": 2
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
           "cartId",
           "productVariantId",
           "quantity",
@@ -6462,145 +4109,14 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.570Z"
+            "example": "2025-12-04T10:46:26.784Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.570Z"
+            "example": "2025-12-04T10:46:26.785Z"
           }
         }
-      },
-      "UserVoucherEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "userId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "voucherId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "useVoucherAt": {
-            "type": "object",
-            "example": "2024-01-01T00:00:00.000Z",
-            "nullable": true
-          },
-          "saveVoucherAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "voucherStatus": {
-            "type": "string",
-            "enum": [
-              "AVAILABLE",
-              "SAVED",
-              "USED",
-              "EXPIRED"
-            ],
-            "example": "SAVED"
-          }
-        },
-        "required": [
-          "id",
-          "userId",
-          "voucherId",
-          "useVoucherAt",
-          "saveVoucherAt",
-          "voucherStatus"
-        ]
-      },
-      "LoginDto": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string",
-            "example": "user@example.com",
-            "description": "Email or username"
-          },
-          "password": {
-            "type": "string",
-            "example": "password123",
-            "description": "Password"
-          }
-        },
-        "required": [
-          "username",
-          "password"
-        ]
-      },
-      "LoginUserData": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1,
-            "description": "User ID"
-          },
-          "name": {
-            "type": "string",
-            "example": "John Doe",
-            "description": "User full name"
-          },
-          "email": {
-            "type": "string",
-            "example": "user@example.com",
-            "description": "User email"
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "USER",
-              "ADMIN",
-              "OPERATOR"
-            ],
-            "description": "User role"
-          },
-          "isAdmin": {
-            "type": "boolean",
-            "example": false,
-            "description": "Is admin flag"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "email",
-          "role",
-          "isAdmin"
-        ]
-      },
-      "LoginResponseEntity": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "description": "User information",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/LoginUserData"
-              }
-            ]
-          },
-          "access_token": {
-            "type": "string",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-            "description": "JWT access token"
-          }
-        },
-        "required": [
-          "user",
-          "access_token"
-        ]
       },
       "CreateAuthDto": {
         "type": "object",
@@ -6636,7 +4152,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.013Z"
+            "example": "2025-12-04T10:46:27.913Z"
           },
           "isActive": {
             "type": "boolean",
@@ -6649,7 +4165,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.013Z"
+            "example": "2025-12-04T10:46:27.914Z"
           }
         },
         "required": [
@@ -6664,26 +4180,6 @@
           "isActive",
           "codeActive",
           "codeActiveExpire"
-        ]
-      },
-      "AuthResponseEntity": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Operation successful",
-            "description": "Response message"
-          },
-          "data": {
-            "type": "object",
-            "example": {
-              "id": 1
-            },
-            "description": "Response data"
-          }
-        },
-        "required": [
-          "message"
         ]
       },
       "CodeAuthDto": {
@@ -6729,19 +4225,6 @@
           "password",
           "confirmPassword",
           "email"
-        ]
-      },
-      "MailResponseEntity": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Send email from ecommerce shop successfully!",
-            "description": "Response message"
-          }
-        },
-        "required": [
-          "message"
         ]
       },
       "CreateMailDto": {
@@ -6812,12 +4295,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.484Z"
+            "example": "2025-12-04T10:46:30.479Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.484Z"
+            "example": "2025-12-04T10:46:30.479Z"
           },
           "categoryId": {
             "format": "int64",
@@ -6874,12 +4357,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.484Z"
+            "example": "2025-12-04T10:46:30.479Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.484Z"
+            "example": "2025-12-04T10:46:30.479Z"
           },
           "categoryId": {
             "format": "int64",
@@ -6922,12 +4405,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.615Z"
+            "example": "2025-12-04T10:46:30.523Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.615Z"
+            "example": "2025-12-04T10:46:30.523Z"
           }
         },
         "required": [
@@ -6969,12 +4452,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.615Z"
+            "example": "2025-12-04T10:46:30.523Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.615Z"
+            "example": "2025-12-04T10:46:30.523Z"
           }
         }
       },
@@ -7013,12 +4496,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.717Z"
+            "example": "2025-12-04T10:46:30.550Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.717Z"
+            "example": "2025-12-04T10:46:30.550Z"
           }
         },
         "required": [
@@ -7068,12 +4551,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.717Z"
+            "example": "2025-12-04T10:46:30.550Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.717Z"
+            "example": "2025-12-04T10:46:30.550Z"
           }
         }
       },
@@ -7124,12 +4607,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.839Z"
+            "example": "2025-12-04T10:46:30.586Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.839Z"
+            "example": "2025-12-04T10:46:30.586Z"
           }
         },
         "required": [
@@ -7194,14 +4677,81 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.839Z"
+            "example": "2025-12-04T10:46:30.586Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:18.839Z"
+            "example": "2025-12-04T10:46:30.586Z"
           }
         }
+      },
+      "CreateProductVariantDto": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1315
+          },
+          "createByUserId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 852
+          },
+          "variantName": {
+            "type": "string",
+            "example": "name of product variant"
+          },
+          "variantColor": {
+            "type": "string",
+            "example": "red"
+          },
+          "variantSize": {
+            "type": "string",
+            "example": "XL"
+          },
+          "price": {
+            "type": "number",
+            "example": 46546
+          },
+          "stock": {
+            "type": "number",
+            "example": 851
+          },
+          "stockKeepingUnit": {
+            "type": "string",
+            "example": "EWDGDSED715545D"
+          },
+          "voucherId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1325
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-12-04T10:46:30.622Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2025-12-04T10:46:30.622Z"
+          }
+        },
+        "required": [
+          "productId",
+          "createByUserId",
+          "variantName",
+          "variantColor",
+          "variantSize",
+          "price",
+          "stock",
+          "stockKeepingUnit",
+          "voucherId",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "UpdateProductVariantDto": {
         "type": "object",
@@ -7248,12 +4798,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:19.613Z"
+            "example": "2025-12-04T10:46:30.622Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:19.613Z"
+            "example": "2025-12-04T10:46:30.622Z"
           }
         }
       },
@@ -7286,12 +4836,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.189Z"
+            "example": "2025-12-04T10:46:30.660Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.189Z"
+            "example": "2025-12-04T10:46:30.661Z"
           }
         },
         "required": [
@@ -7333,12 +4883,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.189Z"
+            "example": "2025-12-04T10:46:30.660Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.189Z"
+            "example": "2025-12-04T10:46:30.661Z"
           }
         }
       },
@@ -7383,12 +4933,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.279Z"
+            "example": "2025-12-04T10:46:30.698Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.279Z"
+            "example": "2025-12-04T10:46:30.698Z"
           }
         },
         "required": [
@@ -7445,12 +4995,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.279Z"
+            "example": "2025-12-04T10:46:30.698Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.279Z"
+            "example": "2025-12-04T10:46:30.698Z"
           }
         }
       },
@@ -7475,7 +5025,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.526Z"
+            "example": "2025-12-04T10:46:30.741Z"
           },
           "status": {
             "type": "string",
@@ -7500,12 +5050,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.527Z"
+            "example": "2025-12-04T10:46:30.741Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.527Z"
+            "example": "2025-12-04T10:46:30.741Z"
           }
         },
         "required": [
@@ -7543,7 +5093,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.526Z"
+            "example": "2025-12-04T10:46:30.741Z"
           },
           "status": {
             "type": "string",
@@ -7568,12 +5118,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.527Z"
+            "example": "2025-12-04T10:46:30.741Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.527Z"
+            "example": "2025-12-04T10:46:30.741Z"
           }
         }
       },
@@ -7605,67 +5155,15 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.619Z"
+            "example": "2025-12-04T10:46:30.773Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.619Z"
+            "example": "2025-12-04T10:46:30.773Z"
           }
         },
         "required": [
-          "orderId",
-          "productVariantId",
-          "quantity",
-          "unitPrice",
-          "totalPrice",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "OrderItemEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "orderId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "productVariantId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "quantity": {
-            "type": "number",
-            "example": 2
-          },
-          "unitPrice": {
-            "type": "number",
-            "example": 50
-          },
-          "totalPrice": {
-            "type": "number",
-            "example": 100
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
           "orderId",
           "productVariantId",
           "quantity",
@@ -7703,12 +5201,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.619Z"
+            "example": "2025-12-04T10:46:30.773Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.619Z"
+            "example": "2025-12-04T10:46:30.773Z"
           }
         }
       },
@@ -7728,22 +5226,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.722Z"
+            "example": "2025-12-04T10:46:30.810Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-04T10:46:30.810Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-04T10:46:30.810Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-04T10:46:30.810Z"
           },
           "carrier": {
             "type": "string",
@@ -7760,12 +5258,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-04T10:46:30.811Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-04T10:46:30.811Z"
           }
         },
         "required": [
@@ -7798,22 +5296,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.722Z"
+            "example": "2025-12-04T10:46:30.810Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-04T10:46:30.810Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-04T10:46:30.810Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-04T10:46:30.810Z"
           },
           "carrier": {
             "type": "string",
@@ -7830,12 +5328,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-04T10:46:30.811Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.723Z"
+            "example": "2025-12-04T10:46:30.811Z"
           }
         }
       },
@@ -7858,7 +5356,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.807Z"
+            "example": "2025-12-04T10:46:30.844Z"
           },
           "amount": {
             "type": "number",
@@ -7870,57 +5368,6 @@
           }
         },
         "required": [
-          "orderId",
-          "transactionId",
-          "paymentMethod",
-          "paymentDate",
-          "amount",
-          "status"
-        ]
-      },
-      "PaymentEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "orderId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "transactionId": {
-            "type": "string",
-            "example": "TXN123456789"
-          },
-          "paymentMethod": {
-            "type": "string",
-            "example": "Credit Card"
-          },
-          "paymentDate": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "amount": {
-            "type": "number",
-            "example": 105
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "PENDING",
-              "PAID",
-              "FAILED",
-              "REFUNDED"
-            ],
-            "example": "PENDING"
-          }
-        },
-        "required": [
-          "id",
           "orderId",
           "transactionId",
           "paymentMethod",
@@ -7948,7 +5395,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:20.807Z"
+            "example": "2025-12-04T10:46:30.844Z"
           },
           "amount": {
             "type": "number",
@@ -7980,12 +5427,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.596Z"
+            "example": "2025-12-04T10:46:26.804Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:17.596Z"
+            "example": "2025-12-04T10:46:26.805Z"
           }
         }
       },
@@ -8011,12 +5458,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-04T10:46:30.912Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-04T10:46:30.912Z"
           },
           "usageLimit": {
             "type": "number",
@@ -8033,12 +5480,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-04T10:46:30.912Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-04T10:46:30.912Z"
           },
           "createdBy": {
             "format": "int64",
@@ -8083,12 +5530,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-04T10:46:30.912Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-04T10:46:30.912Z"
           },
           "usageLimit": {
             "type": "number",
@@ -8105,12 +5552,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-04T10:46:30.912Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.006Z"
+            "example": "2025-12-04T10:46:30.912Z"
           },
           "createdBy": {
             "format": "int64",
@@ -8135,12 +5582,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.084Z"
+            "example": "2025-12-04T10:46:30.949Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.084Z"
+            "example": "2025-12-04T10:46:30.949Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -8171,12 +5618,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.084Z"
+            "example": "2025-12-04T10:46:30.949Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.084Z"
+            "example": "2025-12-04T10:46:30.949Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -8217,12 +5664,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.167Z"
+            "example": "2025-12-04T10:46:30.996Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.167Z"
+            "example": "2025-12-04T10:46:30.997Z"
           }
         },
         "required": [
@@ -8269,12 +5716,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.167Z"
+            "example": "2025-12-04T10:46:30.996Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.167Z"
+            "example": "2025-12-04T10:46:30.997Z"
           }
         }
       },
@@ -8289,46 +5736,15 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.254Z"
+            "example": "2025-12-04T10:46:31.045Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.254Z"
+            "example": "2025-12-04T10:46:31.045Z"
           }
         },
         "required": [
-          "requestId",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "ReturnRequestEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "requestId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2024-01-01T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
           "requestId",
           "createdAt",
           "updatedAt"
@@ -8345,12 +5761,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.254Z"
+            "example": "2025-12-04T10:46:31.045Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2025-12-04T09:24:21.254Z"
+            "example": "2025-12-04T10:46:31.045Z"
           }
         }
       },

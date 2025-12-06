@@ -31,6 +31,7 @@ export class AwsS3Service {
     isShopBanner: boolean = false,
     isCategoryFile: boolean = false,
     isAvatarFile: boolean = false,
+    requestId: number | null = null,
   ): Promise<Media> {
     this.logger.log(
       'Saving new media file to database with url ' + mediaUrl + ' ...',
@@ -48,6 +49,7 @@ export class AwsS3Service {
           isShopBanner: isShopBanner,
           isCategoryFile: isCategoryFile,
           isAvatarFile: isAvatarFile,
+          requestId: requestId,
         },
       });
 
@@ -193,5 +195,511 @@ export class AwsS3Service {
     }
 
     return resultUploadFile;
+  }
+
+  async uploadLogoShopFile(file: Express.Multer.File, adminId: string) {
+    let targetLocation: string = 'shops/shop-logo/';
+    const isShopLogo: boolean = true;
+
+    // e.g. "image/png" or "video/mp4"
+    const mime = file.mimetype;
+
+    const isImage = mime.startsWith('image/');
+    const isVideo = mime.startsWith('video/');
+
+    if (!isImage && !isVideo) {
+      throw new BadRequestException('Only image or video files are allowed');
+    }
+
+    if (isImage) {
+      this.logger.log('Uploading an image file');
+      targetLocation += 'logo-images/';
+    } else if (isVideo) {
+      this.logger.log('Uploading a video file');
+      targetLocation += 'logo-videos/';
+    }
+
+    this.logger.log(
+      'Received request to upload file ' +
+        file.originalname +
+        ' to location ' +
+        targetLocation,
+    );
+    const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+    const newMediaInDatabase: Media = await this.saveNewMediaFileToDatabase(
+      resultUploadFile.Key,
+      isImage ? MediaType.IMAGE : MediaType.VIDEO,
+      null,
+      Number(adminId),
+      null,
+      isShopLogo,
+      false,
+      false,
+    );
+
+    if (!newMediaInDatabase) {
+      throw new BadRequestException('Cannot save media file to database');
+    }
+
+    return resultUploadFile;
+  }
+
+  async uploadBannerShopFile(file: Express.Multer.File, adminId: string) {
+    let targetLocation: string = 'shops/shop-banners/';
+    const isShopBanner: boolean = true;
+
+    // e.g. "image/png" or "video/mp4"
+    const mime = file.mimetype;
+
+    const isImage = mime.startsWith('image/');
+    const isVideo = mime.startsWith('video/');
+
+    if (!isImage && !isVideo) {
+      throw new BadRequestException('Only image or video files are allowed');
+    }
+
+    if (isImage) {
+      this.logger.log('Uploading an image file');
+      targetLocation += 'banner-images/';
+    } else if (isVideo) {
+      this.logger.log('Uploading a video file');
+      targetLocation += 'banner-videos/';
+    }
+
+    this.logger.log(
+      'Received request to upload file ' +
+        file.originalname +
+        ' to location ' +
+        targetLocation,
+    );
+    const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+    const newMediaInDatabase: Media = await this.saveNewMediaFileToDatabase(
+      resultUploadFile.Key,
+      isImage ? MediaType.IMAGE : MediaType.VIDEO,
+      null,
+      Number(adminId),
+      null,
+      false,
+      isShopBanner,
+      false,
+    );
+
+    if (!newMediaInDatabase) {
+      throw new BadRequestException('Cannot save media file to database');
+    }
+
+    return resultUploadFile;
+  }
+
+  async uploadManyProductFile(
+    files: Express.Multer.File[],
+    adminId: string,
+    productVariantId: string,
+  ): Promise<AWS.S3.ManagedUpload.SendData[]> {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+
+    const results: AWS.S3.ManagedUpload.SendData[] = [];
+
+    for (const file of files) {
+      let targetLocation: string = 'shops/shop-products/';
+
+      // e.g. "image/png" or "video/mp4"
+      const mime = file.mimetype;
+
+      const isImage = mime.startsWith('image/');
+      const isVideo = mime.startsWith('video/');
+
+      if (!isImage && !isVideo) {
+        throw new BadRequestException('Only image or video files are allowed');
+      }
+
+      if (isImage) {
+        this.logger.log('Uploading an image file');
+        targetLocation += 'product-images/';
+      } else if (isVideo) {
+        this.logger.log('Uploading a video file');
+        targetLocation += 'product-videos/';
+      }
+
+      targetLocation +=
+        adminId.toString() + '/' + productVariantId.toString() + '/';
+      this.logger.log(
+        'Received request to upload file ' +
+          file.originalname +
+          ' to location ' +
+          targetLocation,
+      );
+      const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+      const newMediaInDatabase: Media = await this.saveNewMediaFileToDatabase(
+        resultUploadFile.Key,
+        isImage ? MediaType.IMAGE : MediaType.VIDEO,
+        null,
+        Number(adminId),
+        Number(productVariantId),
+        false,
+        false,
+        false,
+      );
+
+      if (!newMediaInDatabase) {
+        throw new BadRequestException('Cannot save media file to database');
+      }
+
+      results.push(resultUploadFile);
+    }
+
+    return results;
+  }
+
+  async uploadOneCategoryFile(
+    file: Express.Multer.File,
+    adminId: string,
+  ): Promise<AWS.S3.ManagedUpload.SendData> {
+    let targetLocation: string = 'shops/shop-categories/';
+    const isCategoryFile: boolean = true;
+
+    // e.g. "image/png" or "video/mp4"
+    const mime = file.mimetype;
+
+    const isImage = mime.startsWith('image/');
+    const isVideo = mime.startsWith('video/');
+
+    if (!isImage && !isVideo) {
+      throw new BadRequestException('Only image or video files are allowed');
+    }
+
+    if (isImage) {
+      this.logger.log('Uploading an image file');
+      targetLocation += 'category-images/';
+    } else if (isVideo) {
+      this.logger.log('Uploading a video file');
+      targetLocation += 'category-videos/';
+    }
+
+    targetLocation += adminId.toString() + '/';
+    this.logger.log(
+      'Received request to upload file ' +
+        file.originalname +
+        ' to location ' +
+        targetLocation,
+    );
+    const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+    const newMediaInDatabase: Media = await this.saveNewMediaFileToDatabase(
+      resultUploadFile.Key,
+      isImage ? MediaType.IMAGE : MediaType.VIDEO,
+      null,
+      Number(adminId),
+      null,
+      false,
+      false,
+      isCategoryFile,
+    );
+
+    if (!newMediaInDatabase) {
+      throw new BadRequestException('Cannot save media file to database');
+    }
+
+    return resultUploadFile;
+  }
+
+  async uploadOneUserAvatarFile(
+    file: Express.Multer.File,
+    userId: string,
+  ): Promise<AWS.S3.ManagedUpload.SendData> {
+    let targetLocation: string = 'users/user-avatars/';
+
+    // e.g. "image/png" or "video/mp4"
+    const mime = file.mimetype;
+
+    const isImage = mime.startsWith('image/');
+    const isVideo = mime.startsWith('video/');
+
+    if (!isImage && !isVideo) {
+      throw new BadRequestException('Only image or video files are allowed');
+    }
+
+    if (isImage) {
+      this.logger.log('Uploading an image file');
+      targetLocation += 'user-avatar-images/';
+    } else if (isVideo) {
+      this.logger.log('Uploading a video file');
+      targetLocation += 'user-avatar-videos/';
+    }
+
+    targetLocation += userId.toString() + '/';
+    this.logger.log(
+      'Received request to upload file ' +
+        file.originalname +
+        ' to location ' +
+        targetLocation,
+    );
+    const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+    const newMediaInDatabase: Media = await this.saveNewMediaFileToDatabase(
+      resultUploadFile.Key,
+      isImage ? MediaType.IMAGE : MediaType.VIDEO,
+      null,
+      Number(userId),
+      null,
+      false,
+      false,
+      false,
+      true,
+    );
+
+    if (!newMediaInDatabase) {
+      throw new BadRequestException('Cannot save media file to database');
+    }
+
+    return resultUploadFile;
+  }
+
+  async uploadManyUserAvatarFile(
+    files: Express.Multer.File[],
+    userId: string,
+  ): Promise<AWS.S3.ManagedUpload.SendData[]> {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+
+    const results: AWS.S3.ManagedUpload.SendData[] = [];
+
+    for (const file of files) {
+      let targetLocation: string = 'users/user-avatars/';
+
+      // e.g. "image/png" or "video/mp4"
+      const mime = file.mimetype;
+
+      const isImage = mime.startsWith('image/');
+      const isVideo = mime.startsWith('video/');
+
+      if (!isImage && !isVideo) {
+        throw new BadRequestException('Only image or video files are allowed');
+      }
+
+      if (isImage) {
+        this.logger.log('Uploading an image file');
+        targetLocation += 'user-avatar-images/';
+      } else if (isVideo) {
+        this.logger.log('Uploading a video file');
+        targetLocation += 'user-avatar-videos/';
+      }
+
+      targetLocation += userId.toString() + '/';
+      this.logger.log(
+        'Received request to upload file ' +
+          file.originalname +
+          ' to location ' +
+          targetLocation,
+      );
+      const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+      const newMediaInDatabase: Media = await this.saveNewMediaFileToDatabase(
+        resultUploadFile.Key,
+        isImage ? MediaType.IMAGE : MediaType.VIDEO,
+        null,
+        Number(userId),
+        null,
+        false,
+        false,
+        false,
+        true,
+      );
+
+      if (!newMediaInDatabase) {
+        throw new BadRequestException('Cannot save media file to database');
+      }
+
+      results.push(resultUploadFile);
+    }
+
+    return results;
+  }
+
+  async uploadOneProductReviewFile(
+    file: Express.Multer.File,
+    userId: string,
+    reviewId: string,
+  ): Promise<AWS.S3.ManagedUpload.SendData> {
+    let targetLocation: string = 'users/user-reviews/';
+
+    // e.g. "image/png" or "video/mp4"
+    const mime = file.mimetype;
+
+    const isImage = mime.startsWith('image/');
+    const isVideo = mime.startsWith('video/');
+
+    if (!isImage && !isVideo) {
+      throw new BadRequestException('Only image or video files are allowed');
+    }
+
+    if (isImage) {
+      this.logger.log('Uploading an image file');
+      targetLocation += 'user-review-images/';
+    } else if (isVideo) {
+      this.logger.log('Uploading a video file');
+      targetLocation += 'user-review-videos/';
+    }
+
+    targetLocation += userId.toString() + '/' + reviewId.toString() + '/';
+
+    this.logger.log(
+      'Received request to upload file ' +
+        file.originalname +
+        ' to location ' +
+        targetLocation,
+    );
+    const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+    const newMediaInDatabase: Media = await this.saveNewMediaFileToDatabase(
+      resultUploadFile.Key,
+      isImage ? MediaType.IMAGE : MediaType.VIDEO,
+      Number(reviewId),
+      Number(userId),
+      null,
+      false,
+      false,
+      false,
+    );
+
+    if (!newMediaInDatabase) {
+      throw new BadRequestException('Cannot save media file to database');
+    }
+
+    return resultUploadFile;
+  }
+
+  async uploadManyReviewFile(
+    files: Express.Multer.File[],
+    userId: string,
+    reviewId: string,
+  ): Promise<AWS.S3.ManagedUpload.SendData[]> {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+
+    const results: AWS.S3.ManagedUpload.SendData[] = [];
+
+    for (const file of files) {
+      let targetLocation: string = 'users/user-reviews/';
+
+      // e.g. "image/png" or "video/mp4"
+      const mime = file.mimetype;
+
+      const isImage = mime.startsWith('image/');
+      const isVideo = mime.startsWith('video/');
+
+      if (!isImage && !isVideo) {
+        throw new BadRequestException('Only image or video files are allowed');
+      }
+
+      if (isImage) {
+        this.logger.log('Uploading an image file');
+        targetLocation += 'user-review-images/';
+      } else if (isVideo) {
+        this.logger.log('Uploading a video file');
+        targetLocation += 'user-review-videos/';
+      }
+
+      targetLocation += userId.toString() + '/' + reviewId.toString() + '/';
+      this.logger.log(
+        'Received request to upload file ' +
+          file.originalname +
+          ' to location ' +
+          targetLocation,
+      );
+      const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+      const newMediaInDatabase: Media = await this.saveNewMediaFileToDatabase(
+        resultUploadFile.Key,
+        isImage ? MediaType.IMAGE : MediaType.VIDEO,
+        Number(reviewId),
+        Number(userId),
+        null,
+        false,
+        false,
+        false,
+        false,
+        null,
+      );
+
+      if (!newMediaInDatabase) {
+        throw new BadRequestException('Cannot save media file to database');
+      }
+
+      results.push(resultUploadFile);
+    }
+
+    return results;
+  }
+
+  async uploadManyRequestFile(
+    files: Express.Multer.File[],
+    userId: string,
+    requestId: string,
+  ): Promise<AWS.S3.ManagedUpload.SendData[]> {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('At least one file is required');
+    }
+
+    const results: AWS.S3.ManagedUpload.SendData[] = [];
+
+    for (const file of files) {
+      let targetLocation: string = 'users/user-requests/';
+
+      // e.g. "image/png" or "video/mp4"
+      const mime = file.mimetype;
+
+      const isImage = mime.startsWith('image/');
+      const isVideo = mime.startsWith('video/');
+
+      if (!isImage && !isVideo) {
+        throw new BadRequestException('Only image or video files are allowed');
+      }
+
+      if (isImage) {
+        this.logger.log('Uploading an image file');
+        targetLocation += 'user-request-images/';
+      } else if (isVideo) {
+        this.logger.log('Uploading a video file');
+        targetLocation += 'user-request-videos/';
+      }
+
+      targetLocation += userId.toString() + '/' + requestId.toString() + '/';
+      this.logger.log(
+        'Received request to upload file ' +
+          file.originalname +
+          ' to location ' +
+          targetLocation,
+      );
+      const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+      const newMediaInDatabase: Media = await this.saveNewMediaFileToDatabase(
+        resultUploadFile.Key,
+        isImage ? MediaType.IMAGE : MediaType.VIDEO,
+        null,
+        Number(userId),
+        null,
+        false,
+        false,
+        false,
+        false,
+        Number(requestId),
+      );
+
+      if (!newMediaInDatabase) {
+        throw new BadRequestException('Cannot save media file to database');
+      }
+
+      results.push(resultUploadFile);
+    }
+
+    return results;
   }
 }

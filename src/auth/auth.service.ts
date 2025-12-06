@@ -8,6 +8,10 @@ import {
   CreateAuthDto,
 } from './dto/create-auth.dto';
 import { UserInRequestWithUser } from '@/helpers/auth/interfaces/RequestWithUser.interface';
+import { CreateUserByGoogleAccountDto } from '@/user/dtos/create.user.dto';
+import { Gender, Role, User } from '@prisma/client';
+import dayjs from 'dayjs';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +26,10 @@ export class AuthService {
   ): Promise<UserInRequestWithUser> {
     const user = await this.userService.getUserByEmail(username);
     if (!user) {
+      throw new UnauthorizedException('Invalid Username or Password');
+    }
+
+    if (!user.password) {
       throw new UnauthorizedException('Invalid Username or Password');
     }
 
@@ -70,6 +78,67 @@ export class AuthService {
 
   async handleRegister(registerDto: CreateAuthDto) {
     return await this.userService.handleRegister(registerDto);
+  }
+
+  async googleLogin(req: any) {
+    if (!req.user) {
+      throw new UnauthorizedException('No user from google!');
+    }
+
+    const existUser: User | null = await this.userService.getUserByEmail(
+      req.user.email,
+    );
+    if (!existUser) {
+      const createUserByGoogleAccountDto: CreateUserByGoogleAccountDto = {
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        email: req.user.email,
+        phone: '',
+        googleId: req.user.id,
+        username:
+          req.user.email.split('@')[0] +
+          Math.floor(Math.random() * 100000).toString(),
+        role: Role.USER,
+        createdAt: new Date(),
+        isActive: true,
+        gender: Gender.OTHER,
+        isAdmin: false,
+        codeActive: uuidv4().toString(),
+        codeActiveExpire: dayjs().add(5, 'minutes').toDate(),
+        staffCode: '',
+        loyaltyCard: '',
+      };
+
+      const newUser: User = await this.userService.createAnUserByGoogleAccount(
+        createUserByGoogleAccountDto,
+      );
+
+      if (!newUser) {
+        throw new UnauthorizedException('Cannot create user from google!');
+      }
+
+      return this.login({
+        id: newUser.id,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        name: newUser.firstName + ' ' + newUser.lastName,
+        email: newUser.email,
+        role: newUser.role,
+        isAdmin: newUser.isAdmin,
+        isActive: newUser.isActive,
+      });
+    }
+
+    return this.login({
+      id: existUser.id,
+      firstName: existUser.firstName,
+      lastName: existUser.lastName,
+      name: existUser.firstName + ' ' + existUser.lastName,
+      email: existUser.email,
+      role: existUser.role,
+      isAdmin: existUser.isAdmin,
+      isActive: existUser.isActive,
+    });
   }
 
   checkCode = async (data: CodeAuthDto) => {

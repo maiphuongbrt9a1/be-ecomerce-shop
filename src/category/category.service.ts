@@ -4,15 +4,22 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Category, Prisma, Products } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 
 @Injectable()
 export class CategoryService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly awsService: AwsS3Service,
+  ) {}
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     const result = await this.prismaService.category.create({
       data: { ...createCategoryDto },
     });
+    if (!result) {
+      throw new NotFoundException('Failed to create category');
+    }
 
     return result;
   }

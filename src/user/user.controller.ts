@@ -9,7 +9,9 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -17,36 +19,24 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
-import { CreateUserDto } from '@/user/dtos/create.user.dto';
+import {
+  CreateUserByGoogleAccountDto,
+  CreateUserDto,
+} from '@/user/dtos/create.user.dto';
 import { UpdateUserDto } from '@/user/dtos/update.user.dto';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import { CreateCartDto } from '@/cart/dto/create-cart.dto';
 import { UpdateCartDto } from '@/cart/dto/update-cart.dto';
 import { CreateCartItemDto } from '@/cart-items/dto/create-cart-item.dto';
-import { UserEntity } from './entities/user.entity';
-import { AddressEntity } from '@/address/entities/address.entity';
-import { ShopOfficeEntity } from '@/shop-offices/entities/shop-office.entity';
-import { MediaEntity } from '@/media/entities/media.entity';
-import { VoucherEntity } from '@/vouchers/entities/voucher.entity';
-import { ProductEntity } from '@/products/entities/product.entity';
-import { ProductVariantEntity } from '@/product-variants/entities/product-variant.entity';
-import { CategoryEntity } from '@/category/entities/category.entity';
-import { OrderEntity } from '@/orders/entities/order.entity';
-import { ShipmentEntity } from '@/shipments/entities/shipment.entity';
-import { RequestEntity } from '@/requests/entities/request.entity';
-import { SizeProfileEntity } from '@/size-profiles/entities/size-profile.entity';
-import { ReviewEntity } from '@/reviews/entities/review.entity';
-import { CartEntity } from '@/cart/entities/cart.entity';
-import { CartItemEntity } from '@/cart-items/entities/cart-item.entity';
-import { UserVoucherEntity } from '@/user-vouchers/entities/user-voucher.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @ApiOperation({ summary: 'Get user list' })
-  @ApiResponse({ status: 200, description: 'User list found!', type: [UserEntity] })
+  @ApiResponse({ status: 200, description: 'User list found!' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema
@@ -56,29 +46,43 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Get user detail by ID' })
-  @ApiResponse({ status: 200, description: 'User found!', type: UserEntity })
+  @ApiResponse({ status: 200, description: 'User found!' })
   @Get('/:id')
   async getUserDetailById(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.getUserDetail(id);
   }
 
   @ApiOperation({ summary: 'Delete a user' })
-  @ApiResponse({ status: 200, description: 'User deleted', type: UserEntity })
   @Delete('/:id')
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.deleteAnUser(id);
   }
 
   @ApiOperation({ summary: 'Add a new user' })
-  @ApiResponse({ status: 201, description: 'User created', type: UserEntity })
+  @ApiBearerAuth()
   @ApiBody({ type: CreateUserDto })
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
-  async createAnUser(@Body() createUserDto: CreateUserDto) {
-    return await this.userService.createAnUser(createUserDto);
+  async createAnUser(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createUserDto: CreateUserDto,
+  ) {
+    return await this.userService.createAnUser(file, createUserDto);
+  }
+
+  @ApiOperation({ summary: 'Add a new user by Google account' })
+  @ApiBearerAuth()
+  @ApiBody({ type: CreateUserByGoogleAccountDto })
+  @Post('google-account')
+  async createAnUserByGoogleAccount(
+    @Body() createUserByGoogleAccountDto: CreateUserByGoogleAccountDto,
+  ) {
+    return await this.userService.createAnUserByGoogleAccount(
+      createUserByGoogleAccountDto,
+    );
   }
 
   @ApiOperation({ summary: 'Update a user' })
-  @ApiResponse({ status: 200, description: 'User updated', type: UserEntity })
   @ApiBody({ type: UpdateUserDto })
   @Patch('/:id')
   async updateAnUser(
@@ -89,7 +93,7 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Get address list of a user' })
-  @ApiResponse({ status: 200, description: 'User address list found!', type: [AddressEntity] })
+  @ApiResponse({ status: 200, description: 'User address list found!' })
   @Get('/:id/address-list')
   async getAddressOfUser(
     @Param('id', ParseIntPipe) userId: number,
@@ -104,7 +108,7 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Get shop office of a user' })
-  @ApiResponse({ status: 200, description: 'User shop office found!', type: ShopOfficeEntity })
+  @ApiResponse({ status: 200, description: 'User shop office found!' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
@@ -117,7 +121,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get avatar of user',
-    type: MediaEntity,
   })
   @Get('/:id/avatar')
   async getAvatarOfUser(@Param('id', ParseIntPipe) id: number) {
@@ -128,7 +131,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get vouchers are created by a user',
-    type: [VoucherEntity],
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -150,7 +152,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get products are created by a user',
-    type: [ProductEntity],
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -172,7 +173,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get product variants are created by a user',
-    type: [ProductVariantEntity],
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -194,7 +194,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get categories are created by a user',
-    type: [CategoryEntity],
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -216,7 +215,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get orders are created by a user',
-    type: [OrderEntity],
   })
   @Get('/:id/order-list')
   async getAllOrdersCreatedByUser(
@@ -235,7 +233,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get orders are processed by a user',
-    type: [OrderEntity],
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -257,7 +254,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get shipments are processed by a user',
-    type: [ShipmentEntity],
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -279,7 +275,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get requests of user',
-    type: [RequestEntity],
   })
   @Get('/:id/request-list')
   async getRequestsOfUser(
@@ -298,7 +293,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get processed requests of user',
-    type: [RequestEntity],
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -320,7 +314,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get size-profiles of user',
-    type: [SizeProfileEntity],
   })
   @Get('/:id/size-profile-list')
   async getSizeProfilesOfUser(
@@ -339,7 +332,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get reviews of user',
-    type: [ReviewEntity],
   })
   @Get('/:id/review-list')
   async getReviewsOfUser(
@@ -362,7 +354,6 @@ export class UserController {
     status: 201,
     description:
       'Create a new cart (only initial id user in cart table. Do not add any cart items)',
-    type: CartEntity,
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
@@ -379,7 +370,6 @@ export class UserController {
   @ApiResponse({
     status: 201,
     description: 'Add a new product variant (cart item) to cart',
-    type: CartItemEntity,
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
@@ -398,7 +388,6 @@ export class UserController {
     status: 200,
     description:
       'Get cart id of user (only get id user in cart table. Do not get any cart items)',
-    type: CartEntity,
   })
   @Get('/:id/cart')
   async getCartIdOfUser(@Param('id', ParseIntPipe) id: number) {
@@ -413,7 +402,6 @@ export class UserController {
     status: 200,
     description:
       'Update one cart (only update id user in cart table. Do not add any cart items)',
-    type: CartEntity,
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
@@ -431,7 +419,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get user cart with cart items detail',
-    type: CartEntity,
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
@@ -445,7 +432,6 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get saved vouchers of user',
-    type: [UserVoucherEntity],
   })
   @Get('/:id/saved-voucher-list')
   async getSavedVouchersOfUser(

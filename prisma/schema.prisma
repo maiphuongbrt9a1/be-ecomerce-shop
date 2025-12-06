@@ -84,7 +84,8 @@ model User {
     email       String      @unique
     phone       String?     @db.VarChar(10)
     username    String      @unique @db.VarChar(32)
-    password    String 
+    password    String?
+    googleId    String?     @unique @db.VarChar(255)
     role        Role        @default(USER)
     isActive    Boolean     @default(false)
     codeActive  String      @db.Uuid
@@ -263,6 +264,8 @@ model Media {
     userId      BigInt?      @db.BigInt
     productVariant ProductVariants? @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productVariantId BigInt?  @db.BigInt
+    request        Requests?        @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    requestId      BigInt?      @db.BigInt
     isShopLogo Boolean    @default(false)
     isShopBanner Boolean   @default(false)
     isCategoryFile Boolean @default(false)
@@ -403,6 +406,7 @@ model Requests {
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
     returnRequest ReturnRequests[]
+    media       Media[]
 }
 
 model ReturnRequests {
