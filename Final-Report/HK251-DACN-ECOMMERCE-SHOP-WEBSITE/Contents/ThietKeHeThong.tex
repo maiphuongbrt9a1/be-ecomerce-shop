@@ -103,6 +103,7 @@ Ngoài ra người quản trị viên còn có thể nhận các thông báo khi
 
 Họ có thể tham gia vào quá trình xử lý, đóng gói, vận chuyển đơn hàng đến tay người khách hàng. Họ có thể than gia vào việc xử lý các yêu cần hủy đơn, trả hàng - hoàn tiền. Và họ có thể nhắn tin với quản trị viên, khách hàng, nhân viên khác cho mục đích công việc. \\
  
+Không những vậy người nhân viên còn có thể xem được sản phẩm và số lượng tồn kho của sản phẩm để có thể tư vấn việc mua hàng cho người khách hàng trong thời gian thực. \\
 
 \subsubsection{Lược đồ cơ sở dữ liệu}
 \begin{figure}[H]
@@ -117,6 +118,8 @@ Lược đồ trên là cơ sở dữ liệu của cửa hàng khi được hi�
 
 Để thực hiện việc quản lý đơn giản người dùng của hệ thống ở đây nhóm chỉ có tạo duy nhất một bảng User để lưu thông tin người dùng trong hệ thống. Để có thể phân biệt người dùng nào là Customer, Admin, Staff. Nhóm sử dụng các trường thông tin phụ của bảng User đó là Role, isAdmin, isActive để kiểm tra và quản lý vai trò và quyền của người dùng. \\ 
 
+Với các bảng còn lại nhóm thực hiện mapping chính xác theo lược đồ thực thể lược đồ thực thể mối liên hệ mở rộng đã được trình bày bên trên. \\
+
 \subsection{Biểu đồ lớp (Class Diagram)}
 \begin{figure}[H]
   \centering
@@ -125,6 +128,30 @@ Lược đồ trên là cơ sở dữ liệu của cửa hàng khi được hi�
   \caption{Biểu đồ lớp (Class diagram) hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite{Sequence Diagram - Admin, staff processing order}}
   \label{fig: Biểu đồ lớp (Class diagram) hệ thống bán hàng trực tuyến cho cửa hàng thời trang}
 \end{figure}
+
+Dựa vào các nghiệp vụ và lược đồ thực thể mối liên hệ mở rộng, biểu đồ lớp được thiết kế nhằm để thể hiện việc mô hình hóa các đối tượng trong hệ thống bao gồm các thuộc tính và các phương thức xử lý chính. \\
+
+Đầu tiên hệ thống có một lớp ảo là User. Các lớp Customer, Operator được kế thừa lại từ User. Nó thể hiện việc cả Customer và Operator đều là User và có các thuộc tính và phương thức của User. \\
+
+Lớp Operator được hai lớp khác kế thừa lại. Đó là Admin và Staff. Điều này thể hiện Admin và Staff đều là một Operator và có các thuộc tính và phương thức của Operator. \\
+
+Việc thiết kế Operator được hiện thực chia thành Admin và Staff thể hiện cho việc phân quyền, phân vai trò của người Operator trong hệ thống. Đặc biệt chỉ có một số hành động chỉ có một Admin của hệ thống mới được phép làm. Đó là việc thêm xóa sửa các sản phẩm, danh mục sản phẩm, voucher ở cửa hàng, thực hiện việc thanh toán hoàn tiền cho đơn hàng có yêu cầu hoàn tiền. \\ 
+
+Không chỉ vậy, theo biểu đồ lớp ta thấy Shop có mối liên hệ association với address thể hiện với mỗi shop sẽ có duy nhất một địa chỉ cho shop đó. Bên cạnh đó, Shop còn có mối liên hệ association với sản phẩm và category thể hiện một shop có danh mục sản phẩm và sản phẩm của riêng shop đó. Còn với vận hành cửa hàng, mỗi shop có thể có nhiều người Operator.\\
+
+Đến với mối quan hệ của Category ta có mối liên hệ association thể hiện một category có nhiều product và một product thì có thể thuộc vào nhiều Category. \\ 
+
+Với mỗi product trong cửa hàng, Product có thể có nhiều ProductVariant và đây là mối quan hệ composition. Mối quan hệ này đảm bảo khi một Product bị hủy thì các ProductVariant của nó cũng sẽ bị hủy theo. \\
+
+Ngoài ra biểu đồ lớp còn thể hiện, một Customer có quan hệ association với Cart. Một Customer thì có một Cart. Giữa Cart và CartItem có mối quan hệ là Composition nếu Cart bị hủy thì tất cả các CartItem đều hủy theo. Đối với CartItem và ProductVariant có mối quan hệ association thể hiện một CartItem là một ProductVariant. Và mỗi ProductVariant thì có mối quan hệ association với media thể hiện một ProductVariant có thể có nhiều hình ảnh hay video mô tả một biến thể của sản phẩm. \\
+
+Bên cạnh đó khi thực hiện đặt hàng, người Customer có thể tiến hành đặt nhiều đơn hàng và mối liên hệ giữa Customer và Order là association. Đến với mỗi Order, Order sẽ chứa nhiều OrderItem và mối liên hệ giữa chúng là composition thể hiện cho việc khi xóa một Order thì tất cả OrderItem cũng sẽ mất theo. Và mỗi OrderItem là một ProductVariant. Không những vậy Order có thể có nhiều lần Payment. Order có thể sử dụng voucher để nhận giảm giá, có mối liên hệ với Shipment để thể hiện việc vận chuyển đơn hàng. Và ngoài ra mỗi đơn hàng thì người Customer có thể tạo nhiều request cho đơn hàng đó. Các Request có thể là Cancelled request hay là Return Request. \\ 
+
+Đối với mỗi một người Customer, họ có thể có nhiều Review mà trong mỗi Review sẽ có thông tin của các ProductVariant và media của sản phẩm đó kèm theo mô tả đánh giá của họ. Trong trường hợp không hài lòng người Customer có thể thực hiện nhắn tin, các message sẽ lưu lại các thông tin của đoạn chat của người Customer với người Operator của cửa hàng. \\
+
+Đến với việc quản lý cửa hàng, biểu đồ lớp cho ta thấy, người Admin của cửa hàng có thể tạo nhiều danh mục sản phẩm, sản phẩm và các biến thể sản phẩm. Không chỉ vậy, người Admin của cửa hàng còn tiến hành tạo ra các voucher khuyến mãi của cửa hàng. Đây đều là các việc mà người Staff của cửa hàng không thể thực hiện. \\
+
+Cả hai vai trò Admin và Staff đều có khả năng thực hiện xử lý các order.\\ 
 \subsection{Sơ đồ tuần tự}
 \subsubsection{Người quản trị viên, người nhân viên xử lý đơn hàng.}
 \begin{figure}[H]
