@@ -1,0 +1,91 @@
+\thispagestyle {empty}
+\contentsline {section}{\numberline {1}Giới thiệu tổng quan đề tài}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Giới thiệu đề tài}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Mục tiêu thực hiện đề tài}{1}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Lợi ích của đề tài mang lại}{1}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Phạm vi và giới hạn của đề tài}{2}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Cấu trúc của đề tài}{2}{subsection.1.5}%
+\contentsline {section}{\numberline {2}Phân tích tổng quan}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Các hệ thống có liên quan trên thị trường}{3}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}H \& M}{3}{subsubsection.2.1.1}%
+\contentsline {subsubsubsection}{\numberline {2.1.1.a}Đặc điểm kỹ thuật nổi bật}{3}{subsubsubsection.2.1.1.1}%
+\contentsline {subsubsubsection}{\numberline {2.1.1.b}Đánh giá hệ thống}{3}{subsubsubsection.2.1.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.2}Zara}{3}{subsubsection.2.1.2}%
+\contentsline {subsubsubsection}{\numberline {2.1.2.a}Đặc điểm kỹ thuật nổi bật}{3}{subsubsubsection.2.1.2.1}%
+\contentsline {subsubsubsection}{\numberline {2.1.2.b}Đánh giá hệ thống}{4}{subsubsubsection.2.1.2.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}Adidas}{4}{subsubsection.2.1.3}%
+\contentsline {subsubsubsection}{\numberline {2.1.3.a}Đặc điểm kỹ thuật nổi bật}{4}{subsubsubsection.2.1.3.1}%
+\contentsline {subsubsubsection}{\numberline {2.1.3.b}Đánh giá hệ thống}{5}{subsubsubsection.2.1.3.2}%
+\contentsline {subsubsection}{\numberline {2.1.4}Amazon Fashion}{5}{subsubsection.2.1.4}%
+\contentsline {subsubsubsection}{\numberline {2.1.4.a}Đặc điểm kỹ thuật nổi bật}{5}{subsubsubsection.2.1.4.1}%
+\contentsline {subsubsubsection}{\numberline {2.1.4.b}Đánh giá hệ thống}{5}{subsubsubsection.2.1.4.2}%
+\contentsline {subsubsection}{\numberline {2.1.5}Coolmate}{6}{subsubsection.2.1.5}%
+\contentsline {subsubsubsection}{\numberline {2.1.5.a}Đặc điểm kỹ thuật nổi bật}{6}{subsubsubsection.2.1.5.1}%
+\contentsline {subsubsubsection}{\numberline {2.1.5.b}Đánh giá hệ thống}{6}{subsubsubsection.2.1.5.2}%
+\contentsline {subsubsection}{\numberline {2.1.6}Hệ thống nhóm đang phát triển - BK Fashion}{7}{subsubsection.2.1.6}%
+\contentsline {subsubsubsection}{\numberline {2.1.6.a}Giới thiệu BK Fashion}{7}{subsubsubsection.2.1.6.1}%
+\contentsline {subsubsubsection}{\numberline {2.1.6.b}Tính năng nổi bật của BK Fashion}{7}{subsubsubsection.2.1.6.2}%
+\contentsline {section}{\numberline {3}Công nghệ sử dụng}{7}{section.3}%
+\contentsline {section}{\numberline {4}Phân tích hệ thống}{8}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Các vai trò và yêu cầu chức năng của người dùng trong hệ thống}{8}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Các yêu cầu phi chức năng}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Thiết kế usecase}{10}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}Sơ đồ usecase}{10}{subsubsection.4.3.1}%
+\contentsline {subsubsubsection}{\numberline {4.3.1.a}Sơ đồ usecase cho người quản trị viên (admin) và nhân viên (staff)}{10}{subsubsubsection.4.3.1.1}%
+\contentsline {subsubsubsection}{\numberline {4.3.1.b}Sơ đồ usecase cho người khách hàng (customer)}{11}{subsubsubsection.4.3.1.2}%
+\contentsline {subsubsection}{\numberline {4.3.2}Đặc tả usecase}{12}{subsubsection.4.3.2}%
+\contentsline {subsubsubsection}{\numberline {4.3.2.a}Đặc tả usecase cho người quản trị viên (admin)}{12}{subsubsubsection.4.3.2.1}%
+\contentsline {subsubsubsection}{\numberline {4.3.2.b}Đặc tả usecase cho người nhân viên (staff)}{22}{subsubsubsection.4.3.2.2}%
+\contentsline {subsubsubsection}{\numberline {4.3.2.c}Đặc tả usecase cho người khách hàng (customer)}{25}{subsubsubsection.4.3.2.3}%
+\contentsline {subsection}{\numberline {4.4}Sơ đồ hoạt động}{29}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}Người quản trị viên, người nhân viên xử lý đơn hàng.}{29}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}Người quản trị viên, người nhân viên xử lý trả đơn hàng - hoàn tiền.}{30}{subsubsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.3}Người khách hàng duyệt sản phẩm và mua sản phẩm.}{31}{subsubsection.4.4.3}%
+\contentsline {subsubsection}{\numberline {4.4.4}Người khách hàng hủy đơn hàng.}{32}{subsubsection.4.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.5}Người khách hàng yêu cầu trả đơn hàng - hoàn tiền.}{32}{subsubsection.4.4.5}%
+\contentsline {section}{\numberline {5}Thiết kế hệ thống}{33}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Kiến trúc hệ thống}{33}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Thiết kế cơ sở dữ liệu}{33}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Mô tả thực thể}{33}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Lược đồ thực thể mối liên hệ mở rộng (EERD)}{34}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Lược đồ cơ sở dữ liệu}{36}{subsubsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.3}Biểu đồ lớp (Class Diagram)}{37}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Sơ đồ tuần tự}{38}{subsection.5.4}%
+\contentsline {subsubsection}{\numberline {5.4.1}Người quản trị viên, người nhân viên xử lý đơn hàng.}{38}{subsubsection.5.4.1}%
+\contentsline {subsubsection}{\numberline {5.4.2}Người quản trị viên, người nhân viên xử lý trả hàng - hoàn tiền.}{39}{subsubsection.5.4.2}%
+\contentsline {subsubsection}{\numberline {5.4.3}Người Khách hàng thực hiện tìm kiếm và xem sản phẩm.}{40}{subsubsection.5.4.3}%
+\contentsline {subsubsection}{\numberline {5.4.4}Người Khách hàng thực hiện so sánh thông tin các sản phẩm.}{40}{subsubsection.5.4.4}%
+\contentsline {subsubsection}{\numberline {5.4.5}Người Khách hàng thực hiện việc mua ngay sản phẩm.}{41}{subsubsection.5.4.5}%
+\contentsline {subsubsection}{\numberline {5.4.6}Người Khách hàng thực hiện thêm các sản phẩm vào giỏ hàng.}{41}{subsubsection.5.4.6}%
+\contentsline {subsubsection}{\numberline {5.4.7}Người Khách hàng thực hiện mua các sản phẩm từ giỏ hàng.}{42}{subsubsection.5.4.7}%
+\contentsline {subsubsection}{\numberline {5.4.8}Người Khách hàng thực hiện mua các sản phẩm từ đơn hàng đã mua.}{42}{subsubsection.5.4.8}%
+\contentsline {subsubsection}{\numberline {5.4.9}Người Khách hàng thực hiện hủy đơn đặt hàng.}{43}{subsubsection.5.4.9}%
+\contentsline {subsubsection}{\numberline {5.4.10}Người Khách hàng thực hiện trả hàng - hoàn tiền.}{44}{subsubsection.5.4.10}%
+\contentsline {subsection}{\numberline {5.5}Thiết kế giao diện hệ thống}{45}{subsection.5.5}%
+\contentsline {subsubsection}{\numberline {5.5.1}Thiết kế giao diện cho khách hàng}{45}{subsubsection.5.5.1}%
+\contentsline {subsubsubsection}{\numberline {5.5.1.a}Trang chủ}{45}{subsubsubsection.5.5.1.1}%
+\contentsline {subsubsubsection}{\numberline {5.5.1.b}Xem Sản phẩm theo Loại/Tìm kiếm Sản phẩm}{46}{subsubsubsection.5.5.1.2}%
+\contentsline {subsubsubsection}{\numberline {5.5.1.c}Tính năng Chăm sóc khách hàng}{46}{subsubsubsection.5.5.1.3}%
+\contentsline {subsubsubsection}{\numberline {5.5.1.d}Giỏ hàng}{48}{subsubsubsection.5.5.1.4}%
+\contentsline {subsubsubsection}{\numberline {5.5.1.e}Thanh toán}{49}{subsubsubsection.5.5.1.5}%
+\contentsline {subsubsubsection}{\numberline {5.5.1.f}Chi tiết sản phẩm}{50}{subsubsubsection.5.5.1.6}%
+\contentsline {subsubsubsection}{\numberline {5.5.1.g}So sánh Sản phẩm}{51}{subsubsubsection.5.5.1.7}%
+\contentsline {subsubsubsection}{\numberline {5.5.1.h}Trang cá nhân}{51}{subsubsubsection.5.5.1.8}%
+\contentsline {subsubsubsection}{\numberline {5.5.1.i}Quản lý đơn hàng}{54}{subsubsubsection.5.5.1.9}%
+\contentsline {subsubsubsection}{\numberline {5.5.1.j}Thông báo}{57}{subsubsubsection.5.5.1.10}%
+\contentsline {subsubsection}{\numberline {5.5.2}Thiết kế giao diện cho quản trị viên}{58}{subsubsection.5.5.2}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.a}Trang tổng quan (Dashboard)}{58}{subsubsubsection.5.5.2.1}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.b}Quản lý đơn hàng}{59}{subsubsubsection.5.5.2.2}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.c}Quản lý khách hàng}{60}{subsubsubsection.5.5.2.3}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.d}Quản lý voucher}{61}{subsubsubsection.5.5.2.4}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.e}Quản lý danh mục}{62}{subsubsubsection.5.5.2.5}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.f}Quản lý giao dịch}{63}{subsubsubsection.5.5.2.6}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.g}Chat hỗ trợ}{64}{subsubsubsection.5.5.2.7}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.h}Thêm sản phẩm}{65}{subsubsubsection.5.5.2.8}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.i}Quản lý trang cá nhân}{66}{subsubsubsection.5.5.2.9}%
+\contentsline {subsubsection}{\numberline {5.5.3}Thiết kế giao diện cho nhân viên}{66}{subsubsection.5.5.3}%
+\contentsline {section}{\numberline {6}Tổng kết}{68}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Nhận xét}{68}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Hướng phát triển}{68}{subsection.6.2}%
+\contentsline {section}{\numberline {7}Tài liệu tham khảo}{68}{section.7}%
+\contentsline {section}{\numberline {8}Phụ lục}{69}{section.8}%

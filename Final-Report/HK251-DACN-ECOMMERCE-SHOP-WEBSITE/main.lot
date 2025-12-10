@@ -1,0 +1,39 @@
+\thispagestyle {empty}
+\contentsline {table}{\numberline {1}{\ignorespaces Bảng Use-case Người quản trị viên sử dụng realtime chat}}{12}{table.caption.11}%
+\contentsline {table}{\numberline {2}{\ignorespaces Bảng Use-case Người quản trị viên xem danh sách đơn hàng của shop.}}{12}{table.caption.12}%
+\contentsline {table}{\numberline {3}{\ignorespaces Bảng Use-case Người quản trị viên cập nhật trạng thái của một đơn hàng của shop.}}{13}{table.caption.13}%
+\contentsline {table}{\numberline {4}{\ignorespaces Bảng Use-case Người quản trị viên theo dõi đơn hàng của shop trong khi vận chuyển.}}{13}{table.caption.14}%
+\contentsline {table}{\numberline {5}{\ignorespaces Bảng Use-case Người quản trị viên xử lý một yêu cầu hoàn tiền đơn hàng.}}{14}{table.caption.15}%
+\contentsline {table}{\numberline {6}{\ignorespaces Bảng Use-case Người quản trị viên xem được số lượng hàng tồn kho của cửa hàng.}}{14}{table.caption.16}%
+\contentsline {table}{\numberline {7}{\ignorespaces Bảng Use-case Người quản trị viên thêm mới danh mục sản phẩm của cửa hàng.}}{15}{table.caption.17}%
+\contentsline {table}{\numberline {8}{\ignorespaces Bảng Use-case Người quản trị viên cập nhật thông tin của một danh mục sản phẩm của cửa hàng.}}{15}{table.caption.18}%
+\contentsline {table}{\numberline {9}{\ignorespaces Bảng Use-case Người quản trị viên thêm mới một sản phẩm vào trong một danh mục sản phẩm của cửa hàng.}}{16}{table.caption.19}%
+\contentsline {table}{\numberline {10}{\ignorespaces Bảng Use-case Người quản trị viên thêm mới một sản phẩm vào trong một danh mục sản phẩm của cửa hàng.}}{16}{table.caption.20}%
+\contentsline {table}{\numberline {11}{\ignorespaces Bảng Use-case Người quản trị viên xóa một danh mục sản phẩm của cửa hàng.}}{17}{table.caption.21}%
+\contentsline {table}{\numberline {12}{\ignorespaces Bảng Use-case Người quản trị viên thêm mới một sản phẩm vào trong cửa hàng.}}{17}{table.caption.22}%
+\contentsline {table}{\numberline {13}{\ignorespaces Bảng Use-case Người quản trị viên cập nhật thông tin một sản phẩm trong cửa hàng.}}{17}{table.caption.23}%
+\contentsline {table}{\numberline {14}{\ignorespaces Bảng Use-case Người quản trị viên xóa một sản phẩm trong cửa hàng.}}{18}{table.caption.24}%
+\contentsline {table}{\numberline {15}{\ignorespaces Bảng Use-case Người quản trị viên xem thông tin về doanh thu của cửa hàng.}}{18}{table.caption.25}%
+\contentsline {table}{\numberline {16}{\ignorespaces Bảng Use-case Người quản trị viên xem thông tin các sản phẩm bán chạy của cửa hàng.}}{18}{table.caption.26}%
+\contentsline {table}{\numberline {17}{\ignorespaces Bảng Use-case Người quản trị viên xem thông tin các nhân viên có doanh số tốt nhất của cửa hàng.}}{19}{table.caption.27}%
+\contentsline {table}{\numberline {18}{\ignorespaces Bảng Use-case Người quản trị viên thêm mới voucher.}}{19}{table.caption.28}%
+\contentsline {table}{\numberline {19}{\ignorespaces Bảng Use-case Người quản trị viên cập nhật thông tin của một voucher.}}{19}{table.caption.29}%
+\contentsline {table}{\numberline {20}{\ignorespaces Bảng Use-case Người quản trị viên gán voucher cho sản phẩm.}}{20}{table.caption.30}%
+\contentsline {table}{\numberline {21}{\ignorespaces Bảng Use-case Người quản trị viên xóa bỏ gán voucher cho sản phẩm.}}{20}{table.caption.31}%
+\contentsline {table}{\numberline {22}{\ignorespaces Bảng Use-case Người quản trị viên xóa một voucher.}}{21}{table.caption.32}%
+\contentsline {table}{\numberline {23}{\ignorespaces Bảng Use-case Người quản trị viên tạo tài khoản người nhân viên cửa hàng.}}{21}{table.caption.33}%
+\contentsline {table}{\numberline {24}{\ignorespaces Bảng Use-case Người quản trị viên cập nhật thông tin tài khoản người nhân viên cửa hàng.}}{22}{table.caption.34}%
+\contentsline {table}{\numberline {25}{\ignorespaces Bảng Use-case Người quản trị viên xóa tài khoản người nhân viên cửa hàng.}}{22}{table.caption.35}%
+\contentsline {table}{\numberline {26}{\ignorespaces Bảng Use-case Người nhân viên sử dụng realtime chat}}{22}{table.caption.36}%
+\contentsline {table}{\numberline {27}{\ignorespaces Bảng Use-case Người nhân viên xem danh sách đơn hàng của shop.}}{23}{table.caption.37}%
+\contentsline {table}{\numberline {28}{\ignorespaces Bảng Use-case Người nhân viên cập nhật trạng thái của một đơn hàng của shop.}}{23}{table.caption.38}%
+\contentsline {table}{\numberline {29}{\ignorespaces Bảng Use-case Người nhân viên xử lý một yêu cầu hoàn tiền đơn hàng.}}{24}{table.caption.39}%
+\contentsline {table}{\numberline {30}{\ignorespaces Bảng Use-case Người nhân viên xem được số lượng hàng tồn kho của cửa hàng.}}{24}{table.caption.40}%
+\contentsline {table}{\numberline {31}{\ignorespaces Bảng Use-case Người khách hàng sử dụng realtime chat}}{25}{table.caption.41}%
+\contentsline {table}{\numberline {32}{\ignorespaces Bảng Use-case Người khách hàng duyệt sản phẩm của shop.}}{25}{table.caption.42}%
+\contentsline {table}{\numberline {33}{\ignorespaces Bảng Use-case Người khách hàng so sánh các sản phẩm của shop.}}{26}{table.caption.43}%
+\contentsline {table}{\numberline {34}{\ignorespaces Bảng Use-case Người khách hàng đặt hàng sản phẩm của shop.}}{27}{table.caption.44}%
+\contentsline {table}{\numberline {35}{\ignorespaces Bảng Use-case Người khách hàng tạo yêu cầu trả hàng / hoàn tiền.}}{28}{table.caption.45}%
+\contentsline {table}{\numberline {36}{\ignorespaces Bảng Use-case Người khách hàng hủy một đơn hàng.}}{28}{table.caption.46}%
+\contentsline {table}{\numberline {37}{\ignorespaces Bảng Use-case Người khách hàng hủy một đơn hàng.}}{29}{table.caption.47}%
+\contentsline {table}{\numberline {38}{\ignorespaces Danh sách thực thể được phân nhóm theo chức năng.}}{33}{table.caption.53}%

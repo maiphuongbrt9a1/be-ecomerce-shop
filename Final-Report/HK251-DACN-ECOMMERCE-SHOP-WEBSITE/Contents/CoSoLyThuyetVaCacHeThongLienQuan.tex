@@ -1,0 +1,192 @@
+\section{Phân tích tổng quan}
+
+\subsection{Các hệ thống có liên quan trên thị trường}
+
+\subsubsection{H \& M}
+\subsubsubsection{Đặc điểm kỹ thuật nổi bật}
+
+Hệ thống web/app H\&M tại Việt Nam triển khai các chức năng kỹ thuật chính như:
+
+\begin{itemize}
+  \item \textbf{Hệ thống thành viên số hóa (H\&M Member):} đăng ký, tích điểm, voucher, quản lý giao dịch qua tài khoản số.
+  \item \textbf{Tích hợp Omni-channel / kiểm tra tồn kho tại cửa hàng (Find in-store):} cho phép người dùng kiểm tra tình trạng hàng tại cửa hàng gần họ từ web/app.
+  \item \textbf{Danh mục \& bộ lọc nâng cao:} sản phẩm được phân loại chi tiết (giới tính, độ tuổi, dòng Conscious, thể thao...), kèm bộ lọc kích cỡ, màu sắc, nhãn bền vững.
+  \item \textbf{Thanh toán \& đổi trả trực tuyến:} hỗ trợ nhiều phương thức thanh toán (thẻ, COD tuỳ thị trường) và chế độ đổi/trả trong 30 ngày qua hệ thống web/app.
+  \item \textbf{Nỗ lực ứng dụng AR/virtual try-on:} thử nghiệm công nghệ ảo nhưng chưa áp dụng rộng rãi cho tất cả sản phẩm.
+\end{itemize}
+
+\subsubsubsection{Đánh giá hệ thống}
+
+\textbf{Ưu điểm nổi bật:}
+\begin{itemize}
+  \item Liên kết mượt giữa kênh online và cửa hàng vật lý (omni-channel).
+  \item Quy trình đổi trả \& CRM thành viên được số hóa, thuận tiện cho khách hàng.
+  \item Hỗ trợ lọc sản phẩm theo yếu tố bền vững (``Conscious''), đáp ứng xu hướng xanh.
+  \item Hạ tầng hỗ trợ các chiến dịch ra mắt nhanh (fast fashion) và drop giới hạn.
+\end{itemize}
+
+\textbf{Nhược điểm \& điểm cần cân nhắc:}
+\begin{itemize}
+  \item Tính năng AR/try-on chưa được triển khai đồng nhất cho mọi sản phẩm.
+  \item Đa dạng size/phom dáng có thể gây nhầm lẫn, cần dữ liệu kích thước chi tiết hơn hoặc công cụ so sánh size.
+  \item Hệ thống gợi ý cá nhân hoá còn hạn chế, chưa thực sự tinh chỉnh theo người dùng.
+  \item Nguy cơ quá tải hạ tầng vào các đợt sale lớn hoặc drop giới hạn, cần tối ưu khả năng mở rộng (scalability, caching, CDN).
+\end{itemize}
+\subsubsection{Zara}
+\subsubsubsection{Đặc điểm kỹ thuật nổi bật}
+
+Hệ thống web/app Zara được xây dựng nhằm phản ánh triết lý "thời trang nhanh" với các tính năng số hoá nổi bật:
+
+\begin{itemize}
+  \item \textbf{Trải nghiệm trực quan \& cập nhật nhanh:} Trang chủ và danh mục luôn ưu tiên mục "THE NEW" (hàng mới về), đồng bộ sản phẩm mới ra mắt toàn cầu; sử dụng hình ảnh/video lookbook chất lượng cao mang phong cách tạp chí.
+  \item \textbf{Phân loại sản phẩm chi tiết:} Danh mục không chỉ theo loại trang phục (áo, váy...) mà còn theo chất liệu/kiểu dáng (da, len, ren...), hỗ trợ tìm kiếm xu hướng.
+  \item \textbf{Tích hợp Omni-channel:}
+    \begin{itemize}
+      \item Kiểm tra tồn kho sản phẩm tại cửa hàng gần nhất từ ứng dụng/web.
+      \item Đặt hàng online và nhận tại cửa hàng nhanh (Express Pick-up, trong khoảng 120 phút tại một số khu vực).
+      \item Hỗ trợ đổi/trả linh hoạt tại cửa hàng hoặc trả hàng tại nhà.
+    \end{itemize}
+  \item \textbf{Thông tin sản phẩm minh bạch:} Mỗi sản phẩm kèm thông tin thành phần, hướng dẫn chăm sóc, tiêu chuẩn bền vững.
+  \item \textbf{Dòng sản phẩm bền vững JOIN LIFE:} Website hỗ trợ gắn nhãn, lọc và giới thiệu các sản phẩm làm từ nguyên liệu hữu cơ/tái chế.
+  \item \textbf{Tích hợp chương trình thu gom:} Thông tin về chương trình thu hồi quần áo cũ để tái chế/quyên góp được hiển thị trên web/app.
+\end{itemize}
+
+\subsubsubsection{Đánh giá hệ thống}
+
+\textbf{Ưu điểm nổi bật:}
+\begin{itemize}
+  \item Tốc độ cập nhật sản phẩm online nhanh, đồng bộ với chiến dịch toàn cầu.
+  \item Hình ảnh và video lookbook chất lượng cao giúp nâng cao trải nghiệm trực tuyến.
+  \item Omni-channel tốt: kiểm tra tồn kho, nhận hàng nhanh tại cửa hàng, đổi trả linh hoạt.
+  \item Minh bạch thông tin sản phẩm, gắn nhãn bền vững rõ ràng.
+\end{itemize}
+
+\textbf{Nhược điểm \& điểm cần cân nhắc:}
+\begin{itemize}
+  \item Bộ lọc tìm kiếm còn hạn chế so với các sàn TMĐT lớn (thiếu lọc theo chi tiết như kiểu cổ áo, độ dài).
+  \item Không có hệ thống đánh giá/xếp hạng sản phẩm từ khách hàng, khó tham khảo khi chọn size hoặc chất liệu.
+  \item Giao diện tập trung quá nhiều vào hình ảnh biên tập (editorial), đôi khi làm giảm tính trực quan khi tìm thông tin sản phẩm cơ bản.
+  \item Ứng dụng/website có thể rối rắm trên di động do nhiều hình ảnh dung lượng lớn, gây chậm tải.
+  \item Bảng size chưa đồng nhất và chưa có công cụ dự đoán kích cỡ (fit predictor/virtual try-on).
+  \item Dịch vụ hỗ trợ online còn hạn chế, chưa tích hợp sâu live chat/hỗ trợ tức thì như các nền tảng TMĐT khác.
+\end{itemize}
+\subsubsection{Adidas}
+\subsubsubsection{Đặc điểm kỹ thuật nổi bật}
+
+Hệ thống web/app Adidas được thiết kế theo hướng cá nhân hoá trải nghiệm và tích hợp đa kênh, với một số tính năng đáng chú ý:
+
+\begin{itemize}
+  \item \textbf{Cá nhân hoá dựa trên AI/ML:} Website và app gợi ý sản phẩm theo lịch sử duyệt web, hành vi mua sắm và sở thích cá nhân.
+  \item \textbf{Ứng dụng Adidas App \& Omni-channel:} Người dùng có thể đồng bộ tài khoản, quản lý đơn hàng, theo dõi ưu đãi và tham gia cộng đồng thành viên (AdiClub) cả trên web và app.
+  \item \textbf{Thử giày ảo (AR):} Ở một số thị trường, ứng dụng cho phép thử giày trực tuyến bằng camera điện thoại, hỗ trợ quyết định mua hàng online.
+  \item \textbf{Tính năng tuỳ chỉnh sản phẩm (miAdidas/Customize):} Cho phép người dùng tự thiết kế giày (chọn màu sắc, chất liệu, chi tiết cá nhân hoá) và đặt hàng trực tuyến.
+  \item \textbf{Thiết kế giao diện mobile-first:} Website và ứng dụng tối ưu cho thiết bị di động, hình ảnh sắc nét, điều hướng nhanh, tập trung trải nghiệm UX mượt mà.
+  \item \textbf{Chính sách giao hàng và hoàn trả minh bạch:} Thông tin về phí ship, đổi trả miễn phí/thu phí hiển thị rõ ràng, đồng bộ giữa các kênh.
+\end{itemize}
+
+\subsubsubsection{Đánh giá hệ thống}
+
+\textbf{Ưu điểm nổi bật:}
+\begin{itemize}
+  \item Tích hợp công nghệ cá nhân hoá thông minh (AI/ML) nâng cao trải nghiệm.
+  \item Ứng dụng AR thử giày online giúp cải thiện quyết định mua hàng.
+  \item Hệ thống tuỳ chỉnh sản phẩm (miAdidas) mang lại trải nghiệm cá nhân hoá độc đáo.
+  \item Thiết kế mobile-first hiện đại, điều hướng nhanh, tối ưu cho thương mại di động.
+  \item Omni-channel mạnh: đồng bộ dữ liệu khách hàng giữa web, app và cửa hàng.
+  \item Hệ thống thành viên (AdiClub) tăng tính gắn kết và trung thành với thương hiệu.
+\end{itemize}
+
+\textbf{Nhược điểm \& điểm cần cân nhắc:}
+\begin{itemize}
+  \item Giao diện/UX chưa thật sự nhất quán, đôi khi khó tìm thông tin chi tiết sản phẩm.
+  \item Hệ thống thử giày AR mới triển khai ở một số thị trường, chưa phổ biến toàn cầu.
+  \item Thiếu công cụ dự đoán kích cỡ nâng cao (Fit Predictor), gây khó khăn cho người mua online do size không đồng nhất giữa các dòng.
+  \item Tốc độ tải trang có thể chậm tại các khu vực hạ tầng mạng yếu, do sử dụng nhiều hình ảnh/AR.
+  \item Chính sách đổi trả và giao hàng dù minh bạch nhưng còn khác biệt theo từng quốc gia, gây trải nghiệm không đồng nhất.
+  \item Quá trình cá nhân hoá đôi khi bị giới hạn do phụ thuộc vào dữ liệu hành vi, chưa đủ linh hoạt nếu khách hàng mới.
+\end{itemize}
+\subsubsection{Amazon Fashion}
+\subsubsubsection{Đặc điểm kỹ thuật nổi bật}
+
+Amazon Fashion là phân nhánh thương mại điện tử thời trang trong hệ sinh thái Amazon, được xây dựng trên nền tảng hạ tầng Amazon toàn cầu. Hệ thống nổi bật nhờ tích hợp logistics mạnh, cá nhân hoá trải nghiệm mua sắm và mạng lưới đánh giá từ cộng đồng:
+
+\begin{itemize}
+  \item \textbf{Cá nhân hoá thông minh:} Sử dụng thuật toán học máy để gợi ý sản phẩm dựa trên lịch sử tìm kiếm, duyệt web và hành vi mua hàng.
+  \item \textbf{Tích hợp hệ sinh thái Amazon:} Kết nối chặt chẽ với các dịch vụ như Prime (giao hàng nhanh), Fulfillment by Amazon (FBA) và hệ thống kho toàn cầu.
+  \item \textbf{Đánh giá \& review phong phú:} Hệ thống feedback từ người mua được tích hợp trực tiếp trong mỗi sản phẩm, giúp nâng cao độ tin cậy.
+  \item \textbf{Chính sách đổi trả minh bạch:} Hỗ trợ đổi trả đơn giản, thường miễn phí trong nhiều trường hợp, quy trình được tự động hóa trên hệ thống.
+  \item \textbf{Khả năng mở rộng quốc tế:} Hệ thống được xây dựng trên hạ tầng Amazon, cho phép mở rộng sản phẩm và dịch vụ ra nhiều quốc gia dễ dàng.
+  \item \textbf{Trải nghiệm mobile-first:} Giao diện tối ưu cho di động, kết hợp công cụ tìm kiếm nâng cao và filter chi tiết.
+\end{itemize}
+
+\subsubsubsection{Đánh giá hệ thống}
+
+\textbf{Ưu điểm nổi bật:}
+\begin{itemize}
+  \item Thuật toán gợi ý sản phẩm hiệu quả, cá nhân hoá mạnh nhờ AI/ML.
+  \item Tích hợp sâu với Prime và FBA, đảm bảo tốc độ giao hàng và quản lý logistics vượt trội.
+  \item Hệ thống đánh giá, nhận xét lớn giúp người mua dễ tham khảo trước khi quyết định.
+  \item Quy trình đổi trả tự động, nhanh gọn, tạo sự tin tưởng cao cho khách hàng online.
+  \item Nền tảng Amazon toàn cầu cho phép mở rộng thị trường quốc tế thuận lợi.
+\end{itemize}
+
+\textbf{Nhược điểm \& điểm cần cân nhắc:}
+\begin{itemize}
+  \item Cạnh tranh gay gắt, nhiều sản phẩm trùng lặp khiến trải nghiệm tìm kiếm bị loãng.
+  \item Vấn đề chất lượng và hàng giả khó kiểm soát, cùng với tình trạng review ảo.
+  \item Dịch vụ \textit{“Try Before You Buy”} đã ngừng triển khai từ 31/01/2025, làm giảm lợi thế thử trước khi mua trong ngành thời trang.
+  \item Vẫn tồn tại hạn chế về phân loại size/fit, tỉ lệ trả hàng cao do chọn size không chuẩn.
+  \item Người bán ít quyền kiểm soát về cách hiển thị sản phẩm, giá và thương hiệu, do phụ thuộc chính sách của Amazon.
+\end{itemize}
+\subsubsection{Coolmate}
+
+\subsubsubsection{Đặc điểm kỹ thuật nổi bật}
+
+Coolmate vận hành theo mô hình thương mại điện tử D2C (Direct-to-Customer) trực tuyến thuần túy, nơi toàn bộ quy trình bán hàng, quản lý sản phẩm, và chăm sóc khách hàng được thực hiện qua nền tảng web. Hệ thống được thiết kế hiện đại, tận dụng công nghệ web và dữ liệu để tối ưu trải nghiệm người dùng.
+
+\begin{itemize}
+  \item \textbf{Kiến trúc Web động và tối ưu hiệu năng:} Website được xây dựng bằng các framework hiện đại (ReactJS, NextJS hoặc tương đương), cho phép tải nhanh, tối ưu SEO và hiển thị linh hoạt trên mọi thiết bị.
+  \item \textbf{Hệ thống quản lý sản phẩm (PMS):} Toàn bộ thông tin sản phẩm được lưu trữ trong cơ sở dữ liệu có cấu trúc, dễ dàng truy vấn, tìm kiếm và cập nhật. Hệ thống hỗ trợ hiển thị thông tin chi tiết như chất liệu, công nghệ vải và kích thước.
+  \item \textbf{Tự động hóa quy trình xử lý đơn hàng:} Các bước từ đặt hàng, thanh toán, đến giao nhận được kết nối qua API với cổng thanh toán (VNPAY, MoMo, ZaloPay) và đơn vị vận chuyển (GHN, GHTK), giúp giảm thời gian xử lý.
+  \item \textbf{Gợi ý thông minh dựa trên dữ liệu:} Coolmate triển khai thuật toán đề xuất sản phẩm (recommendation system) và tính năng “Smart Size” giúp người dùng chọn kích cỡ phù hợp dựa trên số đo hoặc lịch sử mua hàng.
+  \item \textbf{Tích hợp Chatbot và Live Chat:} Hỗ trợ khách hàng theo thời gian thực qua các nền tảng như Tawk.to hoặc Zendesk, tăng tính tương tác và khả năng phản hồi.
+  \item \textbf{Bảo mật và an toàn dữ liệu:} Website sử dụng giao thức HTTPS/TLS, tuân thủ chuẩn PCI DSS cho thanh toán, bảo đảm thông tin cá nhân của người dùng.
+  \item \textbf{Phân tích và theo dõi hiệu suất:} Hệ thống tích hợp Google Analytics hoặc công cụ tương tự để theo dõi hành vi người dùng, tỉ lệ chuyển đổi và hiệu quả chiến dịch quảng cáo.
+\end{itemize}
+
+\subsubsubsection{Đánh giá hệ thống}
+
+\textbf{Ưu điểm nổi bật}
+
+\begin{itemize}
+  \item \textbf{Kiến trúc dễ mở rộng (Scalable Architecture):} Hệ thống web thuần túy cho phép tích hợp nhanh các tính năng mới như AI gợi ý sản phẩm, phân tích dữ liệu hoặc chương trình khách hàng thân thiết.
+  \item \textbf{Hiệu năng xử lý cao:} Các quy trình tự động giúp rút ngắn thời gian đặt hàng và giao hàng, nâng cao trải nghiệm người dùng.
+  \item \textbf{Tối ưu giao diện người dùng (UI/UX):} Giao diện đơn giản, trực quan, tập trung vào hành động mua sắm, giúp giảm tỷ lệ thoát trang.
+  \item \textbf{Dữ liệu tập trung và dễ phân tích:} Hệ thống CRM và kho dữ liệu cho phép theo dõi hành vi người dùng, phục vụ thuật toán gợi ý và dự báo nhu cầu.
+  \item \textbf{Khả năng tích hợp cao:} Dễ kết nối với API thanh toán, hệ thống vận chuyển, và nền tảng tiếp thị tự động (marketing automation).
+\end{itemize}
+
+\textbf{Nhược điểm \& điểm cần cân nhắc}
+
+\begin{itemize}
+  \item \textbf{Phụ thuộc vào hạ tầng Digital:} Mọi lưu lượng truy cập phụ thuộc vào hiệu suất website và quảng cáo trực tuyến, đòi hỏi tối ưu liên tục về tốc độ và SEO.
+  \item \textbf{Chi phí hạ tầng tăng theo quy mô:} Khi lưu lượng và dữ liệu người dùng tăng, chi phí vận hành server, CDN và lưu trữ cũng tăng tương ứng.
+  \item \textbf{Rủi ro bảo mật dữ liệu:} Việc thu thập và xử lý dữ liệu người dùng yêu cầu tuân thủ nghiêm ngặt các quy định về bảo mật (PDPD, GDPR).
+  \item \textbf{Chưa hoàn thiện trải nghiệm đa nền tảng (Omnichannel):} Hệ thống tập trung chủ yếu vào website; ứng dụng di động và đồng bộ giữa các kênh vẫn còn hạn chế.
+\end{itemize}
+\subsubsection{Hệ thống nhóm đang phát triển - BK Fashion}
+\subsubsubsection{Giới thiệu BK Fashion}
+BK Fashion là một website bán hàng thời trang trực tuyến hướng đến giới trẻ,
+tập trung vào việc mang lại trải nghiệm mua sắm hiện đại, tiện lợi và thông minh.
+Website kết hợp công nghệ hỗ trợ gợi ý kích cỡ (Fit Assistant) cùng giao diện thân thiện,
+giúp khách hàng dễ dàng lựa chọn trang phục phù hợp phong cách và vóc dáng.
+
+\subsubsubsection{Tính năng nổi bật của BK Fashion}
+\begin{itemize}
+  \item Fit Assistant + Size Passport: gợi ý kích cỡ chính xác dựa trên thông số cơ thể và lịch sử mua hàng.
+  \item Mix \& Match Outfit: gợi ý set trang phục theo phong cách, hoàn cảnh sử dụng.
+  \item Buy full set: hỗ trợ hiển thị các sản phẩm xuất hiện trong ảnh mẫu.
+  \item Realtime chat: cho phép người dùng và nhân viên chat trực tiếp ngay trên nền tảng
+\end{itemize}
+
+\section{Công nghệ sử dụng}
