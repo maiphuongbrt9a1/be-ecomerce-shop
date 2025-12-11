@@ -162,7 +162,7 @@ Cả hai vai trò Admin và Staff đều có khả năng thực hiện xử lý 
   \label{fig: Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý đơn hàng}
 \end{figure}
 
-Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý đơn hàng quá trình xử lý sẽ bắt đầu như sau
+Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý đơn hàng quá trình xử lý sẽ bắt đầu như sau: Người nhân viên hoặc người quản trị viên truy cập vào trang danh sách đơn hàng để lấy các đơn hàng đang chờ duyệt, sau đó họ vào trang chi tiết đơn hàng để tiến hành lấy thông tin chi tiết của đơn hàng để in tem đóng gói. Sau đó họ phải cập nhật video, hình ảnh đóng kiện hàng lên hệ thống để minh chứng đơn hàng đã đóng đầy đủ và chính xác về sau nếu có khiếu nại. Qua mỗi giai đoạn đơn hàng được đóng gói xong, được xác nhận đóng gói, xác nhận chuyển giao cho người vận chuyển, đang vận chuyển, và khi vận chuyển hoàn tất các trạng thái này sẽ được cập nhật vào thời điểm thực tế mà trạng thái này xảy ra. Đến khi trạng thái đơn hàng được chuyển thành đã giao, thì có nghĩa là đơn hàng trên thực tế đã giao đến tay người khách hàng và quy trình xử lý đến đây kết thúc.
 
 \subsubsection{Người quản trị viên, người nhân viên xử lý trả hàng - hoàn tiền.}
 \begin{figure}[H]
@@ -172,7 +172,27 @@ Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử 
   \caption{Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý việc khách hàng trả hàng và yêu cầu hoàn tiền \cite{Sequence Diagram - Admin, staff processing refund order}}
   \label{fig: Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý việc khách hàng trả hàng và yêu cầu hoàn tiền}
 \end{figure}
+Quy trình xử lý yêu cầu trả hàng hoàn tiền được thực hiện bởi người quản trị viên và người nhân viên. Trong đó chỉ có người quản trị viên mới có quyền thực hiện việc chuyển khoản để hoàn tiền lại cho người khách hàng. Ngoài hành động trên, các hành động còn lại của luồng xử lý đều có thể được xử lý bởi người quản trị viên và người nhân viên của cửa hàng. Vai trò của người nhân viên ở đây chủ yếu là đi lọc trước các yêu cầu hợp lệ theo điều kiện của cửa hàng. Ví dụ yêu cầu hoàn tiền phải có lý do kèm theo minh chứng mở kiện hàng bằng video, hình ảnh. Điều này nhằm làm giảm tải khối lượng công việc mà người quản trị viên phải thực hiện. \\
 
+Quy trình xử lý yêu cầu trả hàng hoàn tiền được thực hiện như sau: \\
+\begin{itemize}
+	\item Luồng xử lý mà cả người quản trị viên và người nhân viên đều thực hiện được: 
+		\begin{itemize}
+			\item Đầu tiên truy cập để lấy trang danh sách các yêu cầu hoàn tiền.
+			\item Hệ thống sẽ trả về danh sách các yêu cầu hoàn tiền ra màn hình.
+			\item Tiến hành nhấp chọn một yêu cầu hoàn tiền để đọc được nội dung chi tiết của yêu cầu hoàn tiền đó: Bao gồm ý kiến của người khách hàng, minh chứng của việc khui mở kiện hàng mà người khách hàng cung cấp. 
+			\item Nếu người khách hàng cung cấp thông tin hợp lệ qua yêu cầu tiến hành cập nhật trạng thái yêu cầu lên thành đang xác nhận yêu cầu hợp lệ.
+			\item Nếu không có thể cập nhật trạng thái yêu cầu thành từ chối để từ chối việc hoàn trả tiền cho đơn hàng.
+		\end{itemize}
+		
+	\item Luồng xử lý sau khi trạng thái của yêu cầu được cập nhật lên thành hợp lệ. Chú ý luồng xử lý này chỉ có thể thực hiện bởi người quản trị viên.
+		\begin{itemize}
+			\item Người quản trị viên truy cập để lấy ra danh sách các yêu cầu trả hàng hoàn tiền với trạng thái hợp lệ.
+			\item Nhấp chọn một yêu cầu để lấy thông tin chi tiết.
+			\item Dựa theo thông tin tài khoản hoàn tiền mà khách hàng cung cấp tiến hành thanh toán.
+			\item Thanh toán thành công trả về thông báo ra màn hình.
+		\end{itemize}
+\end{itemize}
 \subsubsection{Người Khách hàng thực hiện tìm kiếm và xem sản phẩm.}
 \begin{figure}[H]
   \centering
@@ -181,6 +201,9 @@ Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử 
   \caption{Sơ đồ tuần tự người khách hàng thực hiện tìm kiếm và xem sản phẩm \cite{Sequence Diagram - Customer search and view product}}
   \label{fig: Sơ đồ tuần tự người khách hàng thực hiện tìm kiếm và xem sản phẩm}
 \end{figure}
+Đối với quy trình người khách hàng tìm kiếm và xem sản phẩm của cửa hàng: Người khách hàng bắt đầu bằng việc sử dụng thanh tìm kiếm hoặc các bộ lọc về loại sản phẩm, màu sắc, kích thước để chọn ra các sản phẩm đang cần quan tâm. Hệ thống sẽ trả ra các sản phẩm phù hợp với từ khóa tìm kiếm hoặc bộ lọc mà người dùng đã tích chọn. \\
+
+Sau khi có được danh sách các sản phẩm người dùng có thể nhấp chọn vào sản phẩm cụ thể để xem thông tin chi tiết của sản phẩm. \\
 
 \subsubsection{Người Khách hàng thực hiện so sánh thông tin các sản phẩm.}
 \begin{figure}[H]
@@ -191,6 +214,15 @@ Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử 
   \label{fig: Sơ đồ tuần tự người khách hàng thực hiện so sánh thông tin các sản phẩm}
 \end{figure}
 
+Đối với quy trình người khách hàng thực hiện việc so sánh các thông tin của sản phẩm. Quy trình này chỉ có thể thực hiện với các sản phẩm trong cùng một danh mục ví dụ người khách hàng so sánh các mẫu áo sơ mi nam với nhau, hoặc so sánh các mẫu váy nữ với nhau. Không thể so sánh áo sơ mi nam với quần âu nữ. \\ 
+
+Quy trình này là một phần mở rộng trong việc khách hàng tìm kiếm và duyệt các sản phẩm được mô tả bên trên. \\ 
+
+Ban đầu người khách hàng tiến hành chọn một sản phẩm để xem thông tin chi tiết của sản phẩm đó. Ở trang màn hình này người khách hàng chọn vào chức năng so sánh các sản phẩm, trong màn hình hiện ra mặc định sẽ có thông tin về sản phẩm hiện tại được chọn việc người dùng cần làm tiếp theo là chọn các sản phẩm khác. Người dùng có thể chọn thêm nhiều sản phẩm nếu muốn. \\ 
+
+Sau đó một bảng biểu sẽ hiển thị lên các thông tin của các sản phẩm lên một màn hình để người dùng tiện xem và so sánh. \\
+
+
 \subsubsection{Người Khách hàng thực hiện việc mua ngay sản phẩm.}
 \begin{figure}[H]
   \centering
@@ -199,6 +231,11 @@ Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử 
   \caption{Sơ đồ tuần tự người khách hàng thực hiện mua ngay sản phẩm \cite{Sequence Diagram - Customer checkout and place order on product detail page}}
   \label{fig: Sơ đồ tuần tự người khách hàng thực hiện mua ngay sản phẩm}
 \end{figure}
+
+Đối với quy trình mua ngay sản phẩm: Người khách hàng tiến hành chọn vào một sản phẩm đang hiển thị trên màn hình. Hệ thống sẽ hiển thị trang thông tin chi tiết của sản phẩm đó. Sau đó người khách hàng sẽ chọn vào nút mua ngay sản phẩm. Tiếp theo trang mua hàng sẽ hiển thị, người khách hàng sẽ phải điền các thông tin về địa chỉ giao hàng, số điện thoại người nhận, chọn phương thức thanh toán, chọn voucher nếu có. Sau khi bấm nút đặt hàng hệ thống sẽ tiến hành kiểm tra nếu đơn hàng được đặt thành công thì sẽ có thông báo đơn hàng được đặt thành công về phía khách hàng. Trong trường hợp khi bấm nút đặt hàng nếu số lượng của sản phẩm đặt hàng đã hết thì đặt hàng sẽ không thành công và sẽ có thông báo đặt hàng thất bại đến phía khách hàng. \\
+
+Trong trường hợp người khách hàng chọn phương thức thanh toán bằng cổng thanh toán tích hợp. Người khách hàng sẽ phải tiến hành thanh toán trước và sau khi thanh toán thành công thì đơn hàng mới được đặt thành công. \\
+
 
 \subsubsection{Người Khách hàng thực hiện thêm các sản phẩm vào giỏ hàng.}
 \begin{figure}[H]
@@ -209,6 +246,11 @@ Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử 
   \label{fig: Sơ đồ tuần tự người khách hàng thực hiện thêm sản phẩm vào giỏ hàng}
 \end{figure}
 
+Đối với quy trình thực hiện mua sản phẩm từ giỏ hàng đây là một luồng xử lý thứ 2 cho phép việc mua hàng của người khách hàng. Nhằm tạo thêm sự tiện lợi cho việc mua hàng cho người khách hàng.\\
+
+Bắt đầu quy trình, người khách hàng sẽ phải cập nhật vào trang thông tin sản phẩm, sau đó nhấn vào nút add to cart để thêm sản phẩm vào giỏ hàng. Ở bước này người dùng sẽ phải chọn số lượng sản phẩm, kích thước, màu sắc sản phẩm nếu có. Nếu sản phẩm hết hàng ở sự lựa chọn của khách hàng sản phẩm sẽ không được thêm vào giỏ hàng. Nếu còn hàng việc thêm sản phẩm vào giỏ hàng sẽ thành công. \\
+
+
 \subsubsection{Người Khách hàng thực hiện mua các sản phẩm từ giỏ hàng.}
 \begin{figure}[H]
   \centering
@@ -217,6 +259,15 @@ Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử 
   \caption{Sơ đồ tuần tự người khách hàng thực hiện mua các sản phẩm từ giỏ hàng \cite{Sequence Diagram - Customer checkout and place order from shopping cart}}
   \label{fig: Sơ đồ tuần tự người khách hàng thực hiện mua các sản phẩm từ giỏ hàng}
 \end{figure}
+Để quá trình xử lý có thể bắt đầu bắt buộc quy trình thêm sản phẩm vào giỏ hàng phải được thực hiện trước đó. \\
+
+Tiếp theo, người khách hàng sẽ truy cập vào giỏ hàng, tích chọn vào sản phẩm mà mình muốn mua, có thể tích chọn toàn bộ giỏ hàng. Sau đó bấm thanh toán. \\
+
+Tiếp sau đó người dùng sẽ phải điền các thông tin về địa chỉ nhận hàng, số điện thoại người nhận hàng, điền thông tin voucher nếu có, chọn phương thức thanh toán. \\
+
+Hệ thống sẽ thực hiện việc kiểm tra nếu đơn hàng được đặt mà không còn sản phẩm từ cửa hàng thì sẽ báo lỗi đặt hàng không thành công cho người khách hàng. Trong trường hợp thành công sẽ hiển thị thông báo đơn hàng được đặt thành công.
+
+Ngoài ra nếu phương thức thanh toán được chọn là thanh toán qua cổng thanh toán, người khách hàng phải thanh toán đơn hàng thành công thì mới đặt đơn hàng thành công. \\
 
 \subsubsection{Người Khách hàng thực hiện mua các sản phẩm từ đơn hàng đã mua.}
 \begin{figure}[H]
@@ -227,6 +278,19 @@ Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử 
   \label{fig: Sơ đồ tuần tự người khách hàng thực hiện mua các sản phẩm từ đơn hàng đã mua}
 \end{figure}
 
+Để quá trình xử lý có thể bắt đầu bắt buộc quy trình mua sản phẩm đã phải được thực hiện thành công trước đó ít nhất 1 lần. \\
+
+Tiếp theo, người khách hàng sẽ truy cập vào lịch sử đơn hàng, nhấn vào nút mua lại tương ứng với đơn hàng mà người khách hàng muốn mua lại. \\
+
+Tiếp theo khi màn hình đặt hàng hiện ra người khách hàng hoàn toàn có thể chọn lại màu sắc, size, số lượng sản phẩm mà người dùng muốn sau đó bấm thanh toán. \\
+
+Tiếp sau đó người dùng sẽ phải điền các thông tin về địa chỉ nhận hàng, số điện thoại người nhận hàng, điền thông tin voucher nếu có, chọn phương thức thanh toán. \\
+
+Hệ thống sẽ thực hiện việc kiểm tra nếu đơn hàng được đặt mà không còn sản phẩm từ cửa hàng thì sẽ báo lỗi đặt hàng không thành công cho người khách hàng. Trong trường hợp thành công sẽ hiển thị thông báo đơn hàng được đặt thành công.
+
+Ngoài ra nếu phương thức thanh toán được chọn là thanh toán qua cổng thanh toán, người khách hàng phải thanh toán đơn hàng thành công thì mới đặt đơn hàng thành công. \\
+
+
 \subsubsection{Người Khách hàng thực hiện hủy đơn đặt hàng.}
 \begin{figure}[H]
   \centering
@@ -236,6 +300,13 @@ Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử 
   \label{fig: Sơ đồ tuần tự người khách hàng thực hiện hủy đơn đặt hàng}
 \end{figure}
 
+Đối với quy trình người khách hàng thực hiện hủy đơn đặt hàng để quy trình này có thể bắt đầu bắt buộc quy trình mua hàng đã được tiến hành trước đó bới người khách hàng. \\
+
+Người khách hàng truy cập vào lịch sử đơn hàng để lấy ra các đơn đặt hàng đã đặt. Nhấn chọn vào một đơn hàng đã đặt để lấy thông tin của đơn hàng. Sau đó người khách hàng nhấn chọn hủy đơn hàng. Lúc này hệ thống sẽ kiểm tra nếu đơn hàng chưa được đóng gói thì yêu cầu sẽ tự động được chấp nhận và thông báo hủy thành công đơn hàng sẽ hiển thị cho người khách hàng. Trong trường hợp đơn hàng đã được chuyển trạng thái thành đã đóng gói đơn hàng không thể tạo yêu cầu hủy. \\
+
+Ngoài ra nếu người khách hàng lúc đặt đơn hàng đã thanh toán tiền của đơn hàng thông qua cổng thanh toán. Một yêu cầu hoàn tiền sẽ được hệ thống tự động gửi đi đến cửa hàng để đảm bảo tiền đơn hàng sẽ được gửi lại cho khách hàng và thông báo tạo yêu cầu hoàn tiền thành công sẽ được hiển thị đến người khách hàng. \\
+
+
 \subsubsection{Người Khách hàng thực hiện trả hàng - hoàn tiền.}
 \begin{figure}[H]
   \centering
@@ -244,6 +315,9 @@ Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử 
   \caption{Sơ đồ tuần tự người khách hàng thực hiện trả hàng và yêu cầu hoàn tiền đơn hàng \cite{Sequence Diagram - Customer create new refund order}}
   \label{fig: Sơ đồ tuần tự người khách hàng thực hiện trả hàng và yêu cầu hoàn tiền đơn hàng}
 \end{figure}
+
+Đối với quy trình trả hàng - hoàn tiền, người khách hàng tiến hành thực hiện như sau: Người khách hàng tiến hành truy cập vào trang lịch sử đơn hàng, nhấp chọn vào một đơn hàng, nhấn chọn vào nút yêu cầu trả hàng/hoàn tiền. Sau khi màn hình yêu cầu hiện ra, người khách hàng tiến hành điền thông tin về ý kiến của người khách hàng về đơn hàng, cập nhật video, hình ảnh khui mở kiện hàng lần đầu. Sau đó người khách hàng nhấn nút tạo yêu cầu. Hệ thống sẽ hiện lên thông báo tạo yêu cầu thành công cho người khách hàng thấy. \\
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%   Thiết kế giao diện
