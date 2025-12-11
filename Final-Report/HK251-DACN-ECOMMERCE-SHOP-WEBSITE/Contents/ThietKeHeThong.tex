@@ -1,0 +1,575 @@
+
+\section{Thiết kế hệ thống}
+
+\subsection{Kiến trúc hệ thống}
+\subsection{Thiết kế cơ sở dữ liệu}
+\subsubsection{Mô tả thực thể}
+
+\begin{table}[H]
+  \centering
+  % Định nghĩa 3 cột: Cột nhóm (3cm), Cột tên thực thể (3.5cm), Cột ý nghĩa (9.5cm)
+  \begin{tabular}{|m{3cm}|m{3.5cm}|m{9.5cm}|}
+    \hline
+    \textbf{Phân loại} & \textbf{Tên thực thể} & \textbf{Ý nghĩa} \\ \hline
+
+    % --- NHÓM 1: 7 DÒNG ---
+    \multirow{8}{=}{\textbf{Quản lý Người dùng}}
+    & User & Chứa thông tin chi tiết của người dùng trong hệ thống. \\ \cline{2-3}
+    & Customer & Chứa thông tin user mà chỉ có người khách hàng mới có. \\ \cline{2-3}
+    & Operator & Chứa thông tin chung mà chỉ có người admin và staff có. \\ \cline{2-3}
+    & Staff & Chứa thông tin mà chỉ có người nhân viên cửa hàng có. \\ \cline{2-3}
+    & Admin & Chứa thông tin mà chỉ có người quản trị viên cửa hàng có. \\ \cline{2-3}
+    & Address & Chứa thông tin chi tiết về địa chỉ thực tế. \\ \cline{2-3}
+    & Size Profiles & Chứa thông tin chi tiết về kích thước của người dùng về mỗi loại sản phẩm. \\
+    \cline{2-3}
+    & Shop & Chứa thông tin chi tiết về shop. \\
+    \hline
+
+    % --- NHÓM 2: 3 DÒNG ---
+    \multirow{4}{=}{\textbf{Sản phẩm}}
+    & Category & Thông tin về một danh mục sản phẩm. \\ \cline{2-3}
+    & Product & Thông tin về một sản phẩm. \\ \cline{2-3}
+    & Product Variant & Thông tin về các biến thể của cùng một sản phẩm (size, màu sắc). \\ \cline{2-3}
+    & Media & Thông tin chi tiết về một video hoặc hình ảnh. \\ \hline
+
+    % --- NHÓM 3: 4 DÒNG ---
+    \multirow{4}{=}{\textbf{Giỏ hàng \& Khuyến mãi}}
+    & Cart & Thông tin về giỏ hàng của người khách hàng. \\ \cline{2-3}
+    & Cart Item & Chứa thông tin về một sản phẩm có trong giỏ hàng. \\ \cline{2-3}
+    & Voucher & Thông tin về một voucher của shop. \\ \cline{2-3}
+    & User Voucher & Thông tin chi tiết về voucher mà người khách hàng đã lưu. \\ \hline
+
+    % --- NHÓM 4: 6 DÒNG ---
+    \multirow{8}{=}{\textbf{Đơn hàng \& Giao dịch}}
+    & Order & Thông tin chi tiết về đơn hàng. \\ \cline{2-3}
+    & Order Item & Thông tin lưu trữ một món hàng của order. \\ \cline{2-3}
+    & Payment & Thông tin chi tiết về thanh toán một đơn hàng. \\ \cline{2-3}
+    & Shipments & Thông tin vận chuyển của đơn hàng. \\ \cline{2-3}
+    & Update History & Thông tin chi tiết về lịch sử đơn hàng. \\ \cline{2-3}
+    & Special Request & Thông tin chung về các yêu cầu hủy đơn, trả hàng, hoàn tiền. \\
+    \cline{2-3}
+    & Cancelled Request & Thông tin chi tiết về các yêu cầu hủy đơn hàng. \\
+    \cline{2-3}
+    & Return Request & Thông tin chi tiết về các yêu cầu trả hàng, hoàn tiền. \\
+    \cline{2-3}
+
+    \hline
+
+    % --- NHÓM 5: 3 DÒNG ---
+    \multirow{3}{=}{\textbf{Tương tác}}
+    & Notification & Chứa thông tin thông báo. \\ \cline{2-3}
+    & Message & Thông tin chi tiết đoạn tin nhắn của người khách hàng và nhân viên. \\ \cline{2-3}
+    & Review & Thông tin chi tiết về đánh giá sản phẩm. \\ \hline
+
+  \end{tabular}
+  \caption{Danh sách thực thể được phân nhóm theo chức năng.}
+  \label{tab:mInfoGrouped}
+\end{table}
+
+\subsubsection{Lược đồ thực thể mối liên hệ mở rộng (EERD)}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{Images/Brand_Imgs/Đồ án - HK251-ERD .drawio.png}
+  \vspace{0.5cm}
+  \caption{EERD Diagram hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite{EERD diagram}}
+  \label{fig: EERD Diagram hệ thống bán hàng trực tuyến cho cửa hàng thời trang}
+\end{figure}
+
+Lược đồ thực thể mối liên hệ mở rộng cho thấy hệ thống có nhiều người dùng khác nhau đó là người khách hàng (customer), người quản trị viên (admin), người nhân viên (staff) của cửa hàng. \\ 
+
+Đối với người khách hàng, người quản trị viên, nhân viên cửa hàng họ có những trường thông tin chung đó là username, password, fullname, phone number, email, gender. Người khách hàng còn có hai trường thông tin riêng biệt là loyalty card thể hiện thông tin khách hàng thân thiết với cửa hàng và points là điểm số của người khách hàng để tính hạng khách hàng thân thiết. Còn người quản trị viên và nhân viên thì có thêm một trường thông tin chung là staff code thể hiện cho mã nhân viên của người đó trong cửa hàng. \\
+
+Đối với người khách hàng: \\
+
+ Người khách hàng có cho mình nhiều thông tin bảng size khác nhau. Mỗi bảng size là kích thước của một loại sản phẩm thời trang khác nhau. Ví dụ một khách hàng A có ba bảng size khác nhau: Bảng size đầu tiên là bảng size cho quần âu, bảng size thứ hai là bảng size cho áo sơ mi, bảng size thứ 3 là bảng size cho giày thể thao. \\ 
+
+Với mỗi người khách hàng họ có cho mình một giỏ hàng. Trong giỏ hàng họ có thể thêm vào đó nhiều sản phẩm khác nhau. Khi xem hàng và yêu thích món hàng bất kỳ người khách hàng có thể lưu lại sản phẩm vào giỏ hàng để mua sau hay người dùng muốn mua một lúc nhiều món hàng thì có thể thêm sản phẩm vào giỏ hàng và có thể thực hiện thao tác mua hàng một lần cho nhiều sản phẩm. \\ 
+
+Ngoài ra khi truy cập cửa hàng, người khách hàng còn có thể nhận được các mã voucher giảm giá. Nhờ đó mà người khách hàng có thể mua hàng với giá rẻ hơn nhưng chất lượng không đổi. \\ 
+
+Bên cạnh đó để tạo thêm sự tiện lợi cho người khách hàng trong khi mua sắm tại cửa hàng nhóm còn đề xuất tích hợp nhiều phương thức thanh toán đơn hàng khác nhau để người khách hàng lựa chọn. Đó là VNPay, MOMO, COD. Không những vậy, nếu khách hàng có điều gì đó không hài lòng về sản phẩm, khách hàng có thể nhắn tin trực tiếp đến cửa hàng để được hỗ trợ và khách hàng có thể tạo yêu cầu hủy đơn, trả hàng hoàn tiền để hủy việc mua hàng. Sau khi mua hàng xong người khách hàng có thể viết đánh giá để thể hiện sự hài lòng của chính mình về sản phẩm và dịch vụ từ cửa hàng. Sau khi đơn hàng được đặt thành công, các thông tin về địa chỉ giao hàng, bảng size, sẽ được lưu lại và người khách hàng có thể sử dụng lại vào lần sau. \\
+
+Đối với người quản trị viên cửa hàng: \\
+
+Người quản trị viên có thể nắm được các thông tin của các nhân viên đang làm việc tại cửa hàng nào. Địa chỉ cụ thể của cửa hàng. Ngoài ra người quản trị viên cũng biết được danh mục sản phẩm mà cửa hàng đang kinh doanh, số lượng sản phẩm trong mỗi cửa hàng. \\ 
+
+Khi tiến hành hoạt động kinh doanh, người quản trị viên có khả năng xử lý các đơn hàng từ lúc đóng gói đơn hàng cho đến khi đơn hàng được vận chuyển đến người khách hàng thành công. Hệ thống cho phép người quản trị viên xử lý được các yêu cầu hủy đơn, trả hàng - hoàn tiền của người khách hàng. Và hệ thống chỉ cho phép người quản trị viên tiến hàng việc thanh toán để hoàn tiền đơn hàng. \\
+
+Bên cạnh đó người quản trị viên có thể xem được thống kê về doanh thu của từng cửa hàng và tổng số lượng sản phẩm đã bán. Người quản trị viên còn có thể xem được nhân viên có doanh số tốt nhất. \\ 
+
+Ngoài ra người quản trị viên còn có thể nhận các thông báo khi đơn hàng được hủy, được yêu cầu trả hàng - hoàn tiền. Tiến hành nhắn tin để trao đổi thông tin với nhân viên cửa hàng và tư vấn cho khách hàng về sản phẩm. \\ 
+
+Đối với người nhân viên cửa hàng: \\ 
+
+Họ có thể tham gia vào quá trình xử lý, đóng gói, vận chuyển đơn hàng đến tay người khách hàng. Họ có thể than gia vào việc xử lý các yêu cần hủy đơn, trả hàng - hoàn tiền. Và họ có thể nhắn tin với quản trị viên, khách hàng, nhân viên khác cho mục đích công việc. \\
+ 
+Không những vậy người nhân viên còn có thể xem được sản phẩm và số lượng tồn kho của sản phẩm để có thể tư vấn việc mua hàng cho người khách hàng trong thời gian thực. \\
+
+\subsubsection{Lược đồ cơ sở dữ liệu}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{Images/Brand_Imgs/Đồ án - HK251-DB shemas.png}
+  \vspace{0.5cm}
+  \caption{Lược đồ cơ sở dữ liệu hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite{Database Diagram}}
+  \label{fig: Lược đồ cơ sở dữ liệu hệ thống bán hàng trực tuyến cho cửa hàng thời trang}
+\end{figure}
+
+Lược đồ trên là cơ sở dữ liệu của cửa hàng khi được hiện thực trên cơ sở dữ liệ PostgreSQL. \\ 
+
+Để thực hiện việc quản lý đơn giản người dùng của hệ thống ở đây nhóm chỉ có tạo duy nhất một bảng User để lưu thông tin người dùng trong hệ thống. Để có thể phân biệt người dùng nào là Customer, Admin, Staff. Nhóm sử dụng các trường thông tin phụ của bảng User đó là Role, isAdmin, isActive để kiểm tra và quản lý vai trò và quyền của người dùng. \\ 
+
+Với các bảng còn lại nhóm thực hiện mapping chính xác theo lược đồ thực thể lược đồ thực thể mối liên hệ mở rộng đã được trình bày bên trên. \\
+
+\subsection{Biểu đồ lớp (Class Diagram)}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/Brand_Imgs/Đồ án - HK251-Class Diagram.drawio.png}
+  \vspace{0.5cm}
+  \caption{Biểu đồ lớp (Class diagram) hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite{Sequence Diagram - Admin, staff processing order}}
+  \label{fig: Biểu đồ lớp (Class diagram) hệ thống bán hàng trực tuyến cho cửa hàng thời trang}
+\end{figure}
+
+Dựa vào các nghiệp vụ và lược đồ thực thể mối liên hệ mở rộng, biểu đồ lớp được thiết kế nhằm để thể hiện việc mô hình hóa các đối tượng trong hệ thống bao gồm các thuộc tính và các phương thức xử lý chính. \\
+
+Đầu tiên hệ thống có một lớp ảo là User. Các lớp Customer, Operator được kế thừa lại từ User. Nó thể hiện việc cả Customer và Operator đều là User và có các thuộc tính và phương thức của User. \\
+
+Lớp Operator được hai lớp khác kế thừa lại. Đó là Admin và Staff. Điều này thể hiện Admin và Staff đều là một Operator và có các thuộc tính và phương thức của Operator. \\
+
+Việc thiết kế Operator được hiện thực chia thành Admin và Staff thể hiện cho việc phân quyền, phân vai trò của người Operator trong hệ thống. Đặc biệt chỉ có một số hành động chỉ có một Admin của hệ thống mới được phép làm. Đó là việc thêm xóa sửa các sản phẩm, danh mục sản phẩm, voucher ở cửa hàng, thực hiện việc thanh toán hoàn tiền cho đơn hàng có yêu cầu hoàn tiền. \\ 
+
+Không chỉ vậy, theo biểu đồ lớp ta thấy Shop có mối liên hệ association với address thể hiện với mỗi shop sẽ có duy nhất một địa chỉ cho shop đó. Bên cạnh đó, Shop còn có mối liên hệ association với sản phẩm và category thể hiện một shop có danh mục sản phẩm và sản phẩm của riêng shop đó. Còn với vận hành cửa hàng, mỗi shop có thể có nhiều người Operator.\\
+
+Đến với mối quan hệ của Category ta có mối liên hệ association thể hiện một category có nhiều product và một product thì có thể thuộc vào nhiều Category. \\ 
+
+Với mỗi product trong cửa hàng, Product có thể có nhiều ProductVariant và đây là mối quan hệ composition. Mối quan hệ này đảm bảo khi một Product bị hủy thì các ProductVariant của nó cũng sẽ bị hủy theo. \\
+
+Ngoài ra biểu đồ lớp còn thể hiện, một Customer có quan hệ association với Cart. Một Customer thì có một Cart. Giữa Cart và CartItem có mối quan hệ là Composition nếu Cart bị hủy thì tất cả các CartItem đều hủy theo. Đối với CartItem và ProductVariant có mối quan hệ association thể hiện một CartItem là một ProductVariant. Và mỗi ProductVariant thì có mối quan hệ association với media thể hiện một ProductVariant có thể có nhiều hình ảnh hay video mô tả một biến thể của sản phẩm. \\
+
+Bên cạnh đó khi thực hiện đặt hàng, người Customer có thể tiến hành đặt nhiều đơn hàng và mối liên hệ giữa Customer và Order là association. Đến với mỗi Order, Order sẽ chứa nhiều OrderItem và mối liên hệ giữa chúng là composition thể hiện cho việc khi xóa một Order thì tất cả OrderItem cũng sẽ mất theo. Và mỗi OrderItem là một ProductVariant. Không những vậy Order có thể có nhiều lần Payment. Order có thể sử dụng voucher để nhận giảm giá, có mối liên hệ với Shipment để thể hiện việc vận chuyển đơn hàng. Và ngoài ra mỗi đơn hàng thì người Customer có thể tạo nhiều request cho đơn hàng đó. Các Request có thể là Cancelled request hay là Return Request. \\ 
+
+Đối với mỗi một người Customer, họ có thể có nhiều Review mà trong mỗi Review sẽ có thông tin của các ProductVariant và media của sản phẩm đó kèm theo mô tả đánh giá của họ. Trong trường hợp không hài lòng người Customer có thể thực hiện nhắn tin, các message sẽ lưu lại các thông tin của đoạn chat của người Customer với người Operator của cửa hàng. \\
+
+Đến với việc quản lý cửa hàng, biểu đồ lớp cho ta thấy, người Admin của cửa hàng có thể tạo nhiều danh mục sản phẩm, sản phẩm và các biến thể sản phẩm. Không chỉ vậy, người Admin của cửa hàng còn tiến hành tạo ra các voucher khuyến mãi của cửa hàng. Đây đều là các việc mà người Staff của cửa hàng không thể thực hiện. \\
+
+Cả hai vai trò Admin và Staff đều có khả năng thực hiện xử lý các order.\\ 
+\subsection{Sơ đồ tuần tự}
+\subsubsection{Người quản trị viên, người nhân viên xử lý đơn hàng.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Admin, Staff processing order.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý đơn hàng \cite{Sequence Diagram - Admin, staff processing order}}
+  \label{fig: Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý đơn hàng}
+\end{figure}
+
+Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý đơn hàng quá trình xử lý sẽ bắt đầu như sau
+
+\subsubsection{Người quản trị viên, người nhân viên xử lý trả hàng - hoàn tiền.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Admin, Staff processing refund order.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý việc khách hàng trả hàng và yêu cầu hoàn tiền \cite{Sequence Diagram - Admin, staff processing refund order}}
+  \label{fig: Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý việc khách hàng trả hàng và yêu cầu hoàn tiền}
+\end{figure}
+
+\subsubsection{Người Khách hàng thực hiện tìm kiếm và xem sản phẩm.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer search and view product.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ tuần tự người khách hàng thực hiện tìm kiếm và xem sản phẩm \cite{Sequence Diagram - Customer search and view product}}
+  \label{fig: Sơ đồ tuần tự người khách hàng thực hiện tìm kiếm và xem sản phẩm}
+\end{figure}
+
+\subsubsection{Người Khách hàng thực hiện so sánh thông tin các sản phẩm.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ tuần tự người khách hàng thực hiện so sánh thông tin các sản phẩm \cite{Sequence Diagram - Customer view compare product item}}
+  \label{fig: Sơ đồ tuần tự người khách hàng thực hiện so sánh thông tin các sản phẩm}
+\end{figure}
+
+\subsubsection{Người Khách hàng thực hiện việc mua ngay sản phẩm.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order on product detail page (by now function).jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ tuần tự người khách hàng thực hiện mua ngay sản phẩm \cite{Sequence Diagram - Customer checkout and place order on product detail page}}
+  \label{fig: Sơ đồ tuần tự người khách hàng thực hiện mua ngay sản phẩm}
+\end{figure}
+
+\subsubsection{Người Khách hàng thực hiện thêm các sản phẩm vào giỏ hàng.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer add product items to shopping cart.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ tuần tự người khách hàng thực hiện thêm các sản phẩm vào giỏ hàng \cite{Sequence Diagram - Customer add product items to shopping cart}}
+  \label{fig: Sơ đồ tuần tự người khách hàng thực hiện thêm sản phẩm vào giỏ hàng}
+\end{figure}
+
+\subsubsection{Người Khách hàng thực hiện mua các sản phẩm từ giỏ hàng.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order shopping cart.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ tuần tự người khách hàng thực hiện mua các sản phẩm từ giỏ hàng \cite{Sequence Diagram - Customer checkout and place order from shopping cart}}
+  \label{fig: Sơ đồ tuần tự người khách hàng thực hiện mua các sản phẩm từ giỏ hàng}
+\end{figure}
+
+\subsubsection{Người Khách hàng thực hiện mua các sản phẩm từ đơn hàng đã mua.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order on history order page.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ tuần tự người khách hàng thực hiện mua lại các sản phẩm từ đơn hàng đã mua \cite{Sequence Diagram - Customer checkout and place order on history order page}}
+  \label{fig: Sơ đồ tuần tự người khách hàng thực hiện mua các sản phẩm từ đơn hàng đã mua}
+\end{figure}
+
+\subsubsection{Người Khách hàng thực hiện hủy đơn đặt hàng.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ tuần tự người khách hàng thực hiện hủy đơn đặt hàng \cite{Sequence Diagram - Customer cancel order}}
+  \label{fig: Sơ đồ tuần tự người khách hàng thực hiện hủy đơn đặt hàng}
+\end{figure}
+
+\subsubsection{Người Khách hàng thực hiện trả hàng - hoàn tiền.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer create new refund order.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ tuần tự người khách hàng thực hiện trả hàng và yêu cầu hoàn tiền đơn hàng \cite{Sequence Diagram - Customer create new refund order}}
+  \label{fig: Sơ đồ tuần tự người khách hàng thực hiện trả hàng và yêu cầu hoàn tiền đơn hàng}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%   Thiết kế giao diện
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Thiết kế giao diện hệ thống}
+\subsubsection{Thiết kế giao diện cho khách hàng}
+\subsubsubsection {Trang chủ}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Home.png}
+  \vspace{0.5cm}
+  \caption{Giao diện trang chủ \cite{Mockup - Home}}
+  \label{fig: Giao diện trang chủ}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Người dùng có thể duyệt các sản phẩm nổi bật, xem danh mục sản phẩm, tìm kiếm sản phẩm qua thanh tìm kiếm, xem giỏ hàng, quản lý tài khoản, và truy cập chức năng chat hỗ trợ khách hàng.
+\subsubsubsection {Xem Sản phẩm theo Loại/Tìm kiếm Sản phẩm}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Search.png}
+  \vspace{0.5cm}
+  \caption{Giao diện Xem theo loại/Tìm kiếm\cite{Mockup - Search}}
+  \label{fig: Giao diện Xem theo loại/Tìm kiếm}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Người dùng có thể lọc sản phẩm theo danh mục, sắp xếp theo giá hoặc đánh giá, tìm kiếm theo từ khóa, xem chi tiết sản phẩm, thêm sản phẩm vào giỏ hàng, và so sánh các sản phẩm khác nhau.
+
+\subsubsubsection {Tính năng Chăm sóc khách hàng}
+\begin{enumerate}
+  \item Màn hình người dùng:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Home-View.png}
+      \vspace{0.5cm}
+      \caption{Giao diện trang chủ (view) \cite{Mockup - Home (View)}}
+      \label{fig: Màn hình người dùng}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Nút chăm sóc khách hàng có thể expand ra để mở khung chat với nhân viên cửa hàng để nhận hỗ trợ.
+  \item Màn hình người dùng (sau khi expand tính năng Chat):
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Home-Message.png}
+      \vspace{0.5cm}
+      \caption{Giao diện trang chủ (message) \cite{Mockup - Home (Message)}}
+      \label{fig: Màn hình người dùng sau khi expand tính năng Chat}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Gửi và nhận tin nhắn với nhân viên hỗ trợ, xem lịch sử cuộc trò chuyện, gửi hình ảnh, và đóng cửa sổ chat.
+\end{enumerate}
+\subsubsubsection {Giỏ hàng}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Cart.png}
+  \vspace{0.5cm}
+  \caption{Giao diện Giỏ hàng \cite{Mockup - Cart}}
+  \label{fig: Giao diện Giỏ hàng}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem danh sách sản phẩm trong giỏ, thay đổi số lượng sản phẩm, xóa sản phẩm, xem tổng tiền và tiến hành thanh toán.
+\subsubsubsection {Thanh toán}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Checkout.png}
+  \vspace{0.5cm}
+  \caption{Giao diện Thanh toán \cite{Mockup - Checkout}}
+  \label{fig: Giao diện Thanh toán}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Nhập/chọn địa chỉ giao hàng, chọn phương thức thanh toán, xem chi tiết đơn hàng, nhập mã voucher, xác nhận đơn hàng và hoàn tất giao dịch.
+\subsubsubsection {Chi tiết sản phẩm}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Product.png}
+  \vspace{0.5cm}
+  \caption{Giao diện Chi tiết sản phẩm \cite{Mockup - Product}}
+  \label{fig: Giao diện Chi tiết sản phẩm}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem hình ảnh sản phẩm chi tiết, chọn kích cỡ và màu sắc, xem thông tin mô tả, giá cả và đánh giá, thêm vào giỏ hàng, mua ngay.
+\subsubsubsection {So sánh Sản phẩm}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Compare.png}
+  \vspace{0.5cm}
+  \caption{Giao diện So sánh Sản phẩm \cite{Mockup - Compare}}
+  \label{fig: Giao diện So sánh Sản phẩm}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} So sánh thông tin chi tiết các sản phẩm (giá, kích cỡ, chất liệu, đánh giá), xóa sản phẩm khỏi bảng so sánh, thêm sản phẩm vào giỏ hàng từ bảng so sánh, và mua ngay sản phẩm được chọn.
+\subsubsubsection {Trang cá nhân}
+\begin{enumerate}
+  \item Trang thông tin cá nhân:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Profile Page.png}
+      \vspace{0.5cm}
+      \caption{Giao diện trang thông tin cá nhân \cite{Mockup - Profile Page}}
+      \label{fig: Giao diện trang thông tin cá nhân}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Xem và chỉnh sửa thông tin cá nhân (tên, email, số điện thoại, ảnh đại diện), quản lý các địa chỉ, xem lịch sử giao dịch, và cập nhật thông tin tài khoản.
+
+  \item Trang kích cỡ:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Size Page.png}
+      \vspace{0.5cm}
+      \caption{Giao diện trang kích cỡ \cite{Mockup - Size Page}}
+      \label{fig: Giao diện trang kích cỡ}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Lưu và quản lý thông tin kích cỡ cơ thể cho các loại sản phẩm khác nhau, cập nhật số đo cơ thể, và sử dụng thông tin kích cỡ để gợi ý sản phẩm phù hợp.
+
+  \item Trang quản lý địa chỉ:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Address Page.png}
+      \vspace{0.5cm}
+      \caption{Giao diện trang quản lý địa chỉ \cite{Mockup - Address Page}}
+      \label{fig: Giao diện trang quản lý địa chỉ}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Thêm, chỉnh sửa và xóa địa chỉ giao hàng, đặt địa chỉ mặc định, xem danh sách đầy đủ các địa chỉ đã lưu, và nhanh chóng chọn địa chỉ trong quá trình thanh toán.
+
+  \item Trang đổi mật khẩu:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Change Password.png}
+      \vspace{0.5cm}
+      \caption{Giao diện trang đổi mật khẩu \cite{Mockup - Change Password}}
+      \label{fig: Giao diện trang đổi mật khẩu}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Nhập mật khẩu cũ, nhập mật khẩu mới, xác nhận mật khẩu mới, và cập nhật mật khẩu để bảo vệ tài khoản.
+
+  \item Trang xóa tài khoản:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Delete Account.png}
+      \vspace{0.5cm}
+      \caption{Giao diện trang xóa tài khoản \cite{Mockup - Delete Account}}
+      \label{fig: Giao diện trang xóa tài khoản}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Xác nhận yêu cầu xóa tài khoản, đọc cảnh báo và hậu quả của việc xóa tài khoản vĩnh viễn, và hoàn tất quy trình xóa tài khoản.
+\end{enumerate}
+\subsubsubsection {Quản lý đơn hàng}
+\begin{enumerate}
+  \item Tất cả đơn hàng:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Order Page/Orders Page - All.png}
+      \vspace{0.5cm}
+      \caption{Giao diện xem tất cả đơn hàng \cite{Mockup - Order Page All}}
+      \label{fig: Giao diện xem tất cả đơn hàng}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Xem danh sách toàn bộ đơn hàng, lọc theo trạng thái, sắp xếp theo ngày, tìm kiếm đơn hàng, xem chi tiết từng đơn, và thực hiện các hành động liên quan (hủy, trả hàng, theo dõi).
+
+  \item Đơn hàng chờ xử lý:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Order Page/Orders Page - Pending.png}
+      \vspace{0.5cm}
+      \caption{Giao diện đơn hàng chờ xử lý \cite{Mockup - Order Page Pending}}
+      \label{fig: Giao diện đơn hàng chờ xử lý}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Xem danh sách đơn hàng chưa được xác nhận, hủy đơn hàng nếu cần, xem thông tin thanh toán, theo dõi thời gian xử lý, và liên hệ với bộ phận hỗ trợ.
+
+  \item Đơn hàng đang giao:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Order Page/Orders Page - On the way.png}
+      \vspace{0.5cm}
+      \caption{Giao diện đơn hàng đang giao \cite{Mockup - Order Page On the way}}
+      \label{fig: Giao diện đơn hàng đang giao}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Theo dõi vị trí giao hàng theo thời gian thực, xem thông tin nhân viên giao hàng, xem địa chỉ giao, ước tính thời gian giao, và liên hệ với bộ phận giao hàng.
+
+  \item Đơn hàng đã hoàn thành:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Order Page/Orders Page - Finished.png}
+      \vspace{0.5cm}
+      \caption{Giao diện đơn hàng đã hoàn thành \cite{Mockup - Order Page Finished}}
+      \label{fig: Giao diện đơn hàng đã hoàn thành}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Xem lịch sử đơn hàng hoàn thành, đánh giá sản phẩm và shop, xem hóa đơn và biên lai, mua lại các sản phẩm, và yêu cầu trả hàng nếu cần.
+
+  \item Đơn hàng đã hủy:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Order Page/Orders Page - Cancelled.png}
+      \vspace{0.5cm}
+      \caption{Giao diện đơn hàng đã hủy \cite{Mockup - Order Page Cancelled}}
+      \label{fig: Giao diện đơn hàng đã hủy}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Xem danh sách đơn hàng bị hủy, xem lý do hủy, xem trạng thái hoàn tiền, liên hệ bộ phận hỗ trợ nếu có vấn đề, và mua lại sản phẩm.
+
+  \item Đơn hàng trả hàng:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Order Page/Orders Page - Returned.png}
+      \vspace{0.5cm}
+      \caption{Giao diện đơn hàng trả hàng \cite{Mockup - Order Page Returned}}
+      \label{fig: Giao diện đơn hàng trả hàng}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Xem trạng thái yêu cầu trả hàng, theo dõi tiến độ xử lý, xem thông tin hoàn tiền, kiểm tra ngày hoàn tiền dự kiến, và liên hệ hỗ trợ nếu có câu hỏi.
+
+  \item Yêu cầu hủy/trả hàng:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Order Page/Orders Page - Cancel Return Request.png}
+      \vspace{0.5cm}
+      \caption{Giao diện Yêu cầu hủy/trả hàng \cite{Mockup - Order Page Cancel Return Request}}
+      \label{fig: Giao diện Yêu cầu hủy/trả hàng}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Cửa sổ mở lên khi người dùng chọn hủy/trả đơn hàng. Nhập lý do hủy/trả, xác nhận yêu cầu, và theo dõi số tiền được hoàn lại.
+\end{enumerate}
+\subsubsubsection {Thông báo}
+\begin{enumerate}
+  \item Thông báo cập nhật đơn hàng:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Notifications/Notifications - Order updates.png}
+      \vspace{0.5cm}
+      \caption{Giao diện thông báo cập nhật đơn hàng \cite{Mockup - Notifications Order updates}}
+      \label{fig: Giao diện thông báo cập nhật đơn hàng}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Hiển thị thông báo về trạng thái đơn hàng (xác nhận, thanh toán, đang giao, đã giao), xem chi tiết thông báo, đánh dấu đã đọc, và xóa thông báo.
+
+  \item Thông báo khuyến mãi:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{Images/MockUp/Notifications/Notifications - Sales.png}
+      \vspace{0.5cm}
+      \caption{Giao diện thông báo khuyến mãi \cite{Mockup - Notifications Sales}}
+      \label{fig: Giao diện thông báo khuyến mãi}
+    \end{figure}
+    \noindent\textbf{Các thao tác chính:} Hiển thị thông báo về khuyến mãi, giảm giá, và sản phẩm mới, xem chi tiết chương trình khuyến mãi, lưu thông báo, và điều hướng đến sản phẩm liên quan.
+\end{enumerate}
+\subsubsection{Thiết kế giao diện cho quản trị viên}
+\subsubsubsection {Trang tổng quan (Dashboard)}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Dashboard.png}
+  \vspace{0.5cm}
+  \caption{Giao diện trang tổng quan \cite{Mockup - Admin Dashboard}}
+  \label{fig: Giao diện trang tổng quan}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem tổng quan về doanh thu, số đơn hàng, số khách hàng mới, xem các biểu đồ thống kê, và truy cập nhanh đến các chức năng quản lý chính.
+
+\subsubsubsection {Quản lý đơn hàng}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Order Management.png}
+  \vspace{0.5cm}
+  \caption{Giao diện quản lý đơn hàng \cite{Mockup - Admin Order Management}}
+  \label{fig: Giao diện quản lý đơn hàng}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem danh sách tất cả đơn hàng, lọc theo trạng thái, cập nhật trạng thái đơn hàng, xác nhận thanh toán, và quản lý vận chuyển.
+
+\subsubsubsection {Quản lý khách hàng}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Customer.png}
+  \vspace{0.5cm}
+  \caption{Giao diện quản lý khách hàng \cite{Mockup - Admin Customer}}
+  \label{fig: Giao diện quản lý khách hàng}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem danh sách khách hàng, tìm kiếm và lọc khách hàng, xem chi tiết tài khoản, quản lý quyền truy cập, và theo dõi hoạt động khách hàng.
+
+\subsubsubsection {Quản lý voucher}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Add Voucher.png}
+  \vspace{0.5cm}
+  \caption{Giao diện quản lý voucher \cite{Mockup - Admin Voucher}}
+  \label{fig: Giao diện quản lý voucher}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem danh sách voucher đã tạo, lọc theo trạng thái, xem chi tiết sử dụng, và quản lý hạn mức voucher.
+
+\subsubsubsection {Quản lý danh mục}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Categories.png}
+  \vspace{0.5cm}
+  \caption{Giao diện quản lý danh mục \cite{Mockup - Admin Categories}}
+  \label{fig: Giao diện quản lý danh mục}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem danh sách danh mục sản phẩm, thêm danh mục mới, chỉnh sửa và xóa danh mục, sắp xếp danh mục.
+
+\subsubsubsection {Quản lý giao dịch}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Transaction.png}
+  \vspace{0.5cm}
+  \caption{Giao diện quản lý giao dịch \cite{Mockup - Admin Transaction}}
+  \label{fig: Giao diện quản lý giao dịch}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem lịch sử giao dịch, lọc theo loại giao dịch, xem chi tiết thanh toán, xuất báo cáo giao dịch, và kiểm tra xác minh thanh toán.
+
+\subsubsubsection {Chat hỗ trợ}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Chat.png}
+  \vspace{0.5cm}
+  \caption{Giao diện chat hỗ trợ \cite{Mockup - Admin Chat}}
+  \label{fig: Giao diện chat hỗ trợ}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem danh sách cuộc trò chuyện với khách hàng, trả lời tin nhắn, gửi hình ảnh hoặc tệp, và quản lý các yêu cầu hỗ trợ.
+
+\subsubsubsection {Thêm sản phẩm}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Add Product.png}
+  \vspace{0.5cm}
+  \caption{Giao diện thêm sản phẩm \cite{Mockup - Admin Add Product}}
+  \label{fig: Giao diện thêm sản phẩm}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Nhập thông tin sản phẩm (tên, giá, mô tả), chọn danh mục, tải ảnh sản phẩm, thiết lập kích cỡ và màu sắc, và xuất bản sản phẩm.
+
+\subsubsubsection {Quản lý trang cá nhân}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Admin Role.png}
+  \vspace{0.5cm}
+  \caption{Giao diện quản lý trang cá nhân \cite{Mockup - Admin Admin Role}}
+  \label{fig: Giao diện quản lý trang cá nhân}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem danh sách người dùng hệ thống, phân quyền và vai trò (admin, nhân viên), chỉnh sửa quyền truy cập, khóa tài khoản, và xem lịch sử hoạt động.
+
+
+\subsubsection {Thiết kế giao diện cho nhân viên}
+Các giao diện cho nhân viên cửa hàng tương tự như giao diện cho quản trị viên, với một số chức năng bị giới hạn tùy theo vai trò của nhân viên. Dưới đây là so sánh:
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/MockUp/Admin/Permission Comparison.png}
+  \vspace{0.5cm}
+  \caption{So sánh giao diện Admin và Nhân viên: Các quyền của Admin (Trái) và Nhân viên (Phải)\cite{Mockup - Admin Admin Role}}
+  \label{fig: So sánh giao diện Admin và Nhân viên}
+\end{figure}

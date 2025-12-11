@@ -1,0 +1,1970 @@
+\section{Phân tích hệ thống}
+\subsection{Các vai trò và yêu cầu chức năng của người dùng trong hệ thống}
+
+\begin{itemize}
+  \item Các vai trò trong hệ thống:
+    \begin{itemize}
+      \item Hệ thống được thiết kế để phục vụ nhu cầu của các nhóm người đó là: Quản trị viên cửa hàng (admin), nhân viên cửa hàng (staff), và người khách hàng mua hàng tại cửa hàng (customer).
+    \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+  \item Đối với người quản trị viên đó là việc:
+    \begin{itemize}
+      \item Quản lý sản phẩm: thêm, xóa, sửa, xem sản phẩm.
+      \item Quản lý danh mục sản phẩm: thêm, xóa, sửa, xem danh mục sản phẩm.
+      \item Quản lý doanh thu: Xem doanh thu hằng ngày, tuần, tháng, năm. Xem các mặt hàng bán chạy trong ngày, tuần, tháng, năm. Xem được thông tin nhân viên nào của cửa hàng là nhân viên bán hàng với doanh số cao nhất.
+      \item Quản lý việc hoàn tiền khi người dùng hủy đơn - hoàn tiền hoặc trả hàng - hoàn tiền: Cho phép ghi nhận và kiểm tra tính hợp lệ của yêu cầu hoàn tiền. Chỉnh sửa trạng thái của yêu cầu hoàn tiền và cho phép thực hiện việc chuyển hoàn tiền cho khách hàng.
+      \item Quản lý hàng tồn kho: Xem được số lượng hàng còn trong kho của bất kỳ sản phẩm nào tại bất kỳ thời điểm nào.
+      \item Gợi ý sản phẩm cần được nhập dựa trên tần suất cháy hàng sản phẩm đó, trend hiện có trên thị trường.
+      \item Quản lý được voucher: Xem, xóa, sửa, tạo mới voucher. Và việc gán voucher này sẽ được áp dụng cho sản phẩm, danh mục sản phẩm hay khách hàng cụ thể nào.
+      \item Quản lý việc đóng đơn hàng và vận chuyển đơn hàng. Đó là việc xác nhận và update trạng thái của đơn hàng trong từng thời điểm đơn hàng được xử lý (xác nhận đơn, đã đóng gói, đang giao, đã giao, đang chuyển hoàn.)
+      \item Quản lý được thông tin của nhân viên shop: Thêm mới, xem, xóa, chỉnh sửa thông tin cá nhân của nhân viên.
+      \item Sử dụng box chat để trao đổi thông tin với nhân viên và với khách hàng của cửa hàng.
+    \end{itemize}
+
+  \item Đối với người nhân viên đó là việc:
+    \begin{itemize}
+      \item Quản lý hàng tồn kho: Xem được số lượng hàng còn trong kho của bất kỳ sản phẩm nào tại bất kỳ thời điểm nào.
+      \item Quản lý việc đóng đơn hàng và vận chuyển đơn hàng. Đó là việc xác nhận và update trạng thái của đơn hàng trong từng thời điểm đơn hàng được xử lý (xác nhận đơn, đã đóng gói, đang giao, đã giao, đang chuyển hoàn.)
+      \item Quản lý việc hoàn tiền khi người dùng hủy đơn - hoàn tiền hoặc trả hàng - hoàn tiền: Chỉ cho phép ghi nhận và kiểm tra tính hợp lệ của yêu cầu hoàn tiền. Không cho phép thực hiện việc chuyển hoàn tiền
+      \item Quản lý được thông tin cá nhân của mình: Xem và chỉnh sửa thông tin cá nhân.
+      \item Sử dụng box chat để trao đổi thông tin với đồng nghiệp và với khách hàng.
+    \end{itemize}
+
+  \item Đối với người khách hàng:
+    \begin{itemize}
+      \item Tìm kiếm thông tin sản phẩm bằng từ khóa.
+      \item Duyệt nhanh các sản phẩm của hãng. Đối với từng sản phẩm có thể xem chi tiết được thông tin sản phẩm, size, số lượng hàng hiện có, màu sắc cho từng sản phẩm.
+      \item Hỗ trợ chức năng so sánh các sản phẩm từ cùng một danh mục sản phẩm.
+      \item Gợi ý sản phẩm hot trend, sản phẩm phù hợp với sở thích cho người dùng.
+      \item Quản lý giỏ hàng: Thêm, xóa, sửa, xem sản phẩm có trong giỏ hàng
+      \item Mua hàng nhanh hoặc mua hàng từ giỏ hàng và cho phép thanh toán online
+      \item Hỗ trợ chức năng mua lại một đơn hàng đã mua từ trước.
+      \item Chọn đơn vị vận chuyển. Hỗ trợ việc lưu địa chỉ giao hàng một lần và dùng vào nhiều lần sau.
+      \item Có thể tạo yêu cầu hủy đơn hàng - hoàn tiền (trong trường hợp thanh toán online trước khi nhận được hàng) và trả hàng - hoàn tiền (khi nhận được hàng rồi nhưng đơn hàng không đúng yêu cầu đã mua).
+      \item Quản lý voucher: Lưu lại vouhcer để dùng sau. Và hỗ trợ việc thêm voucher vào đơn hàng.
+      \item Sử dụng box chat để trao đổi thông tin với nhân viên cửa hàng để nhận tư vấn về sản phẩm người khách hàng quan tâm.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Các yêu cầu phi chức năng}
+\begin{itemize}
+  \item Thời gian tải trang (Page Load Time): Trang chủ, trang danh mục và trang sản phẩm phải tải dưới 3 giây (tối ưu là 1-2 giây) trên cả thiết bị di động và máy tính.
+  \item Khả năng chịu tải (Load Capacity): Hệ thống phải xử lý được ít nhất X người dùng đồng thời (ví dụ: 5.000 - 10.000 người) mà vẫn duy trì tốc độ ổn định, đặc biệt trong các đợt Flash Sale lớn.
+  \item Thời gian phản hồi (Response Time): Thời gian phản hồi của API thanh toán và giỏ hàng phải dưới 0.5 giây để đảm bảo giao dịch diễn ra nhanh chóng.
+  \item Thân thiện với Di động (Mobile Responsiveness): Giao diện phải tương thích hoàn toàn và hoạt động trơn tru trên tất cả các kích thước màn hình di động và máy tính bảng (Mobile-first design).
+  \item Tính nhất quán của Giao diện  Font chữ, màu sắc thương hiệu và bố cục các nút (ví dụ: "Thêm vào Giỏ hàng", "Thanh toán") phải nhất quán trên mọi trang.
+  \item Bảo mật thanh toán (PCI DSS Compliance)  Việc xử lý và lưu trữ dữ liệu thẻ tín dụng phải tuân thủ tiêu chuẩn PCI DSS (nếu tự xử lý) hoặc sử dụng cổng thanh toán tuân thủ.
+  \item Bảo vệ dữ liệu người dùng (Data Protection)  Thông tin cá nhân (tên, địa chỉ, email) phải được mã hóa và bảo vệ theo các quy tắc bảo mật dữ liệu hiện hành.
+  \item Ngăn chặn Lỗ hổng bảo mật  Hệ thống phải được kiểm tra thường xuyên (Penetration Testing) để ngăn chặn các cuộc tấn công phổ biến như SQL Injection, Cross-Site Scripting (XSS).
+  \item Thời gian hoạt động (Uptime)  Trang web phải đảm bảo thời gian hoạt động tối thiểu là 99.9\% (tương đương không quá 8.7 giờ ngừng hoạt động mỗi năm).
+
+  \item Khả năng Phục hồi (Disaster Recovery)  Phải có kế hoạch và quy trình sao lưu dữ liệu thường xuyên. Trong trường hợp xảy ra lỗi nghiêm trọng, hệ thống phải được khôi phục về trạng thái hoạt động gần nhất trong vòng T giờ (ví dụ: T=4 giờ).
+  \item Khả năng Tích hợp (Integrability)  Hệ thống phải dễ dàng tích hợp với các dịch vụ bên thứ ba (ví dụ: Cổng thanh toán, Dịch vụ vận chuyển, Phần mềm CRM/ERP) thông qua các API tiêu chuẩn.
+\end{itemize}
+
+\subsection{Thiết kế usecase}
+\subsubsection{Sơ đồ usecase}
+
+\subsubsubsection{Sơ đồ usecase cho người quản trị viên (admin) và nhân viên (staff)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/UsecaseDiagram/Đồ án - HK251-Usecase cho Admin và Staff.drawio.png}\
+  \vspace{0.5cm}
+  \caption{Usecase Diagram của người Quản trị viên và nhân viên của hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite{Usecase diagram}}
+  \label{fig: Usecase Diagram của người Quản trị viên và nhân viên của hệ thống bán hàng trực tuyến cho cửa hàng thời trang}
+\end{figure}
+
+Bên trên là lược đồ usecase cho thấy các usecase mà người nhân viên (staff) và người quản lý (admin) có thể có.
+\begin{itemize}
+
+  \item Đối với người nhân viên (staff):
+    \begin{itemize}
+      \item Có thể sử dụng realtime chat để có thể nhắn tin với người khách hàng, giữa các nhân viên với nhau để trao đổi thông tin về sản phẩm và về các thông tin trong việc điều hành cửa hàng.
+      \item Người nhân viên cũng có thể quản lý các đơn hàng. Trong đó người nhân viên có thể tham gia vào việc đóng gói đơn hàng và tham gia vận chuyển đơn hàng đến với khách hàng. Được thể hiện ở việc người nhân viên có thể cập nhật trạng thái của đơn hàng theo từng mốc thời gian mà đơn hàng đó được xử lý (đã nhận đơn hàng, đã đóng gói, đang giao, đã giao, chuyển hoàn.)
+      \item Người nhân viên có thể tham gia vào quá trình kiểm duyệt một yêu cầu hoàn tiền đơn hàng được tạo từ phía khách hàng. Đó là cập nhật thông tin trạng thái của một yêu cầu khách hàng (đã nhận, đang xử lý, từ chối kèm theo lý do). Không cho phép người nhân viên thực hiện chuyển khoản hoàn tiền cho người khách hàng.
+      \item Người nhân viên có thể kiểm tra tình trạng tồn kho của một sản phẩm nào đó trong cửa hàng.
+    \end{itemize}
+
+  \item Đối với người quản trị viên (admin):
+    \begin{itemize}
+      \item  Sử dụng realtime chat để trao đổi thông tin với các nhân viên của cửa hàng, hoặc dùng để nhắn tin trực tiếp với khách hàng để cung cấp thông tin về sản phẩm cho khách hàng.
+      \item Có thể quản lý danh mục sản phẩm: Thêm, xem, xóa, sửa danh mục sản phẩm.
+      \item Có thể quản lý sản phẩm: Thêm, xem, xóa, sửa sản phẩm
+      \item Có thể quản lý được đơn hàng: Trong đó người quản trị viên (admin) có thể tham gia vào quá trình đóng gói đơn hàng và vận chuyển đơn hàng đến khách hàng. Ngoài ra chỉ có người quản trị viên mới có thể thực hiện được việc chuyển khoản để hoàn tiền đơn hàng cho người khách hàng.
+      \item Có thể quản lý được hàng tồn kho của cửa hàng. Như việc xem số lượng sản phẩm còn lại trong kho.
+      \item Có thể quản lý doanh thu: Xem doanh thu trong tháng, trong quý, trong năm của cửa hàng. Xem được mặt hàng nào là bán chạy nhất của cửa hàng. Xem được thông tin nhân viên có doanh thu cao nhất. Ngoài ra người quản trị viên (admin) cũng sẽ được hệ thống đề xuất những món hàng bán chạy để nhập hàng thêm cho cửa hàng.
+      \item Có thể quản lý vouchers của cửa hàng: Thêm xóa sửa voucher.
+      \item Có thể quản lý thông tin của nhân viên trong cửa hàng: Thêm mới, xem thông tin, cập nhật, xóa thông tin nhân viên.
+    \end{itemize}
+\end{itemize}
+
+\subsubsubsection{Sơ đồ usecase cho người khách hàng (customer)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/UsecaseDiagram/Đồ án - HK251-Usecase cho customer.drawio.png}\
+  \vspace{0.5cm}
+  \caption{Usecase Diagram của người Khách hàng của hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite{Usecase diagram}}
+  \label{fig: Usecase Diagram của người Khách hàng của hệ thống bán hàng trực tuyến cho cửa hàng thời trang}
+\end{figure}
+
+Bên trên cho thấy các usecase mà người khách hàng (customer) có thể thực hiện được trong hệ thống:
+\begin{itemize}
+  \item Sử dụng được realtime chat để trao đổi thông tin với người nhân viên của shop để hỏi thông tin về sản phẩm.
+  \item Tìm kiếm sản phẩm bằng từ khóa để có thể tìm kiếm nhanh một loại sản phẩm đang mong muốn mua.
+  \item Xem thông tin chi tiết của một sản phẩm bất kỳ.
+  \item Hỗ trợ việc so sánh thông tin nhiều sản phẩm trong cùng một danh mục. Một bảng biểu sẽ xuất hiện và so sánh thông tin trên nhiều tiêu chí của hai hay nhiều sản phẩm.
+  \item Người dùng được hệ thống đề xuất các sản phẩm bán chạy hiện có trên hệ thống, hoặc đề xuất các sản phẩm tương tự với các sản phẩm mà người dùng đã mua.
+  \item Quản lý giỏ hàng: Xem, thêm, xóa, cập nhật thông tin sản phẩm trong giỏ hàng.
+  \item Hỗ trợ việc mua hàng từ trang chi tiết của sản phẩm (mua nhanh). Hỗ trợ việc mua hàng từ giỏ hàng. Hỗ trợ việc mua hàng từ lịch sử đơn hàng đã đặt.
+  \item Hỗ trợ việc thanh toán online cho việc mua sản phẩm.
+  \item Hỗ trợ việc tạo yêu cầu hoàn tiền khi hủy đơn hoặc khi sản phẩm nhận về không đúng mô tả trên trang web.
+  \item Quản lý thông tin cá nhân: Hỗ trợ việc xem, thêm, xóa, sửa thông tin cá nhâ. Hỗ trợ việc nhập địa chỉ giao hàng một lần và tái sử dụng nhiều lần.
+  \item Người khách hàng có thể lưu lại các voucher và dùng vào các lần mua hàng sau.
+\end{itemize}
+
+\subsubsection{Đặc tả usecase}
+
+\subsubsubsection{Đặc tả usecase cho người quản trị viên (admin)}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên sử dụng realtime chat
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn nhắn tin thời gian thực với những người nhân viên của cửa hàng và những người khách hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Tin nhắn được gửi đi thành công. Và trạng thái của tin nhắn được cập nhật ngay trên khung tin nhắn.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào icon chat trên màn hình \\
+      3. Chọn vào đoạn chat với người dùng đã liên hệ \\
+      4. Nhập liệu nội dung tin nhắn \\
+      5. Nhấn enter để gửi hoặc nhấn nút send để gửi \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên sử dụng realtime chat}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xem danh sách đơn hàng của shop
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xem được danh sách đơn hàng mà khách hàng đã đặt ở shop.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Hiển thị danh sách các đơn hàng được đặt.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào mục quản lý đơn hàng trên thanh menu \\
+      3. Danh sách tất cả đơn hàng sẽ hiện ra. \\
+      4. Chọn vào mục các đơn đang chờ duyệt \\
+      5. Danh sách các đơn hàng đang chờ duyệt sẽ hiện ra \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Xem thông tin các đơn hàng đã duyệt \\
+      Tại bước số 4 tiến hành: \\
+      4A1.  Chọn vào mục các đơn hàng đã duyệt.\\
+      4A2.  Hiển thị danh sách các đơn hàng đã duyệt.\\
+
+      \\
+      Xem thông tin các đơn hàng đã giao \\
+      Tại bước số 4 tiến hành: \\
+      4B1.  Chọn vào mục các đơn hàng đã giao.\\
+      4B2.  Hiển thị danh sách các đơn hàng đã giao.\\
+
+      \\
+      Xem thông tin các đơn hàng đã hủy \\
+      Tại bước số 4 tiến hành: \\
+      4B1.  Chọn vào mục các đơn hàng đã hủy.\\
+      4B2.  Hiển thị danh sách các đơn hàng đã hủy.\\
+
+      \\
+      Xem thông tin các đơn hàng có yêu cầu hoàn tiền. \\
+      Tại bước số 4 tiến hành: \\
+      4B1.  Chọn vào mục các đơn hàng hoàn tiền.\\
+      4B2.  Hiển thị danh sách các đơn hàng có yêu cầu hoàn tiền.\\
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xem danh sách đơn hàng của shop.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên cập nhật trạng thái đơn hàng của shop
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn cập nhật trạng thái đơn hàng mà khách hàng đã đặt ở shop.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Hiển thị trạng thái mới của đơn hàng được đặt.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào mục quản lý đơn hàng trên thanh menu \\
+      3. Danh sách tất cả đơn hàng sẽ hiện ra. \\
+      4. Chọn vào một đơn hàng cụ thể \\
+      5. Đơn hàng với thông tin chi tiết sẽ hiện ra. \\
+      6. Nhấn vào actions. \\
+      7. Nhấn vào update status. \\
+      8. Chọn vào trạng thái mới của đơn hàng. (Chú ý mỗi lần update status chỉ được phép cập nhật 1 nấc của trạng thái: Pending-->accepted-->delivering-->delivered-->completed / return). \\
+      9. Nhấn lưu thông tin đơn hàng.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Lọc để tìm kiếm và update trạng thái đơn hàng \\
+      Tại bước số 3 tiến hành: \\
+      3A1.  Chọn vào mục phân loại đơn hàng để chọn ra danh sách các đơn hàng theo phân loại (chờ duyệt / đã duyệt / đang giao / hoàn tiền).\\
+      3A2.  Hiển thị danh sách các đơn hàng theo phân loại.\\
+      Quay lại bước 4.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên cập nhật trạng thái của một đơn hàng của shop.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên theo dõi đơn hàng của shop trong khi vận chuyển.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xem được thông tin để theo dõi đơn hàng trong quá trình vận chuyển.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Hiển thị thông tin của đơn hàng trong quá trình vận chuyển.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào mục quản lý đơn hàng trên thanh menu \\
+      3. Danh sách tất cả đơn hàng sẽ hiện ra. \\
+      4. Chọn vào mục các đơn đang giao \\
+      5. Danh sách các đơn hàng đang giao sẽ hiện ra. \\
+      6. Chọn vào một đơn hàng cụ thể. \\
+      7. Chọn vào nút tracking. \\
+      8. Thông tin giao hàng của đơn hàng sẽ hiện ra bao gồm (Thông tin người xử lý đơn hàng và người vận chuyển đơn hàng, ngày giờ đơn hàng được đóng gói, ngày giờ đơn hàng được lấy ra khỏi shop để vận chuyển, minh chứng đơn hàng đã được giao (nếu có) và các thông tin chi tiết của đơn hàng đó).
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên theo dõi đơn hàng của shop trong khi vận chuyển.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xử lý một yêu cầu hoàn tiền đơn hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xử lý một yêu cầu hoàn tiền từ khách hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Trạng thái của đơn hàng được cập nhật thành công và thông báo đến người khách hàng về yêu cầu hoàn tiền thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống.\\
+      2. Chọn vào mục quản lý đơn hàng trên thanh menu. \\
+      3. Danh sách tất cả đơn hàng sẽ hiện ra. \\
+      4. Chọn vào mục hoàn tiền. \\
+      5. Danh sách các đơn hàng có yêu cầu hoàn tiền sẽ hiện ra. \\
+      6. Chọn vào một đơn hàng cụ thể. \\
+      7. Thông tin về yêu cầu hoàn tiền của đơn hàng sẽ hiện ra bao gồm (Thông tin khiếu nại về tình trạng đơn hàng và video, hình ảnh minh chứng cho khiếu nại (bắt buộc phải có) và các thông tin chi tiết của đơn hàng đó). \\
+      8. Trong trường hợp cửa hàng chấp nhận khiếu nại và minh chứng mà người khách hàng đưa ra. Tiến hành chọn vào nút refund. \\
+      9. Thực hiện thanh toán số tiền đơn hàng vào tài khoản khách hàng. \\
+      10. Thanh toán thành công và thông báo đến người khách hàng.\\
+      11. Thực hiện cập nhật trạng thái yêu cầu hoàn tiền thành Accepted.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Nhắn tin hỏi về thông tin sản phẩm từ trang hoàn tiền. \\
+      Tại bước số 8 tiến hành: \\
+      8A1.  Chọn vào liên hệ với khách hàng ngay trên màn hình.\\
+      8A2. Khung chat hiển thị và mặc định gửi thông tin sản phẩm đang hiện thị trên màn hình đến với khách hàng. \\
+      8A3. Người quản trị viên nhập liệu nội dung tin nhắn để hỏi về khiếu nại đang giải quyết. \\
+      8A4. Người quản trị viên nhấn nút send/ enter để gửi tin nhắn \\
+      Quay lại bước 8.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xử lý một yêu cầu hoàn tiền đơn hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xem được số lượng hàng tồn kho của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn kiểm tra số lượng hàng tồn kho của một sản phẩm bất kỳ tại thời điểm bất kỳ của cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về lượng hàng tồn kho của sản phẩm được hiển thị trên màn hình.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý tồn kho \\
+      3. Danh sách các sản phẩm với số lượng hàng tồn kho sẽ hiện ra. \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Lọc và tìm kiếm thông tin tồn kho của một sản phẩm. \\
+      Tại bước số 3 tiến hành: \\
+      4A1.  Chọn vào mục còn hàng hoặc hết hàng.\\
+      4A2.  Danh sách thông tin về số lượng hàng của các sản phẩm sẽ hiện ra.\\
+
+      \\
+      Xem số lượng hàng tồn của sản phẩm từ mục quản lý danh mục sản phẩm. \\
+      Tại bước số 2 tiến hành: \\
+      2A1. Chọn vào mục quản lý danh mục sản phẩm trên thanh menu.\\
+      2A2. Trên màn hình hiện ra chọn vào mục On Sale / Out of stock.\\
+      2A3. Danh sách các sản phẩm và số lượng hàng tồn sẽ hiện ra.\\
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xem được số lượng hàng tồn kho của cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên thêm mới một danh mục sản phẩm
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn thêm mới một danh mục sản phẩm cho cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về danh mục mới được thêm thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý danh mục sản phẩm \\
+      3. Danh sách các danh mục sản phẩm sẽ hiện ra. \\
+      4. Nhấn chọn thêm mới danh mục sản phẩm. \\
+      5. Điền thông tin về danh mục sản phẩm mới. \\
+      6. Nhấn lưu thông tin. \\
+      7. Hiển thị thông báo thêm danh mục sản phẩm mới thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên thêm mới danh mục sản phẩm của cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên cập nhật thông tin của một danh mục sản phẩm của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn cập nhật thông tin cho một danh mục sản phẩm của cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về danh mục sản phẩm được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý danh mục sản phẩm \\
+      3. Danh sách các danh mục sản phẩm sẽ hiện ra. \\
+      4. Chọn vào một danh mục cụ thể. \\
+      5. Thông tin chi tiết về danh mục sản phẩm hiện ra. \\
+      6. Nhấn chọn cập nhật thông tin. \\
+      7. Điền thông tin mới cho danh mục. \\
+      8. Nhấn lưu thông tin. \\
+      9. Thông tin về danh mục sản phẩm được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên cập nhật thông tin của một danh mục sản phẩm của cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên thêm mới một sản phẩm vào trong danh mục sản phẩm của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn thêm mới thông tin sản phẩm vào danh mục sản phẩm.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về danh sách sản phẩm trong danh mục sản phẩm được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý danh mục sản phẩm \\
+      3. Danh sách các danh mục sản phẩm sẽ hiện ra. \\
+      4. Chọn vào một danh mục cụ thể. \\
+      5. Thông tin chi tiết về danh mục sản phẩm hiện ra. \\
+      6. Nhấn chọn thêm mới một sản phẩm. \\
+      7. Tích chọn một sản phẩm. \\
+      8. Nhấn lưu thông tin. \\
+      9. Thông tin về sản phẩm trong danh mục sản phẩm được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Thêm nhiều sản phẩm vào trong danh mục sản phẩm: \\
+      Tại bước 7 tiến hành: \\
+      7A1. Tích chọn nhiều sản phẩm. \\
+      Quay lại bước số 8.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên thêm mới một sản phẩm vào trong một danh mục sản phẩm của cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xóa bỏ một sản phẩm ra khỏi danh mục sản phẩm của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xóa bỏ thông tin sản phẩm ra khỏi danh mục sản phẩm.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về danh sách sản phẩm trong danh mục sản phẩm được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý danh mục sản phẩm \\
+      3. Danh sách các danh mục sản phẩm sẽ hiện ra. \\
+      4. Chọn vào một danh mục cụ thể. \\
+      5. Thông tin chi tiết về danh mục sản phẩm hiện ra. \\
+      6. Nhấn chọn xóa bỏ một sản phẩm. \\
+      7. Bỏ tích chọn một sản phẩm. \\
+      8. Nhấn lưu thông tin. \\
+      9. Thông tin về sản phẩm trong danh mục sản phẩm được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Xóa bỏ sản phẩm vào trong danh mục sản phẩm: \\
+      Tại bước 7 tiến hành: \\
+      7A1. Bỏ tích chọn nhiều sản phẩm. \\
+      Quay lại bước 8.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên thêm mới một sản phẩm vào trong một danh mục sản phẩm của cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xóa một danh mục sản phẩm của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xóa thông tin của một danh mục sản phẩm.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về danh mục sản phẩm được xóa thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý danh mục sản phẩm \\
+      3. Danh sách các danh mục sản phẩm sẽ hiện ra. \\
+      4. Chọn vào một danh mục cụ thể. \\
+      5. Thông tin chi tiết về danh mục sản phẩm hiện ra. \\
+      6. Nhấn chọn xóa danh mục. \\
+      7. Nhấn lưu thông tin. \\
+      8. Thông tin về danh mục sản phẩm được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xóa một danh mục sản phẩm của cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên thêm mới một sản phẩm của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn thêm mới thông tin sản phẩm cho cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về danh sách sản phẩm được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý sản phẩm \\
+      3. Danh sách các sản phẩm sẽ hiện ra. \\
+      4. Nhấn chọn thêm mới một sản phẩm. \\
+      5. Điền thông tin cho một sản phẩm. \\
+      6. Nhấn lưu thông tin. \\
+      7. Thông tin về sản phẩm được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên thêm mới một sản phẩm vào trong cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên cập nhật thông tin một sản phẩm của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn cập nhật thông tin sản phẩm cho cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về sản phẩm được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý sản phẩm \\
+      3. Danh sách các sản phẩm sẽ hiện ra. \\
+      4. Nhấn chọn vào một sản phẩm cụ thể. \\
+      5. Nhấn chọn chỉnh sửa thông tin sản phẩm. \\
+      6. Điền thông tin cho một sản phẩm. \\
+      7. Nhấn lưu thông tin. \\
+      8. Thông tin về sản phẩm được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên cập nhật thông tin một sản phẩm trong cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xóa một sản phẩm của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xóa thông tin sản phẩm của cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về danh sách sản phẩm được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý sản phẩm \\
+      3. Danh sách các sản phẩm sẽ hiện ra. \\
+      4. Nhấn chọn xóa một sản phẩm. \\
+      5. Nhấn lưu thông tin. \\
+      6. Thông tin về sản phẩm được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xóa một sản phẩm trong cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xem doanh thu của cửa hàng theo tuần / tháng / năm.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xem doanh thu của cửa hàng trong tuần / tháng / năm.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về doanh thu của cửa hàng được hiển thị trên màn hình.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý giao dịch \\
+      3. Hiển thị ra các thông tin về số lượng giao dịch trong tuần, tổng doanh thu trong tuần, các giao dịch vẫn đang chờ, số giao dịch bị hủy. \\
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Chuyển đổi mốc thời gian để xem thông tin doanh thu theo tháng hoặc theo năm. \\
+      Tại bước số 3 tiến hành: \\
+      3A1. Chọn bộ lọc theo tháng / năm. \\
+      3A2. Màn hình sẽ hiển thị thông tin về số lượng giao dịch, tổng doanh thu, số giao dịch đang chờ, số giao dịch bị hủy theo mốc tháng hoặc năm. \\
+
+      \\
+      Xem nhanh thông tin doanh thu trên màn hình dashboard. \\
+      Tại bước số 2 tiến hành: \\
+      2A1. Trên màn hình dashboard đang hiển thị chọn vào thay đổi bộ lọc thành tuần / tháng / năm để xem thông tin total sales, total orders, pending and canceled orders theo tuần / tháng / năm.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xem thông tin về doanh thu của cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xem thông tin các sản phẩm bán chạy nhất của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xem thông tin danh sách các sản phẩm bán chạy nhất của cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về danh sách sản phẩm bán chạy được hiển thị trên màn hình.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý giao dịch \\
+      3. Danh sách các sản phẩm bán chạy sẽ hiện ra. \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Xem nhanh thông tin của các sản phẩm bán chạy nhất trên màn hình dashboard. \\
+      Tại bước số 2 tiến hành: \\
+      2A1. Trên màn hình dashboard đang hiển thị, chọn vào mục detail trên khung Best salling product. \\
+      2A2. Danh sách đầy đủ các sản phẩm bán chạy sẽ hiện ra.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xem thông tin các sản phẩm bán chạy của cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xem thông tin các nhân viên có doanh số tốt nhất của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xem thông tin danh sách các nhân viên có doanh số tốt nhất của cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về danh sách nhân viên có doanh số tốt nhất được hiển thị trên màn hình.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý giao dịch \\
+      3. Danh sách các nhân viên có doanh số tốt nhất sẽ hiện ra. \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Xem nhanh thông tin của các nhân viên có doanh số tốt nhất trên màn hình dashboard. \\
+      Tại bước số 2 tiến hành: \\
+      2A1. Trên màn hình dashboard đang hiển thị, chọn vào mục detail trên khung Best salers. \\
+      2A2. Danh sách đầy đủ các nhân viên có doanh số tốt nhất sẽ hiện ra.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xem thông tin các nhân viên có doanh số tốt nhất của cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên thêm mới một voucher
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn thêm mới một voucher.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về voucher mới được thêm thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý voucher \\
+      3. Danh sách các voucher sẽ hiện ra. \\
+      4. Nhấn chọn thêm mới voucher. \\
+      5. Điền thông tin về voucher mới. \\
+      6. Nhấn lưu thông tin. \\
+      7. Hiển thị thông báo thêm voucher mới thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên thêm mới voucher.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên cập nhật thông tin voucher.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn cập nhật thông tin cho một voucher.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về voucher được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý voucher \\
+      3. Danh sách các voucher sẽ hiện ra. \\
+      4. Chọn vào một voucher cụ thể. \\
+      5. Thông tin chi tiết về voucher hiện ra. \\
+      6. Nhấn chọn cập nhật thông tin. \\
+      7. Điền thông tin mới cho danh mục. \\
+      8. Nhấn lưu thông tin. \\
+      9. Thông tin về voucher được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên cập nhật thông tin của một voucher.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên tiến hành áp dụng voucher cho sản phẩm của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn gán voucher cho sản phẩm.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về việc gán voucher cho sản phẩm được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý voucher \\
+      3. Danh sách các voucher sẽ hiện ra. \\
+      4. Chọn vào một voucher cụ thể. \\
+      5. Thông tin chi tiết về voucher hiện ra. \\
+      6. Nhấn chọn thêm mới một sản phẩm. \\
+      7. Tích chọn một sản phẩm. \\
+      8. Nhấn lưu thông tin. \\
+      9. Thông tin về voucher được áp dụng cho sản phẩm được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Áp dụng một voucher cho nhiều sản phẩm: \\
+      Tại bước 7 tiến hành: \\
+      7A1. Tích chọn nhiều sản phẩm. \\
+      Quay lại bước số 8.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên gán voucher cho sản phẩm.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên tiến hành xóa bỏ áp dụng voucher cho sản phẩm của cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xóa bỏ gán voucher cho sản phẩm.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về việc xóa bỏ gán voucher cho sản phẩm được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý voucher \\
+      3. Danh sách các voucher sẽ hiện ra. \\
+      4. Chọn vào một voucher cụ thể. \\
+      5. Thông tin chi tiết về voucher hiện ra. \\
+      6. Trong khung các sản phẩm được áp dụng voucher được hiển thị trên màn hình, bỏ tích chọn một sản phẩm. \\
+      7. Nhấn lưu thông tin. \\
+      8. Thông tin về việc xóa bỏ voucher áp dụng cho sản phẩm được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Xóa bỏ áp dụng một voucher cho nhiều sản phẩm: \\
+      Tại bước 6 tiến hành: \\
+      6A1. Bỏ tích chọn nhiều sản phẩm. \\
+      Quay lại bước số 7.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xóa bỏ gán voucher cho sản phẩm.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xóa một voucher.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xóa thông tin của một voucher.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về voucher được xóa thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý voucher \\
+      3. Danh sách các voucher sẽ hiện ra. \\
+      4. Chọn vào một voucher cụ thể. \\
+      5. Thông tin chi tiết về voucher sản phẩm hiện ra. \\
+      6. Nhấn chọn xóa voucher. \\
+      7. Nhấn lưu thông tin. \\
+      8. Thông tin về voucher được lưu thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xóa một voucher.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên tạo tài khoản người nhân viên cửa hàng.
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn tạo tài khoản cho người nhân viên ở cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Tài khoản được tạo thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến quản lý tài khoản \\
+      3. Chọn vào tab Staff được hiển thị \\
+      4. Chọn Add new staff \\
+      5. Điền vào username, password, firstname, lastname, email, address, chọn role cho tài khoản \\
+      6. Nhấn chọn Create staff \\
+      7. Nhấn xác nhận Create staff.
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Upload staff account từ file CSV. \\
+      Tại bước số 4 tiến hành: \\
+      4A1.  Chọn Upload staff\\
+      4A2.  Chọn Choose file để chọn tệp chứa thông tin tài khoản cần tải lên\\
+      4A3. Nhấn nút Upload staffs để tải lên tập \\
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Tại bước số 6: \\
+      Nếu người quản trị viên chưa nhập thông tin về tài khoản thì quay lại bước số 5.
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên tạo tài khoản người nhân viên cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên cập nhật thông tin tài khoản người nhân viên cửa hàng
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn cập nhật thông tin tài khoản cho người nhân viên ở cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Tài khoản được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến quản lý tài khoản \\
+      3. Chọn vào tab Staff được hiển thị \\
+      4. Chọn Update staff \\
+      5. Điền vào username, password, firstname, lastname, email, address, chọn role cho tài khoản \\
+      6. Nhấn chọn update staff \\
+      7. Nhấn xác nhận update staff.
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Tại bước số 6: \\
+      Nếu người quản trị viên chưa nhập thông tin về tài khoản thì quay lại bước số 5.
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên cập nhật thông tin tài khoản người nhân viên cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người quản trị viên xóa tài khoản người nhân viên
+    \\  \hline
+    Actors & Quản trị viên
+    \\ \hline
+    Description & Là quản trị viên tôi muốn xóa thông tin tài khoản của người nhân viên ở cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Tài khoản được xóa thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến quản lý tài khoản \\
+      3. Chọn vào tab Staff được hiển thị \\
+      4. Chọn Delete staff \\
+      6. Nhấn xác nhận Delete staff.
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người quản trị viên xóa tài khoản người nhân viên cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\subsubsubsection{Đặc tả usecase cho người nhân viên (staff)}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người nhân viên sử dụng realtime chat
+    \\  \hline
+    Actors & Người nhân viên
+    \\ \hline
+    Description & Là người nhân viên tôi muốn nhắn tin thời gian thực với những người nhân viên của cửa hàng, và những người khách hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Tin nhắn được gửi đi thành công. Và trạng thái của tin nhắn được cập nhật ngay trên khung tin nhắn.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào icon chat trên màn hình \\
+      3. Chọn vào đoạn chat với người dùng đã liên hệ \\
+      4. Nhập liệu nội dung tin nhắn \\
+      5. Nhấn enter để gửi hoặc nhấn nút send để gửi \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người nhân viên sử dụng realtime chat}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người nhân viên xem danh sách đơn hàng của shop
+    \\  \hline
+    Actors & Nhân viên
+    \\ \hline
+    Description & Là nhân viên tôi muốn xem được danh sách đơn hàng mà khách hàng đã đặt ở shop.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Hiển thị danh sách các đơn hàng được đặt.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào mục quản lý đơn hàng trên thanh menu \\
+      3. Danh sách tất cả đơn hàng sẽ hiện ra. \\
+      4. Chọn vào mục các đơn đang chờ duyệt \\
+      5. Danh sách các đơn hàng đang chờ duyệt sẽ hiện ra \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Xem thông tin các đơn hàng đã duyệt \\
+      Tại bước số 4 tiến hành: \\
+      4A1.  Chọn vào mục các đơn hàng đã duyệt.\\
+      4A2.  Hiển thị danh sách các đơn hàng đã duyệt.\\
+
+      \\
+      Xem thông tin các đơn hàng đã giao \\
+      Tại bước số 4 tiến hành: \\
+      4B1.  Chọn vào mục các đơn hàng đã giao.\\
+      4B2.  Hiển thị danh sách các đơn hàng đã giao.\\
+
+      \\
+      Xem thông tin các đơn hàng đã hủy \\
+      Tại bước số 4 tiến hành: \\
+      4B1.  Chọn vào mục các đơn hàng đã hủy.\\
+      4B2.  Hiển thị danh sách các đơn hàng đã hủy.\\
+
+      \\
+      Xem thông tin các đơn hàng có yêu cầu hoàn tiền. \\
+      Tại bước số 4 tiến hành: \\
+      4B1.  Chọn vào mục các đơn hàng hoàn tiền.\\
+      4B2.  Hiển thị danh sách các đơn hàng có yêu cầu hoàn tiền.\\
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người nhân viên xem danh sách đơn hàng của shop.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người nhân viên cập nhật trạng thái đơn hàng của shop
+    \\  \hline
+    Actors & Nhân viên
+    \\ \hline
+    Description & Là nhân viên tôi muốn cập nhật trạng thái đơn hàng mà khách hàng đã đặt ở shop.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Hiển thị trạng thái mới của đơn hàng được đặt.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào mục quản lý đơn hàng trên thanh menu \\
+      3. Danh sách tất cả đơn hàng sẽ hiện ra. \\
+      4. Chọn vào một đơn hàng cụ thể \\
+      5. Đơn hàng với thông tin chi tiết sẽ hiện ra. \\
+      6. Nhấn vào actions. \\
+      7. Nhấn vào update status. \\
+      8. Chọn vào trạng thái mới của đơn hàng. (Chú ý mỗi lần update status chỉ được phép cập nhật 1 nấc của trạng thái: Pending-->accepted-->delivering-->delivered-->completed / return). \\
+      9. Nhấn lưu thông tin đơn hàng.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Lọc để tìm kiếm và update trạng thái đơn hàng \\
+      Tại bước số 3 tiến hành: \\
+      3A1.  Chọn vào mục phân loại đơn hàng để chọn ra danh sách các đơn hàng theo phân loại (chờ duyệt / đã duyệt / đang giao / hoàn tiền).\\
+      3A2.  Hiển thị danh sách các đơn hàng theo phân loại.\\
+      Quay lại bước số 4.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người nhân viên cập nhật trạng thái của một đơn hàng của shop.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người nhân viên xử lý một yêu cầu hoàn tiền đơn hàng.
+    \\  \hline
+    Actors & Nhân viên
+    \\ \hline
+    Description & Là nhân viên tôi muốn xử lý một yêu cầu hoàn tiền từ khách hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Trạng thái của đơn hàng được cập nhật thành công và thông báo đến người khách hàng về yêu cầu hoàn tiền thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống.\\
+      2. Chọn vào mục quản lý đơn hàng trên thanh menu. \\
+      3. Danh sách tất cả đơn hàng sẽ hiện ra. \\
+      4. Chọn vào mục hoàn tiền. \\
+      5. Danh sách các đơn hàng có yêu cầu hoàn tiền sẽ hiện ra. \\
+      6. Chọn vào một đơn hàng cụ thể. \\
+      7. Thông tin về yêu cầu hoàn tiền của đơn hàng sẽ hiện ra bao gồm (Thông tin khiếu nại về tình trạng đơn hàng và video, hình ảnh minh chứng cho khiếu nại (bắt buộc phải có) và các thông tin chi tiết của đơn hàng đó). \\
+      8. Trong trường hợp cửa hàng chấp nhận khiếu nại và minh chứng mà người khách hàng đưa ra. Tiến hành chọn vào nút update status của yêu cầu thành processing. \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Nhắn tin hỏi về thông tin sản phẩm từ trang hoàn tiền. \\
+      Tại bước số 8 tiến hành: \\
+      8A1.  Chọn vào liên hệ với khách hàng ngay trên màn hình.\\
+      8A2. Khung chat hiển thị và mặc định gửi thông tin sản phẩm đang hiện thị trên màn hình đến với khách hàng. \\
+      8A3. Người nhân viên nhập liệu nội dung tin nhắn để hỏi về khiếu nại đang giải quyết. \\
+      8A4. Người nhân viên nhấn nút send/ enter để gửi tin nhắn. \\
+      Quay lại bước số 8. \\
+      \\
+      Từ chối yêu cầu hoàn tiền. \\
+      Tại bước số 8 tiến hành: \\
+      8A1. Nếu yêu cầu hoàn tiền với lý do vô lý và minh chứng không đầy đủ, nhân viên cập nhật trạng thái yêu cầu thành rejected
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người nhân viên xử lý một yêu cầu hoàn tiền đơn hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người nhân viên xem được số lượng hàng tồn kho của cửa hàng.
+    \\  \hline
+    Actors & Nhân viên
+    \\ \hline
+    Description & Là nhân viên tôi muốn kiểm tra số lượng hàng tồn kho của một sản phẩm bất kỳ tại thời điểm bất kỳ của cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin về lượng hàng tồn kho của sản phẩm được hiển thị trên màn hình.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Di chuyển đến mục quản lý tồn kho \\
+      3. Danh sách các sản phẩm với số lượng hàng tồn kho sẽ hiện ra. \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Lọc và tìm kiếm thông tin tồn kho của một sản phẩm. \\
+      Tại bước số 3 tiến hành: \\
+      4A1.  Chọn vào mục còn hàng hoặc hết hàng.\\
+      4A2.  Danh sách thông tin về số lượng hàng của các sản phẩm sẽ hiện ra.\\
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người nhân viên xem được số lượng hàng tồn kho của cửa hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\subsubsubsection{Đặc tả usecase cho người khách hàng (customer)}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người khách hàng sử dụng realtime chat
+    \\  \hline
+    Actors & Người khách hàng
+    \\ \hline
+    Description & Là người khách hàng tôi muốn nhắn tin thời gian thực với những người nhân viên của cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Tin nhắn được gửi đi thành công. Và trạng thái của tin nhắn được cập nhật ngay trên khung tin nhắn.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào icon chat trên màn hình \\
+      3. Chọn vào đoạn chat với người dùng đã liên hệ \\
+      4. Nhập liệu nội dung tin nhắn \\
+      5. Nhấn enter để gửi hoặc nhấn nút send để gửi \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Nhắn tin hỏi về thông tin sản phẩm từ trang sản phẩm. \\
+      Tại bước số 2 tiến hành: \\
+      2A1.  Chọn vào một sản phẩm đang hiển thị trên giao diện.\\
+      2A2.  Chọn vào nút liên hệ với cửa hàng.\\
+      2A3. Khung chat hiển thị và mặc định gửi thông tin sản phẩm đang hiện thị trên màn hình đến với shop. \\
+      2A4. Người dùng nhập liệu nội dung tin nhắn. \\
+      2A5. Người dùng nhấn nút send/ enter để gửi tin nhắn
+
+      \\
+      \\
+      Nhắn tin phản ánh về thông tin sản phẩm từ trang lịch sử mua hàng. \\
+      Tại bước số 2 tiến hành: \\
+      2B1.  Chọn vào lịch sử đơn hàng trên thanh điều hướng.\\
+      2B2.  Chọn vào nút liên hệ với cửa hàng.\\
+      2B3. Khung chat hiển thị và mặc định gửi thông tin sản phẩm đang hiện thị trên màn hình đến với shop. \\
+      2B4. Người dùng nhập liệu nội dung tin nhắn. \\
+      2B5. Người dùng nhấn nút send/ enter để gửi tin nhắn
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người khách hàng sử dụng realtime chat}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người khách hàng duyệt sản phẩm của shop
+    \\  \hline
+    Actors & Người khách hàng
+    \\ \hline
+    Description & Là người khách hàng tôi muốn duyệt sản phẩm của cửa hàng.
+    \\ \hline
+    Pre-Conditions &
+    \\ \hline
+    Post Conditions &
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Truy cập đến trang bán hàng của shop theo đường link.\\
+      2. Người khách hàng lướt và chọn vào một sản phẩm  \\
+      3. Trên màn hình hiện ra thông tin chi tiết của sản phẩm. \\
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Người khách hàng tìm kiếm và duyệt sản phẩm \\
+      Tại bước số 2 tiến hành: \\
+      2A1.  Nhập từ khóa vào trong thanh tìm kiếm và nhấn enter.\\
+      2A2.  Hiển thị danh sách các sản phẩm phù hợp với từ khóa tìm kiếm.\\
+      Quay lại bước 3. \\
+      \\
+      Người khách hàng duyệt qua các sản phẩm được gợi ý từ cửa hàng. \\
+      Tại bước số 2 tiến hành: \\
+      2B1. Chọn vào mục Gợi ý hôm nay. \\
+      2B2. Người khách hàng lướt và chọn vào một sản phẩm. \\
+      Quay lại bước 3.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người khách hàng duyệt sản phẩm của shop.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người khách hàng so sánh các sản phẩm của shop
+    \\  \hline
+    Actors & Người khách hàng
+    \\ \hline
+    Description & Là người khách hàng tôi muốn so sánh các sản phẩm cùng một danh mục của cửa hàng.
+    \\ \hline
+    Pre-Conditions & Người khách hàng đang ở trong trang thông in chi tiết của một sản phẩm
+    \\ \hline
+    Post Conditions &
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Người khách hàng nhấn vào nút so sánh sản phẩm.\\
+      2. Màn hình hiện ra danh sách các sản phẩm cùng loại.  \\
+      3. Khách hàng chọn một sản phẩm. \\
+      4. Bảng so sánh các số liệu về sản phẩm được hiển thị ra màn hình.
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Người khách hàng chọn và so sánh nhiều hơn 2 sản phẩm \\
+      Tại bước số 3 tiến hành: \\
+      3A1.  Chọn nhiều sản phẩm từ màn hình.\\
+      3A2.  Hiển thị bảng so sánh theo từng tiêu chí cho các sản phẩm.\\
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người khách hàng so sánh các sản phẩm của shop.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người khách hàng đặt hàng sản phẩm của shop
+    \\  \hline
+    Actors & Người khách hàng
+    \\ \hline
+    Description & Là người khách hàng tôi muốn đặt hàng sản phẩm của cửa hàng.
+    \\ \hline
+    Pre-Conditions & Đăng nhập thành công vào hệ thống.
+    \\ \hline
+    Post Conditions & Đơn đặt hàng thành công và thông báo đến người khách hàng.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Truy cập đến trang bán hàng của shop theo đường link.\\
+      2. Người khách hàng lướt và chọn vào một sản phẩm  \\
+      3. Trên màn hình hiện ra thông tin chi tiết của sản phẩm. \\
+      4. Người khách hàng chọn số lượng, size sản phẩm và màu sắc nếu có. \\
+      5. Người khách hàng chọn vào nút mua hàng. \\
+      6. Người khách hàng điền thông tin địa chỉ giao hàng \\
+      7. Người khách hàng chọn voucher áp dụng cho sản phẩm nếu người dùng có. \\
+      8. Người dùng chọn phương thức thanh toán (mặc định là phương thức COD). \\
+      9. Nhấn nút thanh toán \\
+      10. Hiển thị thông báo đặt đơn hàng thành công.
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Người khách hàng tìm kiếm và duyệt sản phẩm sau đó đặt hàng \\
+      Tại bước số 2 tiến hành: \\
+      2A1.  Nhập từ khóa vào trong thanh tìm kiếm và nhấn enter.\\
+      2A2.  Hiển thị danh sách các sản phẩm phù hợp với từ khóa tìm kiếm.\\
+      2A3. Người khách hàng chọn vào một sản phẩm đang hiển thị. \\
+      2A4. Quay lại bước 3.
+
+      \\
+      Người khách hàng mua hàng từ giỏ hàng. \\
+      Tại bước số 5 tiến hành: \\
+      5B1. Chọn vào thêm vào giỏ hàng. \\
+      5B2. Chọn vào icon giỏ hàng ở góc trên bên phải của giao diện. \\
+      5B3. Trên màn hình hiển thị giỏ hàng, người khách hàng tích chọn các sản phẩm muốn mua. \\
+      5B4. Nhấn vào nút mua hàng. \\
+      5B5. Quay lại bước 6. \\
+      \\
+      Người khách hàng mua hàng từ trang lịch sử đơn hàng. \\
+      Tại bước số 2 tiến hành:  \\
+      2C1. Chọn vào icon avatar của khách hàng.  \\
+      2C2. Chọn vào mục đơn hàng của bạn.  \\
+      2C3. Màn hình hiển thị tất cả các đơn hàng bạn đã đặt.  \\
+      2C4. Chọn vào đơn hàng mà bạn muốn mua.  \\
+      2C5. Chọn lại số lượng, size, màu sắc của sản phẩm.  \\
+      2C6. Chọn vào nút mua lại.  \\
+      2C7. Quay lại bước 6. \\
+
+      \\
+      Khách hàng đặt hàng với phương thức thanh toán online qua cổng VNPay / MOMO. \\
+      Tại bước số 8 tiến hành: \\
+      8D1. Chọn vào phương thức thanh toán VNPay / MOMO. \\
+      8D2. Điền thông tin tài khoản của khách hàng tại VNPay hoặc MOMO. \\
+      8D3. Quay lại bước 9.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người khách hàng đặt hàng sản phẩm của shop.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người khách hàng tạo một yêu cầu hoàn tiền.
+    \\  \hline
+    Actors & Người khách hàng.
+    \\ \hline
+    Description & Là người khách hàng tôi muốn tạo một yêu cầu hoàn tiền cho đơn hàng mà tôi đã đặt.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Yêu cầu hoàn tiền được tạo thành công và gửi đến cửa hàng.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào icon avatar của khách hàng \\
+      3. Trên màn hình hiện ra chọn vào nút đơn hàng của bạn. \\
+      4. Trong tab đơn hàng hoàn thành (đơn hàng đã giao), chọn vào nút yêu cầu trả hàng / hoàn tiền. \\
+      5. Điền đầy đủ thông tin cho việc yêu cầu trả hàng / hoàn tiền. Trong đó các thông tin bắt buộc là mô tả về ý kiến của người khách hàng, video, hình ảnh về tình trạng đơn hàng khi mới mở đơn hàng, thông tin chuyển khoản ngân hàng. \\
+      6. Nhấn nút gửi yêu cầu. \\
+      7. Hiển thị thông báo gửi yêu cầu thanh công.
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người khách hàng tạo yêu cầu trả hàng / hoàn tiền.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người khách hàng hủy đơn hàng.
+    \\  \hline
+    Actors & Người khách hàng.
+    \\ \hline
+    Description & Là người khách hàng tôi muốn hủy một đơn hàng đã đặt.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Hủy đơn hàng thành công và gửi đến cửa hàng.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào icon avatar của khách hàng \\
+      3. Trên màn hình hiện ra chọn vào nút đơn hàng của bạn. \\
+      4. Trong tab đơn hàng chờ xác nhận, chọn vào nút hủy đơn hàng. \\
+      5. Hiển thị thông báo gửi yêu cầu thanh công.
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Đối với các trường hợp đơn hàng được đặt và được thanh toán trước bằng hình thức thanh toán qua VNPay, MOMO. \\
+      Tại bước số 4 tiến hành: \\
+      4A1. Chọn vào nút yêu cầu trả hàng / hoàn tiền. \\
+      4A2. Điền đầy đủ thông tin cho việc yêu cầu trả hàng / hoàn tiền. Trong đó các thông tin bắt buộc là mô tả về ý kiến của người khách hàng, video, hình ảnh về tình trạng đơn hàng khi mới mở đơn hàng, thông tin chuyển khoản ngân hàng. \\
+      4A3. Nhấn nút gửi yêu cầu. \\
+      4A4. Hiển thị thông báo gửi yêu cầu thanh công.
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người khách hàng hủy một đơn hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|m{12cm}|}
+    \hline
+    Use-case Name & Người khách hàng cập nhật thông tin cá nhân.
+    \\  \hline
+    Actors & Người khách hàng.
+    \\ \hline
+    Description & Là người khách hàng tôi muốn cập nhật thông tin cá nhân của mình.
+    \\ \hline
+    Pre-Conditions & Đã đăng nhập thành công vào hệ thống
+    \\ \hline
+    Post Conditions & Thông tin tài khoản được cập nhật thành công.
+    \\ \hline
+    Trigger &
+    \\ \hline
+    Nomal flow &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      1. Đăng nhập thành công vào hệ thống\\
+      2. Chọn vào icon avatar của khách hàng \\
+      3. Trên màn hình hiện ra chọn vào tài khoản của tôi. \\
+      4. Trong tab hồ sơ, điền thông tin cần cập nhật. \\
+      5. Nhấn nút lưu thông tin. \\
+      6. Hiển thị thông báo cập nhật thông tin thanh công.
+
+    \end{tabular}
+    \\ \hline
+    Alternative Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+      Người khách hàng muốn thay đổi bảng size của mình cho từng loại sản phẩm. \\
+      Tại bước số 4 tiến hành: \\
+      4A1. Chọn vào tab bảng size \\
+      4A2. Điền đầy đủ thông tin cho việc thay đổi bảng size. \\
+      4A3. Nhấn nút lưu thông tin. \\
+      4A4. Hiển thị thông báo lưu thông tin thành công. \\
+
+      \\
+      Người khách hàng muốn thay đổi địa chỉ giao hàng. \\
+      Tại bước số 4 tiến hành: \\
+      4B1. Chọn vào tab địa chỉ \\
+      4B2. Điền đầy đủ thông tin cho việc thay đổi địa chỉ. \\
+      4B3. Nhấn nút lưu thông tin. \\
+      4B4. Hiển thị thông báo lưu thông tin thành công. \\
+
+    \end{tabular}
+    \\ \hline
+    Exception Flow(s) &
+    \begin{tabular}[c]{@{}p{12cm}@{}}
+
+    \end{tabular}
+    \\ \hline
+  \end{tabular}
+  \caption{Bảng Use-case Người khách hàng hủy một đơn hàng.}
+  \label{tab:mInfo}
+\end{table}
+
+
+
+\subsection{Sơ đồ hoạt động}
+\subsubsection{Người quản trị viên, người nhân viên xử lý đơn hàng.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/ActivityDiagram/Đồ án - HK251-Activity diagram Staff and Admin processing order.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý đơn hàng \cite{Activity Diagram - Admin, staff processing order}}
+  \label{fig: Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý đơn hàng}
+\end{figure}
+
+Người quản trị viên và người nhân viên của cửa hàng đều có luồng xử lý và thẩm quyền như nhau trong việc xử lý một đơn hàng từ lúc đóng gói đến lúc giao hàng và cập nhật trạng thái đơn hàng trong quá trình vận chuyển. \\
+
+\begin{itemize}
+  \item  Người quản trị viên và người nhân viên bắt đầu quy trình xử lý đơn hàng bằng việc xem các đơn hàng đang chờ được xác nhận và đóng gói. \\
+  \item Sau đó đơn hàng khi đã được đồng ý và đóng gói sẽ được cấp cho một mã vận chuyển duy nhất, đồng thời video quay việc đóng gói và dán tem đơn hàng phải được cập nhật vào hệ thống. \\
+  \item Sau khi các thông tin này đều hợp lệ đơn hàng sẽ được cập nhật trạng thái mới là đã đóng gói. \\
+  \item Sau đó đơn hàng sẽ được kiểm tra lại một lần nữa. Và được cập nhật trạng thái đơn hàng đang chờ được vận chuyển. \\
+  \item Khi đơn hàng này được đem ra khỏi shop cho mục đích vận chuyển. Đơn hàng này sẽ được cập nhật trạng thái thành đang vận chuyển. \\
+  \item Khi đơn hàng được giao đến người khách hàng. Video, hình ảnh minh chứng cho việc giao hàng được tải lên hệ thống và trạng thái đơn hàng được cập nhật thành đã giao.\\
+
+  \item Đến đây hoạt động xử lý đóng gói đơn hàng và vận chuyển đơn hàng kết thúc.
+
+\end{itemize}
+
+\subsubsection{Người quản trị viên, người nhân viên xử lý trả đơn hàng - hoàn tiền.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/ActivityDiagram/Đồ án - HK251-Activity diagram Staff and Admin processing refund order.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý yêu cầu trả đơn hàng - hoàn tiền \cite{Activity Diagram - Admin, staff processing refund order}}
+  \label{fig: Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý yêu cầu trả đơn hàng - hoàn tiền}
+\end{figure}
+
+Đối với hoạt động xử lý yêu cầu trả hàng - hoàn tiền của người khách hàng. Có sự khác nhau trong thẩm quyền và luồng xử lý của người quản trị viên so với nhân viên. Đó là người quản trị viên mới có thẩm quyền thực hiện việc thanh toán để chuyển tiền đơn hàng về lại cho người khách hàng. Người nhân viên shop không thể thực hiện hoạt động chuyển khoản thanh toán này. Còn lại những hoạt động khác trong luồng xử lý yêu cầu trả hàng - hoàn tiền cả hai vai trò quản trị viên và nhân viên có thể làm như nhau. \\
+
+\subsubsection{Người khách hàng duyệt sản phẩm và mua sản phẩm.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/ActivityDiagram/Đồ án - HK251-Activity diagram Customer browse and buy product.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ hoạt động người khách hàng duyệt và mua sản phẩm \cite{Activity Diagram - Customer browse and buy product}}
+  \label{fig: Sơ đồ hoạt động người khách hàng duyệt và mua sản phẩm}
+\end{figure}
+
+Sơ đồ bên trên thể hiện các luồng mua hàng mà người khách hàng có thể làm để mua được một sản phẩm ở cửa hàng. Trong đó ta thấy có ba cách để mua được một sản phẩm đó là mua hàng trực tiếp trong trang thông tin chi tiết của sản phẩm, cách thứ hai là thêm sản phẩm vào giỏ hàng sau đó tiến hành mua các sản phẩm từ giỏ hàng. Cách thứ ba là mua hàng từ việc mua lại một đơn hàng đã mua trước đó trong trang lịch sử đơn hàng. \\
+
+Ngoài ra trong luồng xử lý việc mua hàng ta thấy cửa hàng có hỗ trợ việc thanh toán bằng nhiều hình thức khác nhau đó là thanh toán khi nhận hàng (COD) hoặc thanh toán online tích hợp (VNPay / MOMO.). \\
+
+Sau khi đặt hàng thành công sẽ có thông báo đặt hàng thành công hiển thị cho người dùng. \\
+
+\subsubsection{Người khách hàng hủy đơn hàng.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/ActivityDiagram/Đồ án - HK251-Activity diagram Customer cancel order.drawio.png}
+  \vspace{0.5cm}
+  \caption{Sơ đồ hoạt động người khách hàng hủy đơn hàng \cite{Activity Diagram - Customer cancel order}}
+  \label{fig: Sơ đồ hoạt động người khách hàng hủy đơn hàng}
+\end{figure}
+
+Với quy trình hủy đơn hàng do người khách hàng thực hiện, có quy định rằng đơn hàng chỉ được hủy khi và chỉ khi đơn hàng chưa được shop đóng gói. Ngay khi đơn hàng được cập nhật trạng thái đã đóng gói người khách hàng không thể hủy đơn đặt hàng. Sẽ có thông báo từ chối hủy đơn hàng do đơn hàng đã đóng gói được hiển thị.\\
+
+Trong trường hợp đơn hàng chưa được đóng gói khách hàng có thể hủy đơn hàng. Thông tin về việc hủy đơn hàng sẽ được gửi về cho cửa hàng. \\
+
+Trong trường hợp đơn hàng được thanh toán bằng phương thức COD và hủy đơn hàng thành công. Sẽ không có yêu cầu trả hàng - hoàn tiền gửi đến cửa hàng. Đến đây hoạt động này kết thúc. \\
+
+Trong trường hợp đơn hàng được thanh toán bằng hình thức thanh toán online và đã hủy đơn hàng thành công. Sẽ có một yêu cầu trả hàng - hoàn tiền gửi kèm về cho shop để shop gửi lại tiền cho đơn hàng được hủy. Đến đây hoạt động này kết thúc. \\
+
+\subsubsection{Người khách hàng yêu cầu trả đơn hàng - hoàn tiền.}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/ActivityDiagram/Đồ án - HK251-Activity diagram Customer refund order.jpg}
+  \vspace{0.5cm}
+  \caption{Sơ đồ hoạt động người khách hàng yêu cầu trả đơn hàng - hoàn tiền \cite{Activity Diagram - Customer create refund order}}
+  \label{fig: Sơ đồ hoạt động người khách hàng yêu cầu trả đơn hàng - hoàn tiền}
+\end{figure}
+
+Khi người khách hàng tạo một yêu cầu trả hàng hoàn tiền người khách hàng phải cung cấp được cho cửa hàng video, hình ảnh lúc người khách hàng nhận được đơn hàng và mở gói hàng lần đầu. Video thể hiện được kiện hàng phải còn nguyên không bị khui mở từ trước nếu đơn hàng đã bị tráo ở giai đoạn vận chuyển người khách hàng cần phải chụp lại ngay tình trạng đơn hàng và thông báo cho shop ngay để được ghi nhận và giải quyết tại thời điểm nhận hàng. \\
+
+Trong trường hợp gói hàng không đóng gói đúng yêu cầu của người khách hàng. Shop yêu cầu người khách hàng phải chuyển hoàn lại gói hàng cho shop, người khách hàng cũng phải update biên nhận vận chuyển từ bưu cục và gửi về hệ thống. \\
+
+Sau đó người khách hàng cần cung cấp thông tin tài khoản ngân hàng để nhận được tiền đơn hàng chuyển hoàn trước khi nhấn nút gửi yêu cầu trả hàng - hoàn tiền. \\

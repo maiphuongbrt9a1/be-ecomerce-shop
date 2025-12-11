@@ -1,0 +1,53 @@
+\thispagestyle {empty}
+\contentsline {figure}{\numberline {1}{\ignorespaces Usecase Diagram của người Quản trị viên và nhân viên của hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite {Usecase diagram}}}{10}{figure.caption.9}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Usecase Diagram của người Khách hàng của hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite {Usecase diagram}}}{11}{figure.caption.10}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý đơn hàng \cite {Activity Diagram - Admin, staff processing order}}}{29}{figure.caption.48}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý yêu cầu trả đơn hàng - hoàn tiền \cite {Activity Diagram - Admin, staff processing refund order}}}{30}{figure.caption.49}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Sơ đồ hoạt động người khách hàng duyệt và mua sản phẩm \cite {Activity Diagram - Customer browse and buy product}}}{31}{figure.caption.50}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Sơ đồ hoạt động người khách hàng hủy đơn hàng \cite {Activity Diagram - Customer cancel order}}}{32}{figure.caption.51}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Sơ đồ hoạt động người khách hàng yêu cầu trả đơn hàng - hoàn tiền \cite {Activity Diagram - Customer create refund order}}}{32}{figure.caption.52}%
+\contentsline {figure}{\numberline {8}{\ignorespaces EERD Diagram hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite {EERD diagram}}}{34}{figure.caption.54}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Lược đồ cơ sở dữ liệu hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite {Database Diagram}}}{36}{figure.caption.55}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Biểu đồ lớp (Class diagram) hệ thống bán hàng trực tuyến cho cửa hàng thời trang \cite {Sequence Diagram - Admin, staff processing order}}}{37}{figure.caption.56}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý đơn hàng \cite {Sequence Diagram - Admin, staff processing order}}}{39}{figure.caption.57}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý việc khách hàng trả hàng và yêu cầu hoàn tiền \cite {Sequence Diagram - Admin, staff processing refund order}}}{40}{figure.caption.58}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện tìm kiếm và xem sản phẩm \cite {Sequence Diagram - Customer search and view product}}}{41}{figure.caption.59}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện so sánh thông tin các sản phẩm \cite {Sequence Diagram - Customer view compare product item}}}{41}{figure.caption.60}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện mua ngay sản phẩm \cite {Sequence Diagram - Customer checkout and place order on product detail page}}}{42}{figure.caption.61}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện thêm các sản phẩm vào giỏ hàng \cite {Sequence Diagram - Customer add product items to shopping cart}}}{42}{figure.caption.62}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện mua các sản phẩm từ giỏ hàng \cite {Sequence Diagram - Customer checkout and place order from shopping cart}}}{43}{figure.caption.63}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện mua lại các sản phẩm từ đơn hàng đã mua \cite {Sequence Diagram - Customer checkout and place order on history order page}}}{43}{figure.caption.64}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện hủy đơn đặt hàng \cite {Sequence Diagram - Customer cancel order}}}{44}{figure.caption.65}%
+\contentsline {figure}{\numberline {20}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện trả hàng và yêu cầu hoàn tiền đơn hàng \cite {Sequence Diagram - Customer create new refund order}}}{45}{figure.caption.66}%
+\contentsline {figure}{\numberline {21}{\ignorespaces Giao diện trang chủ \cite {Mockup - Home}}}{46}{figure.caption.67}%
+\contentsline {figure}{\numberline {22}{\ignorespaces Giao diện Xem theo loại/Tìm kiếm\cite {Mockup - Search}}}{47}{figure.caption.68}%
+\contentsline {figure}{\numberline {23}{\ignorespaces Giao diện trang chủ (view) \cite {Mockup - Home (View)}}}{48}{figure.caption.69}%
+\contentsline {figure}{\numberline {24}{\ignorespaces Giao diện trang chủ (message) \cite {Mockup - Home (Message)}}}{48}{figure.caption.70}%
+\contentsline {figure}{\numberline {25}{\ignorespaces Giao diện Giỏ hàng \cite {Mockup - Cart}}}{49}{figure.caption.71}%
+\contentsline {figure}{\numberline {26}{\ignorespaces Giao diện Thanh toán \cite {Mockup - Checkout}}}{50}{figure.caption.72}%
+\contentsline {figure}{\numberline {27}{\ignorespaces Giao diện Chi tiết sản phẩm \cite {Mockup - Product}}}{51}{figure.caption.73}%
+\contentsline {figure}{\numberline {28}{\ignorespaces Giao diện So sánh Sản phẩm \cite {Mockup - Compare}}}{52}{figure.caption.74}%
+\contentsline {figure}{\numberline {29}{\ignorespaces Giao diện trang thông tin cá nhân \cite {Mockup - Profile Page}}}{53}{figure.caption.75}%
+\contentsline {figure}{\numberline {30}{\ignorespaces Giao diện trang kích cỡ \cite {Mockup - Size Page}}}{53}{figure.caption.76}%
+\contentsline {figure}{\numberline {31}{\ignorespaces Giao diện trang quản lý địa chỉ \cite {Mockup - Address Page}}}{54}{figure.caption.77}%
+\contentsline {figure}{\numberline {32}{\ignorespaces Giao diện trang đổi mật khẩu \cite {Mockup - Change Password}}}{54}{figure.caption.78}%
+\contentsline {figure}{\numberline {33}{\ignorespaces Giao diện trang xóa tài khoản \cite {Mockup - Delete Account}}}{54}{figure.caption.79}%
+\contentsline {figure}{\numberline {34}{\ignorespaces Giao diện xem tất cả đơn hàng \cite {Mockup - Order Page All}}}{55}{figure.caption.80}%
+\contentsline {figure}{\numberline {35}{\ignorespaces Giao diện đơn hàng chờ xử lý \cite {Mockup - Order Page Pending}}}{55}{figure.caption.81}%
+\contentsline {figure}{\numberline {36}{\ignorespaces Giao diện đơn hàng đang giao \cite {Mockup - Order Page On the way}}}{56}{figure.caption.82}%
+\contentsline {figure}{\numberline {37}{\ignorespaces Giao diện đơn hàng đã hoàn thành \cite {Mockup - Order Page Finished}}}{56}{figure.caption.83}%
+\contentsline {figure}{\numberline {38}{\ignorespaces Giao diện đơn hàng đã hủy \cite {Mockup - Order Page Cancelled}}}{57}{figure.caption.84}%
+\contentsline {figure}{\numberline {39}{\ignorespaces Giao diện đơn hàng trả hàng \cite {Mockup - Order Page Returned}}}{57}{figure.caption.85}%
+\contentsline {figure}{\numberline {40}{\ignorespaces Giao diện Yêu cầu hủy/trả hàng \cite {Mockup - Order Page Cancel Return Request}}}{58}{figure.caption.86}%
+\contentsline {figure}{\numberline {41}{\ignorespaces Giao diện thông báo cập nhật đơn hàng \cite {Mockup - Notifications Order updates}}}{58}{figure.caption.87}%
+\contentsline {figure}{\numberline {42}{\ignorespaces Giao diện thông báo khuyến mãi \cite {Mockup - Notifications Sales}}}{59}{figure.caption.88}%
+\contentsline {figure}{\numberline {43}{\ignorespaces Giao diện trang tổng quan \cite {Mockup - Admin Dashboard}}}{59}{figure.caption.89}%
+\contentsline {figure}{\numberline {44}{\ignorespaces Giao diện quản lý đơn hàng \cite {Mockup - Admin Order Management}}}{60}{figure.caption.90}%
+\contentsline {figure}{\numberline {45}{\ignorespaces Giao diện quản lý khách hàng \cite {Mockup - Admin Customer}}}{61}{figure.caption.91}%
+\contentsline {figure}{\numberline {46}{\ignorespaces Giao diện quản lý voucher \cite {Mockup - Admin Voucher}}}{62}{figure.caption.92}%
+\contentsline {figure}{\numberline {47}{\ignorespaces Giao diện quản lý danh mục \cite {Mockup - Admin Categories}}}{63}{figure.caption.93}%
+\contentsline {figure}{\numberline {48}{\ignorespaces Giao diện quản lý giao dịch \cite {Mockup - Admin Transaction}}}{64}{figure.caption.94}%
+\contentsline {figure}{\numberline {49}{\ignorespaces Giao diện chat hỗ trợ \cite {Mockup - Admin Chat}}}{65}{figure.caption.95}%
+\contentsline {figure}{\numberline {50}{\ignorespaces Giao diện thêm sản phẩm \cite {Mockup - Admin Add Product}}}{66}{figure.caption.96}%
+\contentsline {figure}{\numberline {51}{\ignorespaces Giao diện quản lý trang cá nhân \cite {Mockup - Admin Admin Role}}}{67}{figure.caption.97}%
+\contentsline {figure}{\numberline {52}{\ignorespaces So sánh giao diện Admin và Nhân viên: Các quyền của Admin (Trái) và Nhân viên (Phải)\cite {Mockup - Admin Admin Role}}}{68}{figure.caption.98}%
