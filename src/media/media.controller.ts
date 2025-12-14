@@ -12,6 +12,7 @@ import { MediaService } from './media.service';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { MediaEntity } from './entities/media.entity';
 
 @Controller('media')
 export class MediaController {
@@ -25,6 +26,7 @@ export class MediaController {
     status: 201,
     description:
       'Create a new media file. Please use upload file functions in aws-s3 instead',
+    type: MediaEntity,
   })
   @ApiBody({ type: CreateMediaDto })
   @Post()
@@ -33,21 +35,21 @@ export class MediaController {
   }
 
   @ApiOperation({ summary: 'Get all media files' })
-  @ApiResponse({ status: 200, description: 'Get all media files' })
+  @ApiResponse({ status: 200, description: 'Get all media files', type: [MediaEntity] })
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.mediaService.findAll(Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get one media file' })
-  @ApiResponse({ status: 200, description: 'Get one media file' })
+  @ApiResponse({ status: 200, description: 'Get one media file', type: MediaEntity })
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.mediaService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update one media file' })
-  @ApiResponse({ status: 200, description: 'Update one media file' })
+  @ApiResponse({ status: 200, description: 'Update one media file', type: MediaEntity })
   @ApiBody({ type: UpdateMediaDto })
   @Patch('/:id')
   async update(
@@ -58,7 +60,7 @@ export class MediaController {
   }
 
   @ApiOperation({ summary: 'Delete one media file' })
-  @ApiResponse({ status: 200, description: 'Delete one media file' })
+  @ApiResponse({ status: 200, description: 'Delete one media file', type: MediaEntity })
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.mediaService.remove(+id);

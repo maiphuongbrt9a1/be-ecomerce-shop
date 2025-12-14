@@ -19,14 +19,19 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
-import { Roles } from '@/decorator/customize';
+import { Roles, Public } from '@/decorator/customize';
+import { ShopOfficeEntity } from './entities/shop-office.entity';
+import { UserEntity } from '@/user/entities/user.entity';
+import { AddressEntity } from '@/address/entities/address.entity';
+import { ProductEntity } from '@/products/entities/product.entity';
+import { CategoryEntity } from '@/category/entities/category.entity';
 
 @Controller('shop-offices')
 export class ShopOfficesController {
   constructor(private readonly shopOfficesService: ShopOfficesService) {}
 
   @ApiOperation({ summary: 'Add new a shop office' })
-  @ApiResponse({ status: 200, description: 'Add new a shop office' })
+  @ApiResponse({ status: 201, description: 'Add new a shop office', type: ShopOfficeEntity })
   @ApiBody({ type: CreateShopOfficeDto })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -37,20 +42,23 @@ export class ShopOfficesController {
   }
 
   @ApiOperation({ summary: 'Get shop office list' })
-  @ApiResponse({ status: 200, description: ' shop office list found!' })
+  @ApiResponse({ status: 200, description: ' shop office list found!', type: [ShopOfficeEntity] })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.shopOfficesService.findAll(Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get shop office detail by ID' })
-  @ApiResponse({ status: 200, description: 'shop office found!' })
+  @ApiResponse({ status: 200, description: 'shop office found!', type: ShopOfficeEntity })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.shopOfficesService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update a shop office' })
+  @ApiResponse({ status: 200, description: 'Update a shop office', type: ShopOfficeEntity })
   @ApiBody({ type: UpdateShopOfficeDto })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -64,6 +72,7 @@ export class ShopOfficesController {
   }
 
   @ApiOperation({ summary: 'Delete a shop office' })
+  @ApiResponse({ status: 200, description: 'Delete a shop office', type: ShopOfficeEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema
@@ -76,7 +85,9 @@ export class ShopOfficesController {
   @ApiResponse({
     status: 200,
     description: 'shop office"s manager list found!',
+    type: [UserEntity],
   })
+  @Public()
   @Get('/:id/manager-list')
   async findAllManagersOfShopOffice(@Param('id') id: string) {
     return await this.shopOfficesService.findAllManagersOfShopOffice(+id);
@@ -86,7 +97,9 @@ export class ShopOfficesController {
   @ApiResponse({
     status: 200,
     description: 'shop office"s address found!',
+    type: AddressEntity,
   })
+  @Public()
   @Get('/:id/address')
   async findAddressOfShopOffice(@Param('id') id: string) {
     return await this.shopOfficesService.findAddressOfShopOffice(+id);
@@ -96,7 +109,9 @@ export class ShopOfficesController {
   @ApiResponse({
     status: 200,
     description: 'shop office"s products found!',
+    type: [ProductEntity],
   })
+  @Public()
   @Get('/:id/product-list')
   async findAllProductsOfShopOffice(
     @Param('id') id: string,
@@ -114,7 +129,9 @@ export class ShopOfficesController {
   @ApiResponse({
     status: 200,
     description: 'shop office"s categories found!',
+    type: [CategoryEntity],
   })
+  @Public()
   @Get('/:id/category-list')
   async findAllCategoryOfShopOffice(@Param('id') id: string) {
     return await this.shopOfficesService.findAllCategoryOfShopOffice(+id);
@@ -127,7 +144,9 @@ export class ShopOfficesController {
   @ApiResponse({
     status: 200,
     description: 'shop office"s products of category found!',
+    type: [ProductEntity],
   })
+  @Public()
   @Get('/:shopId/category/:categoryId/product-list')
   async findAllProductsOfCategoryOfShopOffice(
     @Param('shopId') shopId: string,

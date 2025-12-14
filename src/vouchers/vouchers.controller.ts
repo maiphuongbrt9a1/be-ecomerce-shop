@@ -19,14 +19,18 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
-import { Roles } from '@/decorator/customize';
+import { Roles, Public } from '@/decorator/customize';
+import { VoucherEntity } from './entities/voucher.entity';
+import { CategoryEntity } from '@/category/entities/category.entity';
+import { ProductEntity } from '@/products/entities/product.entity';
+import { ProductVariantEntity } from '@/product-variants/entities/product-variant.entity';
 
 @Controller('vouchers')
 export class VouchersController {
   constructor(private readonly vouchersService: VouchersService) {}
 
   @ApiOperation({ summary: 'Create a new voucher' })
-  @ApiResponse({ status: 201, description: 'Create a new voucher' })
+  @ApiResponse({ status: 201, description: 'Create a new voucher', type: VoucherEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -37,21 +41,23 @@ export class VouchersController {
   }
 
   @ApiOperation({ summary: 'Get all vouchers' })
-  @ApiResponse({ status: 200, description: 'Get all vouchers' })
+  @ApiResponse({ status: 200, description: 'Get all vouchers', type: [VoucherEntity] })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.vouchersService.findAll(Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get a voucher' })
-  @ApiResponse({ status: 200, description: 'Get a voucher' })
+  @ApiResponse({ status: 200, description: 'Get a voucher', type: VoucherEntity })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.vouchersService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update a voucher' })
-  @ApiResponse({ status: 200, description: 'Update a voucher' })
+  @ApiResponse({ status: 200, description: 'Update a voucher', type: VoucherEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -65,7 +71,7 @@ export class VouchersController {
   }
 
   @ApiOperation({ summary: 'Delete a voucher' })
-  @ApiResponse({ status: 200, description: 'Delete a voucher' })
+  @ApiResponse({ status: 200, description: 'Delete a voucher', type: VoucherEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -78,7 +84,9 @@ export class VouchersController {
   @ApiResponse({
     status: 200,
     description: 'Get all categories are applied this voucher',
+    type: [CategoryEntity],
   })
+  @Public()
   @Get('/:id/all-categories-applied')
   async getAllCategoriesAreAppliedThisVoucher(
     @Param('id') id: string,
@@ -96,7 +104,9 @@ export class VouchersController {
   @ApiResponse({
     status: 200,
     description: 'Get all products are applied this voucher',
+    type: [ProductEntity],
   })
+  @Public()
   @Get('/:id/all-products-applied')
   async getAllProductsAreAppliedThisVoucher(
     @Param('id') id: string,
@@ -116,7 +126,9 @@ export class VouchersController {
   @ApiResponse({
     status: 200,
     description: 'Get all product-variants are applied this voucher',
+    type: [ProductVariantEntity],
   })
+  @Public()
   @Get('/:id/all-product-variants-applied')
   async getAllProductVariantsAreAppliedThisVoucher(
     @Param('id') id: string,
