@@ -15,15 +15,13 @@ import {
 import { ProductVariantsService } from './product-variants.service';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiResponse,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
-import { Roles } from '@/decorator/customize';
+import { Roles, Public } from '@/decorator/customize';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ProductVariantEntity } from './entities/product-variant.entity';
+import { ReviewEntity } from '@/reviews/entities/review.entity';
+import { MediaEntity } from '@/media/entities/media.entity';
 import type { RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Controller('product-variants')
@@ -33,11 +31,35 @@ export class ProductVariantsController {
   ) {}
 
   @ApiOperation({ summary: 'Create a new product variant' })
-  @ApiResponse({ status: 201, description: 'Create a new product variant' })
+  @ApiResponse({ status: 201, description: 'Create a new product variant', type: ProductVariantEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  @ApiBody({ type: CreateProductVariantDto })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Product variant image file',
+        },
+        productId: { type: 'number', example: 1315 },
+        createByUserId: { type: 'number', example: 852 },
+        variantName: { type: 'string', example: 'name of product variant' },
+        variantColor: { type: 'string', example: 'red' },
+        variantSize: { type: 'string', example: 'XL' },
+        price: { type: 'number', example: 46546 },
+        stock: { type: 'number', example: 851 },
+        stockKeepingUnit: { type: 'string', example: 'EWDGDSED715545D' },
+        voucherId: { type: 'number', example: 1325 },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+      required: ['file', 'productId', 'createByUserId', 'variantName', 'variantColor', 'variantSize', 'price', 'stock', 'stockKeepingUnit'],
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   @Post()
   async create(
@@ -53,7 +75,8 @@ export class ProductVariantsController {
   }
 
   @ApiOperation({ summary: 'Get all product variant' })
-  @ApiResponse({ status: 200, description: 'Get all product variant' })
+  @ApiResponse({ status: 200, description: 'Get all product variant', type: [ProductVariantEntity] })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.productVariantsService.findAll(
@@ -63,14 +86,15 @@ export class ProductVariantsController {
   }
 
   @ApiOperation({ summary: 'Get one product variant' })
-  @ApiResponse({ status: 200, description: 'Get one product variant' })
+  @ApiResponse({ status: 200, description: 'Get one product variant', type: ProductVariantEntity })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.productVariantsService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update a product variant' })
-  @ApiResponse({ status: 200, description: 'Update a product variant' })
+  @ApiResponse({ status: 200, description: 'Update a product variant', type: ProductVariantEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -87,7 +111,7 @@ export class ProductVariantsController {
   }
 
   @ApiOperation({ summary: 'Delete a product variant' })
-  @ApiResponse({ status: 200, description: 'Delete a product variant' })
+  @ApiResponse({ status: 200, description: 'Delete a product variant', type: ProductVariantEntity })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -100,7 +124,9 @@ export class ProductVariantsController {
   @ApiResponse({
     status: 200,
     description: 'Get all reviews of product variant',
+    type: [ReviewEntity],
   })
+  @Public()
   @Get('/:id/review-list')
   async getReviewsOfProductVariant(
     @Param('id') id: string,
@@ -118,7 +144,9 @@ export class ProductVariantsController {
   @ApiResponse({
     status: 200,
     description: 'Get all medias of product variant',
+    type: [MediaEntity],
   })
+  @Public()
   @Get('/:id/media-list')
   async getAllMediaOfProductVariant(
     @Param('id') id: string,
