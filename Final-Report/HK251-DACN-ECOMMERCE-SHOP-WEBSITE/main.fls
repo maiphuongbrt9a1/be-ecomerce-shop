@@ -386,14 +386,8 @@ INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/tex/latex/epstopdf-pkg/epst
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
-INPUT ./main.out
-INPUT ./main.out
-INPUT main.out
-INPUT main.out
-OUTPUT main.pdf
-INPUT ./main.out
-INPUT ./main.out
 OUTPUT main.out
+OUTPUT main.pdf
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmr8v.tfm
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmb8v.tfm
 INPUT ./Images/hcmut.png
@@ -465,9 +459,6 @@ INPUT ./Intro/TomTat.tex
 INPUT ./Intro/TomTat.tex
 INPUT ./Intro/TomTat.tex
 INPUT Intro/TomTat.tex
-INPUT ./main.toc
-INPUT ./main.toc
-INPUT main.toc
 OUTPUT main.toc
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
@@ -476,14 +467,17 @@ INPUT ./Images/hcmut.png
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmr8v.tfm
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmb8v.tfm
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmr8v.tfm
-INPUT ./main.lof
-INPUT ./main.lof
-INPUT main.lof
+INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmb8v.tfm
 OUTPUT main.lof
-INPUT ./main.lot
-INPUT ./main.lot
-INPUT main.lot
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
 OUTPUT main.lot
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
 INPUT ./Contents/GioiThieuTongQuan.tex
 INPUT ./Contents/GioiThieuTongQuan.tex
 INPUT ./Contents/GioiThieuTongQuan.tex
@@ -511,19 +505,130 @@ INPUT ./Contents/CoSoLyThuyetVaCacHeThongLienQuan.tex
 INPUT ./Contents/CoSoLyThuyetVaCacHeThongLienQuan.tex
 INPUT ./Contents/CoSoLyThuyetVaCacHeThongLienQuan.tex
 INPUT Contents/CoSoLyThuyetVaCacHeThongLienQuan.tex
+INPUT ./Images/Brand_Imgs/HandM.png
+INPUT ./Images/Brand_Imgs/HandM.png
+INPUT ./Images/Brand_Imgs/HandM.png
+INPUT ./Images/Brand_Imgs/HandM.png
+INPUT ./Images/Brand_Imgs/HandM.png
+INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmr8v.tfm
+INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmb8v.tfm
+INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmri8v.tfm
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
+INPUT ./Images/Brand_Imgs/Zara.png
+INPUT ./Images/Brand_Imgs/Zara.png
+INPUT ./Images/Brand_Imgs/Zara.png
+INPUT ./Images/Brand_Imgs/Zara.png
+INPUT ./Images/Brand_Imgs/Zara.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
+INPUT ./Images/Brand_Imgs/Adidas.png
+INPUT ./Images/Brand_Imgs/Adidas.png
+INPUT ./Images/Brand_Imgs/Adidas.png
+INPUT ./Images/Brand_Imgs/Adidas.png
+INPUT ./Images/Brand_Imgs/Adidas.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/Brand_Imgs/Amazon-fashion.png
+INPUT ./Images/Brand_Imgs/Amazon-fashion.png
+INPUT ./Images/Brand_Imgs/Amazon-fashion.png
+INPUT ./Images/Brand_Imgs/Amazon-fashion.png
+INPUT ./Images/Brand_Imgs/Amazon-fashion.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmri8v.tfm
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/Brand_Imgs/Coolmate.png
+INPUT ./Images/Brand_Imgs/Coolmate.png
+INPUT ./Images/Brand_Imgs/Coolmate.png
+INPUT ./Images/Brand_Imgs/Coolmate.png
+INPUT ./Images/Brand_Imgs/Coolmate.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/Tech_logo/typescript-logo.png
+INPUT ./Images/Tech_logo/typescript-logo.png
+INPUT ./Images/Tech_logo/typescript-logo.png
+INPUT ./Images/Tech_logo/typescript-logo.png
+INPUT ./Images/Tech_logo/typescript-logo.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/Tech_logo/nestjs-logo.png
+INPUT ./Images/Tech_logo/nestjs-logo.png
+INPUT ./Images/Tech_logo/nestjs-logo.png
+INPUT ./Images/Tech_logo/nestjs-logo.png
+INPUT ./Images/Tech_logo/nestjs-logo.png
+INPUT ./Images/Tech_logo/prisma-logo.png
+INPUT ./Images/Tech_logo/prisma-logo.png
+INPUT ./Images/Tech_logo/prisma-logo.png
+INPUT ./Images/Tech_logo/prisma-logo.png
+INPUT ./Images/Tech_logo/prisma-logo.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/Tech_logo/PostgreSQL_logo.png
+INPUT ./Images/Tech_logo/PostgreSQL_logo.png
+INPUT ./Images/Tech_logo/PostgreSQL_logo.png
+INPUT ./Images/Tech_logo/PostgreSQL_logo.png
+INPUT ./Images/Tech_logo/PostgreSQL_logo.png
+INPUT ./Images/Tech_logo/next-js-logo.png
+INPUT ./Images/Tech_logo/next-js-logo.png
+INPUT ./Images/Tech_logo/next-js-logo.png
+INPUT ./Images/Tech_logo/next-js-logo.png
+INPUT ./Images/Tech_logo/next-js-logo.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/Tech_logo/shadcn-ui-logo.png
+INPUT ./Images/Tech_logo/shadcn-ui-logo.png
+INPUT ./Images/Tech_logo/shadcn-ui-logo.png
+INPUT ./Images/Tech_logo/shadcn-ui-logo.png
+INPUT ./Images/Tech_logo/shadcn-ui-logo.png
+INPUT ./Images/Tech_logo/swagger-logo.png
+INPUT ./Images/Tech_logo/swagger-logo.png
+INPUT ./Images/Tech_logo/swagger-logo.png
+INPUT ./Images/Tech_logo/swagger-logo.png
+INPUT ./Images/Tech_logo/swagger-logo.png
+INPUT ./Images/Tech_logo/git-logo.png
+INPUT ./Images/Tech_logo/git-logo.png
+INPUT ./Images/Tech_logo/git-logo.png
+INPUT ./Images/Tech_logo/git-logo.png
+INPUT ./Images/Tech_logo/git-logo.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/Tech_logo/github-logo.png
+INPUT ./Images/Tech_logo/github-logo.png
+INPUT ./Images/Tech_logo/github-logo.png
+INPUT ./Images/Tech_logo/github-logo.png
+INPUT ./Images/Tech_logo/github-logo.png
+INPUT ./Images/Tech_logo/amazon-s3-logo.png
+INPUT ./Images/Tech_logo/amazon-s3-logo.png
+INPUT ./Images/Tech_logo/amazon-s3-logo.png
+INPUT ./Images/Tech_logo/amazon-s3-logo.png
+INPUT ./Images/Tech_logo/amazon-s3-logo.png
+INPUT ./Images/Tech_logo/vnpay-logo.jpg
+INPUT ./Images/Tech_logo/vnpay-logo.jpg
+INPUT ./Images/Tech_logo/vnpay-logo.jpg
+INPUT ./Images/Tech_logo/vnpay-logo.jpg
+INPUT ./Images/Tech_logo/vnpay-logo.jpg
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
@@ -546,9 +651,6 @@ INPUT ./Images/UsecaseDiagram/Đồ án - HK251-Usecase cho Admin và Staff.draw
 INPUT ./Images/UsecaseDiagram/Đồ án - HK251-Usecase cho Admin và Staff.drawio.png
 INPUT ./Images/UsecaseDiagram/Đồ án - HK251-Usecase cho Admin và Staff.drawio.png
 INPUT ./Images/UsecaseDiagram/Đồ án - HK251-Usecase cho Admin và Staff.drawio.png
-INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmr8v.tfm
-INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmb8v.tfm
-INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmri8v.tfm
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
@@ -711,11 +813,19 @@ INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Admin, Staff processing order.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Admin, Staff processing order.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Admin, Staff processing order.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Admin, Staff processing order.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Admin, Staff processing order.jpg
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
@@ -734,15 +844,15 @@ INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer sea
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer search and view product.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer search and view product.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer search and view product.jpg
+INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg
+INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg
+INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg
+INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg
+INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
-INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg
-INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg
-INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg
-INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg
-INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer view compare product item.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order on product detail page (by now function).jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order on product detail page (by now function).jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order on product detail page (by now function).jpg
@@ -757,6 +867,10 @@ INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer add
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer add product items to shopping cart.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer add product items to shopping cart.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer add product items to shopping cart.jpg
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
+INPUT ./Images/hcmut.png
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order shopping cart.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order shopping cart.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order shopping cart.jpg
@@ -771,15 +885,15 @@ INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer che
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order on history order page.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order on history order page.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer checkout and place order on history order page.jpg
-INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg
-INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg
-INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg
-INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg
-INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
+INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg
+INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg
+INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg
+INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg
+INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer cancel order.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer create new refund order.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer create new refund order.jpg
 INPUT ./Images/SequenceDiagram/Đồ án - HK251-Sequence Diagram - Customer create new refund order.jpg
