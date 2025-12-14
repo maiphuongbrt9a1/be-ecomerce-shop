@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1765720296.56539 "d:/BkEduDocs/Self_Study/Code/be-ecomerce-shop/Final-Report/HK251-DACN-ECOMMERCE-SHOP-WEBSITE/main.tex" "main.pdf" "main" 1765720312.75992 2
-  "Contents/CoSoLyThuyetVaCacHeThongLienQuan.tex" 1765641922 37627 16c6cfa8dd837fd920ba939a6d314289 ""
+["pdflatex"] 1765722590.88716 "d:/BkEduDocs/Self_Study/Code/be-ecomerce-shop/Final-Report/HK251-DACN-ECOMMERCE-SHOP-WEBSITE/main.tex" "main.pdf" "main" 1765722608.55933 0
+  "Contents/CoSoLyThuyetVaCacHeThongLienQuan.tex" 1765720996 37635 37cd635bf87269149218ffde43654ea6 ""
   "Contents/GioiThieuTongQuan.tex" 1765366354 10380 928a2383a8e0de76cbdc69fe2f4a3d2d ""
   "Contents/PhanTichHeThong.tex" 1765366354 90191 5c62e7f86e63c9fa6e5c0b6780520d9b ""
   "Contents/ThietKeHeThong.tex" 1765441648 51701 9fc012a67e713a3233db7524b1576a5e ""
@@ -59,7 +59,7 @@
   "Intro/TomTat.tex" 1765366354 106 d84424ca2012ca658349175c3cbe2a60 ""
   "Outro/PhuLuc.tex" 1765366354 21 470a20e0bb3e6c91669f8aa0009d56da ""
   "Outro/TaiLieuThamKhao.tex" 1765464762 34 0e14a2c04f3d542a73c2597cfcd99583 ""
-  "d:/BkEduDocs/Self_Study/Code/be-ecomerce-shop/Final-Report/HK251-DACN-ECOMMERCE-SHOP-WEBSITE/main.tex" 1765720271 7773 1be732db3d8f1cc723578b37fa99593a ""
+  "d:/BkEduDocs/Self_Study/Code/be-ecomerce-shop/Final-Report/HK251-DACN-ECOMMERCE-SHOP-WEBSITE/main.tex" 1765722588 7773 1be732db3d8f1cc723578b37fa99593a ""
   "d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc" 1764733728 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/enc/dvips/vntex/t5.enc" 1764742169 7824 21ade6c3c7fd67cb4ace8dbc91c53118 ""
   "d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1764734576 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -284,12 +284,12 @@
   "d:/Program Files (x86)/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1764742728 5587524 d4a6733fbd191f0aef4ba5c82bd083bf ""
   "d:/Program Files (x86)/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1764742966 3636218 d2f6bfed27971eab4de288c6f7d30c42 ""
   "d:/Program Files (x86)/texlive/2025/texmf.cnf" 1764742679 713 e69b156964470283e0530f5060668171 ""
-  "main.aux" 1765720311 62048 9a4729c9cb9a4b2c03d56214f58f1de6 "pdflatex"
-  "main.lof" 1765720312 11365 5e46d68e8172ec8784751c34ebfa1021 "pdflatex"
-  "main.lot" 1765720312 6423 8979e6783756152e2fdf1d3bf2c0b27d "pdflatex"
-  "main.out" 1765720312 23155 b0cbff1ed8767598a8d5ab0d71f56d2a "pdflatex"
-  "main.tex" 1765720271 7773 1be732db3d8f1cc723578b37fa99593a ""
-  "main.toc" 1765720312 11601 f39d2f2ed7304f8b26c26280182d30da "pdflatex"
+  "main.aux" 1765722607 64703 15260fdedefa9ad38415eedb30121de0 "pdflatex"
+  "main.lof" 1765722607 11364 61593417f5ce259f034091a295f2e099 "pdflatex"
+  "main.lot" 1765722607 6423 8979e6783756152e2fdf1d3bf2c0b27d "pdflatex"
+  "main.out" 1765722607 23155 b0cbff1ed8767598a8d5ab0d71f56d2a "pdflatex"
+  "main.tex" 1765722588 7773 1be732db3d8f1cc723578b37fa99593a ""
+  "main.toc" 1765722607 11601 f39d2f2ed7304f8b26c26280182d30da "pdflatex"
   (generated)
   "main.aux"
   "main.lof"

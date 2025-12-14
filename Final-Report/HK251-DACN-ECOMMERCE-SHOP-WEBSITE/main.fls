@@ -386,8 +386,14 @@ INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/tex/latex/epstopdf-pkg/epst
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
-OUTPUT main.out
+INPUT ./main.out
+INPUT ./main.out
+INPUT main.out
+INPUT main.out
 OUTPUT main.pdf
+INPUT ./main.out
+INPUT ./main.out
+OUTPUT main.out
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmr8v.tfm
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmb8v.tfm
 INPUT ./Images/hcmut.png
@@ -459,6 +465,9 @@ INPUT ./Intro/TomTat.tex
 INPUT ./Intro/TomTat.tex
 INPUT ./Intro/TomTat.tex
 INPUT Intro/TomTat.tex
+INPUT ./main.toc
+INPUT ./main.toc
+INPUT main.toc
 OUTPUT main.toc
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
@@ -467,17 +476,18 @@ INPUT ./Images/hcmut.png
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmr8v.tfm
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmb8v.tfm
 INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmr8v.tfm
-INPUT d:/Program Files (x86)/texlive/2025/texmf-dist/fonts/tfm/vntex/urwvn/utmb8v.tfm
+INPUT ./main.lof
+INPUT ./main.lof
+INPUT main.lof
 OUTPUT main.lof
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
 INPUT ./Images/hcmut.png
+INPUT ./main.lot
+INPUT ./main.lot
+INPUT main.lot
 OUTPUT main.lot
-INPUT ./Images/hcmut.png
-INPUT ./Images/hcmut.png
-INPUT ./Images/hcmut.png
-INPUT ./Images/hcmut.png
 INPUT ./Contents/GioiThieuTongQuan.tex
 INPUT ./Contents/GioiThieuTongQuan.tex
 INPUT ./Contents/GioiThieuTongQuan.tex
