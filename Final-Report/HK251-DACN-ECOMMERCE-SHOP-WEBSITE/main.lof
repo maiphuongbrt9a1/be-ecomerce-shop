@@ -1,71 +1,71 @@
 \thispagestyle {empty}
-\contentsline {figure}{\numberline {1}{\ignorespaces Trang chủ H \& M \cite {HandM}}}{3}{figure.caption.9}%
-\contentsline {figure}{\numberline {2}{\ignorespaces Trang chủ H \& M}}{3}{figure.caption.9}%
-\contentsline {figure}{\numberline {3}{\ignorespaces Trang chủ Zara}}{4}{figure.caption.10}%
-\contentsline {figure}{\numberline {4}{\ignorespaces Trang chủ Adidas}}{6}{figure.caption.11}%
-\contentsline {figure}{\numberline {5}{\ignorespaces Trang chủ Amazon Fashion}}{7}{figure.caption.12}%
-\contentsline {figure}{\numberline {6}{\ignorespaces Trang chủ Coolmate}}{8}{figure.caption.13}%
-\contentsline {figure}{\numberline {7}{\ignorespaces Logo của Typescript}}{10}{figure.caption.14}%
-\contentsline {figure}{\numberline {8}{\ignorespaces Logo của Nestjs}}{10}{figure.caption.15}%
-\contentsline {figure}{\numberline {9}{\ignorespaces Logo của Prisma}}{11}{figure.caption.16}%
-\contentsline {figure}{\numberline {10}{\ignorespaces Logo của PostgreSQL}}{11}{figure.caption.17}%
-\contentsline {figure}{\numberline {11}{\ignorespaces Logo của Nextjs}}{12}{figure.caption.18}%
-\contentsline {figure}{\numberline {12}{\ignorespaces Logo của Shadcn / ui}}{12}{figure.caption.19}%
-\contentsline {figure}{\numberline {13}{\ignorespaces Logo của Swagger}}{12}{figure.caption.20}%
-\contentsline {figure}{\numberline {14}{\ignorespaces Logo của Git}}{13}{figure.caption.21}%
-\contentsline {figure}{\numberline {15}{\ignorespaces Logo của Github}}{13}{figure.caption.22}%
-\contentsline {figure}{\numberline {16}{\ignorespaces Logo của AWS S3}}{13}{figure.caption.23}%
-\contentsline {figure}{\numberline {17}{\ignorespaces Logo của VNPAY}}{14}{figure.caption.24}%
-\contentsline {figure}{\numberline {18}{\ignorespaces Usecase Diagram của người Quản trị viên và nhân viên của hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{17}{figure.caption.25}%
-\contentsline {figure}{\numberline {19}{\ignorespaces Usecase Diagram của người Khách hàng của hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{18}{figure.caption.26}%
-\contentsline {figure}{\numberline {20}{\ignorespaces Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý đơn hàng}}{36}{figure.caption.64}%
-\contentsline {figure}{\numberline {21}{\ignorespaces Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý yêu cầu trả đơn hàng - hoàn tiền}}{37}{figure.caption.65}%
-\contentsline {figure}{\numberline {22}{\ignorespaces Sơ đồ hoạt động người khách hàng duyệt và mua sản phẩm}}{38}{figure.caption.66}%
-\contentsline {figure}{\numberline {23}{\ignorespaces Sơ đồ hoạt động người khách hàng hủy đơn hàng}}{39}{figure.caption.67}%
-\contentsline {figure}{\numberline {24}{\ignorespaces Sơ đồ hoạt động người khách hàng yêu cầu trả đơn hàng - hoàn tiền}}{39}{figure.caption.68}%
-\contentsline {figure}{\numberline {25}{\ignorespaces EERD Diagram hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{41}{figure.caption.70}%
-\contentsline {figure}{\numberline {26}{\ignorespaces Lược đồ cơ sở dữ liệu hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{43}{figure.caption.71}%
-\contentsline {figure}{\numberline {27}{\ignorespaces Biểu đồ lớp (Class diagram) hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{44}{figure.caption.72}%
-\contentsline {figure}{\numberline {28}{\ignorespaces Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý đơn hàng}}{46}{figure.caption.73}%
-\contentsline {figure}{\numberline {29}{\ignorespaces Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý việc khách hàng trả hàng và yêu cầu hoàn tiền}}{47}{figure.caption.74}%
-\contentsline {figure}{\numberline {30}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện tìm kiếm và xem sản phẩm}}{48}{figure.caption.75}%
-\contentsline {figure}{\numberline {31}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện so sánh thông tin các sản phẩm}}{49}{figure.caption.76}%
-\contentsline {figure}{\numberline {32}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện mua ngay sản phẩm}}{50}{figure.caption.77}%
-\contentsline {figure}{\numberline {33}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện thêm các sản phẩm vào giỏ hàng}}{51}{figure.caption.78}%
-\contentsline {figure}{\numberline {34}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện mua các sản phẩm từ giỏ hàng}}{51}{figure.caption.79}%
-\contentsline {figure}{\numberline {35}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện mua lại các sản phẩm từ đơn hàng đã mua}}{52}{figure.caption.80}%
-\contentsline {figure}{\numberline {36}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện hủy đơn đặt hàng}}{53}{figure.caption.81}%
-\contentsline {figure}{\numberline {37}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện trả hàng và yêu cầu hoàn tiền đơn hàng}}{54}{figure.caption.82}%
-\contentsline {figure}{\numberline {38}{\ignorespaces Giao diện trang chủ}}{55}{figure.caption.83}%
-\contentsline {figure}{\numberline {39}{\ignorespaces Giao diện Xem theo loại/Tìm kiếm}}{56}{figure.caption.84}%
-\contentsline {figure}{\numberline {40}{\ignorespaces Giao diện trang chủ (view)}}{57}{figure.caption.85}%
-\contentsline {figure}{\numberline {41}{\ignorespaces Giao diện trang chủ (message)}}{57}{figure.caption.86}%
-\contentsline {figure}{\numberline {42}{\ignorespaces Giao diện Giỏ hàng}}{58}{figure.caption.87}%
-\contentsline {figure}{\numberline {43}{\ignorespaces Giao diện Thanh toán}}{59}{figure.caption.88}%
-\contentsline {figure}{\numberline {44}{\ignorespaces Giao diện Chi tiết sản phẩm}}{60}{figure.caption.89}%
-\contentsline {figure}{\numberline {45}{\ignorespaces Giao diện So sánh Sản phẩm}}{61}{figure.caption.90}%
-\contentsline {figure}{\numberline {46}{\ignorespaces Các bước chọn sản phẩm để so sánh}}{62}{figure.caption.91}%
-\contentsline {figure}{\numberline {47}{\ignorespaces Giao diện trang thông tin cá nhân}}{63}{figure.caption.92}%
-\contentsline {figure}{\numberline {48}{\ignorespaces Giao diện trang kích cờm}}{63}{figure.caption.93}%
-\contentsline {figure}{\numberline {49}{\ignorespaces Giao diện trang quản lý địa chỉ}}{64}{figure.caption.94}%
-\contentsline {figure}{\numberline {50}{\ignorespaces Giao diện trang đổi mật khẩu}}{64}{figure.caption.95}%
-\contentsline {figure}{\numberline {51}{\ignorespaces Giao diện trang xóa tài khoản}}{64}{figure.caption.96}%
-\contentsline {figure}{\numberline {52}{\ignorespaces Giao diện xem tất cả đơn hàng}}{65}{figure.caption.97}%
-\contentsline {figure}{\numberline {53}{\ignorespaces Giao diện đơn hàng chờ xử lý}}{65}{figure.caption.98}%
-\contentsline {figure}{\numberline {54}{\ignorespaces Giao diện đơn hàng đang giao}}{66}{figure.caption.99}%
-\contentsline {figure}{\numberline {55}{\ignorespaces Giao diện đơn hàng đã hoàn thành}}{66}{figure.caption.100}%
-\contentsline {figure}{\numberline {56}{\ignorespaces Giao diện đơn hàng đã hủy}}{67}{figure.caption.101}%
-\contentsline {figure}{\numberline {57}{\ignorespaces Giao diện đơn hàng trả hàng}}{67}{figure.caption.102}%
-\contentsline {figure}{\numberline {58}{\ignorespaces Giao diện Yêu cầu hủy/trả hàng}}{68}{figure.caption.103}%
-\contentsline {figure}{\numberline {59}{\ignorespaces Giao diện thông báo cập nhật đơn hàng}}{68}{figure.caption.104}%
-\contentsline {figure}{\numberline {60}{\ignorespaces Giao diện thông báo khuyến mãi}}{69}{figure.caption.105}%
-\contentsline {figure}{\numberline {61}{\ignorespaces Giao diện trang tổng quan}}{69}{figure.caption.106}%
-\contentsline {figure}{\numberline {62}{\ignorespaces Giao diện quản lý đơn hàng}}{70}{figure.caption.107}%
-\contentsline {figure}{\numberline {63}{\ignorespaces Giao diện quản lý khách hàng}}{71}{figure.caption.108}%
-\contentsline {figure}{\numberline {64}{\ignorespaces Giao diện quản lý voucher}}{72}{figure.caption.109}%
-\contentsline {figure}{\numberline {65}{\ignorespaces Giao diện quản lý danh mục}}{73}{figure.caption.110}%
-\contentsline {figure}{\numberline {66}{\ignorespaces Giao diện quản lý giao dịch}}{74}{figure.caption.111}%
-\contentsline {figure}{\numberline {67}{\ignorespaces Giao diện chat hỗ trợ}}{75}{figure.caption.112}%
-\contentsline {figure}{\numberline {68}{\ignorespaces Giao diện thêm sản phẩm}}{76}{figure.caption.113}%
-\contentsline {figure}{\numberline {69}{\ignorespaces Giao diện quản lý trang cá nhân}}{77}{figure.caption.114}%
-\contentsline {figure}{\numberline {70}{\ignorespaces So sánh giao diện Admin và Nhân viên: Các quyền của Admin (Trái) và Nhân viên (Phải)}}{78}{figure.caption.115}%
+\contentsline {figure}{\numberline {1}{\ignorespaces Trang chủ H \& M}}{3}{figure.caption.9}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Trang chủ Zara}}{4}{figure.caption.10}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Trang chủ Adidas}}{5}{figure.caption.11}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Trang chủ Amazon Fashion}}{7}{figure.caption.12}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Trang chủ Coolmate}}{8}{figure.caption.13}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Logo của Typescript}}{9}{figure.caption.14}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Logo của Nestjs}}{10}{figure.caption.15}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Logo của Prisma}}{10}{figure.caption.16}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Logo của PostgreSQL}}{11}{figure.caption.17}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Logo của Nextjs}}{11}{figure.caption.18}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Logo của Shadcn / ui}}{12}{figure.caption.19}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Logo của Swagger}}{12}{figure.caption.20}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Logo của Git}}{13}{figure.caption.21}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Logo của Github}}{13}{figure.caption.22}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Logo của AWS S3}}{13}{figure.caption.23}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Logo của VNPAY}}{14}{figure.caption.24}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Usecase Diagram của người Quản trị viên và nhân viên của hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{17}{figure.caption.25}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Usecase Diagram của người Khách hàng của hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{18}{figure.caption.26}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý đơn hàng}}{36}{figure.caption.64}%
+\contentsline {figure}{\numberline {20}{\ignorespaces Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý yêu cầu trả đơn hàng - hoàn tiền}}{37}{figure.caption.65}%
+\contentsline {figure}{\numberline {21}{\ignorespaces Sơ đồ hoạt động người khách hàng duyệt và mua sản phẩm}}{38}{figure.caption.66}%
+\contentsline {figure}{\numberline {22}{\ignorespaces Sơ đồ hoạt động người khách hàng hủy đơn hàng}}{39}{figure.caption.67}%
+\contentsline {figure}{\numberline {23}{\ignorespaces Sơ đồ hoạt động người khách hàng yêu cầu trả đơn hàng - hoàn tiền}}{39}{figure.caption.68}%
+\contentsline {figure}{\numberline {24}{\ignorespaces Kiến trúc bậc cao của hệ thống}}{40}{figure.caption.69}%
+\contentsline {figure}{\numberline {25}{\ignorespaces EERD Diagram hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{43}{figure.caption.71}%
+\contentsline {figure}{\numberline {26}{\ignorespaces Lược đồ cơ sở dữ liệu hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{45}{figure.caption.72}%
+\contentsline {figure}{\numberline {27}{\ignorespaces Biểu đồ lớp (Class diagram) hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{46}{figure.caption.73}%
+\contentsline {figure}{\numberline {28}{\ignorespaces Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý đơn hàng}}{48}{figure.caption.74}%
+\contentsline {figure}{\numberline {29}{\ignorespaces Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý việc khách hàng trả hàng và yêu cầu hoàn tiền}}{49}{figure.caption.75}%
+\contentsline {figure}{\numberline {30}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện tìm kiếm và xem sản phẩm}}{50}{figure.caption.76}%
+\contentsline {figure}{\numberline {31}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện so sánh thông tin các sản phẩm}}{51}{figure.caption.77}%
+\contentsline {figure}{\numberline {32}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện mua ngay sản phẩm}}{52}{figure.caption.78}%
+\contentsline {figure}{\numberline {33}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện thêm các sản phẩm vào giỏ hàng}}{53}{figure.caption.79}%
+\contentsline {figure}{\numberline {34}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện mua các sản phẩm từ giỏ hàng}}{53}{figure.caption.80}%
+\contentsline {figure}{\numberline {35}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện mua lại các sản phẩm từ đơn hàng đã mua}}{54}{figure.caption.81}%
+\contentsline {figure}{\numberline {36}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện hủy đơn đặt hàng}}{55}{figure.caption.82}%
+\contentsline {figure}{\numberline {37}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện trả hàng và yêu cầu hoàn tiền đơn hàng}}{56}{figure.caption.83}%
+\contentsline {figure}{\numberline {38}{\ignorespaces Giao diện trang chủ}}{57}{figure.caption.84}%
+\contentsline {figure}{\numberline {39}{\ignorespaces Giao diện Xem theo loại/Tìm kiếm}}{58}{figure.caption.85}%
+\contentsline {figure}{\numberline {40}{\ignorespaces Giao diện trang chủ (view)}}{59}{figure.caption.86}%
+\contentsline {figure}{\numberline {41}{\ignorespaces Giao diện trang chủ (message)}}{59}{figure.caption.87}%
+\contentsline {figure}{\numberline {42}{\ignorespaces Giao diện Giỏ hàng}}{60}{figure.caption.88}%
+\contentsline {figure}{\numberline {43}{\ignorespaces Giao diện Thanh toán}}{61}{figure.caption.89}%
+\contentsline {figure}{\numberline {44}{\ignorespaces Giao diện Chi tiết sản phẩm}}{62}{figure.caption.90}%
+\contentsline {figure}{\numberline {45}{\ignorespaces Giao diện So sánh Sản phẩm}}{63}{figure.caption.91}%
+\contentsline {figure}{\numberline {46}{\ignorespaces Các bước chọn sản phẩm để so sánh}}{64}{figure.caption.92}%
+\contentsline {figure}{\numberline {47}{\ignorespaces Giao diện trang thông tin cá nhân}}{65}{figure.caption.93}%
+\contentsline {figure}{\numberline {48}{\ignorespaces Giao diện trang kích cờm}}{65}{figure.caption.94}%
+\contentsline {figure}{\numberline {49}{\ignorespaces Giao diện trang quản lý địa chỉ}}{66}{figure.caption.95}%
+\contentsline {figure}{\numberline {50}{\ignorespaces Giao diện trang đổi mật khẩu}}{66}{figure.caption.96}%
+\contentsline {figure}{\numberline {51}{\ignorespaces Giao diện trang xóa tài khoản}}{66}{figure.caption.97}%
+\contentsline {figure}{\numberline {52}{\ignorespaces Giao diện xem tất cả đơn hàng}}{67}{figure.caption.98}%
+\contentsline {figure}{\numberline {53}{\ignorespaces Giao diện đơn hàng chờ xử lý}}{67}{figure.caption.99}%
+\contentsline {figure}{\numberline {54}{\ignorespaces Giao diện đơn hàng đang giao}}{68}{figure.caption.100}%
+\contentsline {figure}{\numberline {55}{\ignorespaces Giao diện đơn hàng đã hoàn thành}}{68}{figure.caption.101}%
+\contentsline {figure}{\numberline {56}{\ignorespaces Giao diện đơn hàng đã hủy}}{69}{figure.caption.102}%
+\contentsline {figure}{\numberline {57}{\ignorespaces Giao diện đơn hàng trả hàng}}{69}{figure.caption.103}%
+\contentsline {figure}{\numberline {58}{\ignorespaces Giao diện Yêu cầu hủy/trả hàng}}{70}{figure.caption.104}%
+\contentsline {figure}{\numberline {59}{\ignorespaces Giao diện thông báo cập nhật đơn hàng}}{70}{figure.caption.105}%
+\contentsline {figure}{\numberline {60}{\ignorespaces Giao diện thông báo khuyến mãi}}{71}{figure.caption.106}%
+\contentsline {figure}{\numberline {61}{\ignorespaces Giao diện trang tổng quan}}{71}{figure.caption.107}%
+\contentsline {figure}{\numberline {62}{\ignorespaces Giao diện quản lý đơn hàng}}{72}{figure.caption.108}%
+\contentsline {figure}{\numberline {63}{\ignorespaces Giao diện quản lý khách hàng}}{73}{figure.caption.109}%
+\contentsline {figure}{\numberline {64}{\ignorespaces Giao diện quản lý voucher}}{74}{figure.caption.110}%
+\contentsline {figure}{\numberline {65}{\ignorespaces Giao diện quản lý danh mục}}{75}{figure.caption.111}%
+\contentsline {figure}{\numberline {66}{\ignorespaces Giao diện quản lý giao dịch}}{76}{figure.caption.112}%
+\contentsline {figure}{\numberline {67}{\ignorespaces Giao diện chat hỗ trợ}}{77}{figure.caption.113}%
+\contentsline {figure}{\numberline {68}{\ignorespaces Giao diện thêm sản phẩm}}{78}{figure.caption.114}%
+\contentsline {figure}{\numberline {69}{\ignorespaces Giao diện quản lý trang cá nhân}}{79}{figure.caption.115}%
+\contentsline {figure}{\numberline {70}{\ignorespaces So sánh giao diện Admin và Nhân viên: Các quyền của Admin (Trái) và Nhân viên (Phải)}}{80}{figure.caption.116}%
