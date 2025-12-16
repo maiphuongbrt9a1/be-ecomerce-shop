@@ -762,3 +762,74 @@ Ngoài ra nếu người khách hàng lúc đặt đơn hàng đã thanh toán t
 \end{figure}
 \noindent\textbf{Các thao tác chính:} Xem danh sách người dùng hệ thống, phân quyền và vai trò (admin, nhân viên), chỉnh sửa quyền truy cập, khóa tài khoản, và xem lịch sử hoạt động.
 
+\subsubsection{Thiết kế giao diện cho nhân viên}
+
+\subsubsubsection {Quản lý đơn hàng}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Staff/Order Management.png}
+  \vspace{0.5cm}
+  \caption{Giao diện quản lý đơn hàng (Nhân viên)}
+  \label{fig: Giao diện quản lý đơn hàng nhân viên}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem danh sách đơn hàng, lọc theo trạng thái, cập nhật trạng thái xử lý đơn hàng, xác nhận đơn hàng. Không có quyền tạo/sửa/xóa sản phẩm, voucher.
+
+\subsubsubsection {Chi tiết đơn hàng}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Staff/Order Detail.png}
+  \vspace{0.5cm}
+  \caption{Giao diện chi tiết đơn hàng (Nhân viên)}
+  \label{fig: Giao diện chi tiết đơn hàng nhân viên}
+\end{figure}
+\noindent\textbf{Mô tả:} Hiển thị thông tin chi tiết đơn hàng: mã đơn, khách hàng, địa chỉ giao hàng, danh sách sản phẩm, tổng tiền. Cho phép cập nhật trạng thái đơn hàng, xem lịch sử xử lý.
+
+\subsubsubsection {Danh sách sản phẩm}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Staff/Products.png}
+  \vspace{0.5cm}
+  \caption{Giao diện danh sách sản phẩm (Nhân viên)}
+  \label{fig: Giao diện danh sách sản phẩm nhân viên}
+\end{figure}
+\noindent\textbf{Mô tả:} Hiển thị danh sách sản phẩm với thông tin: tên,giá, tồn kho, trạng thái. Nhân viên chỉ có quyền xem (read-only) để tra cứu thông tin sản phẩm phục vụ tư vấn khách hàng. Không có quyền thêm, sửa, xóa sản phẩm hay thay đổi giá.
+
+\subsubsubsection {Chi tiết sản phẩm}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Staff/Product Detail.png}
+  \vspace{0.5cm}
+  \caption{Giao diện chi tiết sản phẩm (Nhân viên)}
+  \label{fig: Giao diện chi tiết sản phẩm nhân viên}
+\end{figure}
+\noindent\textbf{Mô tả:} Hiển thị thông tin đầy đủ về sản phẩm: tên, mô tả, giá, các biến thể (màu sắc, kích cỡ), số lượng tồn kho từng biến thể, hình ảnh sản phẩm. Chế độ chỉ xem, không cho phép chỉnh sửa bất kỳ thông tin nào trừ tồn kho.
+
+\subsubsubsection {Quản lý giao dịch}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Staff/Transaction.png}
+  \vspace{0.5cm}
+  \caption{Giao diện quản lý giao dịch (Nhân viên)}
+  \label{fig: Giao diện quản lý giao dịch nhân viên}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem lịch sử giao dịch thanh toán liên quan đến đơn hàng, lọc theo trạng thái, xác minh thanh toán.
+
+\subsubsubsection {Chi tiết giao dịch}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Staff/Transaction Details.png}
+  \vspace{0.5cm}
+  \caption{Giao diện chi tiết giao dịch (Nhân viên)}
+  \label{fig: Giao diện chi tiết giao dịch nhân viên}
+\end{figure}
+\noindent\textbf{Mô tả:} Hiển thị thông tin chi tiết giao dịch: mã giao dịch, đơn hàng, số tiền, phương thức thanh toán, trạng thái, thời gian. Chế độ chỉ xem, không cho phép thực hiện chỉnh sửa thông tin giao dịch.
+
+\subsubsubsection {Chat hỗ trợ}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{Images/MockUp/Staff/Chat.png}
+  \vspace{0.5cm}
+  \caption{Giao diện chat hỗ trợ (Nhân viên)}
+  \label{fig: Giao diện chat hỗ trợ nhân viên}
+\end{figure}
+\noindent\textbf{Các thao tác chính:} Xem và trả lời tin nhắn của khách hàng, gửi hình ảnh/tệp đính kèm, tư vấn sản phẩm, hỗ trợ xử lý đơn hàng.
