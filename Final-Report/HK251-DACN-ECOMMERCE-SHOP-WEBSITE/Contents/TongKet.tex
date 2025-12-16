@@ -1,3 +1,46 @@
 \section{Tổng kết}
+
 \subsection{Nhận xét}
+Hệ thống bán hàng trực tuyến đã được xây dựng theo kiến trúc three-tier với nền tảng backend NestJS, Prisma ORM kết nối PostgreSQL, xác thực người dùng bằng JWT và Google OAuth, lưu trữ media trên AWS S3, và tích hợp thanh toán VNPay. Kiến trúc module hoá (sản phẩm, đơn hàng, vận chuyển, khuyến mãi, người dùng, truyền thông) giúp tách bạch trách nhiệm, dễ mở rộng và bảo trì. Bộ API tuân thủ chuẩn REST và có tài liệu hoá OpenAPI, thuận tiện cho phát triển frontend và kiểm thử.
+
+Về mặt vận hành, các luồng nghiệp vụ cốt lõi (duyệt/tìm kiếm sản phẩm, giỏ hàng, đặt hàng, xử lý đơn hàng, trả hàng/hoàn tiền ở mức cơ bản, thông báo, chat hỗ trợ dạng nguyên mẫu) đã được thiết kế giao diện chi tiết cho cả phía Khách hàng, Admin và Nhân viên, đảm bảo tính nhất quán trải nghiệm.
+
+	\textbf{Điểm mạnh}
+\begin{itemize}
+	\item Kiến trúc rõ ràng, module hoá; chuẩn công nghiệp (NestJS, Prisma, S3, OAuth).
+	\item Mô hình dữ liệu chặt chẽ, có Prisma Migrate để kiểm soát thay đổi lược đồ.
+	\item Tài liệu mockup phong phú, giúp thống nhất luồng nghiệp vụ và phân quyền (Admin/Staff).
+	\item Tích hợp thanh toán VNPay và nền tảng xác thực đa chiến lược (JWT, Google).
+\end{itemize}
+
+	\textbf{Hạn chế cần cải thiện}
+\begin{itemize}
+	\item Hiệu năng tìm kiếm/lọc còn tiềm năng tối ưu (cache, full-text search, indexing). 
+	\item Quản trị vận hành: thiếu audit log chi tiết, rate limit và quy trình CI/CD đầy đủ.
+	\item Nghiệp vụ kho và RMA (trả hàng/hoàn tiền) cần chuẩn hoá sâu hơn với nhật ký tồn kho và SLA.
+\end{itemize}
+
 \subsection{Hướng phát triển}
+Giai đoạn 2 tập trung cải thiện giao diện người dùng (UI/UX) và bổ sung một số tính năng.
+\\
+	\textbf{Cải thiện UI/UX}
+\begin{itemize}
+	\item \textbf{Thiết kế lại trang chủ}: banner rõ ràng, khối danh mục nổi bật, block sản phẩm đề xuất, CTA đơn giản.
+	\item \textbf{Bộ lọc sản phẩm tốt hơn}: lọc theo giá, kích cỡ, màu, thương hiệu; thanh lọc side-panel; chip filter có thể xoá nhanh.
+	\item \textbf{Trang chi tiết sản phẩm}: gallery ảnh (zoom, carousel), hiển thị biến thể trực quan (màu/kích cỡ), gợi ý sản phẩm liên quan.
+	% \item \textbf{Giỏ hàng/Thanh toán}: tối giản bước, hiển thị phí/giảm giá rõ ràng, validate form thân thiện, nhắc dùng voucher.
+	% % \item \textbf{Theo dõi đơn hàng}: timeline trạng thái trực quan, đính kèm chứng từ vận chuyển nếu có.
+	% \item \textbf{Trả hàng/Hoàn tiền}: màn hình tạo yêu cầu đơn giản (checklist + upload), trạng thái xử lý rõ ràng.
+	\item \textbf{Thông báo}: "Notification Center" gộp trạng thái đơn hàng/khuyến mãi; đánh dấu đã đọc.
+	\item \textbf{Tối ưu responsive}: grid linh hoạt cho mobile/tablet/desktop; skeleton loading, pagination rõ ràng.
+	\item \textbf{Dark mode + Accessibility}: màu tương phản, font đọc dễ, focus state rõ.
+\end{itemize}
+
+	\textbf{Tính năng trọng tâm theo yêu cầu đề tài}
+\begin{itemize}
+	\item \textbf{Gợi ý sản phẩm thời trang}: đề xuất sản phẩm theo danh mục, hành vi xem/mua cơ bản (phiên bản đơn giản, không ML nặng).
+	\item \textbf{Thanh toán điện tử đa phương thức}: mở rộng thêm MoMo/VNPay QR, chuẩn webhook xác minh.
+	\item \textbf{Báo cáo phân tích}: bảng điều khiển doanh thu, số lượng đơn, sản phẩm bán chạy; lọc theo thời gian/cửa hàng.
+	\item \textbf{Giao diện đa ngôn ngữ}: i18n cho Client (vi/en) và phần Admin chính; chuyển ngôn ngữ nhanh.
+	\item \textbf{Chatbot hỗ trợ khách hàng (phiên bản nhẹ)}: FAQ + hành trình đơn hàng; chuyển tiếp người thật khi cần.
+\end{itemize}
