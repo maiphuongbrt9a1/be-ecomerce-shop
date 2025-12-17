@@ -1,23 +1,15 @@
 \section{Tổng kết}
 
 \subsection{Nhận xét}
-Hệ thống bán hàng trực tuyến đã được xây dựng theo kiến trúc three-tier với nền tảng backend NestJS, Prisma ORM kết nối PostgreSQL, xác thực người dùng bằng JWT và Google OAuth, lưu trữ media trên AWS S3, và tích hợp thanh toán VNPay. Kiến trúc module hoá (sản phẩm, đơn hàng, vận chuyển, khuyến mãi, người dùng, truyền thông) giúp tách bạch trách nhiệm, dễ mở rộng và bảo trì. Bộ API tuân thủ chuẩn REST và có tài liệu hoá OpenAPI, thuận tiện cho phát triển frontend và kiểm thử.
 
-Về mặt vận hành, các luồng nghiệp vụ cốt lõi (duyệt/tìm kiếm sản phẩm, giỏ hàng, đặt hàng, xử lý đơn hàng, trả hàng/hoàn tiền ở mức cơ bản, thông báo, chat hỗ trợ dạng nguyên mẫu) đã được thiết kế giao diện chi tiết cho cả phía Khách hàng, Admin và Nhân viên, đảm bảo tính nhất quán trải nghiệm.
+Thông qua giai đoạn 1 - đồ án chuyên ngành, nhóm đã tiến hành nghiên cứu và phân tích các ưu nhược điểm của các hệ thống bán hàng của các cửa hàng thời trang lớn hiện đang có trên thị trường. Từ đó có được cái nhìn tổng quan về nhu cầu cấp thiết cần có một hệ thống bán hàng thời trang cho các cửa hàng thời trang vừa và nhỏ. Hệ thống đó cần đáp ứng sở thích mua sắm tiện lợi của người khách hàng vừa phải đáp ứng nhu cầu quản lý cửa hàng của những người chủ cửa hàng vừa và nhỏ. \\
 
-	\textbf{Điểm mạnh}
-\begin{itemize}
-	\item Kiến trúc rõ ràng, module hoá; chuẩn công nghiệp (NestJS, Prisma, S3, OAuth).
-	\item Mô hình dữ liệu chặt chẽ, có Prisma Migrate để kiểm soát thay đổi lược đồ.
-	\item Tài liệu mockup phong phú, giúp thống nhất luồng nghiệp vụ và phân quyền (Admin/Staff).
-	\item Tích hợp thanh toán VNPay và nền tảng xác thực đa chiến lược (JWT, Google).
-\end{itemize}
+Tiếp theo đó, nhóm đã tiến hành phân tích nhu cầu của người dùng hệ thống theo từng vai trò và chức năng họ có thể thực hiện được bên trong hệ thống. Trong đó các tính năng nổi bật có thể kể đến đó là thực hiện mua ngay sản phẩm, mua sản phẩm từ giỏ hàng, mua lại sản phẩm từ đơn hàng trước đó. Không những vậy, người khách hàng còn có thể so sánh thông tin các sản phẩm trước khi mua hàng, có thể thanh toán đơn hàng thông qua cổng thanh toán bên thứ 3 nhanh chóng, tiện lợi. Để tăng cao trải nghiệm sử dụng dịch vụ bên cửa hàng, hệ thống còn hỗ trợ việc nhắn tin realtime để người khách hàng có thể nhận sự trợ giúp từ phía cửa hàng khi mua và sử dụng sản phẩm. Ngoài ra, hệ thống còn cho phép người khách hàng thực hiện hủy đơn hàng hoặc yêu cầu trả hàng hoàn tiền khi đơn hàng nhận được không đúng mô tả sản phẩm cửa hàng đã đưa ra. Còn đối với người quản trị viên cửa hàng, họ có thể quản lý danh mục sản phẩm, sản phẩm, voucher, đơn hàng, thông tin nhân viên của cửa hàng. Ngoài ra người quản trị viên có thể thống kê và biết được tình hình kinh doanh cửa của hàng thông qua các biểu đồ về doanh thu, tổng lượng đơn hàng bán, tổng số đơn hàng giao thành công hoặc đã hủy,... theo tuần / tháng / năm. Hệ thống còn giúp người quản trị viên biết được sản phẩm nào bán chạy nhất, nhân viên nào có doanh số cao nhất,..\\
 
-	\textbf{Hạn chế cần cải thiện}
-\begin{itemize}
-	\item Hiệu năng tìm kiếm/lọc còn tiềm năng tối ưu (cache, full-text search, indexing). 
-	\item Quản trị vận hành: thiếu audit log chi tiết, rate limit và quy trình CI/CD đầy đủ.
-	\item Nghiệp vụ kho và RMA (trả hàng/hoàn tiền) cần chuẩn hoá sâu hơn với nhật ký tồn kho và SLA.
-\end{itemize}
+Bên cạnh đó, trong đồ án chuyên ngành, nhóm đã tiến hàng thiết kế được kiến trúc bậc cao của hệ thống theo kiến trúc Three Tier, thiết kết cơ sở dữ liệu, thiết kế sơ đồ hoạt động, sơ đồ tuần tự, sơ đồ lớp. Đây là những tài liệu quan trọng sẽ hỗ trợ rất lớn cho việc phát triển, vận hành, bảo trì và nâng cấp hệ thống sau này. \\
+
+Hệ thống bán hàng trực tuyến đã được xây dựng theo kiến trúc three-tier với nền tảng backend NestJS, Prisma ORM kết nối PostgreSQL, xác thực người dùng bằng JWT và Google OAuth, lưu trữ media trên AWS S3, và tích hợp thanh toán VNPay. Kiến trúc module hoá ở phía backend (sản phẩm, đơn hàng, vận chuyển, khuyến mãi, người dùng, truyền thông) giúp tách bạch trách nhiệm, dễ mở rộng và bảo trì. Bộ API tuân thủ chuẩn REST và có tài liệu hoá OpenAPI, thuận tiện cho phát triển frontend và kiểm thử. \\
+
+Về mặt vận hành, các luồng nghiệp vụ cốt lõi (duyệt/tìm kiếm sản phẩm, giỏ hàng, đặt hàng, xử lý đơn hàng, trả hàng/hoàn tiền, thông báo, chat hỗ trợ) đã được thiết kế giao diện chi tiết cho cả phía Khách hàng, Admin và Nhân viên, đảm bảo tính nhất quán trải nghiệm. Các giao diện này sẽ giúp người chủ cửa hàng sẽ có cái nhìn trực diện và hình dung được các tính năng mà hệ thống sẽ có. Các tài liệu này sẽ giúp đội ngũ phát triển hiện thực đúng chức năng và các yêu cầu mà người chủ cửa hàng đưa ra. \\
 
 \subsection{Hướng phát triển}
