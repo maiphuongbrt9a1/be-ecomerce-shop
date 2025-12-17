@@ -51,16 +51,15 @@
 \subsection{Các yêu cầu phi chức năng}
 \begin{itemize}
   \item Thời gian tải trang (Page Load Time): Trang chủ, trang danh mục và trang sản phẩm phải tải dưới 3 giây (tối ưu là 1-2 giây) trên cả thiết bị di động và máy tính.
-  \item Khả năng chịu tải (Load Capacity): Hệ thống phải xử lý được ít nhất X người dùng đồng thời (ví dụ: 5.000 - 10.000 người) mà vẫn duy trì tốc độ ổn định, đặc biệt trong các đợt Flash Sale lớn.
+  \item Khả năng chịu tải (Load Capacity): Hệ thống phải xử lý được ít nhất 5.000 - 10.000 người dùng đồng thời mà vẫn duy trì tốc độ ổn định, đặc biệt trong các đợt Flash Sale lớn.
   \item Thời gian phản hồi (Response Time): Thời gian phản hồi của API thanh toán và giỏ hàng phải dưới 0.5 giây để đảm bảo giao dịch diễn ra nhanh chóng.
-  \item Thân thiện với Di động (Mobile Responsiveness): Giao diện phải tương thích hoàn toàn và hoạt động trơn tru trên tất cả các kích thước màn hình di động và máy tính bảng (Mobile-first design).
   \item Tính nhất quán của Giao diện  Font chữ, màu sắc thương hiệu và bố cục các nút (ví dụ: "Thêm vào Giỏ hàng", "Thanh toán") phải nhất quán trên mọi trang.
-  \item Bảo mật thanh toán (PCI DSS Compliance)  Việc xử lý và lưu trữ dữ liệu thẻ tín dụng phải tuân thủ tiêu chuẩn PCI DSS (nếu tự xử lý) hoặc sử dụng cổng thanh toán tuân thủ.
+  \item Bảo mật thanh toán (PCI DSS Compliance)  Việc xử lý và lưu trữ dữ liệu thẻ tín dụng phải tuân thủ tiêu chuẩn PCI DSS.
   \item Bảo vệ dữ liệu người dùng (Data Protection)  Thông tin cá nhân (tên, địa chỉ, email) phải được mã hóa và bảo vệ theo các quy tắc bảo mật dữ liệu hiện hành.
-  \item Ngăn chặn Lỗ hổng bảo mật  Hệ thống phải được kiểm tra thường xuyên (Penetration Testing) để ngăn chặn các cuộc tấn công phổ biến như SQL Injection, Cross-Site Scripting (XSS).
+  \item Ngăn chặn các cuộc tấn công phổ biến như SQL Injection, Cross-Site Scripting (XSS).
   \item Thời gian hoạt động (Uptime)  Trang web phải đảm bảo thời gian hoạt động tối thiểu là 99.9\% (tương đương không quá 8.7 giờ ngừng hoạt động mỗi năm).
 
-  \item Khả năng Phục hồi (Disaster Recovery)  Phải có kế hoạch và quy trình sao lưu dữ liệu thường xuyên. Trong trường hợp xảy ra lỗi nghiêm trọng, hệ thống phải được khôi phục về trạng thái hoạt động gần nhất trong vòng T giờ (ví dụ: T=4 giờ).
+  \item Khả năng Phục hồi (Disaster Recovery)  Phải có kế hoạch và quy trình sao lưu dữ liệu thường xuyên. Trong trường hợp xảy ra lỗi nghiêm trọng, hệ thống phải được khôi phục về trạng thái hoạt động gần nhất trong vòng 4 giờ.
   \item Khả năng Tích hợp (Integrability)  Hệ thống phải dễ dàng tích hợp với các dịch vụ bên thứ ba (ví dụ: Cổng thanh toán, Dịch vụ vận chuyển, Phần mềm CRM/ERP) thông qua các API tiêu chuẩn.
 \end{itemize}
 

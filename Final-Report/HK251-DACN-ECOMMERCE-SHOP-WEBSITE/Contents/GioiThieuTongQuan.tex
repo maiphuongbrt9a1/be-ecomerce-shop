@@ -14,13 +14,13 @@ Có nhiều ưu điểm là thế nhưng đối với trang web bán hàng cá n
 Đến với đề tài lần này, nhóm đang muốn phát triển hệ thống bán hàng trực tuyến cho cửa hàng thời trang giúp cho những cửa hàng dưới 10 nhân viên có thể bán hàng, quản lý cửa hàng trên môi trường internet. Sản phẩm được phát triển sẽ cho phép người mua hàng nhanh chóng duyệt qua các danh mục sản phẩm và các sản phẩm có trong cửa hàng, cho phép họ mua hàng và thanh toán nhanh chóng. Họ có thể thực hiện việc hủy đơn và hoàn tiền đơn hàng tuân thủ điều khoản công khai của shop. Ngoài ra người mua hàng còn có thể thêm sản phẩm vào trong giỏ hàng để mua sau. Nhận được các mã giảm giá hấp dẫn. Không chỉ vậy, sản phẩm của nhóm cũng sẽ cho phép gợi ý sản phẩm phù hợp với từng khách hàng dựa trên lịch sử mua hàng của họ. Còn đối với phía cửa hàng, người chủ cửa hàng sẽ có thể quản lý tập trung sản phẩm trong cửa hàng. Kiểm kê được doanh thu cửa hàng, lượng hàng tồn kho, việc đóng đơn hàng và vận chuyển đơn hàng. Từ đó có dữ liệu cho việc đưa ra quyết định nên nhập thêm loại hàng nào để phục vụ khách hàng. Không chỉ vậy, chủ cửa hàng còn quản lý được thông tin nhân viên, quản lý các voucher khuyến mãi.
 
 \subsection{Mục tiêu thực hiện đề tài}
-Hoàn thành hệ thống bán hàng trực tuyến cho cửa hàng thời trang trên cả hai phiên bản là website và mobile. Hỗ trợ người mua hàng có thể nhanh chóng mua được sản phầm ưng ý với giá cả phải chăng và hỗ trợ người quản trị viên, nhân viên có thể quản lý cửa hàng nhanh chóng, tập trung, dễ dàng hơn.
+Hoàn thành hệ thống bán hàng trực tuyến cho cửa hàng thời trang trên nền tảng ứng dụng Web. Hỗ trợ người mua hàng có thể nhanh chóng mua được sản phầm ưng ý với giá cả phải chăng và hỗ trợ người quản trị viên, nhân viên có thể quản lý cửa hàng nhanh chóng, tập trung, dễ dàng hơn.
 
 \subsection{Lợi ích của đề tài mang lại}
 
 Đề tài của nhóm hướng đến những lợi ích sau:
 \begin{itemize}
-  \item Xây dựng hoàn chỉnh hệ thống bán hàng trực tuyến cho cửa hàng thời trang trên cả hai nền tảng website và mobile.
+  \item Xây dựng hoàn chỉnh hệ thống bán hàng trực tuyến cho cửa hàng thời trang trên nền tảng ứng dụng Web.
 
   \item Hỗ trợ thuận tiện cho việc quản lý những cửa hàng thời trang nhỏ dưới 10 nhân viên hoạt động. Quản lý danh mục sản phẩm, quản lý sản phẩm, quản lý hàng tồn kho, doanh thu, đóng gói đơn hàng, vận chuyển đơn hàng, voucher, giúp đề xuất quyết định nhập hàng các loại hàng bán chạy hay đang hot trend. Hỗ trợ quản lý thông tin nhân viên cửa hàng.
 
@@ -31,49 +31,23 @@ Hoàn thành hệ thống bán hàng trực tuyến cho cửa hàng thời trang
 
 Phạm vi và giới hạn của đề tài được nhóm quy ước là nhóm đang làm hệ thống bán hàng trực tuyến cho cửa hàng thời trang với những cửa hàng có quy mô dưới 10 nhân viên và chỉ có 2 cơ sở hoạt động kinh doanh. Các actor chính của hệ thống là người quản trị viên, người nhân viên cửa hàng và người khách hàng.\\
 
-Đồ thời trang mà cửa hàng đang buôn bán là quần áo, giày dép, nón, mũ các loại. Ngoài ra còn có thêm các loại phụ kiện thời trang khác cho nam và nữ như thắt lưng, bóp, ví, túi, balo. Tất cả các sản phẩm của shop đều phục vụ cho cả nam và nữ trong độ tuổi từ 15 tuổi đến dưới 30 tuổi.\\
+Đồ thời trang mà cửa hàng đang buôn bán là quần áo, giày dép, nón, mũ các loại dành cho cả nam và nữ. Ngoài ra còn có thêm các loại phụ kiện thời trang khác cho nam và nữ như thắt lưng, bóp, ví, túi, balo. Tất cả các sản phẩm của shop đều phục vụ cho cả nam và nữ trong độ tuổi từ 15 tuổi đến dưới 30 tuổi.\\
 
-Các tính năng cốt lõi có trong hệ thống đã được nêu cụ thể ở phần sau của đề tài.
+Các tính năng cốt lõi có trong hệ thống sẽ được nêu cụ thể ở phần sau của đề tài.
 
 \subsection{Cấu trúc của đề tài}
 \begin{itemize}
-  \item Chương 1: Tổng quan về đề tài
-    \begin{itemize}
-      \item Trình bày lý do lựa chọn đề tài và giới thiệu tổng quan về đề tài
-      \item Mục tiêu đồ án cần đạt được
-      \item Phạm vi nghiên cứu và triển khai của đồ án
-      \item Những đóng góp chính và cuối cùng là cấu trúc của đồ án.
-    \end{itemize}
+  \item Chương 1: Tổng quan về đề tài: Thứ nhất, trình bày lý do lựa chọn đề tài và giới thiệu tổng quan về đề tài. Thứ hai, trình bày về mục tiêu đồ án cần đạt được. Thứ ba, phạm vi nghiên cứu và triển khai của đồ án. Thứ tư, những đóng góp chính và cuối cùng là cấu trúc của đồ án.
+    
+  \item Chương 2: Tìm hiểu về các hệ thống có liên quan và công nghệ được sử dụng: Trình bày về các hệ thống có liên quan và ưu nhược điểm của từng hệ thống đó. Bên cạnh đó nhóm còn nêu lên những ưu điểm của hệ thống mà nhóm đang phát triển. Trình bày các công nghệ được sử dụng cho dự án nhóm đang phát triển.
 
-  \item Chương 2: Tìm hiểu về các hệ thống có liên quan và công nghệ được sử dụng.
-    \begin{itemize}
-      \item Trình bày về các hệ thống có liên quan và ưu nhược điểm của từng hệ thống đó.
-      \item Bên cạnh đó nhóm còn nêu lên những ưu nhược điểm của hệ thống mà nhóm đang phát triển.
-      \item Trình bày các công nghệ được sử dụng
-    \end{itemize}
+  \item Chương 3: Phân tích hệ thống: Trình bày chi tiết về các vai trò của người dùng trong hệ thống, các nhóm chức năng cho từng vai trò. Các yêu cầu phi chức năng mong muốn và thiết kế use case để trực quan hóa tổng thể về mặt chức năng của hệ thống để người đọc hiểu rõ hơn về hệ thống nhóm phát triển.
 
-  \item Chương 3: Phân tích hệ thống
-    \begin{itemize}
-      \item Trình bày chi tiết về các vai trò của người dùng trong hệ thống, các nhóm chức năng cho từng vai trò,
-      \item Các yêu cầu phi chức năng mong muốn và thiết kế use case để trực quan hóa tổng thể về mặt chức năng của hệ thống để người đọc hiểu rõ hơn về hệ thống nhóm phát triển.
-    \end{itemize}
-  \item Chương 4: Thiết kế hệ thống
-    \begin{itemize}
-      \item Trình bày thiết kế kiến trúc của hệ thống
-      \item Thiết kế cơ sở dữ liệu bao gồm mô tả thực thể, sơ đồ thực thể mối quan hệ.
-      \item Trình bày về lược đồ cơ sở dữ liệu và bảng ánh xạ,
-      \item Trình bày về Class diagram của hệ thống
-      \item Trình bày về sơ đồ hoạt động của hệ thống.
-      \item Trình bày về sơ đồ tuần tự mà người dùng sẽ trải qua khi sử dụng các chức năng.
-      \item Ngoài ra, nhóm cũng đưa ra thiết kế về giao diện người dùng đối với từng vai trò người dùng và chức năng của hệ thống.
-    \end{itemize}
-  \item Chương 5: Tổng kết
-    \begin{itemize}
-      \item Tổng kết kết quả đạt được, rút ra kinh nghiệm và đề xuất hướng phát triển cho giai đoạn 2.
-    \end{itemize}
-  \item Chương 6: Tài liệu tham khảo
-    \begin{itemize}
-      \item Tất cả các tài liệu nhóm đã dùng tham khảo đều được trích dẫn đầy đủ tại đây.
-    \end{itemize}
+  \item Chương 4: Thiết kế hệ thống: Trình bày thiết kế kiến trúc của hệ thống. Thiết kế cơ sở dữ liệu bao gồm mô tả thực thể, sơ đồ thực thể mối quan hệ. Trình bày về lược đồ cơ sở dữ liệu và bảng ánh xạ. Trình bày về Class diagram của hệ thống. Trình bày về sơ đồ hoạt động của hệ thống. Trình bày về sơ đồ tuần tự mà người dùng sẽ trải qua khi sử dụng các chức năng. Ngoài ra, nhóm cũng đưa ra thiết kế về giao diện người dùng đối với từng vai trò và chức năng của người dùng được phép thực hiện trong hệ thống.
+    
+  \item Chương 5: Tổng kết: Tổng kết kết quả đạt được, rút ra kinh nghiệm và đề xuất hướng phát triển cho giai đoạn 2.
+  
+  \item Chương 6: Tài liệu tham khảo:  Tất cả các tài liệu nhóm đã dùng tham khảo đều được trích dẫn đầy đủ tại đây.
+    
   \item Chương 7: Phụ lục
 \end{itemize}

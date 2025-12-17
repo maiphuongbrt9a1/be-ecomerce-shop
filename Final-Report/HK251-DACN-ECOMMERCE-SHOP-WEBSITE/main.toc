@@ -88,32 +88,32 @@
 \contentsline {subsubsubsection}{\numberline {5.5.1.h}Trang cá nhân}{64}{subsubsubsection.5.5.1.8}%
 \contentsline {subsubsubsection}{\numberline {5.5.1.i}Quản lý đơn hàng}{67}{subsubsubsection.5.5.1.9}%
 \contentsline {subsubsubsection}{\numberline {5.5.1.j}Thông báo}{70}{subsubsubsection.5.5.1.10}%
-\contentsline {subsubsection}{\numberline {5.5.2}Thiết kế giao diện cho quản trị viên}{73}{subsubsection.5.5.2}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.a}Trang tổng quan (Dashboard)}{73}{subsubsubsection.5.5.2.1}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.b}Quản lý đơn hàng}{74}{subsubsubsection.5.5.2.2}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.c}Chi tiết đơn hàng (Admin)}{75}{subsubsubsection.5.5.2.3}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.d}Quản lý khách hàng}{76}{subsubsubsection.5.5.2.4}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.e}Chi tiết khách hàng}{77}{subsubsubsection.5.5.2.5}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.f}Quản lý voucher}{78}{subsubsubsection.5.5.2.6}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.g}Quản lý danh mục}{79}{subsubsubsection.5.5.2.7}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.h}Quản lý giao dịch}{80}{subsubsubsection.5.5.2.8}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.i}Chi tiết giao dịch}{81}{subsubsubsection.5.5.2.9}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.j}Chat hỗ trợ}{82}{subsubsubsection.5.5.2.10}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.k}Thêm/Chỉnh sửa sản phẩm}{83}{subsubsubsection.5.5.2.11}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.l}Danh sách sản phẩm}{84}{subsubsubsection.5.5.2.12}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.m}Phân quyền vai trò}{85}{subsubsubsection.5.5.2.13}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.n}Chi tiết giao dịch}{86}{subsubsubsection.5.5.2.14}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.o}Quản lý trang cá nhân}{87}{subsubsubsection.5.5.2.15}%
-\contentsline {subsubsection}{\numberline {5.5.3}Thiết kế giao diện cho nhân viên}{88}{subsubsection.5.5.3}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.a}Quản lý đơn hàng}{88}{subsubsubsection.5.5.3.1}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.b}Chi tiết đơn hàng}{89}{subsubsubsection.5.5.3.2}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.c}Danh sách sản phẩm}{90}{subsubsubsection.5.5.3.3}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.d}Chi tiết sản phẩm}{91}{subsubsubsection.5.5.3.4}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.e}Quản lý giao dịch}{92}{subsubsubsection.5.5.3.5}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.f}Chi tiết giao dịch}{93}{subsubsubsection.5.5.3.6}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.g}Chat hỗ trợ}{94}{subsubsubsection.5.5.3.7}%
-\contentsline {section}{\numberline {6}Tổng kết}{95}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Nhận xét}{95}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Hướng phát triển}{95}{subsection.6.2}%
-\contentsline {section}{\numberline {7}Tài liệu tham khảo}{95}{section.7}%
-\contentsline {section}{\numberline {8}Phụ lục}{96}{section.8}%
+\contentsline {subsubsection}{\numberline {5.5.2}Thiết kế giao diện cho quản trị viên}{72}{subsubsection.5.5.2}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.a}Trang tổng quan (Dashboard)}{72}{subsubsubsection.5.5.2.1}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.b}Quản lý đơn hàng}{73}{subsubsubsection.5.5.2.2}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.c}Chi tiết đơn hàng (Admin)}{74}{subsubsubsection.5.5.2.3}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.d}Quản lý khách hàng}{75}{subsubsubsection.5.5.2.4}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.e}Chi tiết khách hàng}{76}{subsubsubsection.5.5.2.5}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.f}Quản lý voucher}{77}{subsubsubsection.5.5.2.6}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.g}Quản lý danh mục}{78}{subsubsubsection.5.5.2.7}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.h}Quản lý giao dịch}{79}{subsubsubsection.5.5.2.8}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.i}Chi tiết giao dịch}{80}{subsubsubsection.5.5.2.9}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.j}Chat hỗ trợ}{81}{subsubsubsection.5.5.2.10}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.k}Thêm/Chỉnh sửa sản phẩm}{82}{subsubsubsection.5.5.2.11}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.l}Danh sách sản phẩm}{83}{subsubsubsection.5.5.2.12}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.m}Phân quyền vai trò}{84}{subsubsubsection.5.5.2.13}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.n}Chi tiết giao dịch}{85}{subsubsubsection.5.5.2.14}%
+\contentsline {subsubsubsection}{\numberline {5.5.2.o}Quản lý trang cá nhân}{86}{subsubsubsection.5.5.2.15}%
+\contentsline {subsubsection}{\numberline {5.5.3}Thiết kế giao diện cho nhân viên}{87}{subsubsection.5.5.3}%
+\contentsline {subsubsubsection}{\numberline {5.5.3.a}Quản lý đơn hàng}{87}{subsubsubsection.5.5.3.1}%
+\contentsline {subsubsubsection}{\numberline {5.5.3.b}Chi tiết đơn hàng}{88}{subsubsubsection.5.5.3.2}%
+\contentsline {subsubsubsection}{\numberline {5.5.3.c}Danh sách sản phẩm}{89}{subsubsubsection.5.5.3.3}%
+\contentsline {subsubsubsection}{\numberline {5.5.3.d}Chi tiết sản phẩm}{90}{subsubsubsection.5.5.3.4}%
+\contentsline {subsubsubsection}{\numberline {5.5.3.e}Quản lý giao dịch}{91}{subsubsubsection.5.5.3.5}%
+\contentsline {subsubsubsection}{\numberline {5.5.3.f}Chi tiết giao dịch}{92}{subsubsubsection.5.5.3.6}%
+\contentsline {subsubsubsection}{\numberline {5.5.3.g}Chat hỗ trợ}{93}{subsubsubsection.5.5.3.7}%
+\contentsline {section}{\numberline {6}Tổng kết}{94}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Nhận xét}{94}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Hướng phát triển}{94}{subsection.6.2}%
+\contentsline {section}{\numberline {7}Tài liệu tham khảo}{94}{section.7}%
+\contentsline {section}{\numberline {8}Phụ lục}{95}{section.8}%
