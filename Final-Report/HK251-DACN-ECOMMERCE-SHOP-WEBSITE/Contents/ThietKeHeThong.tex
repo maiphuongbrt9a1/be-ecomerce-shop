@@ -25,7 +25,7 @@ Tiếp theo đến với Application Tier - nhóm mô tả nó là back-end evir
 	\item Shipment module: Xử lý các nghiệp vụ liên quan đến việc vận chuyển đơn hàng.
 	\item voucher module: Xử lý các nghiệp vụ liên quan đến voucher của cửa hàng.
 	\item User profile module: Xử lý các nghiệp vụ liên quan đến xử lý hồ sơ thông tin của người dùng trong hệ thống.
-	\item Auth module: Xử lý các nghiệp vụ liên quan đến việc xác thực người dùng đăng nhập và quyền hạn của người dùng trong hệ thống. Trong khi thực hiện module này nhóm quyết định sử dụng JWT STRATEGY và GOOGLE STRATEGY cho việc đăng nhập và đăng ký vì nhóm nhận thấy các chiến lược này là các quy chuẩn công nghiệp đã được công nhận và sử dụng rộng rãi bên ngoài thị trường. Giúp việc đăng nhập, đăng ký của người dùng vào hệ thống được nhanh chóng và hạn chế tối đa được các lỗ hổng bảo mật của hệ thống. Ngoài ra nhóm cũng thực hiện việc đăng nhập và đăng ký bằng email và password truyền thống bên trong LOCAL STRATEGY.
+	\item Auth module: Xử lý các nghiệp vụ liên quan đến việc xác thực người dùng đăng nhập và quyền hạn của người dùng trong hệ thống. Trong khi thực hiện module này nhóm quyết định sử dụng JWT STRATEGY và GOOGLE OAuth cho việc đăng nhập và đăng ký vì nhóm nhận thấy các chiến lược này là các quy chuẩn công nghiệp đã được công nhận và sử dụng rộng rãi bên ngoài thị trường. Giúp việc đăng nhập, đăng ký của người dùng vào hệ thống được nhanh chóng và hạn chế tối đa được các lỗ hổng bảo mật của hệ thống. Ngoài ra nhóm cũng thực hiện việc đăng nhập và đăng ký bằng email và password truyền thống bên trong LOCAL STRATEGY.
 	\item Media upload file module: Xử lý việc đăng tải hình ảnh video của sản phẩm, của đánh giá sản phẩm,.. lên hệ thống. Nhóm tiến hành chọn việc lưu trữ video và hình ảnh ở AWS S3 vì đây là dịch vụ lưu trữ đối tượng hàng đầu của nền tảng điện toán đám mây AWS. Thay vì phương
 	pháp truyền thống là lưu trữ tệp tin media (hình ảnh sản phẩm, video, ảnh đại diện) trực tiếp trên ổ cứng của máy
 	chủ ứng dụng (Web Server), việc sử dụng S3 mang lại giải pháp lưu trữ tách biệt và chuyên dụng.
@@ -121,7 +121,7 @@ Lược đồ thực thể mối liên hệ mở rộng cho thấy hệ thống 
 
 Đối với người khách hàng: \\
 
-Người khách hàng có cho mình nhiều thông tin bảng size khác nhau. Mỗi bảng size là kích thước của một loại sản phẩm thời trang khác nhau. Ví dụ một khách hàng A có ba bảng size khác nhau: Bảng size đầu tiên là bảng size cho quần âu, bảng size thứ hai là bảng size cho áo sơ mi, bảng size thứ 3 là bảng size cho giày thể thao. \\
+Người khách hàng có cho mình nhiều thông tin bảng size khác nhau. Mỗi bảng size là kích thước của một người dùng mà người đó đã lưu. Ví dụ một khách hàng A có ba bảng size khác nhau: Bảng size đầu tiên là bảng size cho chính họ, bảng size thứ hai là bảng size cho mẹ người dùng, bảng size thứ 3 là bảng size cho cha của người dùng. \\
 
 Với mỗi người khách hàng họ có cho mình một giỏ hàng. Trong giỏ hàng họ có thể thêm vào đó nhiều sản phẩm khác nhau. Khi xem hàng và yêu thích món hàng bất kỳ người khách hàng có thể lưu lại sản phẩm vào giỏ hàng để mua sau hay người dùng muốn mua một lúc nhiều món hàng thì có thể thêm sản phẩm vào giỏ hàng và có thể thực hiện thao tác mua hàng một lần cho nhiều sản phẩm. \\
 
