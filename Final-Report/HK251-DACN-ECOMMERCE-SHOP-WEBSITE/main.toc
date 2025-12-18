@@ -5,31 +5,30 @@
 \contentsline {subsection}{\numberline {1.3}Lợi ích của đề tài mang lại}{1}{subsection.1.3}%
 \contentsline {subsection}{\numberline {1.4}Phạm vi và giới hạn của đề tài}{2}{subsection.1.4}%
 \contentsline {subsection}{\numberline {1.5}Cấu trúc của đề tài}{2}{subsection.1.5}%
-\contentsline {section}{\numberline {2}Phân tích tổng quan}{3}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Các hệ thống có liên quan trên thị trường}{3}{subsection.2.1}%
-\contentsline {subsubsection}{\numberline {2.1.1}H \& M}{3}{subsubsection.2.1.1}%
-\contentsline {subsubsubsection}{\numberline {2.1.1.a}Giới thiệu H \& M}{3}{subsubsubsection.2.1.1.1}%
-\contentsline {subsubsubsection}{\numberline {2.1.1.b}Đặc điểm kỹ thuật nổi bật}{3}{subsubsubsection.2.1.1.2}%
-\contentsline {subsubsubsection}{\numberline {2.1.1.c}Đánh giá hệ thống}{3}{subsubsubsection.2.1.1.3}%
-\contentsline {subsubsection}{\numberline {2.1.2}Zara}{4}{subsubsection.2.1.2}%
-\contentsline {subsubsubsection}{\numberline {2.1.2.a}Giới thiệu Zara}{4}{subsubsubsection.2.1.2.1}%
-\contentsline {subsubsubsection}{\numberline {2.1.2.b}Đặc điểm kỹ thuật nổi bật}{4}{subsubsubsection.2.1.2.2}%
-\contentsline {subsubsubsection}{\numberline {2.1.2.c}Đánh giá hệ thống}{5}{subsubsubsection.2.1.2.3}%
-\contentsline {subsubsection}{\numberline {2.1.3}Adidas}{5}{subsubsection.2.1.3}%
-\contentsline {subsubsubsection}{\numberline {2.1.3.a}Giới thiệu Adidas}{5}{subsubsubsection.2.1.3.1}%
-\contentsline {subsubsubsection}{\numberline {2.1.3.b}Đặc điểm kỹ thuật nổi bật}{6}{subsubsubsection.2.1.3.2}%
-\contentsline {subsubsubsection}{\numberline {2.1.3.c}Đánh giá hệ thống}{6}{subsubsubsection.2.1.3.3}%
-\contentsline {subsubsection}{\numberline {2.1.4}Amazon Fashion}{6}{subsubsection.2.1.4}%
-\contentsline {subsubsubsection}{\numberline {2.1.4.a}Giới thiệu Amazon Fashion}{6}{subsubsubsection.2.1.4.1}%
-\contentsline {subsubsubsection}{\numberline {2.1.4.b}Đặc điểm kỹ thuật nổi bật}{7}{subsubsubsection.2.1.4.2}%
-\contentsline {subsubsubsection}{\numberline {2.1.4.c}Đánh giá hệ thống}{7}{subsubsubsection.2.1.4.3}%
-\contentsline {subsubsection}{\numberline {2.1.5}Coolmate}{8}{subsubsection.2.1.5}%
-\contentsline {subsubsubsection}{\numberline {2.1.5.a}Giới thiệu Coolmate}{8}{subsubsubsection.2.1.5.1}%
-\contentsline {subsubsubsection}{\numberline {2.1.5.b}Đặc điểm kỹ thuật nổi bật}{8}{subsubsubsection.2.1.5.2}%
-\contentsline {subsubsubsection}{\numberline {2.1.5.c}Đánh giá hệ thống}{8}{subsubsubsection.2.1.5.3}%
-\contentsline {subsubsection}{\numberline {2.1.6}Hệ thống nhóm đang phát triển - BK Fashion}{9}{subsubsection.2.1.6}%
-\contentsline {subsubsubsection}{\numberline {2.1.6.a}Giới thiệu BK Fashion}{9}{subsubsubsection.2.1.6.1}%
-\contentsline {subsubsubsection}{\numberline {2.1.6.b}Tính năng nổi bật của BK Fashion}{9}{subsubsubsection.2.1.6.2}%
+\contentsline {section}{\numberline {2}Phân tích tổng quan các hệ thống có liên quan trên thị trường}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}H \& M}{3}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Giới thiệu H \& M}{3}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Đặc điểm kỹ thuật nổi bật}{3}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}Đánh giá hệ thống}{3}{subsubsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.2}Zara}{4}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Giới thiệu Zara}{4}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Đặc điểm kỹ thuật nổi bật}{4}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Đánh giá hệ thống}{5}{subsubsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.3}Adidas}{5}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Giới thiệu Adidas}{5}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Đặc điểm kỹ thuật nổi bật}{6}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.3}Đánh giá hệ thống}{6}{subsubsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.4}Amazon Fashion}{6}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Giới thiệu Amazon Fashion}{6}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Đặc điểm kỹ thuật nổi bật}{7}{subsubsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {2.4.3}Đánh giá hệ thống}{7}{subsubsection.2.4.3}%
+\contentsline {subsection}{\numberline {2.5}Coolmate}{8}{subsection.2.5}%
+\contentsline {subsubsection}{\numberline {2.5.1}Giới thiệu Coolmate}{8}{subsubsection.2.5.1}%
+\contentsline {subsubsection}{\numberline {2.5.2}Đặc điểm kỹ thuật nổi bật}{8}{subsubsection.2.5.2}%
+\contentsline {subsubsection}{\numberline {2.5.3}Đánh giá hệ thống}{8}{subsubsection.2.5.3}%
+\contentsline {subsection}{\numberline {2.6}Hệ thống nhóm đang phát triển - Paple}{9}{subsection.2.6}%
+\contentsline {subsubsection}{\numberline {2.6.1}Giới thiệu Paple}{9}{subsubsection.2.6.1}%
+\contentsline {subsubsection}{\numberline {2.6.2}Tính năng nổi bật của Paple}{9}{subsubsection.2.6.2}%
 \contentsline {section}{\numberline {3}Công nghệ sử dụng}{9}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Ngôn ngữ lập trình Typescript}{9}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Nestjs Framework}{10}{subsection.3.2}%

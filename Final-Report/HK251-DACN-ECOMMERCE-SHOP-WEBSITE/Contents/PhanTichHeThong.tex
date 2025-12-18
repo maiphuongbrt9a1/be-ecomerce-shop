@@ -37,7 +37,7 @@
       \item Tìm kiếm thông tin sản phẩm bằng từ khóa.
       \item Duyệt nhanh các sản phẩm của hãng. Đối với từng sản phẩm có thể xem chi tiết được thông tin sản phẩm, size, số lượng hàng hiện có, màu sắc cho từng sản phẩm.
       \item Hỗ trợ chức năng so sánh các sản phẩm từ cùng một danh mục sản phẩm.
-      \item Gợi ý sản phẩm hot trend, sản phẩm phù hợp với sở thích cho người dùng.
+      \item Gợi ý sản phẩm hot trend, sản phẩm phù hợp với sở thích cho người dùng, hỗ trợ việc gợi ý các sản phẩm trong cùng một bộ (buy full set), gợi ý kích cỡ phù hợp của sản phẩm đối với người khách hàng.
       \item Quản lý giỏ hàng: Thêm, xóa, sửa, xem sản phẩm có trong giỏ hàng
       \item Mua hàng nhanh hoặc mua hàng từ giỏ hàng và cho phép thanh toán online
       \item Hỗ trợ chức năng mua lại một đơn hàng đã mua từ trước.
@@ -116,12 +116,12 @@ Bên trên cho thấy các usecase mà người khách hàng (customer) có th�
   \item Tìm kiếm sản phẩm bằng từ khóa để có thể tìm kiếm nhanh một loại sản phẩm đang mong muốn mua.
   \item Xem thông tin chi tiết của một sản phẩm bất kỳ.
   \item Hỗ trợ việc so sánh thông tin nhiều sản phẩm trong cùng một danh mục. Một bảng biểu sẽ xuất hiện và so sánh thông tin trên nhiều tiêu chí của hai hay nhiều sản phẩm.
-  \item Người dùng được hệ thống đề xuất các sản phẩm bán chạy hiện có trên hệ thống, hoặc đề xuất các sản phẩm tương tự với các sản phẩm mà người dùng đã mua.
+  \item Người dùng được hệ thống đề xuất các sản phẩm bán chạy hiện có trên hệ thống, hoặc đề xuất các sản phẩm tương tự với các sản phẩm mà người dùng đã mua, hỗ trợ việc gợi ý các sản phẩm trong cùng một bộ (buy full set), gợi ý kích cỡ phù hợp của sản phẩm đối với người khách hàng.
   \item Quản lý giỏ hàng: Xem, thêm, xóa, cập nhật thông tin sản phẩm trong giỏ hàng.
   \item Hỗ trợ việc mua hàng từ trang chi tiết của sản phẩm (mua nhanh). Hỗ trợ việc mua hàng từ giỏ hàng. Hỗ trợ việc mua hàng từ lịch sử đơn hàng đã đặt.
   \item Hỗ trợ việc thanh toán online cho việc mua sản phẩm.
   \item Hỗ trợ việc tạo yêu cầu hoàn tiền khi hủy đơn hoặc khi sản phẩm nhận về không đúng mô tả trên trang web.
-  \item Quản lý thông tin cá nhân: Hỗ trợ việc xem, thêm, xóa, sửa thông tin cá nhâ. Hỗ trợ việc nhập địa chỉ giao hàng một lần và tái sử dụng nhiều lần.
+  \item Quản lý thông tin cá nhân: Hỗ trợ việc xem, thêm, xóa, sửa thông tin cá nhân. Hỗ trợ việc nhập địa chỉ giao hàng một lần và tái sử dụng nhiều lần.
   \item Người khách hàng có thể lưu lại các voucher và dùng vào các lần mua hàng sau.
 \end{itemize}
 
@@ -212,14 +212,14 @@ Bên trên cho thấy các usecase mà người khách hàng (customer) có th�
       \\
       Xem thông tin các đơn hàng đã hủy \\
       Tại bước số 4 tiến hành: \\
-      4B1.  Chọn vào mục các đơn hàng đã hủy.\\
-      4B2.  Hiển thị danh sách các đơn hàng đã hủy.\\
+      4C1.  Chọn vào mục các đơn hàng đã hủy.\\
+      4C2.  Hiển thị danh sách các đơn hàng đã hủy.\\
 
       \\
       Xem thông tin các đơn hàng có yêu cầu hoàn tiền. \\
       Tại bước số 4 tiến hành: \\
-      4B1.  Chọn vào mục các đơn hàng hoàn tiền.\\
-      4B2.  Hiển thị danh sách các đơn hàng có yêu cầu hoàn tiền.\\
+      4D1.  Chọn vào mục các đơn hàng hoàn tiền.\\
+      4D2.  Hiển thị danh sách các đơn hàng có yêu cầu hoàn tiền.\\
 
     \end{tabular}
     \\ \hline
@@ -602,7 +602,7 @@ Bên trên cho thấy các usecase mà người khách hàng (customer) có th�
     \end{tabular}
     \\ \hline
   \end{tabular}
-  \caption{Bảng Use-case Người quản trị viên thêm mới một sản phẩm vào trong một danh mục sản phẩm của cửa hàng.}
+  \caption{Bảng Use-case Người quản trị viên xóa bỏ một sản phẩm ra khỏi một danh mục sản phẩm của cửa hàng.}
   \label{tab:mInfo}
 \end{table}
 
@@ -1880,7 +1880,7 @@ Bên trên cho thấy các usecase mà người khách hàng (customer) có th�
     \end{tabular}
     \\ \hline
   \end{tabular}
-  \caption{Bảng Use-case Người khách hàng hủy một đơn hàng.}
+  \caption{Bảng Use-case Người khách hàng cập nhật thông tin cá nhân.}
   \label{tab:mInfo}
 \end{table}
 

@@ -8,7 +8,7 @@
 \contentsline {table}{\numberline {7}{\ignorespaces Bảng Use-case Người quản trị viên thêm mới danh mục sản phẩm của cửa hàng.}}{22}{table.caption.33}%
 \contentsline {table}{\numberline {8}{\ignorespaces Bảng Use-case Người quản trị viên cập nhật thông tin của một danh mục sản phẩm của cửa hàng.}}{22}{table.caption.34}%
 \contentsline {table}{\numberline {9}{\ignorespaces Bảng Use-case Người quản trị viên thêm mới một sản phẩm vào trong một danh mục sản phẩm của cửa hàng.}}{23}{table.caption.35}%
-\contentsline {table}{\numberline {10}{\ignorespaces Bảng Use-case Người quản trị viên thêm mới một sản phẩm vào trong một danh mục sản phẩm của cửa hàng.}}{23}{table.caption.36}%
+\contentsline {table}{\numberline {10}{\ignorespaces Bảng Use-case Người quản trị viên xóa bỏ một sản phẩm ra khỏi một danh mục sản phẩm của cửa hàng.}}{23}{table.caption.36}%
 \contentsline {table}{\numberline {11}{\ignorespaces Bảng Use-case Người quản trị viên xóa một danh mục sản phẩm của cửa hàng.}}{24}{table.caption.37}%
 \contentsline {table}{\numberline {12}{\ignorespaces Bảng Use-case Người quản trị viên thêm mới một sản phẩm vào trong cửa hàng.}}{24}{table.caption.38}%
 \contentsline {table}{\numberline {13}{\ignorespaces Bảng Use-case Người quản trị viên cập nhật thông tin một sản phẩm trong cửa hàng.}}{24}{table.caption.39}%
@@ -35,6 +35,6 @@
 \contentsline {table}{\numberline {34}{\ignorespaces Bảng Use-case Người khách hàng đặt hàng sản phẩm của shop.}}{34}{table.caption.60}%
 \contentsline {table}{\numberline {35}{\ignorespaces Bảng Use-case Người khách hàng tạo yêu cầu trả hàng / hoàn tiền.}}{35}{table.caption.61}%
 \contentsline {table}{\numberline {36}{\ignorespaces Bảng Use-case Người khách hàng hủy một đơn hàng.}}{35}{table.caption.62}%
-\contentsline {table}{\numberline {37}{\ignorespaces Bảng Use-case Người khách hàng hủy một đơn hàng.}}{36}{table.caption.63}%
+\contentsline {table}{\numberline {37}{\ignorespaces Bảng Use-case Người khách hàng cập nhật thông tin cá nhân.}}{36}{table.caption.63}%
 \contentsline {table}{\numberline {38}{\ignorespaces Danh sách thực thể được phân nhóm theo chức năng.}}{42}{table.caption.70}%
 \contentsline {table}{\numberline {39}{\ignorespaces Lịch trình chi tiết thực hiện đồ án tốt nghiệp vào học kỳ 252.}}{95}{table.39}%
