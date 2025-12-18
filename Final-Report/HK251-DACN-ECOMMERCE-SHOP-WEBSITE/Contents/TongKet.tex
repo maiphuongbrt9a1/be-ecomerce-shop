@@ -12,10 +12,157 @@ Hệ thống bán hàng trực tuyến đã được xây dựng theo kiến tr�
 
 Về mặt vận hành, các luồng nghiệp vụ cốt lõi (duyệt/tìm kiếm sản phẩm, giỏ hàng, đặt hàng, xử lý đơn hàng, trả hàng/hoàn tiền, thông báo, chat hỗ trợ) đã được thiết kế giao diện chi tiết cho cả phía Khách hàng, Admin và Nhân viên, đảm bảo tính nhất quán trải nghiệm. Các giao diện này sẽ giúp người chủ cửa hàng sẽ có cái nhìn trực diện và hình dung được các tính năng mà hệ thống sẽ có. Các tài liệu này sẽ giúp đội ngũ phát triển hiện thực đúng chức năng và các yêu cầu mà người chủ cửa hàng đưa ra. \\
 
-\subsection{Hướng phát triển}Lịch trình dự án giai đoạn 2 từ 12/01/2026 đến hết 27/04/2026 (15 tuần):
+\newpage
+\subsection{Hướng phát triển}
 
-\begin{figure}[H]
+\begingroup
+\renewcommand{\arraystretch}{1.4} % Tăng chiều cao dòng
 \centering
-\includegraphics[width=1\textwidth]{Images/plan2/plan2.png}
-\end{figure}
+\begin{xltabular}{\textwidth}{|c|c| >{\hsize=0.8\hsize}X | >{\hsize=1.2\hsize}X |}
+	% --- PHẦN 1: TIÊU ĐỀ CHO TRANG ĐẦU TIÊN ---
+	\hline
+	\multicolumn{4}{|c|}{\bfseries \textcolor{red}{ĐỀ TÀI: PHÁT TRIỂN HỆ THỐNG BÁN HÀNG TRỰC TUYẾN}} \\
+	\hline
+	\multicolumn{4}{|c|}{\bfseries \textcolor{red}{LỊCH TRÌNH ĐỒ ÁN TỐT NGHIỆP: TỪ 12/01/2026 ĐẾN HẾT 27/04/2026}} \\
+	\hline
+	\hline
+	\rowcolor{excelblue}
+	\multicolumn{1}{|c|}{\textbf{Tuần}} & 
+	\multicolumn{1}{|c|}{\textbf{Ngày}} & 
+	\multicolumn{1}{|c|}{\textbf{Công việc}} & 
+	\multicolumn{1}{|c|}{\textbf{Chi tiết nội dung công việc}} \\
+	\hline
+	\endfirsthead
+	% --- PHẦN 2: TIÊU ĐỀ LẶP LẠI KHI SANG TRANG MỚI ---
+	\hline
+	\rowcolor{excelblue}
+	\multicolumn{1}{|c|}{\textbf{Tuần}} & 
+	\multicolumn{1}{|c|}{\textbf{Ngày}} & 
+	\multicolumn{1}{|c|}{\textbf{Công việc}} & 
+	\multicolumn{1}{|c|}{\textbf{Chi tiết nội dung công việc}} \\
+	\hline
+	\endhead
+	% --- PHẦN 3: CHÂN TRANG (Mỗi khi hết trang) ---
+	\hline
+	\multicolumn{4}{r}{\textit{Còn tiếp sang trang sau...}} \\
+	\endfoot
+	% --- PHẦN 4: CHÂN TRANG (Kết thúc bảng) ---
+	\hline
+	\endlastfoot
+	% --- NỘI DUNG DỮ LIỆU ---
+	% Tuần 1
+	1 & 12/01/2026 & 
+		- Nâng cấp UI cải thiện trải nghiệm người dùng. \newline
+		- Thực hiện việc đề xuất và cá nhân hóa cho từng người dùng. \newline
+		- Viết báo cáo hàng tuần. \newline
+	 & 
+		\begin{itemize}[leftmargin=*, nosep, after=\vspace{-\baselineskip}]
+			\item Hiện thực bộ lọc: Xây dựng api hỗ trợ lọc đa điều kiện. (Lọc theo khoảng giá, màu sắc, kích thước, danh mục sản phẩm, hot trend,..). 
+			\item Tối ưu Query để xử lý việc truy xuất trên nhiều bảng trong cơ sở dữ liệu để lấy được kết quả theo bộ lọc.
+			\item Hiện thực logic đề xuất theo danh mục (đề xuất bằng các sản phẩm đang bán chạy trong danh mục.).
+			\item Hiện thực logic đề xuất theo lịch xử duyệt web và mua hàng của người dùng (đề xuất giải thuật k-Nearest Neighbors).
+			\item Hiện thực UI tương ứng với các tính năng trên.
+			\item Viết báo cáo hàng tuần
+		\end{itemize}
+	
+	\\ 
+	\cline{1-2}
+	% Tuần 2 (Copy nhiều dòng để test sang trang)
+	2 & 19/01/2026 &&\\ \hline
+	3 & 26/01/2026 & 
+		-Tích hợp hệ thống thanh toán bên thứ 3: VNPay, MOMO. \newline
+		- Viết báo cáo hàng tuần .\newline
+	 & 
+		\begin{itemize}[leftmargin=*, nosep, after=\vspace{-\baselineskip}]
+			\item Tiến hành xây dựng api tích hợp cho việc kết nối cổng thanh toán vnpay. Momo,
+			\item Hiện thực các UI tương ứng nếu có.
+			\item Xử lý việc cập nhật trạng thái thanh toán của đơn hàng sau khi thanh toán thành công. 
+			\item Hiện thực thông báo realtime khi thanh toán thành công / thất bại.
+			\item Viết báo cáo hàng tuần
+		\end{itemize}
+	\\ 
+	\cline{1-2}
+	4 & 02/02/2026 &&\\ \hline
+	5 & 09/02/2026 &
+	- Tích hợp hệ thống thông báo realtime cho các sự kiện hệ thống. \newline
+	- Xây dựng tính năng nhắn tin realtime. \newline
+	- Viết báo cáo hàng tuần. \newline
+	&
+	\begin{itemize}[leftmargin=*, nosep, after=\vspace{-\baselineskip}]
+		\item Xây dựng tính năng thông báo và nhắn tin realtime dựa trên thư viện Socket.io của Nestjs hỗ trợ.
+		\item Viết báo cáo hàng tuần
+	\end{itemize}
+	\\ 
+	\cline{1-2}
+	6 & 16/02/2026 &&\\ \hline
+	7 & 23/02/2026 &
+	- Tích hợp các chức năng báo cáo trên dashboard của người quản trị viên. \newline
+	- Viết báo cáo hàng tuần. \newline
+	&
+	\begin{itemize}[leftmargin=*, nosep, after=\vspace{-\baselineskip}]
+		\item Xây dựng các apis query kết quả tổng kết doanh thu, tổng kết đơn hàng, tổng kết số lượng đơn giao thành công, đơn trả hàng,….
+		\item Query các thông số sản phẩm bán chạy nhất, nhân viên doanh số cao nhất, danh sách số lượng hàng tồn còn lại trong kho,…
+		\item Hiện thực và tinh chỉnh UI theo figma đã có.
+		\item Viết báo cáo hàng tuần
+	\end{itemize}
+	\\ 
+	\cline{1-2}
+	8 & 02/03/2026 &&\\ \hline
+	9 & 09/03/2026 &
+	- Hiện thực tinh chỉnh giao diện dark mode. \newline
+	- Hiện thực tích hợp đa ngôn ngữ: Tiếng Việt / Tiếng Anh. \newline
+	- Viết báo cáo hàng tuần. \newline
+	&
+	\begin{itemize}[leftmargin=*, nosep, after=\vspace{-\baselineskip}]
+		\item Tích hợp thư viện react-i18next cho việc cấu hình ngôn ngữ việt nam, english.
+		\item Viết báo cáo hàng tuần
+	\end{itemize}	
+	\\ 
+	\cline{1-2}
+	10 & 16/03/2026 &&\\ \hline
+	11 & 23/03/2026 &
+	- Thực hiện testing và đánh giá:
+	Unit testing,  integration testing, system testing và acceptance testing. \newline
+	- Viết báo cáo hằng tuần. \newline
+	&
+	\begin{itemize}[leftmargin=*, nosep, after=\vspace{-\baselineskip}]
+		\item Thực hiện kiểm thử tự động bằng Selenium.
+		\item Kiểm tra và cập nhật validate và transform dữ liệu ở front-end và cả backend. Dùng các thư viện được hỗ trợ sẵn như class-validate, class-tranformer.
+		\item Kiểm tra và cập nhật lỗ hổng để lộ thông tin người dùng ví dụ như mật khẩu người dùng.
+		\item Kiểm tra và cập nhật vấn đề N + 1 query .
+		\item Kiểm tra và cập nhật index cho các bảng thường xuyên được truy xuất ví dụ Order, Payment, Product, ProductVariant.
+		\item Kiểm tra và cập nhật phân trang trong các api trả về kết quả là một danh sách các đối tượng.
+		\item Kiểm tra và cập nhật transaction cho các api có nghiệp vụ xử lý phức tạp trên nhiều bảng một lúc. Đảm bảo rollback ngay lập tức khi có lỗi. 
+		\item Thực hiện try catch cho việc bắt lỗi hệ thống.
+		\item Check và cập nhật lỗi IDOR.
+		\item Kiểm tra và cập nhật để tránh lỗi SQL Injection khi dùng các Raw Query.
+		\item Kiểm tra và cập nhật các lỗi để tránh tấn công Cross-Site Scripting.
+		\item Viết báo cáo hàng tuần
+		
+	\end{itemize}
+	\\ 
+	\cline{1-2}
+	12 & 30/03/2026 &&\\ 
+	\cline{1-2}
+	13 & 06/04/2026 &&\\ 
+	\hline
+	14 & 13/04/2026 &
+	-Deploy và demo. \newline
+	- Hoàn thiện báo cáo đồ án tốt nghiệp. \newline
+	&
+	\begin{itemize}[leftmargin=*, nosep, after=\vspace{-\baselineskip}]
+		\item Triển khai hệ thống lên server.
+		\item Cấu hình timeout cho server.
+		\item Cấu hình iptable để hạn chế số lượng request mà 1IP có thể gửi trong 1s, chặn IP khi một IP nào đó khi nó gửi quá số lượng request cho phép để hạn chế ảnh hưởng của Dos/DDoS 
+		\item Cấu hình CDN Cloudflare để hạn chế ảnh hưởng của Dos/DDoS.
+		\item Cấu hình load balancing bằng Nginx.
+		\item Viết báo cáo hàng tuần.
+		\item Quay chụp video, hình ảnh demo dự án.
+	\end{itemize}
+	\\ 
+	\cline{1-2}
+	15 & 20/04/2026 &&\\ \hline
+\end{xltabular}
+\endgroup
+
 \newpage
