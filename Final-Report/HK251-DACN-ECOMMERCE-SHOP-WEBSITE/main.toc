@@ -113,5 +113,5 @@
 \contentsline {section}{\numberline {6}Tổng kết}{93}{section.6}%
 \contentsline {subsection}{\numberline {6.1}Nhận xét}{93}{subsection.6.1}%
 \contentsline {subsection}{\numberline {6.2}Hướng phát triển đồ án tốt nghiệp}{94}{subsection.6.2}%
-\contentsline {section}{\numberline {7}Tài liệu tham khảo}{96}{section.7}%
-\contentsline {section}{\numberline {8}Phụ lục}{97}{section.8}%
+\contentsline {section}{\numberline {7}Tài liệu tham khảo}{97}{section.7}%
+\contentsline {section}{\numberline {8}Phụ lục}{98}{section.8}%
