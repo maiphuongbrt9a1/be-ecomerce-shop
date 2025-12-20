@@ -127,7 +127,7 @@ Về mặt vận hành, các luồng nghiệp vụ cốt lõi (duyệt/tìm ki�
 	\begin{itemize}[leftmargin=*, nosep, after=\vspace{-\baselineskip}]
 		\item Thực hiện kiểm thử tự động bằng Selenium.
 		\item Kiểm tra và cập nhật validate và transform dữ liệu ở front-end và cả backend. Dùng các thư viện được hỗ trợ sẵn như class-validate, class-tranformer.
-		\item Kiểm tra và cập nhật lỗ hổng để lộ thông tin người dùng ví dụ như mật khẩu người dùng.
+		\item Kiểm tra và cập nhật lỗ hổng để lộ thông tin người dùng.
 		\item Kiểm tra và cập nhật vấn đề N + 1 query .
 		\item Kiểm tra và cập nhật index cho các bảng thường xuyên được truy xuất ví dụ Order, Payment, Product, ProductVariant.
 		\item Kiểm tra và cập nhật phân trang trong các api trả về kết quả là một danh sách các đối tượng.
@@ -151,7 +151,7 @@ Về mặt vận hành, các luồng nghiệp vụ cốt lõi (duyệt/tìm ki�
 	&
 	\begin{itemize}[leftmargin=*, nosep, after=\vspace{-\baselineskip}]
 		\item Triển khai hệ thống lên server.
-		\item Cấu hình timeout cho server.
+		\item Cấu hình timeout cho server khi dành tài nguyên xử lý cho một request.
 		\item Cấu hình iptable để hạn chế số lượng request mà 1IP có thể gửi trong 1s, chặn IP khi một IP nào đó khi nó gửi quá số lượng request cho phép để hạn chế ảnh hưởng của Dos/DDoS 
 		\item Cấu hình CDN Cloudflare để hạn chế ảnh hưởng của Dos/DDoS.
 		\item Cấu hình load balancing bằng Nginx.
