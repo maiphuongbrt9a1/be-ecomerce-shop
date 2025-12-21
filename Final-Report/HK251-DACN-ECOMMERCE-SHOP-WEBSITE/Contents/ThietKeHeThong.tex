@@ -537,6 +537,16 @@ Ngoài ra nếu người khách hàng lúc đặt đơn hàng đã thanh toán t
           \label{fig: Giao diện đánh giá đơn hàng}
         \end{figure}
         \noindent\textbf{Các thao tác chính:} Xem lại chi tiết sản phẩm vừa mua, chọn số sao đánh giá, nhập nội dung nhận xét, đính kèm hình ảnh minh họa, gửi đánh giá, và xem danh sách các đánh giá đã tạo.
+  
+  \item Hủy/trả đơn hàng:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[width=1\textwidth]{Images/MockUp/Customer/Orders/Cancel+Return request.png}
+          \vspace{0.5cm}
+          \caption{Giao diện hủy/trả đơn hàng}
+          \label{fig: Giao diện hủy/trả đơn hàng}
+        \end{figure}
+        \noindent\textbf{Các thao tác chính:} Tạo yêu cầu hủy đơn hàng hoặc trả hàng, chọn lý do hủy/trả hàng, mô tả chi tiết vấn đề gặp phải, đính kèm hình ảnh/video minh họa (đối với trả hàng), gửi yêu cầu.
         
 \end{enumerate}
 \subsubsubsection {Thông báo}
@@ -584,14 +594,45 @@ Ngoài ra nếu người khách hàng lúc đặt đơn hàng đã thanh toán t
 \noindent\textbf{Các thao tác chính:} Xem danh sách tất cả đơn hàng, lọc theo trạng thái, cập nhật trạng thái đơn hàng, xác nhận thanh toán, và quản lý vận chuyển.
 
 \subsubsubsection {Chi tiết đơn hàng (Admin)}
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Order Detail.png}
-  \vspace{0.5cm}
-  \caption{Giao diện chi tiết đơn hàng (Admin)}
-  \label{fig: Giao diện chi tiết đơn hàng (Admin)}
-\end{figure}
-\noindent\textbf{Mô tả:} Hiển thị ngày đặt, trạng thái, khách hàng, địa chỉ giao, phương thức thanh toán, chi tiết sản phẩm (biến thể, số lượng, giá), phí vận chuyển, voucher, tổng tiền, lịch sử cập nhật trạng thái. Cho phép xác nhận, đóng gói, bàn giao vận chuyển, cập nhật trạng thái, xử lý hủy/hoàn tiền.
+\begin{enumerate}
+  \item Đơn hàng bình thường:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Order Detail.png}
+          \vspace{0.5cm}
+          \caption{Giao diện chi tiết đơn hàng bình thường (Admin)}
+          \label{fig: Giao diện chi tiết đơn hàng bình thường (Admin)}
+        \end{figure}
+        \noindent\textbf{Mô tả:} Hiển thị ngày đặt, trạng thái, khách hàng, địa chỉ giao, phương thức thanh toán, chi tiết sản phẩm (biến thể, số lượng, giá), phí vận chuyển, voucher, tổng tiền, lịch sử cập nhật trạng thái. Cho phép xác nhận, đóng gói, bàn giao vận chuyển, cập nhật trạng thái.
+
+  \item Đơn hàng yêu cầu đổi/trả:
+        \begin{figure}[H]
+          \centering
+          \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Returned Order 1.png}
+          \vspace{0.5cm}
+          \caption{Giao diện chi tiết đơn hàng yêu cầu đổi/trả (Admin)}
+          \label{fig: Giao diện chi tiết đơn hàng yêu cầu đổi/trả (Admin)}
+        \end{figure}
+        \noindent\textbf{Mô tả:} Hiển thị thông tin đơn hàng yêu cầu đổi/trả bao gồm lý do trả hàng, hình ảnh/video minh họa từ khách hàng, thông tin đơn hàng gốc. Từ trang này, quản trị viên có 2 lựa chọn:
+        \begin{itemize}
+          \item \textbf{Xác nhận hoàn tiền:} Khi chấp nhận yêu cầu, hệ thống sẽ mở modal thanh toán để xác nhận thực hiện hoàn tiền cho khách hàng.
+                \begin{figure}[H]
+                  \centering
+                  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Returned Order 1A.png}
+                  \vspace{0.5cm}
+                  \caption{Modal xác nhận hoàn tiền}
+                  \label{fig: Modal xác nhận hoàn tiền}
+                \end{figure}
+          \item \textbf{Từ chối yêu cầu:} Khi từ chối yêu cầu, hệ thống sẽ mở modal yêu cầu nhập lý do từ chối để thông báo cho khách hàng.
+                \begin{figure}[H]
+                  \centering
+                  \includegraphics[width=1\textwidth]{Images/MockUp/Admin/Returned Order 1B.png}
+                  \vspace{0.5cm}
+                  \caption{Modal nhập lý do từ chối}
+                  \label{fig: Modal nhập lý do từ chối}
+                \end{figure}
+        \end{itemize}
+\end{enumerate}
 
 \subsubsubsection {Quản lý khách hàng}
 \begin{figure}[H]
