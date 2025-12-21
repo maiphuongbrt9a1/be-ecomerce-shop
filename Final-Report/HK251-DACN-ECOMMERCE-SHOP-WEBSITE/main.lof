@@ -17,15 +17,15 @@
 \contentsline {figure}{\numberline {16}{\ignorespaces Logo của VNPAY}}{14}{figure.caption.24}%
 \contentsline {figure}{\numberline {17}{\ignorespaces Usecase Diagram của người Quản trị viên và nhân viên của hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{17}{figure.caption.25}%
 \contentsline {figure}{\numberline {18}{\ignorespaces Usecase Diagram của người Khách hàng của hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{18}{figure.caption.26}%
-\contentsline {figure}{\numberline {19}{\ignorespaces Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý đơn hàng}}{36}{figure.caption.64}%
-\contentsline {figure}{\numberline {20}{\ignorespaces Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý yêu cầu trả đơn hàng - hoàn tiền}}{37}{figure.caption.65}%
-\contentsline {figure}{\numberline {21}{\ignorespaces Sơ đồ hoạt động người khách hàng duyệt và mua sản phẩm}}{38}{figure.caption.66}%
-\contentsline {figure}{\numberline {22}{\ignorespaces Sơ đồ hoạt động người khách hàng hủy đơn hàng}}{39}{figure.caption.67}%
-\contentsline {figure}{\numberline {23}{\ignorespaces Sơ đồ hoạt động người khách hàng yêu cầu trả đơn hàng - hoàn tiền}}{39}{figure.caption.68}%
-\contentsline {figure}{\numberline {24}{\ignorespaces Kiến trúc bậc cao của hệ thống}}{40}{figure.caption.69}%
-\contentsline {figure}{\numberline {25}{\ignorespaces EERD Diagram hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{43}{figure.caption.71}%
-\contentsline {figure}{\numberline {26}{\ignorespaces Lược đồ cơ sở dữ liệu hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{45}{figure.caption.72}%
-\contentsline {figure}{\numberline {27}{\ignorespaces Biểu đồ lớp (Class diagram) hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{46}{figure.caption.73}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Kiến trúc bậc cao của hệ thống}}{37}{figure.caption.64}%
+\contentsline {figure}{\numberline {20}{\ignorespaces EERD Diagram hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{40}{figure.caption.66}%
+\contentsline {figure}{\numberline {21}{\ignorespaces Lược đồ cơ sở dữ liệu hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{42}{figure.caption.67}%
+\contentsline {figure}{\numberline {22}{\ignorespaces Biểu đồ lớp (Class diagram) hệ thống bán hàng trực tuyến cho cửa hàng thời trang}}{43}{figure.caption.68}%
+\contentsline {figure}{\numberline {23}{\ignorespaces Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý đơn hàng}}{44}{figure.caption.69}%
+\contentsline {figure}{\numberline {24}{\ignorespaces Sơ đồ hoạt động người quản trị viên, nhân viên cửa hàng xử lý yêu cầu trả đơn hàng - hoàn tiền}}{45}{figure.caption.70}%
+\contentsline {figure}{\numberline {25}{\ignorespaces Sơ đồ hoạt động người khách hàng duyệt và mua sản phẩm}}{46}{figure.caption.71}%
+\contentsline {figure}{\numberline {26}{\ignorespaces Sơ đồ hoạt động người khách hàng hủy đơn hàng}}{47}{figure.caption.72}%
+\contentsline {figure}{\numberline {27}{\ignorespaces Sơ đồ hoạt động người khách hàng yêu cầu trả đơn hàng - hoàn tiền}}{47}{figure.caption.73}%
 \contentsline {figure}{\numberline {28}{\ignorespaces Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý đơn hàng}}{48}{figure.caption.74}%
 \contentsline {figure}{\numberline {29}{\ignorespaces Sơ đồ tuần tự người quản trị viên, nhân viên cửa hàng xử lý việc khách hàng trả hàng và yêu cầu hoàn tiền}}{49}{figure.caption.75}%
 \contentsline {figure}{\numberline {30}{\ignorespaces Sơ đồ tuần tự người khách hàng thực hiện tìm kiếm và xem sản phẩm}}{50}{figure.caption.76}%

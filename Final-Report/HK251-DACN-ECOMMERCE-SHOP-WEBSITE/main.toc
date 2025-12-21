@@ -51,65 +51,65 @@
 \contentsline {subsubsubsection}{\numberline {4.3.2.a}Đặc tả usecase cho người quản trị viên (admin)}{19}{subsubsubsection.4.3.2.1}%
 \contentsline {subsubsubsection}{\numberline {4.3.2.b}Đặc tả usecase cho người nhân viên (staff)}{29}{subsubsubsection.4.3.2.2}%
 \contentsline {subsubsubsection}{\numberline {4.3.2.c}Đặc tả usecase cho người khách hàng (customer)}{32}{subsubsubsection.4.3.2.3}%
-\contentsline {subsection}{\numberline {4.4}Sơ đồ hoạt động}{36}{subsection.4.4}%
-\contentsline {subsubsection}{\numberline {4.4.1}Người quản trị viên, người nhân viên xử lý đơn hàng.}{36}{subsubsection.4.4.1}%
-\contentsline {subsubsection}{\numberline {4.4.2}Người quản trị viên, người nhân viên xử lý trả đơn hàng - hoàn tiền.}{37}{subsubsection.4.4.2}%
-\contentsline {subsubsection}{\numberline {4.4.3}Người khách hàng duyệt sản phẩm và mua sản phẩm.}{38}{subsubsection.4.4.3}%
-\contentsline {subsubsection}{\numberline {4.4.4}Người khách hàng hủy đơn hàng.}{39}{subsubsection.4.4.4}%
-\contentsline {subsubsection}{\numberline {4.4.5}Người khách hàng yêu cầu trả đơn hàng - hoàn tiền.}{39}{subsubsection.4.4.5}%
-\contentsline {section}{\numberline {5}Thiết kế hệ thống}{40}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Kiến trúc hệ thống - Kiến trúc Three Tier}{40}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Thiết kế cơ sở dữ liệu}{42}{subsection.5.2}%
-\contentsline {subsubsection}{\numberline {5.2.1}Mô tả thực thể}{42}{subsubsection.5.2.1}%
-\contentsline {subsubsection}{\numberline {5.2.2}Lược đồ thực thể mối liên hệ mở rộng (EERD)}{43}{subsubsection.5.2.2}%
-\contentsline {subsubsection}{\numberline {5.2.3}Lược đồ cơ sở dữ liệu}{45}{subsubsection.5.2.3}%
-\contentsline {subsection}{\numberline {5.3}Biểu đồ lớp (Class Diagram)}{46}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Sơ đồ tuần tự}{48}{subsection.5.4}%
-\contentsline {subsubsection}{\numberline {5.4.1}Người quản trị viên, người nhân viên xử lý đơn hàng.}{48}{subsubsection.5.4.1}%
-\contentsline {subsubsection}{\numberline {5.4.2}Người quản trị viên, người nhân viên xử lý trả hàng - hoàn tiền.}{49}{subsubsection.5.4.2}%
-\contentsline {subsubsection}{\numberline {5.4.3}Người Khách hàng thực hiện tìm kiếm và xem sản phẩm.}{50}{subsubsection.5.4.3}%
-\contentsline {subsubsection}{\numberline {5.4.4}Người Khách hàng thực hiện so sánh thông tin các sản phẩm.}{51}{subsubsection.5.4.4}%
-\contentsline {subsubsection}{\numberline {5.4.5}Người Khách hàng thực hiện việc mua ngay sản phẩm.}{52}{subsubsection.5.4.5}%
-\contentsline {subsubsection}{\numberline {5.4.6}Người Khách hàng thực hiện thêm các sản phẩm vào giỏ hàng.}{53}{subsubsection.5.4.6}%
-\contentsline {subsubsection}{\numberline {5.4.7}Người Khách hàng thực hiện mua các sản phẩm từ giỏ hàng.}{53}{subsubsection.5.4.7}%
-\contentsline {subsubsection}{\numberline {5.4.8}Người Khách hàng thực hiện mua các sản phẩm từ đơn hàng đã mua.}{54}{subsubsection.5.4.8}%
-\contentsline {subsubsection}{\numberline {5.4.9}Người Khách hàng thực hiện hủy đơn đặt hàng.}{55}{subsubsection.5.4.9}%
-\contentsline {subsubsection}{\numberline {5.4.10}Người Khách hàng thực hiện trả hàng - hoàn tiền.}{56}{subsubsection.5.4.10}%
-\contentsline {subsection}{\numberline {5.5}Thiết kế giao diện hệ thống}{57}{subsection.5.5}%
-\contentsline {subsubsection}{\numberline {5.5.1}Thiết kế giao diện cho khách hàng}{57}{subsubsection.5.5.1}%
-\contentsline {subsubsubsection}{\numberline {5.5.1.a}Trang chủ}{57}{subsubsubsection.5.5.1.1}%
-\contentsline {subsubsubsection}{\numberline {5.5.1.b}Xem Sản phẩm theo Loại/Tìm kiếm Sản phẩm}{58}{subsubsubsection.5.5.1.2}%
-\contentsline {subsubsubsection}{\numberline {5.5.1.c}Tính năng Chăm sóc khách hàng}{58}{subsubsubsection.5.5.1.3}%
-\contentsline {subsubsubsection}{\numberline {5.5.1.d}Giỏ hàng}{60}{subsubsubsection.5.5.1.4}%
-\contentsline {subsubsubsection}{\numberline {5.5.1.e}Thanh toán}{61}{subsubsubsection.5.5.1.5}%
-\contentsline {subsubsubsection}{\numberline {5.5.1.f}Chi tiết sản phẩm}{62}{subsubsubsection.5.5.1.6}%
-\contentsline {subsubsubsection}{\numberline {5.5.1.g}So sánh Sản phẩm}{63}{subsubsubsection.5.5.1.7}%
-\contentsline {subsubsubsection}{\numberline {5.5.1.h}Trang cá nhân}{64}{subsubsubsection.5.5.1.8}%
-\contentsline {subsubsubsection}{\numberline {5.5.1.i}Quản lý đơn hàng}{67}{subsubsubsection.5.5.1.9}%
-\contentsline {subsubsubsection}{\numberline {5.5.1.j}Thông báo}{69}{subsubsubsection.5.5.1.10}%
-\contentsline {subsubsection}{\numberline {5.5.2}Thiết kế giao diện cho quản trị viên}{71}{subsubsection.5.5.2}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.a}Trang tổng quan (Dashboard)}{71}{subsubsubsection.5.5.2.1}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.b}Quản lý đơn hàng}{72}{subsubsubsection.5.5.2.2}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.c}Chi tiết đơn hàng (Admin)}{72}{subsubsubsection.5.5.2.3}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.d}Quản lý khách hàng}{77}{subsubsubsection.5.5.2.4}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.e}Chi tiết khách hàng}{78}{subsubsubsection.5.5.2.5}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.f}Quản lý voucher}{79}{subsubsubsection.5.5.2.6}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.g}Quản lý danh mục}{80}{subsubsubsection.5.5.2.7}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.h}Quản lý giao dịch}{81}{subsubsubsection.5.5.2.8}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.i}Chi tiết giao dịch}{82}{subsubsubsection.5.5.2.9}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.j}Chat hỗ trợ}{83}{subsubsubsection.5.5.2.10}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.k}Thêm/Chỉnh sửa sản phẩm}{84}{subsubsubsection.5.5.2.11}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.l}Danh sách sản phẩm}{85}{subsubsubsection.5.5.2.12}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.m}Phân quyền vai trò}{86}{subsubsubsection.5.5.2.13}%
-\contentsline {subsubsubsection}{\numberline {5.5.2.n}Quản lý trang cá nhân}{87}{subsubsubsection.5.5.2.14}%
-\contentsline {subsubsection}{\numberline {5.5.3}Thiết kế giao diện cho nhân viên}{88}{subsubsection.5.5.3}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.a}Quản lý đơn hàng}{88}{subsubsubsection.5.5.3.1}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.b}Chi tiết đơn hàng}{89}{subsubsubsection.5.5.3.2}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.c}Danh sách sản phẩm}{90}{subsubsubsection.5.5.3.3}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.d}Chi tiết sản phẩm}{91}{subsubsubsection.5.5.3.4}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.e}Quản lý giao dịch}{92}{subsubsubsection.5.5.3.5}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.f}Chi tiết giao dịch}{93}{subsubsubsection.5.5.3.6}%
-\contentsline {subsubsubsection}{\numberline {5.5.3.g}Chat hỗ trợ}{94}{subsubsubsection.5.5.3.7}%
+\contentsline {section}{\numberline {5}Thiết kế hệ thống}{37}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Kiến trúc hệ thống - Kiến trúc Three Tier}{37}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Thiết kế cơ sở dữ liệu}{39}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Mô tả thực thể}{39}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Lược đồ thực thể mối liên hệ mở rộng (EERD)}{40}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}Lược đồ cơ sở dữ liệu}{42}{subsubsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.3}Biểu đồ lớp (Class Diagram)}{43}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Sơ đồ hoạt động}{44}{subsection.5.4}%
+\contentsline {subsubsection}{\numberline {5.4.1}Người quản trị viên, người nhân viên xử lý đơn hàng.}{44}{subsubsection.5.4.1}%
+\contentsline {subsubsection}{\numberline {5.4.2}Người quản trị viên, người nhân viên xử lý trả đơn hàng - hoàn tiền.}{45}{subsubsection.5.4.2}%
+\contentsline {subsubsection}{\numberline {5.4.3}Người khách hàng duyệt sản phẩm và mua sản phẩm.}{46}{subsubsection.5.4.3}%
+\contentsline {subsubsection}{\numberline {5.4.4}Người khách hàng hủy đơn hàng.}{47}{subsubsection.5.4.4}%
+\contentsline {subsubsection}{\numberline {5.4.5}Người khách hàng yêu cầu trả đơn hàng - hoàn tiền.}{47}{subsubsection.5.4.5}%
+\contentsline {subsection}{\numberline {5.5}Sơ đồ tuần tự}{48}{subsection.5.5}%
+\contentsline {subsubsection}{\numberline {5.5.1}Người quản trị viên, người nhân viên xử lý đơn hàng.}{48}{subsubsection.5.5.1}%
+\contentsline {subsubsection}{\numberline {5.5.2}Người quản trị viên, người nhân viên xử lý trả hàng - hoàn tiền.}{49}{subsubsection.5.5.2}%
+\contentsline {subsubsection}{\numberline {5.5.3}Người Khách hàng thực hiện tìm kiếm và xem sản phẩm.}{50}{subsubsection.5.5.3}%
+\contentsline {subsubsection}{\numberline {5.5.4}Người Khách hàng thực hiện so sánh thông tin các sản phẩm.}{51}{subsubsection.5.5.4}%
+\contentsline {subsubsection}{\numberline {5.5.5}Người Khách hàng thực hiện việc mua ngay sản phẩm.}{52}{subsubsection.5.5.5}%
+\contentsline {subsubsection}{\numberline {5.5.6}Người Khách hàng thực hiện thêm các sản phẩm vào giỏ hàng.}{53}{subsubsection.5.5.6}%
+\contentsline {subsubsection}{\numberline {5.5.7}Người Khách hàng thực hiện mua các sản phẩm từ giỏ hàng.}{53}{subsubsection.5.5.7}%
+\contentsline {subsubsection}{\numberline {5.5.8}Người Khách hàng thực hiện mua các sản phẩm từ đơn hàng đã mua.}{54}{subsubsection.5.5.8}%
+\contentsline {subsubsection}{\numberline {5.5.9}Người Khách hàng thực hiện hủy đơn đặt hàng.}{55}{subsubsection.5.5.9}%
+\contentsline {subsubsection}{\numberline {5.5.10}Người Khách hàng thực hiện trả hàng - hoàn tiền.}{56}{subsubsection.5.5.10}%
+\contentsline {subsection}{\numberline {5.6}Thiết kế giao diện hệ thống}{57}{subsection.5.6}%
+\contentsline {subsubsection}{\numberline {5.6.1}Thiết kế giao diện cho khách hàng}{57}{subsubsection.5.6.1}%
+\contentsline {subsubsubsection}{\numberline {5.6.1.a}Trang chủ}{57}{subsubsubsection.5.6.1.1}%
+\contentsline {subsubsubsection}{\numberline {5.6.1.b}Xem Sản phẩm theo Loại/Tìm kiếm Sản phẩm}{58}{subsubsubsection.5.6.1.2}%
+\contentsline {subsubsubsection}{\numberline {5.6.1.c}Tính năng Chăm sóc khách hàng}{58}{subsubsubsection.5.6.1.3}%
+\contentsline {subsubsubsection}{\numberline {5.6.1.d}Giỏ hàng}{60}{subsubsubsection.5.6.1.4}%
+\contentsline {subsubsubsection}{\numberline {5.6.1.e}Thanh toán}{61}{subsubsubsection.5.6.1.5}%
+\contentsline {subsubsubsection}{\numberline {5.6.1.f}Chi tiết sản phẩm}{62}{subsubsubsection.5.6.1.6}%
+\contentsline {subsubsubsection}{\numberline {5.6.1.g}So sánh Sản phẩm}{63}{subsubsubsection.5.6.1.7}%
+\contentsline {subsubsubsection}{\numberline {5.6.1.h}Trang cá nhân}{64}{subsubsubsection.5.6.1.8}%
+\contentsline {subsubsubsection}{\numberline {5.6.1.i}Quản lý đơn hàng}{67}{subsubsubsection.5.6.1.9}%
+\contentsline {subsubsubsection}{\numberline {5.6.1.j}Thông báo}{69}{subsubsubsection.5.6.1.10}%
+\contentsline {subsubsection}{\numberline {5.6.2}Thiết kế giao diện cho quản trị viên}{71}{subsubsection.5.6.2}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.a}Trang tổng quan (Dashboard)}{71}{subsubsubsection.5.6.2.1}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.b}Quản lý đơn hàng}{72}{subsubsubsection.5.6.2.2}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.c}Chi tiết đơn hàng (Admin)}{72}{subsubsubsection.5.6.2.3}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.d}Quản lý khách hàng}{77}{subsubsubsection.5.6.2.4}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.e}Chi tiết khách hàng}{78}{subsubsubsection.5.6.2.5}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.f}Quản lý voucher}{79}{subsubsubsection.5.6.2.6}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.g}Quản lý danh mục}{80}{subsubsubsection.5.6.2.7}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.h}Quản lý giao dịch}{81}{subsubsubsection.5.6.2.8}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.i}Chi tiết giao dịch}{82}{subsubsubsection.5.6.2.9}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.j}Chat hỗ trợ}{83}{subsubsubsection.5.6.2.10}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.k}Thêm/Chỉnh sửa sản phẩm}{84}{subsubsubsection.5.6.2.11}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.l}Danh sách sản phẩm}{85}{subsubsubsection.5.6.2.12}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.m}Phân quyền vai trò}{86}{subsubsubsection.5.6.2.13}%
+\contentsline {subsubsubsection}{\numberline {5.6.2.n}Quản lý trang cá nhân}{87}{subsubsubsection.5.6.2.14}%
+\contentsline {subsubsection}{\numberline {5.6.3}Thiết kế giao diện cho nhân viên}{88}{subsubsection.5.6.3}%
+\contentsline {subsubsubsection}{\numberline {5.6.3.a}Quản lý đơn hàng}{88}{subsubsubsection.5.6.3.1}%
+\contentsline {subsubsubsection}{\numberline {5.6.3.b}Chi tiết đơn hàng}{89}{subsubsubsection.5.6.3.2}%
+\contentsline {subsubsubsection}{\numberline {5.6.3.c}Danh sách sản phẩm}{90}{subsubsubsection.5.6.3.3}%
+\contentsline {subsubsubsection}{\numberline {5.6.3.d}Chi tiết sản phẩm}{91}{subsubsubsection.5.6.3.4}%
+\contentsline {subsubsubsection}{\numberline {5.6.3.e}Quản lý giao dịch}{92}{subsubsubsection.5.6.3.5}%
+\contentsline {subsubsubsection}{\numberline {5.6.3.f}Chi tiết giao dịch}{93}{subsubsubsection.5.6.3.6}%
+\contentsline {subsubsubsection}{\numberline {5.6.3.g}Chat hỗ trợ}{94}{subsubsubsection.5.6.3.7}%
 \contentsline {section}{\numberline {6}Tổng kết}{95}{section.6}%
 \contentsline {subsection}{\numberline {6.1}Nhận xét}{95}{subsection.6.1}%
 \contentsline {subsection}{\numberline {6.2}Hướng phát triển đồ án tốt nghiệp}{96}{subsection.6.2}%
