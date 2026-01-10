@@ -75,12 +75,12 @@ export class AwsS3Controller {
 
   @ApiOperation({
     summary:
-      'Build a https link for media file stored in S3 bucket using its key',
+      'Build a https link for media file stored in S3 bucket using its key. It"s key is file url in url field of media table',
   })
   @ApiResponse({
     status: 200,
     description:
-      'Build a https link for media file stored in S3 bucket using its key',
+      'Build a https link for media file stored in S3 bucket using its key. It"s key is file url in url field of media table',
   })
   @Get('/build-public-media-url')
   buildPublicMediaUrl(@Query('key') key: string): string {
