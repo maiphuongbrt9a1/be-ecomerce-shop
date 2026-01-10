@@ -168,8 +168,7 @@ export class AwsS3Service {
       targetLocation += 'product-videos/';
     }
 
-    targetLocation +=
-      adminId.toString() + '/' + productVariantId.toString() + '/';
+    targetLocation += productVariantId.toString() + '/';
 
     this.logger.log(
       'Received request to upload file ' +
@@ -325,8 +324,7 @@ export class AwsS3Service {
         targetLocation += 'product-videos/';
       }
 
-      targetLocation +=
-        adminId.toString() + '/' + productVariantId.toString() + '/';
+      targetLocation += productVariantId.toString() + '/';
       this.logger.log(
         'Received request to upload file ' +
           file.originalname +
@@ -359,6 +357,7 @@ export class AwsS3Service {
   async uploadOneCategoryFile(
     file: Express.Multer.File,
     adminId: string,
+    categoryId: string,
   ): Promise<AWS.S3.ManagedUpload.SendData> {
     let targetLocation: string = 'shops/shop-categories/';
     const isCategoryFile: boolean = true;
@@ -381,7 +380,7 @@ export class AwsS3Service {
       targetLocation += 'category-videos/';
     }
 
-    targetLocation += adminId.toString() + '/';
+    targetLocation += categoryId.toString() + '/';
     this.logger.log(
       'Received request to upload file ' +
         file.originalname +

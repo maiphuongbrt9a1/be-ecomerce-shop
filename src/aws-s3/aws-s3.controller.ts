@@ -249,13 +249,18 @@ export class AwsS3Controller {
       required: ['file'],
     },
   })
-  @Post('/admin/:adminId/upload-one-category-file')
+  @Post('/admin/:adminId/upload-one-category-file/:categoryId')
   @UseInterceptors(FileInterceptor('file'))
   async uploadOneCategoryFile(
     @UploadedFile() file: Express.Multer.File,
     @Param('adminId') adminId: string,
+    @Param('categoryId') categoryId: string,
   ): Promise<AWS.S3.ManagedUpload.SendData> {
-    return await this.awsS3Service.uploadOneCategoryFile(file, adminId);
+    return await this.awsS3Service.uploadOneCategoryFile(
+      file,
+      adminId,
+      categoryId,
+    );
   }
 
   ////////////////User upload endpoints can be added here//////////////
