@@ -76,12 +76,6 @@ export class CreateUserDto {
   @IsString()
   staffCode: string;
 
-  @ApiProperty({ example: false })
-  @IsOptional()
-  @IsBoolean()
-  @Type(() => Boolean)
-  isAdmin: boolean;
-
   @ApiProperty({ example: '0987985465231' })
   @IsOptional()
   @IsString()
@@ -152,12 +146,6 @@ export class CreateUserByGoogleAccountDto {
   @IsOptional()
   @IsString()
   staffCode: string;
-
-  @ApiProperty({ example: false })
-  @IsOptional()
-  @IsBoolean()
-  @Type(() => Boolean)
-  isAdmin: boolean;
 
   @ApiProperty({ example: '0987985465231' })
   @IsOptional()

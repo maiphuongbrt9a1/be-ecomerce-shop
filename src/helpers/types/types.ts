@@ -4,7 +4,6 @@ export type Payload = {
   sub: User['id'];
   username: User['email'];
   role: User['role'];
-  isAdmin: User['isAdmin'];
   firstName: User['firstName'] | null;
   lastName: User['lastName'] | null;
   name: string | null;

@@ -14,7 +14,7 @@ export class ProductVariantsService {
   ) {}
 
   async create(
-    file: Express.Multer.File,
+    files: Express.Multer.File[],
     createProductVariantDto: CreateProductVariantDto,
     adminId: string,
   ): Promise<ProductVariants> {
@@ -26,8 +26,8 @@ export class ProductVariantsService {
       throw new NotFoundException('Failed to create product variant');
     }
 
-    const mediaForProductVariant = await this.awsService.uploadOneProductFile(
-      file,
+    const mediaForProductVariant = await this.awsService.uploadManyProductFile(
+      files,
       adminId,
       productVariant.id.toString(),
     );
@@ -49,7 +49,12 @@ export class ProductVariantsService {
       Prisma.ProductVariantsFindManyArgs
     >(
       this.prismaService.productVariants,
-      { orderBy: { id: 'asc' } },
+      {
+        include: {
+          media: true,
+        },
+        orderBy: { id: 'asc' },
+      },
       { page: page },
     );
 
@@ -58,6 +63,9 @@ export class ProductVariantsService {
 
   async findOne(id: number): Promise<ProductVariants | null> {
     const productVariant = await this.prismaService.productVariants.findFirst({
+      include: {
+        media: true,
+      },
       where: { id: id },
     });
 
@@ -69,13 +77,32 @@ export class ProductVariantsService {
   }
 
   async update(
+    files: Express.Multer.File[],
     id: number,
     updateProductVariantDto: UpdateProductVariantDto,
+    adminId: string,
   ): Promise<ProductVariants> {
     const productVariant = await this.prismaService.productVariants.update({
       where: { id: id },
       data: { ...updateProductVariantDto },
     });
+
+    if (!productVariant) {
+      throw new NotFoundException('Failed to update product variant');
+    }
+
+    if (files && files.length > 0) {
+      const mediaUploadForProductVariant =
+        await this.awsService.uploadManyProductFile(
+          files,
+          adminId,
+          id.toString(),
+        );
+
+      if (!mediaUploadForProductVariant) {
+        throw new NotFoundException('Failed to upload product media files');
+      }
+    }
 
     return productVariant;
   }

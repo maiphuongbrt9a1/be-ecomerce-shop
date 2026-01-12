@@ -19,7 +19,11 @@ export class UserVouchersController {
   constructor(private readonly userVouchersService: UserVouchersService) {}
 
   @ApiOperation({ summary: 'Create a new user voucher' })
-  @ApiResponse({ status: 201, description: 'Create a new user voucher', type: UserVoucherEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'Create a new user voucher',
+    type: UserVoucherEntity,
+  })
   @ApiBody({ type: CreateUserVoucherDto })
   @Post()
   async create(@Body() createUserVoucherDto: CreateUserVoucherDto) {
@@ -27,7 +31,11 @@ export class UserVouchersController {
   }
 
   @ApiOperation({ summary: 'Get all user vouchers' })
-  @ApiResponse({ status: 200, description: 'Get all user vouchers', type: [UserVoucherEntity] })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all user vouchers',
+    type: [UserVoucherEntity],
+  })
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.userVouchersService.findAll(
@@ -37,14 +45,22 @@ export class UserVouchersController {
   }
 
   @ApiOperation({ summary: 'Get one user voucher' })
-  @ApiResponse({ status: 200, description: 'Get one user voucher', type: UserVoucherEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Get one user voucher',
+    type: UserVoucherEntity,
+  })
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.userVouchersService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update one user voucher' })
-  @ApiResponse({ status: 200, description: 'Update one user voucher', type: UserVoucherEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Update one user voucher',
+    type: UserVoucherEntity,
+  })
   @ApiBody({ type: UpdateUserVoucherDto })
   @Patch('/:id')
   async update(
@@ -55,7 +71,11 @@ export class UserVouchersController {
   }
 
   @ApiOperation({ summary: 'Delete one user voucher' })
-  @ApiResponse({ status: 200, description: 'Delete one user voucher', type: UserVoucherEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Delete one user voucher',
+    type: UserVoucherEntity,
+  })
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.userVouchersService.remove(+id);

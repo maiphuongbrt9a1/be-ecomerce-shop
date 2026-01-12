@@ -30,7 +30,11 @@ export class VouchersController {
   constructor(private readonly vouchersService: VouchersService) {}
 
   @ApiOperation({ summary: 'Create a new voucher' })
-  @ApiResponse({ status: 201, description: 'Create a new voucher', type: VoucherEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'Create a new voucher',
+    type: VoucherEntity,
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -41,7 +45,11 @@ export class VouchersController {
   }
 
   @ApiOperation({ summary: 'Get all vouchers' })
-  @ApiResponse({ status: 200, description: 'Get all vouchers', type: [VoucherEntity] })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all vouchers',
+    type: [VoucherEntity],
+  })
   @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
@@ -49,7 +57,11 @@ export class VouchersController {
   }
 
   @ApiOperation({ summary: 'Get a voucher' })
-  @ApiResponse({ status: 200, description: 'Get a voucher', type: VoucherEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Get a voucher',
+    type: VoucherEntity,
+  })
   @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
@@ -57,7 +69,11 @@ export class VouchersController {
   }
 
   @ApiOperation({ summary: 'Update a voucher' })
-  @ApiResponse({ status: 200, description: 'Update a voucher', type: VoucherEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Update a voucher',
+    type: VoucherEntity,
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -71,7 +87,11 @@ export class VouchersController {
   }
 
   @ApiOperation({ summary: 'Delete a voucher' })
-  @ApiResponse({ status: 200, description: 'Delete a voucher', type: VoucherEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Delete a voucher',
+    type: VoucherEntity,
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')

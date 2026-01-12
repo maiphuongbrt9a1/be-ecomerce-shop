@@ -28,7 +28,11 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @ApiOperation({ summary: 'Create a new category' })
-  @ApiResponse({ status: 201, description: 'Create a new category', type: CategoryEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'Create a new category',
+    type: CategoryEntity,
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -39,7 +43,11 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: 'Get all categories' })
-  @ApiResponse({ status: 200, description: 'Get all categories', type: [CategoryEntity] })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all categories',
+    type: [CategoryEntity],
+  })
   @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
@@ -47,7 +55,11 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: 'Get a category' })
-  @ApiResponse({ status: 200, description: 'Get a category', type: CategoryEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Get a category',
+    type: CategoryEntity,
+  })
   @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
@@ -55,7 +67,11 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: 'Update a category' })
-  @ApiResponse({ status: 200, description: 'Update a category', type: CategoryEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Update a category',
+    type: CategoryEntity,
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -69,7 +85,11 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: 'Delete a category' })
-  @ApiResponse({ status: 200, description: 'Delete a category', type: CategoryEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Delete a category',
+    type: CategoryEntity,
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -79,7 +99,11 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: 'Get all sub-category of category' })
-  @ApiResponse({ status: 200, description: 'Get all sub-category of category', type: [CategoryEntity] })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all sub-category of category',
+    type: [CategoryEntity],
+  })
   @Public()
   @Get('/:id/sub-categories')
   async getAllSubCategoriesOfCategory(@Param('id') id: string) {
@@ -87,7 +111,11 @@ export class CategoryController {
   }
 
   @ApiOperation({ summary: 'Get all products of category' })
-  @ApiResponse({ status: 200, description: 'Get all products of category', type: [ProductEntity] })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all products of category',
+    type: [ProductEntity],
+  })
   @Public()
   @Get('/:id/products')
   async getAllProductsOfCategory(

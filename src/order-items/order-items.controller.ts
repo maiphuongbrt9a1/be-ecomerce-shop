@@ -19,7 +19,11 @@ export class OrderItemsController {
   constructor(private readonly orderItemsService: OrderItemsService) {}
 
   @ApiOperation({ summary: 'Create a new order item' })
-  @ApiResponse({ status: 201, description: 'Create a new order item', type: OrderItemEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'Create a new order item',
+    type: OrderItemEntity,
+  })
   @ApiBody({ type: CreateOrderItemDto })
   @Post()
   async create(@Body() createOrderItemDto: CreateOrderItemDto) {
@@ -27,21 +31,33 @@ export class OrderItemsController {
   }
 
   @ApiOperation({ summary: 'Get all order items' })
-  @ApiResponse({ status: 200, description: 'Get all order items', type: [OrderItemEntity] })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all order items',
+    type: [OrderItemEntity],
+  })
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.orderItemsService.findAll(Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get one order item' })
-  @ApiResponse({ status: 200, description: 'Get one order item', type: OrderItemEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Get one order item',
+    type: OrderItemEntity,
+  })
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.orderItemsService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update one order item' })
-  @ApiResponse({ status: 200, description: 'Update one order item', type: OrderItemEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Update one order item',
+    type: OrderItemEntity,
+  })
   @ApiBody({ type: UpdateOrderItemDto })
   @Patch('/:id')
   async update(
@@ -52,7 +68,11 @@ export class OrderItemsController {
   }
 
   @ApiOperation({ summary: 'Delete one order item' })
-  @ApiResponse({ status: 200, description: 'Delete one order item', type: OrderItemEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Delete one order item',
+    type: OrderItemEntity,
+  })
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.orderItemsService.remove(+id);

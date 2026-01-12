@@ -37,7 +37,10 @@ export class ShipmentEntity {
   @ApiProperty({ example: 'TRACK123456' })
   trackingNumber: string;
 
-  @ApiProperty({ enum: ShipmentStatus, example: ShipmentStatus.WAITING_FOR_PICKUP })
+  @ApiProperty({
+    enum: ShipmentStatus,
+    example: ShipmentStatus.WAITING_FOR_PICKUP,
+  })
   status: ShipmentStatus;
 
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })

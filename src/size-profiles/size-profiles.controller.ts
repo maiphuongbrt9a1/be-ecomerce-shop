@@ -20,7 +20,11 @@ export class SizeProfilesController {
   constructor(private readonly sizeProfilesService: SizeProfilesService) {}
 
   @ApiOperation({ summary: 'Create a new size profile' })
-  @ApiResponse({ status: 201, description: 'Create a new size profile', type: SizeProfileEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'Create a new size profile',
+    type: SizeProfileEntity,
+  })
   @ApiBody({ type: CreateSizeProfileDto })
   @Post()
   async create(@Body() createSizeProfileDto: CreateSizeProfileDto) {
@@ -28,7 +32,11 @@ export class SizeProfilesController {
   }
 
   @ApiOperation({ summary: 'Get all size profiles' })
-  @ApiResponse({ status: 200, description: 'Get all size profiles', type: [SizeProfileEntity] })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all size profiles',
+    type: [SizeProfileEntity],
+  })
   @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
@@ -39,7 +47,11 @@ export class SizeProfilesController {
   }
 
   @ApiOperation({ summary: 'Get one size profile' })
-  @ApiResponse({ status: 200, description: 'Get one size profile', type: SizeProfileEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Get one size profile',
+    type: SizeProfileEntity,
+  })
   @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
@@ -47,7 +59,11 @@ export class SizeProfilesController {
   }
 
   @ApiOperation({ summary: 'Update one size profile' })
-  @ApiResponse({ status: 200, description: 'Update one size profile', type: SizeProfileEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Update one size profile',
+    type: SizeProfileEntity,
+  })
   @ApiBody({ type: UpdateSizeProfileDto })
   @Patch('/:id')
   async update(
@@ -58,7 +74,11 @@ export class SizeProfilesController {
   }
 
   @ApiOperation({ summary: 'Delete one size profile' })
-  @ApiResponse({ status: 200, description: 'Delete one size profile', type: SizeProfileEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Delete one size profile',
+    type: SizeProfileEntity,
+  })
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.sizeProfilesService.remove(+id);

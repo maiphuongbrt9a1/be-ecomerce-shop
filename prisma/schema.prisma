@@ -13,6 +13,11 @@ provider = "postgresql"
 url      = env("DATABASE_URL")
 }
 
+/* DEFINE ROLES:
+    USER ROLE IS CUSTOMER, 
+    ADMIN ROLE IS ADMIN, 
+    OPERATOR ROLE IS STAFF
+*/
 enum Role {
     USER
     ADMIN
@@ -100,7 +105,7 @@ model User {
     
     // Staff fields if user is staff
     staffCode   String?      @unique @db.VarChar(50)
-    isAdmin     Boolean     @default(false)
+    
 
     // relations of staff
     vouchers    Vouchers[]

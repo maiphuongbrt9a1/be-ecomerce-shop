@@ -35,21 +35,33 @@ export class MediaController {
   }
 
   @ApiOperation({ summary: 'Get all media files' })
-  @ApiResponse({ status: 200, description: 'Get all media files', type: [MediaEntity] })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all media files',
+    type: [MediaEntity],
+  })
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.mediaService.findAll(Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get one media file' })
-  @ApiResponse({ status: 200, description: 'Get one media file', type: MediaEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Get one media file',
+    type: MediaEntity,
+  })
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.mediaService.findOne(+id);
   }
 
   @ApiOperation({ summary: 'Update one media file' })
-  @ApiResponse({ status: 200, description: 'Update one media file', type: MediaEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Update one media file',
+    type: MediaEntity,
+  })
   @ApiBody({ type: UpdateMediaDto })
   @Patch('/:id')
   async update(
@@ -60,7 +72,11 @@ export class MediaController {
   }
 
   @ApiOperation({ summary: 'Delete one media file' })
-  @ApiResponse({ status: 200, description: 'Delete one media file', type: MediaEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Delete one media file',
+    type: MediaEntity,
+  })
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.mediaService.remove(+id);

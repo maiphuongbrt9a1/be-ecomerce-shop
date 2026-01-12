@@ -7,7 +7,10 @@ export class CategoryEntity {
   @ApiProperty({ example: 'Electronics' })
   name: string;
 
-  @ApiProperty({ example: 'Electronic devices and accessories', nullable: true })
+  @ApiProperty({
+    example: 'Electronic devices and accessories',
+    nullable: true,
+  })
   description: string | null;
 
   @ApiProperty({ example: 1, nullable: true })

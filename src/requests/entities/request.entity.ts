@@ -23,7 +23,9 @@ export class RequestEntity {
   @ApiProperty({ example: 'Product Return Request' })
   subject: string;
 
-  @ApiProperty({ example: 'The product arrived damaged and I would like to return it.' })
+  @ApiProperty({
+    example: 'The product arrived damaged and I would like to return it.',
+  })
   description: string;
 
   @ApiProperty({ enum: RequestStatus, example: RequestStatus.PENDING })

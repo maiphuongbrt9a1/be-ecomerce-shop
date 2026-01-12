@@ -31,7 +31,11 @@ export class ShopOfficesController {
   constructor(private readonly shopOfficesService: ShopOfficesService) {}
 
   @ApiOperation({ summary: 'Add new a shop office' })
-  @ApiResponse({ status: 201, description: 'Add new a shop office', type: ShopOfficeEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'Add new a shop office',
+    type: ShopOfficeEntity,
+  })
   @ApiBody({ type: CreateShopOfficeDto })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -42,7 +46,11 @@ export class ShopOfficesController {
   }
 
   @ApiOperation({ summary: 'Get shop office list' })
-  @ApiResponse({ status: 200, description: ' shop office list found!', type: [ShopOfficeEntity] })
+  @ApiResponse({
+    status: 200,
+    description: ' shop office list found!',
+    type: [ShopOfficeEntity],
+  })
   @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
@@ -50,7 +58,11 @@ export class ShopOfficesController {
   }
 
   @ApiOperation({ summary: 'Get shop office detail by ID' })
-  @ApiResponse({ status: 200, description: 'shop office found!', type: ShopOfficeEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'shop office found!',
+    type: ShopOfficeEntity,
+  })
   @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
@@ -58,7 +70,11 @@ export class ShopOfficesController {
   }
 
   @ApiOperation({ summary: 'Update a shop office' })
-  @ApiResponse({ status: 200, description: 'Update a shop office', type: ShopOfficeEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Update a shop office',
+    type: ShopOfficeEntity,
+  })
   @ApiBody({ type: UpdateShopOfficeDto })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -72,7 +88,11 @@ export class ShopOfficesController {
   }
 
   @ApiOperation({ summary: 'Delete a shop office' })
-  @ApiResponse({ status: 200, description: 'Delete a shop office', type: ShopOfficeEntity })
+  @ApiResponse({
+    status: 200,
+    description: 'Delete a shop office',
+    type: ShopOfficeEntity,
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema

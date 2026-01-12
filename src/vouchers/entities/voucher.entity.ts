@@ -18,7 +18,7 @@ export class VoucherEntity {
   @ApiProperty({ enum: DiscountType, example: DiscountType.FIXED_AMOUNT })
   discountType: DiscountType;
 
-  @ApiProperty({ example: 20.00 })
+  @ApiProperty({ example: 20.0 })
   discountValue: number;
 
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })

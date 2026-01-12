@@ -8,7 +8,6 @@ export interface RequestWithUser extends Request {
     name: string | null;
     email: string;
     role: string;
-    isAdmin: boolean;
     isActive: boolean;
   };
 }
@@ -20,7 +19,6 @@ export interface RequestWithUserInJWTStrategy extends Request {
     userId: bigint;
     username: string;
     role: string;
-    isAdmin: boolean;
     firstName: string | null;
     lastName: string | null;
     name: string | null;

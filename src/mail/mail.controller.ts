@@ -10,7 +10,11 @@ export class MailController {
 
   @Post('/hello-mail')
   @ApiOperation({ summary: 'Send hello mail from shop' })
-  @ApiResponse({ status: 201, description: 'Hello mail sent', type: MailResponseEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'Hello mail sent',
+    type: MailResponseEntity,
+  })
   sendHelloMail() {
     return this.mailService.sendHelloMail();
   }
@@ -18,7 +22,11 @@ export class MailController {
   @Post()
   @ApiOperation({ summary: 'Send custom mail' })
   @ApiBody({ type: CreateMailDto })
-  @ApiResponse({ status: 201, description: 'Custom mail sent successfully', type: MailResponseEntity })
+  @ApiResponse({
+    status: 201,
+    description: 'Custom mail sent successfully',
+    type: MailResponseEntity,
+  })
   create(@Body() createMailDto: CreateMailDto) {
     return this.mailService.create(createMailDto);
   }

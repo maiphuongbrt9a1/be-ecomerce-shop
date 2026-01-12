@@ -45,7 +45,6 @@ export class AuthService {
       name: user.firstName + ' ' + user.lastName,
       email: user.email,
       role: user.role,
-      isAdmin: user.isAdmin,
       isActive: user.isActive,
     };
 
@@ -57,7 +56,6 @@ export class AuthService {
       sub: user.id,
       username: user.email,
       role: user.role,
-      isAdmin: user.isAdmin,
       firstName: user.firstName,
       lastName: user.lastName,
       name: user.name,
@@ -70,7 +68,6 @@ export class AuthService {
         name: user.name,
         email: user.email,
         role: user.role,
-        isAdmin: user.isAdmin,
       },
       access_token: this.jwtService.sign(payload),
     };
@@ -102,7 +99,6 @@ export class AuthService {
         createdAt: new Date(),
         isActive: true,
         gender: Gender.OTHER,
-        isAdmin: false,
         codeActive: uuidv4().toString(),
         codeActiveExpire: dayjs().add(5, 'minutes').toDate(),
         staffCode: '',
@@ -124,7 +120,6 @@ export class AuthService {
         name: newUser.firstName + ' ' + newUser.lastName,
         email: newUser.email,
         role: newUser.role,
-        isAdmin: newUser.isAdmin,
         isActive: newUser.isActive,
       });
     }
@@ -136,7 +131,6 @@ export class AuthService {
       name: existUser.firstName + ' ' + existUser.lastName,
       email: existUser.email,
       role: existUser.role,
-      isAdmin: existUser.isAdmin,
       isActive: existUser.isActive,
     });
   }

@@ -13,15 +13,15 @@ class LoginUserData {
 
   @ApiProperty({ enum: Role, description: 'User role' })
   role: Role;
-
-  @ApiProperty({ example: false, description: 'Is admin flag' })
-  isAdmin: boolean;
 }
 
 export class LoginResponseEntity {
   @ApiProperty({ type: LoginUserData, description: 'User information' })
   user: LoginUserData;
 
-  @ApiProperty({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...', description: 'JWT access token' })
+  @ApiProperty({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    description: 'JWT access token',
+  })
   access_token: string;
 }
