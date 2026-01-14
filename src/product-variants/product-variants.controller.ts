@@ -125,6 +125,39 @@ export class ProductVariantsController {
   }
 
   @ApiOperation({ summary: 'Update a product variant' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
+          description: 'Product variant image files',
+        },
+        productId: { type: 'number', example: 1315 },
+        variantName: { type: 'string', example: 'name of product variant' },
+        variantColor: { type: 'string', example: 'red' },
+        variantSize: { type: 'string', example: 'XL' },
+        price: { type: 'number', example: 46546 },
+        stock: { type: 'number', example: 851 },
+        stockKeepingUnit: { type: 'string', example: 'EWDGDSED715545D' },
+        voucherId: { type: 'number', example: 1325 },
+        mediaIdsToDelete: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'int64',
+            example: '9007199254740993',
+          },
+          description:
+            'Array of media ids to delete. Big integers should be sent as strings.',
+        },
+        updatedAt: { type: 'string', format: 'date-time' },
+      },
+      required: [],
+    },
+  })
   @ApiResponse({
     status: 200,
     description: 'Update a product variant',
@@ -133,7 +166,6 @@ export class ProductVariantsController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  @ApiBody({ type: UpdateProductVariantDto })
   @Patch('/:id')
   @UseInterceptors(FilesInterceptor('files', 10))
   async update(
