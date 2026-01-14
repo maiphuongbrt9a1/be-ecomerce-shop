@@ -1,3 +1,4 @@
+import { Media } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 const saltOrRounds = 10;
 
@@ -20,4 +21,21 @@ export const comparePasswordHelper = async (
     console.log(error);
     throw new Error('Invalid password!');
   }
+};
+
+export const formatMediaFieldForProductVariant = (
+  medias: Media[] | [],
+  buildPublicMediaUrl: (url: string) => string,
+): Media[] | [] => {
+  if (medias && medias.length == 0) {
+    return medias;
+  } else if (medias && medias.length > 0) {
+    return medias.map((m: Media) => {
+      return {
+        ...m,
+        url: buildPublicMediaUrl(m.url),
+      };
+    });
+  }
+  return [];
 };

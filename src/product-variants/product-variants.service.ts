@@ -10,6 +10,8 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Media, Prisma, ProductVariants, Reviews } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
+import { formatMediaFieldForProductVariant } from '@/helpers/utils';
+import { ProductVariantsWithMediaInformation } from '@/helpers/types/types';
 
 @Injectable()
 export class ProductVariantsService {
@@ -49,10 +51,28 @@ export class ProductVariantsService {
       }
 
       // return new product variant
+      const newProductVariant =
+        await this.prismaService.productVariants.findUnique({
+          include: { media: true },
+          where: { id: productVariant.id },
+        });
+
+      if (!newProductVariant) {
+        this.logger.log('Failed to retrieve new product variant');
+        throw new NotFoundException('Failed to retrieve new product variant');
+      }
+
+      // generate full http url for media files
+      newProductVariant.media = formatMediaFieldForProductVariant(
+        newProductVariant.media,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+      );
+
       this.logger.log(
         'Product variant created successfully with id: ' + productVariant.id,
       );
-      return productVariant;
+
+      return newProductVariant;
     } catch (error) {
       this.logger.log('Error creating product variant: ' + error);
       throw new NotFoundException('Failed to create product variant');
@@ -62,11 +82,11 @@ export class ProductVariantsService {
   async findAll(
     page: number,
     perPage: number,
-  ): Promise<ProductVariants[] | []> {
+  ): Promise<ProductVariantsWithMediaInformation[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
       const productVariantList = await paginate<
-        ProductVariants,
+        ProductVariantsWithMediaInformation,
         Prisma.ProductVariantsFindManyArgs
       >(
         this.prismaService.productVariants,
@@ -78,6 +98,24 @@ export class ProductVariantsService {
         },
         { page: page },
       );
+
+      // generate full http url for media files
+      for (let i = 0; i < productVariantList.data.length; i++) {
+        const productVariant = productVariantList.data[i];
+        const originalMedia = productVariant.media; // Store original media for comparison
+        productVariant.media = formatMediaFieldForProductVariant(
+          productVariant.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+        );
+
+        // Check if the media field has changed
+        if (originalMedia !== productVariant.media) {
+          this.logger.log(
+            `Media field changed for product variant ID: ${productVariant.id}`,
+          );
+        }
+      }
+
       this.logger.log(
         `Retrieved ${productVariantList.data.length} product variants successfully`,
       );
@@ -88,7 +126,9 @@ export class ProductVariantsService {
     }
   }
 
-  async findOne(id: number): Promise<ProductVariants | null> {
+  async findOne(
+    id: number,
+  ): Promise<ProductVariantsWithMediaInformation | null> {
     try {
       const productVariant = await this.prismaService.productVariants.findFirst(
         {
@@ -102,6 +142,20 @@ export class ProductVariantsService {
       if (!productVariant) {
         throw new NotFoundException('Product Variant not found!');
       }
+
+      // generate full http url for media files
+      const originalMedia = productVariant.media; // Store original media for comparison
+      productVariant.media = formatMediaFieldForProductVariant(
+        productVariant.media,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+      );
+
+      if (originalMedia !== productVariant.media) {
+        this.logger.log(
+          `Media field changed for product variant ID: ${productVariant.id}`,
+        );
+      }
+
       this.logger.log('Retrieved product variant successfully with id: ' + id);
       return productVariant;
     } catch (error) {
@@ -115,7 +169,7 @@ export class ProductVariantsService {
     id: number,
     updateProductVariantDto: UpdateProductVariantDto,
     adminId: string,
-  ): Promise<ProductVariants> {
+  ): Promise<ProductVariantsWithMediaInformation> {
     try {
       // Find old product variant with media files and prepare to delete selected media files
       const oldProductVariant =
@@ -131,6 +185,7 @@ export class ProductVariantsService {
       // update product variant data
       const newProductVariant = await this.prismaService.productVariants.update(
         {
+          include: { media: true },
           where: { id: id },
           data: updateData,
         },
@@ -171,12 +226,38 @@ export class ProductVariantsService {
         }
       }
 
-      // return updated product variant
-      this.logger.log(
-        'Product variant updated successfully with id: ' + newProductVariant.id,
+      // generate full http url for media files
+      const resultProductVariant =
+        await this.prismaService.productVariants.findUnique({
+          include: { media: true },
+          where: { id: newProductVariant.id },
+        });
+
+      if (!resultProductVariant) {
+        throw new NotFoundException(
+          'Failed to retrieve updated product variant',
+        );
+      }
+
+      const originalMedia = resultProductVariant.media; // Store original media for comparison
+      resultProductVariant.media = formatMediaFieldForProductVariant(
+        resultProductVariant.media,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
       );
 
-      return newProductVariant;
+      if (originalMedia !== resultProductVariant.media) {
+        this.logger.log(
+          `Media field changed for product variant ID: ${resultProductVariant.id}`,
+        );
+      }
+
+      // return updated product variant
+      this.logger.log(
+        'Product variant updated successfully with id: ' +
+          resultProductVariant.id,
+      );
+
+      return resultProductVariant;
     } catch (error) {
       this.logger.log('Error updating product variant: ' + error);
       throw new NotFoundException('Failed to update product variant');
@@ -222,7 +303,13 @@ export class ProductVariantsService {
       const paginate = createPaginator({ perPage: perPage });
       const result = await paginate<Reviews, Prisma.ReviewsFindManyArgs>(
         this.prismaService.reviews,
-        { where: { productVariantId: id }, orderBy: { id: 'asc' } },
+        {
+          include: {
+            media: true,
+          },
+          where: { productVariantId: id },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
       this.logger.log(
