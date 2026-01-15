@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -8,6 +13,7 @@ import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 
 @Injectable()
 export class ReviewsService {
+  private readonly logger = new Logger(ReviewsService.name);
   constructor(
     private readonly prismaService: PrismaService,
     private readonly awsService: AwsS3Service,
@@ -18,62 +24,90 @@ export class ReviewsService {
     createReviewDto: CreateReviewDto,
     userId: string,
   ): Promise<Reviews> {
-    const result = await this.prismaService.reviews.create({
-      data: { ...createReviewDto },
-    });
+    try {
+      const result = await this.prismaService.reviews.create({
+        data: { ...createReviewDto },
+      });
 
-    if (!result) {
-      throw new NotFoundException('Failed to create review');
+      if (!result) {
+        throw new NotFoundException('Failed to create review');
+      }
+
+      const mediaForReview = await this.awsService.uploadManyReviewFile(
+        files,
+        userId,
+        result.id.toString(),
+      );
+
+      if (!mediaForReview) {
+        throw new NotFoundException('Failed to upload review media file');
+      }
+
+      this.logger.log('Review created successfully', result.id);
+      return result;
+    } catch (error) {
+      this.logger.log('Error creating review', error);
+      throw new BadRequestException('Failed to create review');
     }
-
-    const mediaForReview = await this.awsService.uploadManyReviewFile(
-      files,
-      userId,
-      result.id.toString(),
-    );
-
-    if (!mediaForReview) {
-      throw new NotFoundException('Failed to upload review media file');
-    }
-
-    return result;
   }
 
   async findAll(page: number, perPage: number): Promise<Reviews[] | []> {
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<Reviews, Prisma.ReviewsFindManyArgs>(
-      this.prismaService.reviews,
-      { orderBy: { id: 'asc' } },
-      { page: page },
-    );
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<Reviews, Prisma.ReviewsFindManyArgs>(
+        this.prismaService.reviews,
+        { orderBy: { id: 'asc' } },
+        { page: page },
+      );
 
-    return result.data;
+      this.logger.log('Fetched reviews successfully');
+      return result.data;
+    } catch (error) {
+      this.logger.log('Error fetching reviews', error);
+      throw new BadRequestException('Failed to fetch reviews');
+    }
   }
 
   async findOne(id: number): Promise<Reviews | null> {
-    const result = await this.prismaService.reviews.findFirst({
-      where: { id: id },
-    });
+    try {
+      const result = await this.prismaService.reviews.findFirst({
+        where: { id: id },
+      });
 
-    if (!result) {
-      throw new NotFoundException('Review not found!');
+      if (!result) {
+        throw new NotFoundException('Review not found!');
+      }
+
+      return result;
+    } catch (error) {
+      this.logger.log('Error fetching review', error);
+      throw new BadRequestException('Failed to fetch review');
     }
-
-    return result;
   }
 
   async update(id: number, updateReviewDto: UpdateReviewDto): Promise<Reviews> {
-    const result = await this.prismaService.reviews.update({
-      where: { id: id },
-      data: { ...updateReviewDto },
-    });
-    return result;
+    try {
+      const result = await this.prismaService.reviews.update({
+        where: { id: id },
+        data: { ...updateReviewDto },
+      });
+      return result;
+    } catch (error) {
+      this.logger.log('Error updating review', error);
+      throw new BadRequestException('Failed to update review');
+    }
   }
 
   async remove(id: number): Promise<Reviews> {
-    return await this.prismaService.reviews.delete({
-      where: { id: id },
-    });
+    try {
+      this.logger.log('Deleting review', id);
+      return await this.prismaService.reviews.delete({
+        where: { id: id },
+      });
+    } catch (error) {
+      this.logger.log('Error deleting review', error);
+      throw new BadRequestException('Failed to delete review');
+    }
   }
 
   async getAllMediaOfReview(
@@ -81,13 +115,19 @@ export class ReviewsService {
     page: number,
     perPage: number,
   ): Promise<Media[] | []> {
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<Media, Prisma.MediaFindManyArgs>(
-      this.prismaService.media,
-      { where: { reviewId: id }, orderBy: { id: 'asc' } },
-      { page: page },
-    );
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<Media, Prisma.MediaFindManyArgs>(
+        this.prismaService.media,
+        { where: { reviewId: id }, orderBy: { id: 'asc' } },
+        { page: page },
+      );
 
-    return result.data;
+      this.logger.log('Fetched media of review successfully', id);
+      return result.data;
+    } catch (error) {
+      this.logger.log('Error fetching media of review', error);
+      throw new BadRequestException('Failed to fetch media of review');
+    }
   }
 }

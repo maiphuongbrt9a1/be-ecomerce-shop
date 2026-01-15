@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateShipmentDto } from './dto/create-shipment.dto';
 import { UpdateShipmentDto } from './dto/update-shipment.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -7,53 +12,82 @@ import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
 export class ShipmentsService {
+  private readonly logger = new Logger(ShipmentsService.name);
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createShipmentDto: CreateShipmentDto): Promise<Shipments> {
-    const result = await this.prismaService.shipments.create({
-      data: { ...createShipmentDto },
-    });
-
-    return result;
+    try {
+      const result = await this.prismaService.shipments.create({
+        data: { ...createShipmentDto },
+      });
+      this.logger.log('Shipment created successfully', result.id);
+      return result;
+    } catch (error) {
+      this.logger.log('Error creating shipment', error);
+      throw new BadRequestException('Failed to create shipment');
+    }
   }
 
   async findAll(page: number, perPage: number): Promise<Shipments[] | []> {
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<Shipments, Prisma.ShipmentsFindManyArgs>(
-      this.prismaService.shipments,
-      { orderBy: { id: 'asc' } },
-      { page: page },
-    );
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<Shipments, Prisma.ShipmentsFindManyArgs>(
+        this.prismaService.shipments,
+        { orderBy: { id: 'asc' } },
+        { page: page },
+      );
 
-    return result.data;
+      this.logger.log('Fetched shipments successfully');
+      return result.data;
+    } catch (error) {
+      this.logger.log('Error fetching shipments', error);
+      throw new BadRequestException('Failed to fetch shipments');
+    }
   }
 
   async findOne(id: number): Promise<Shipments | null> {
-    const result = await this.prismaService.shipments.findFirst({
-      where: { id: id },
-    });
+    try {
+      const result = await this.prismaService.shipments.findFirst({
+        where: { id: id },
+      });
 
-    if (!result) {
-      throw new NotFoundException('Shipments not found!');
+      if (!result) {
+        throw new NotFoundException('Shipments not found!');
+      }
+      this.logger.log('Fetched shipment successfully', id);
+      return result;
+    } catch (error) {
+      this.logger.log('Error fetching shipment', error);
+      throw new BadRequestException('Failed to fetch shipment');
     }
-
-    return result;
   }
 
   async update(
     id: number,
     updateShipmentDto: UpdateShipmentDto,
   ): Promise<Shipments> {
-    const result = await this.prismaService.shipments.update({
-      where: { id: id },
-      data: { ...updateShipmentDto },
-    });
-    return result;
+    try {
+      const result = await this.prismaService.shipments.update({
+        where: { id: id },
+        data: { ...updateShipmentDto },
+      });
+      this.logger.log('Shipment updated successfully', id);
+      return result;
+    } catch (error) {
+      this.logger.log('Error updating shipment', error);
+      throw new BadRequestException('Failed to update shipment');
+    }
   }
 
   async remove(id: number): Promise<Shipments> {
-    return await this.prismaService.shipments.delete({
-      where: { id: id },
-    });
+    try {
+      this.logger.log('Deleting shipment', id);
+      return await this.prismaService.shipments.delete({
+        where: { id: id },
+      });
+    } catch (error) {
+      this.logger.log('Error deleting shipment', error);
+      throw new BadRequestException('Failed to delete shipment');
+    }
   }
 }

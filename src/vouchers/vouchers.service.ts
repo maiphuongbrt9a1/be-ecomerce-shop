@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -12,54 +17,86 @@ import {
 
 @Injectable()
 export class VouchersService {
+  private readonly logger = new Logger(VouchersService.name);
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createVoucherDto: CreateVoucherDto): Promise<Vouchers> {
-    const result = await this.prismaService.vouchers.create({
-      data: { ...createVoucherDto },
-    });
+    try {
+      const result = await this.prismaService.vouchers.create({
+        data: { ...createVoucherDto },
+      });
 
-    return result;
+      this.logger.log('Voucher created successfully', result.id);
+      return result;
+    } catch (error) {
+      this.logger.log('Error creating voucher', error);
+      throw new BadRequestException('Failed to create voucher');
+    }
   }
 
   async findAll(page: number, perPage: number): Promise<Vouchers[] | []> {
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<Vouchers, Prisma.VouchersFindManyArgs>(
-      this.prismaService.vouchers,
-      { orderBy: { id: 'asc' } },
-      { page: page },
-    );
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<Vouchers, Prisma.VouchersFindManyArgs>(
+        this.prismaService.vouchers,
+        { orderBy: { id: 'asc' } },
+        { page: page },
+      );
 
-    return result.data;
+      this.logger.log('Vouchers retrieved successfully');
+      return result.data;
+    } catch (error) {
+      this.logger.log('Error retrieving vouchers', error);
+      throw new BadRequestException('Failed to retrieve vouchers');
+    }
   }
 
   async findOne(id: number): Promise<Vouchers | null> {
-    const result = await this.prismaService.vouchers.findFirst({
-      where: { id: id },
-    });
+    try {
+      const result = await this.prismaService.vouchers.findFirst({
+        where: { id: id },
+      });
 
-    if (!result) {
-      throw new NotFoundException('Voucher not found!');
+      if (!result) {
+        throw new NotFoundException('Voucher not found!');
+      }
+
+      this.logger.log('Voucher retrieved successfully', id);
+      return result;
+    } catch (error) {
+      this.logger.log('Error retrieving voucher', error);
+      throw new BadRequestException('Failed to retrieve voucher');
     }
-
-    return result;
   }
 
   async update(
     id: number,
     updateVoucherDto: UpdateVoucherDto,
   ): Promise<Vouchers> {
-    const result = await this.prismaService.vouchers.update({
-      where: { id: id },
-      data: { ...updateVoucherDto },
-    });
-    return result;
+    try {
+      const result = await this.prismaService.vouchers.update({
+        where: { id: id },
+        data: { ...updateVoucherDto },
+      });
+
+      this.logger.log('Voucher updated successfully', id);
+      return result;
+    } catch (error) {
+      this.logger.log('Error updating voucher', error);
+      throw new BadRequestException('Failed to update voucher');
+    }
   }
 
   async remove(id: number): Promise<Vouchers> {
-    return await this.prismaService.vouchers.delete({
-      where: { id: id },
-    });
+    try {
+      this.logger.log('Voucher deleted successfully', id);
+      return await this.prismaService.vouchers.delete({
+        where: { id: id },
+      });
+    } catch (error) {
+      this.logger.log('Error deleting voucher', error);
+      throw new BadRequestException('Failed to delete voucher');
+    }
   }
 
   async getAllCategoriesAreAppliedThisVoucher(
@@ -67,20 +104,31 @@ export class VouchersService {
     page: number,
     perPage: number,
   ): Promise<VoucherWithAllAppliedCategoriesDetailInformation[] | []> {
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<
-      VoucherWithAllAppliedCategoriesDetailInformation,
-      Prisma.VouchersFindManyArgs
-    >(
-      this.prismaService.vouchers,
-      {
-        where: { id: id },
-        orderBy: { id: 'asc' },
-      },
-      { page: page },
-    );
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        VoucherWithAllAppliedCategoriesDetailInformation,
+        Prisma.VouchersFindManyArgs
+      >(
+        this.prismaService.vouchers,
+        {
+          where: { id: id },
+          orderBy: { id: 'asc' },
+        },
+        { page: page },
+      );
 
-    return result.data;
+      this.logger.log(
+        'Categories applied to voucher retrieved successfully',
+        id,
+      );
+      return result.data;
+    } catch (error) {
+      this.logger.log('Error retrieving categories applied to voucher', error);
+      throw new BadRequestException(
+        'Failed to retrieve categories applied to voucher',
+      );
+    }
   }
 
   async getAllProductsAreAppliedThisVoucher(
@@ -88,20 +136,28 @@ export class VouchersService {
     page: number,
     perPage: number,
   ): Promise<VoucherWithAllAppliedProductsDetailInformation[] | []> {
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<
-      VoucherWithAllAppliedProductsDetailInformation,
-      Prisma.VouchersFindManyArgs
-    >(
-      this.prismaService.vouchers,
-      {
-        where: { id: id },
-        orderBy: { id: 'asc' },
-      },
-      { page: page },
-    );
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        VoucherWithAllAppliedProductsDetailInformation,
+        Prisma.VouchersFindManyArgs
+      >(
+        this.prismaService.vouchers,
+        {
+          where: { id: id },
+          orderBy: { id: 'asc' },
+        },
+        { page: page },
+      );
 
-    return result.data;
+      this.logger.log('Products applied to voucher retrieved successfully', id);
+      return result.data;
+    } catch (error) {
+      this.logger.log('Error retrieving products applied to voucher', error);
+      throw new BadRequestException(
+        'Failed to retrieve products applied to voucher',
+      );
+    }
   }
 
   async getAllProductVariantsAreAppliedThisVoucher(
@@ -109,19 +165,33 @@ export class VouchersService {
     page: number,
     perPage: number,
   ): Promise<VoucherWithAllAppliedProductVariantsDetailInformation[] | []> {
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<
-      VoucherWithAllAppliedProductVariantsDetailInformation,
-      Prisma.VouchersFindManyArgs
-    >(
-      this.prismaService.vouchers,
-      {
-        where: { id: id },
-        orderBy: { id: 'asc' },
-      },
-      { page: page },
-    );
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        VoucherWithAllAppliedProductVariantsDetailInformation,
+        Prisma.VouchersFindManyArgs
+      >(
+        this.prismaService.vouchers,
+        {
+          where: { id: id },
+          orderBy: { id: 'asc' },
+        },
+        { page: page },
+      );
 
-    return result.data;
+      this.logger.log(
+        'Product variants applied to voucher retrieved successfully',
+        id,
+      );
+      return result.data;
+    } catch (error) {
+      this.logger.log(
+        'Error retrieving product variants applied to voucher',
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to retrieve product variants applied to voucher',
+      );
+    }
   }
 }

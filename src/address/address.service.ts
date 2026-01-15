@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -7,56 +12,90 @@ import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
 export class AddressService {
+  private readonly logger = new Logger(AddressService.name);
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createAddressDto: CreateAddressDto): Promise<Address> {
-    const address = await this.prismaService.address.create({
-      data: { ...createAddressDto },
-    });
+    try {
+      const address = await this.prismaService.address.create({
+        data: { ...createAddressDto },
+      });
 
-    return address;
+      this.logger.log(`Address created with ID: ${address.id}`);
+      return address;
+    } catch (error) {
+      this.logger.error('Failed to create address: ', error);
+      throw new BadRequestException('Failed to create address');
+    }
   }
 
   async findAll(page: number, perPage: number): Promise<Address[] | []> {
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<Address, Prisma.AddressFindManyArgs>(
-      this.prismaService.address,
-      { orderBy: { id: 'asc' } },
-      { page: page },
-    );
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<Address, Prisma.AddressFindManyArgs>(
+        this.prismaService.address,
+        { orderBy: { id: 'asc' } },
+        { page: page },
+      );
 
-    return result.data;
+      this.logger.log(
+        `Fetched all addresses - Page: ${page}, Per Page: ${perPage}`,
+      );
+
+      return result.data;
+    } catch (error) {
+      this.logger.error('Failed to fetch all addresses: ', error);
+      throw new BadRequestException('Failed to fetch all addresses');
+    }
   }
 
   async findOne(id: number): Promise<Address | null> {
-    const address = await this.prismaService.address.findFirst({
-      where: { id: id },
-    });
+    try {
+      const address = await this.prismaService.address.findFirst({
+        where: { id: id },
+      });
 
-    if (!address) {
-      throw new NotFoundException('Address not found!');
+      if (!address) {
+        throw new NotFoundException('Address not found!');
+      }
+
+      this.logger.log(`Fetched address with ID: ${id}`);
+      return address;
+    } catch (error) {
+      this.logger.error(`Failed to fetch address with ID ${id}: `, error);
+      throw new BadRequestException('Failed to fetch address');
     }
-
-    return address;
   }
 
   async update(
     id: number,
     updateAddressDto: UpdateAddressDto,
   ): Promise<Address> {
-    const address = await this.prismaService.address.update({
-      where: { id: id },
-      data: { ...updateAddressDto },
-    });
+    try {
+      const address = await this.prismaService.address.update({
+        where: { id: id },
+        data: { ...updateAddressDto },
+      });
 
-    return address;
+      this.logger.log(`Updated address with ID: ${id}`);
+      return address;
+    } catch (error) {
+      this.logger.error(`Failed to update address with ID ${id}: `, error);
+      throw new BadRequestException('Failed to update address');
+    }
   }
 
   async remove(id: number): Promise<Address> {
-    const address = await this.prismaService.address.delete({
-      where: { id: id },
-    });
+    try {
+      const address = await this.prismaService.address.delete({
+        where: { id: id },
+      });
 
-    return address;
+      this.logger.log(`Deleted address with ID: ${id}`);
+      return address;
+    } catch (error) {
+      this.logger.error(`Failed to delete address with ID ${id}: `, error);
+      throw new BadRequestException('Failed to delete address');
+    }
   }
 }

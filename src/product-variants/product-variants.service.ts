@@ -15,7 +15,7 @@ import { ProductVariantsWithMediaInformation } from '@/helpers/types/types';
 
 @Injectable()
 export class ProductVariantsService {
-  private readonly logger = new Logger(AwsS3Service.name);
+  private readonly logger = new Logger(ProductVariantsService.name);
   constructor(
     private readonly prismaService: PrismaService,
     private readonly awsService: AwsS3Service,
