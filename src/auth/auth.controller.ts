@@ -15,7 +15,7 @@ import {
 import { Public, ResponseMessage } from '@/decorator/customize';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { JwtAuthGuard } from './passport/jwt-auth.guard';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import type {
   RequestWithUser,
   RequestWithUserInJWTStrategy,
@@ -26,6 +26,11 @@ import { GoogleOAuthGuard } from './passport/google-oauth.guard';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful, returns access token and user info.',
+  })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Post('login')
   @Public()
   @UseGuards(LocalAuthGuard)
@@ -35,6 +40,13 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Profile fetched successfully.',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ResponseMessage('Fetch user profile')
@@ -43,6 +55,11 @@ export class AuthController {
     return req.user;
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'User registered successfully.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   @UseGuards(JwtAuthGuard)
   @Post('signup')
   @Public()
@@ -72,6 +89,11 @@ export class AuthController {
   @ResponseMessage('Check code active account')
   @ApiOperation({ summary: 'Check code active account' })
   @ApiBody({ type: CodeAuthDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Check code successful.',
+  })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   async checkCode(@Body() registerDto: CodeAuthDto) {
     return await this.authService.checkCode(registerDto);
   }
@@ -80,6 +102,11 @@ export class AuthController {
   @Public()
   @ResponseMessage('Retry active account')
   @ApiOperation({ summary: 'Retry active account' })
+  @ApiResponse({
+    status: 200,
+    description: 'Retry active account successful.',
+  })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   async retryActive(@Body('email') email: string) {
     return await this.authService.retryActive(email);
   }
@@ -88,6 +115,11 @@ export class AuthController {
   @Public()
   @ResponseMessage('User retry password')
   @ApiOperation({ summary: 'User retry password' })
+  @ApiResponse({
+    status: 200,
+    description: 'User retry password successful.',
+  })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   async retryPassword(@Body('email') email: string) {
     return await this.authService.retryPassword(email);
   }
@@ -96,6 +128,11 @@ export class AuthController {
   @Public()
   @ResponseMessage('User change password')
   @ApiOperation({ summary: 'User change password' })
+  @ApiResponse({
+    status: 200,
+    description: 'User change password successful.',
+  })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBody({ type: ChangePasswordAuthDto })
   async changePassword(@Body() data: ChangePasswordAuthDto) {
     return await this.authService.changePassword(data);

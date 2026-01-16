@@ -32,6 +32,8 @@ export class CartItemsController {
     description: 'Create a new cart item',
     type: CartItemEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -47,6 +49,8 @@ export class CartItemsController {
     description: 'Get all cart items',
     type: [CartItemEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -61,6 +65,8 @@ export class CartItemsController {
     description: 'Get one cart item',
     type: CartItemEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -75,6 +81,8 @@ export class CartItemsController {
     description: 'Update one cart item',
     type: CartItemEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -93,6 +101,8 @@ export class CartItemsController {
     description: 'Delete one cart item',
     type: CartItemEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')

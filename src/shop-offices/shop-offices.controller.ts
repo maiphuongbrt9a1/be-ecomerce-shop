@@ -36,6 +36,8 @@ export class ShopOfficesController {
     description: 'Add new a shop office',
     type: ShopOfficeEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBody({ type: CreateShopOfficeDto })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -51,6 +53,8 @@ export class ShopOfficesController {
     description: ' shop office list found!',
     type: [ShopOfficeEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
@@ -63,6 +67,8 @@ export class ShopOfficesController {
     description: 'shop office found!',
     type: ShopOfficeEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
@@ -75,6 +81,8 @@ export class ShopOfficesController {
     description: 'Update a shop office',
     type: ShopOfficeEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBody({ type: UpdateShopOfficeDto })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
@@ -93,6 +101,8 @@ export class ShopOfficesController {
     description: 'Delete a shop office',
     type: ShopOfficeEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema
@@ -107,6 +117,8 @@ export class ShopOfficesController {
     description: 'shop office"s manager list found!',
     type: [UserEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id/manager-list')
   async findAllManagersOfShopOffice(@Param('id') id: string) {
@@ -119,6 +131,8 @@ export class ShopOfficesController {
     description: 'shop office"s address found!',
     type: AddressEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id/address')
   async findAddressOfShopOffice(@Param('id') id: string) {
@@ -131,6 +145,8 @@ export class ShopOfficesController {
     description: 'shop office"s products found!',
     type: [ProductEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id/product-list')
   async findAllProductsOfShopOffice(
@@ -151,6 +167,8 @@ export class ShopOfficesController {
     description: 'shop office"s categories found!',
     type: [CategoryEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id/category-list')
   async findAllCategoryOfShopOffice(@Param('id') id: string) {
@@ -166,6 +184,8 @@ export class ShopOfficesController {
     description: 'shop office"s products of category found!',
     type: [ProductEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:shopId/category/:categoryId/product-list')
   async findAllProductsOfCategoryOfShopOffice(

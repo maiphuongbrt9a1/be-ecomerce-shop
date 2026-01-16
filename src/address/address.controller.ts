@@ -7,12 +7,20 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { AddressEntity } from './entities/address.entity';
+import { RolesGuard } from '@/auth/passport/permission.guard';
+import { Roles } from '@/decorator/customize';
 
 @Controller('address')
 export class AddressController {
@@ -24,7 +32,11 @@ export class AddressController {
     description: 'Create a new address',
     type: AddressEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiBody({ type: CreateAddressDto })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Post()
   async create(@Body() createAddressDto: CreateAddressDto) {
     return await this.addressService.create(createAddressDto);
@@ -36,6 +48,11 @@ export class AddressController {
     description: 'Get all addresses',
     type: [AddressEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.addressService.findAll(Number(page), Number(perPage));
@@ -47,6 +64,11 @@ export class AddressController {
     description: 'Get an address',
     type: AddressEntity,
   })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.addressService.findOne(+id);
@@ -58,6 +80,11 @@ export class AddressController {
     description: 'Update an address',
     type: AddressEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @ApiBody({ type: UpdateAddressDto })
   @Patch('/:id')
   async update(
@@ -73,6 +100,11 @@ export class AddressController {
     description: 'Delete an address',
     type: AddressEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.addressService.remove(+id);

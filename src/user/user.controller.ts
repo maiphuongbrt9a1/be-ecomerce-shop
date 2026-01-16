@@ -16,6 +16,7 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
@@ -25,7 +26,7 @@ import {
 } from '@/user/dtos/create.user.dto';
 import { UpdateUserDto } from '@/user/dtos/update.user.dto';
 import { RolesGuard } from '@/auth/passport/permission.guard';
-import { Roles } from '@/decorator/customize';
+import { Public, Roles } from '@/decorator/customize';
 import { CreateCartDto } from '@/cart/dto/create-cart.dto';
 import { UpdateCartDto } from '@/cart/dto/update-cart.dto';
 import { CreateCartItemDto } from '@/cart-items/dto/create-cart-item.dto';
@@ -37,9 +38,13 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get user list' })
   @ApiResponse({ status: 200, description: 'User list found!' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
-  @Roles('ADMIN') // please check role is in Role enum of prisma schema
+  @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get()
   async getAllUsers(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.userService.getAllUser(Number(page), Number(perPage));
@@ -47,19 +52,42 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get user detail by ID' })
   @ApiResponse({ status: 200, description: 'User found!' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'USER', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id')
   async getUserDetailById(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.getUserDetail(id);
   }
 
   @ApiOperation({ summary: 'Delete a user' })
+  @ApiResponse({ status: 200, description: 'User deleted successfully!' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'USER', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Delete('/:id')
   async deleteUserById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.deleteAnUser(id);
   }
 
   @ApiOperation({ summary: 'Add a new user' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 201, description: 'User created successfully!' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN') // please check role is in Role enum of prisma schema
   @ApiBody({ type: CreateUserDto })
   @UseInterceptors(FileInterceptor('file'))
   @Post()
@@ -71,7 +99,9 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Add a new user by Google account' })
-  @ApiBearerAuth()
+  @ApiResponse({ status: 201, description: 'User created successfully!' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @Public()
   @ApiBody({ type: CreateUserByGoogleAccountDto })
   @Post('google-account')
   async createAnUserByGoogleAccount(
@@ -83,6 +113,14 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Update a user' })
+  @ApiResponse({ status: 200, description: 'User updated successfully!' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'USER', 'OPERATOR') // please check role is in Role enum of prisma schema
   @ApiBody({ type: UpdateUserDto })
   @Patch('/:id')
   async updateAnUser(
@@ -94,6 +132,12 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get address list of a user' })
   @ApiResponse({ status: 200, description: 'User address list found!' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'USER', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/address-list')
   async getAddressOfUser(
     @Param('id', ParseIntPipe) userId: number,
@@ -109,6 +153,9 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get shop office of a user' })
   @ApiResponse({ status: 200, description: 'User shop office found!' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
@@ -122,6 +169,10 @@ export class UserController {
     status: 200,
     description: 'Get avatar of user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @Public()
   @Get('/:id/avatar')
   async getAvatarOfUser(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.getAvatarOfUser(id);
@@ -132,6 +183,9 @@ export class UserController {
     status: 200,
     description: 'Get vouchers are created by a user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
@@ -153,6 +207,9 @@ export class UserController {
     status: 200,
     description: 'Get products are created by a user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
@@ -174,6 +231,9 @@ export class UserController {
     status: 200,
     description: 'Get product variants are created by a user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
@@ -195,6 +255,9 @@ export class UserController {
     status: 200,
     description: 'Get categories are created by a user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
@@ -216,6 +279,12 @@ export class UserController {
     status: 200,
     description: 'Get orders are created by a user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'USER', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/order-list')
   async getAllOrdersCreatedByUser(
     @Param('id', ParseIntPipe) id: number,
@@ -234,6 +303,9 @@ export class UserController {
     status: 200,
     description: 'Get orders are processed by a user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
@@ -255,6 +327,9 @@ export class UserController {
     status: 200,
     description: 'Get shipments are processed by a user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
@@ -276,6 +351,12 @@ export class UserController {
     status: 200,
     description: 'Get requests of user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'USER', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/request-list')
   async getRequestsOfUser(
     @Param('id', ParseIntPipe) id: number,
@@ -294,6 +375,9 @@ export class UserController {
     status: 200,
     description: 'Get processed requests of user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
@@ -315,6 +399,12 @@ export class UserController {
     status: 200,
     description: 'Get size-profiles of user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'USER', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/size-profile-list')
   async getSizeProfilesOfUser(
     @Param('id', ParseIntPipe) id: number,
@@ -333,6 +423,10 @@ export class UserController {
     status: 200,
     description: 'Get reviews of user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @Public()
   @Get('/:id/review-list')
   async getReviewsOfUser(
     @Param('id', ParseIntPipe) id: number,
@@ -355,6 +449,9 @@ export class UserController {
     description:
       'Create a new cart (only initial id user in cart table. Do not add any cart items)',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -371,6 +468,9 @@ export class UserController {
     status: 201,
     description: 'Add a new product variant (cart item) to cart',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -389,6 +489,12 @@ export class UserController {
     description:
       'Get cart id of user (only get id user in cart table. Do not get any cart items)',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'USER', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/cart')
   async getCartIdOfUser(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.getCartIdOfUser(id);
@@ -403,6 +509,9 @@ export class UserController {
     description:
       'Update one cart (only update id user in cart table. Do not add any cart items)',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -420,6 +529,9 @@ export class UserController {
     status: 200,
     description: 'Get user cart with cart items detail',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -433,6 +545,12 @@ export class UserController {
     status: 200,
     description: 'Get saved vouchers of user',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
+  @Roles('ADMIN', 'USER', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get('/:id/saved-voucher-list')
   async getSavedVouchersOfUser(
     @Param('id', ParseIntPipe) id: number,

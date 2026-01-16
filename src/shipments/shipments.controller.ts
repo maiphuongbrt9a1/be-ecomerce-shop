@@ -32,6 +32,11 @@ export class ShipmentsController {
     description: 'Create a new shipment',
     type: ShipmentEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
   @ApiBody({ type: CreateShipmentDto })
   @Post()
   async create(@Body() createShipmentDto: CreateShipmentDto) {
@@ -44,6 +49,11 @@ export class ShipmentsController {
     description: 'Get all shipments',
     type: [ShipmentEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.shipmentsService.findAll(Number(page), Number(perPage));
@@ -55,6 +65,11 @@ export class ShipmentsController {
     description: 'Get one shipment',
     type: ShipmentEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR', 'USER')
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.shipmentsService.findOne(+id);
@@ -66,6 +81,8 @@ export class ShipmentsController {
     description: 'Update one shipment',
     type: ShipmentEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -84,6 +101,8 @@ export class ShipmentsController {
     description: 'Delete one shipment',
     type: ShipmentEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')

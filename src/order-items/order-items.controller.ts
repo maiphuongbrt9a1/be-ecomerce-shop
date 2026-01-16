@@ -7,12 +7,20 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { OrderItemsService } from './order-items.service';
 import { CreateOrderItemDto } from './dto/create-order-item.dto';
 import { UpdateOrderItemDto } from './dto/update-order-item.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { OrderItemEntity } from './entities/order-item.entity';
+import { RolesGuard } from '@/auth/passport/permission.guard';
+import { Roles } from '@/decorator/customize';
 
 @Controller('order-items')
 export class OrderItemsController {
@@ -25,6 +33,11 @@ export class OrderItemsController {
     type: OrderItemEntity,
   })
   @ApiBody({ type: CreateOrderItemDto })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Post()
   async create(@Body() createOrderItemDto: CreateOrderItemDto) {
     return await this.orderItemsService.create(createOrderItemDto);
@@ -36,6 +49,11 @@ export class OrderItemsController {
     description: 'Get all order items',
     type: [OrderItemEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.orderItemsService.findAll(Number(page), Number(perPage));
@@ -47,6 +65,11 @@ export class OrderItemsController {
     description: 'Get one order item',
     type: OrderItemEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.orderItemsService.findOne(+id);
@@ -58,6 +81,11 @@ export class OrderItemsController {
     description: 'Update one order item',
     type: OrderItemEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @ApiBody({ type: UpdateOrderItemDto })
   @Patch('/:id')
   async update(
@@ -73,6 +101,11 @@ export class OrderItemsController {
     description: 'Delete one order item',
     type: OrderItemEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.orderItemsService.remove(+id);

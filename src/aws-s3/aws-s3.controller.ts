@@ -20,7 +20,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
-import { Roles } from '@/decorator/customize';
+import { Public, Roles } from '@/decorator/customize';
 import * as AWS from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
 
@@ -38,6 +38,8 @@ export class AwsS3Controller {
     description:
       'Get all files from one folder of server Do not contain / character in last. And folder url is in url field of media table. And folder url is in url field of media table but delete file name by front-end',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -60,6 +62,8 @@ export class AwsS3Controller {
     description:
       'Download file from server. And target file url is in url field of media table',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -82,6 +86,9 @@ export class AwsS3Controller {
     description:
       'Build a https link for media file stored in S3 bucket using its key. It"s key is file url in url field of media table',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @Public()
   @Get('/build-public-media-url')
   buildPublicMediaUrl(@Query('key') key: string): string {
     this.logger.log('Building public media URL for key ' + key);
@@ -95,6 +102,8 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload logo shop file to server',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -126,6 +135,8 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload banner shop file to server',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -157,6 +168,8 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload one product file to server',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -193,6 +206,8 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload many product file to server',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -232,6 +247,8 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload one category file to server',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -270,6 +287,8 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload one user avatar file to server',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
@@ -301,6 +320,8 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload many user avatar file to server',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
@@ -335,6 +356,8 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload one review file to server',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
@@ -371,6 +394,8 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload many review product file to server',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
@@ -410,6 +435,8 @@ export class AwsS3Controller {
     status: 200,
     description: 'Upload many media file for request to server',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')

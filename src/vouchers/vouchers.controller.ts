@@ -35,6 +35,8 @@ export class VouchersController {
     description: 'Create a new voucher',
     type: VoucherEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -50,6 +52,8 @@ export class VouchersController {
     description: 'Get all vouchers',
     type: [VoucherEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
@@ -62,6 +66,8 @@ export class VouchersController {
     description: 'Get a voucher',
     type: VoucherEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
@@ -74,6 +80,8 @@ export class VouchersController {
     description: 'Update a voucher',
     type: VoucherEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -92,6 +100,8 @@ export class VouchersController {
     description: 'Delete a voucher',
     type: VoucherEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -106,6 +116,8 @@ export class VouchersController {
     description: 'Get all categories are applied this voucher',
     type: [CategoryEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id/all-categories-applied')
   async getAllCategoriesAreAppliedThisVoucher(
@@ -126,6 +138,8 @@ export class VouchersController {
     description: 'Get all products are applied this voucher',
     type: [ProductEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id/all-products-applied')
   async getAllProductsAreAppliedThisVoucher(
@@ -148,6 +162,8 @@ export class VouchersController {
     description: 'Get all product-variants are applied this voucher',
     type: [ProductVariantEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id/all-product-variants-applied')
   async getAllProductVariantsAreAppliedThisVoucher(

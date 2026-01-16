@@ -33,6 +33,8 @@ export class CategoryController {
     description: 'Create a new category',
     type: CategoryEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -48,6 +50,8 @@ export class CategoryController {
     description: 'Get all categories',
     type: [CategoryEntity],
   })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
@@ -60,6 +64,8 @@ export class CategoryController {
     description: 'Get a category',
     type: CategoryEntity,
   })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
@@ -72,6 +78,8 @@ export class CategoryController {
     description: 'Update a category',
     type: CategoryEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -90,6 +98,8 @@ export class CategoryController {
     description: 'Delete a category',
     type: CategoryEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -104,6 +114,8 @@ export class CategoryController {
     description: 'Get all sub-category of category',
     type: [CategoryEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id/sub-categories')
   async getAllSubCategoriesOfCategory(@Param('id') id: string) {
@@ -116,6 +128,8 @@ export class CategoryController {
     description: 'Get all products of category',
     type: [ProductEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @Public()
   @Get('/:id/products')
   async getAllProductsOfCategory(

@@ -7,12 +7,20 @@ import {
   Delete,
   Patch,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { MediaEntity } from './entities/media.entity';
+import { RolesGuard } from '@/auth/passport/permission.guard';
+import { Public, Roles } from '@/decorator/customize';
 
 @Controller('media')
 export class MediaController {
@@ -29,6 +37,11 @@ export class MediaController {
     type: MediaEntity,
   })
   @ApiBody({ type: CreateMediaDto })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Post()
   async create(@Body() createMediaDto: CreateMediaDto) {
     return await this.mediaService.create(createMediaDto);
@@ -40,6 +53,9 @@ export class MediaController {
     description: 'Get all media files',
     type: [MediaEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.mediaService.findAll(Number(page), Number(perPage));
@@ -51,6 +67,9 @@ export class MediaController {
     description: 'Get one media file',
     type: MediaEntity,
   })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.mediaService.findOne(+id);
@@ -62,6 +81,11 @@ export class MediaController {
     description: 'Update one media file',
     type: MediaEntity,
   })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @ApiBody({ type: UpdateMediaDto })
   @Patch('/:id')
   async update(
@@ -77,6 +101,11 @@ export class MediaController {
     description: 'Delete one media file',
     type: MediaEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.mediaService.remove(+id);

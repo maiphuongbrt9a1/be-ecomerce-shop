@@ -7,13 +7,20 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { SizeProfilesService } from './size-profiles.service';
 import { CreateSizeProfileDto } from './dto/create-size-profile.dto';
 import { UpdateSizeProfileDto } from './dto/update-size-profile.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Public } from '@/decorator/customize';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { Roles } from '@/decorator/customize';
 import { SizeProfileEntity } from './entities/size-profile.entity';
+import { RolesGuard } from '@/auth/passport/permission.guard';
 
 @Controller('size-profiles')
 export class SizeProfilesController {
@@ -26,6 +33,10 @@ export class SizeProfilesController {
     type: SizeProfileEntity,
   })
   @ApiBody({ type: CreateSizeProfileDto })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Post()
   async create(@Body() createSizeProfileDto: CreateSizeProfileDto) {
     return await this.sizeProfilesService.create(createSizeProfileDto);
@@ -37,7 +48,11 @@ export class SizeProfilesController {
     description: 'Get all size profiles',
     type: [SizeProfileEntity],
   })
-  @Public()
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.sizeProfilesService.findAll(
@@ -52,7 +67,11 @@ export class SizeProfilesController {
     description: 'Get one size profile',
     type: SizeProfileEntity,
   })
-  @Public()
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.sizeProfilesService.findOne(+id);
@@ -65,6 +84,11 @@ export class SizeProfilesController {
     type: SizeProfileEntity,
   })
   @ApiBody({ type: UpdateSizeProfileDto })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Patch('/:id')
   async update(
     @Param('id') id: string,
@@ -79,6 +103,11 @@ export class SizeProfilesController {
     description: 'Delete one size profile',
     type: SizeProfileEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.sizeProfilesService.remove(+id);

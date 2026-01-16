@@ -7,12 +7,20 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { OrderEntity } from './entities/order.entity';
+import { RolesGuard } from '@/auth/passport/permission.guard';
+import { Roles } from '@/decorator/customize';
 
 @Controller('orders')
 export class OrdersController {
@@ -24,6 +32,11 @@ export class OrdersController {
     description: 'Create a new order',
     type: OrderEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @ApiBody({ type: CreateOrderDto })
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto) {
@@ -36,6 +49,11 @@ export class OrdersController {
     description: 'Get all orders',
     type: [OrderEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.ordersService.findAll(Number(page), Number(perPage));
@@ -47,6 +65,11 @@ export class OrdersController {
     description: 'Get all orders with their detail information',
     type: [OrderEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
   @Get('/order-detail-list')
   async getAllOrdersWithDetailInformation(
     @Query('page') page = 1,
@@ -60,6 +83,11 @@ export class OrdersController {
 
   @ApiOperation({ summary: 'Get one order' })
   @ApiResponse({ status: 200, description: 'Get one order', type: OrderEntity })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.ordersService.findOne(+id);
@@ -71,6 +99,11 @@ export class OrdersController {
     description: 'Update one order',
     type: OrderEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @ApiBody({ type: UpdateOrderDto })
   @Patch('/:id')
   async update(
@@ -86,6 +119,11 @@ export class OrdersController {
     description: 'Delete one order',
     type: OrderEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER')
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.ordersService.remove(+id);
@@ -97,6 +135,11 @@ export class OrdersController {
     description: 'Get order detail information of one order',
     type: OrderEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Get('/:id/order-detail')
   async getOrderDetailInformation(@Param('id') id: string) {
     return await this.ordersService.getOrderDetailInformation(+id);
@@ -110,6 +153,11 @@ export class OrdersController {
     description: 'Get order item list detail information of one order',
     type: OrderEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Get('/:id/order-item-list-detail')
   async getOrderItemListDetailInformation(@Param('id') id: string) {
     return await this.ordersService.getOrderItemListDetailInformation(+id);
@@ -123,6 +171,11 @@ export class OrdersController {
     description: 'Get order shipments detail information of one order',
     type: OrderEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Get('/:id/order-shipments-detail')
   async getOrderShipmentsDetailInformation(@Param('id') id: string) {
     return await this.ordersService.getOrderShipmentsDetailInformation(+id);
@@ -136,6 +189,11 @@ export class OrdersController {
     description: 'Get order payment detail information of one order',
     type: OrderEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Get('/:id/order-payment-detail')
   async getOrderPaymentDetailInformation(@Param('id') id: string) {
     return await this.ordersService.getOrderPaymentDetailInformation(+id);
@@ -149,6 +207,11 @@ export class OrdersController {
     description: 'Get order request detail information of one order',
     type: OrderEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
   @Get('/:id/order-request-detail')
   async getOrderRequestDetailInformation(@Param('id') id: string) {
     return await this.ordersService.getOrderRequestDetailInformation(+id);

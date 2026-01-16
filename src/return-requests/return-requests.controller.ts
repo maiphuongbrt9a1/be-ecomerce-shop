@@ -32,6 +32,8 @@ export class ReturnRequestsController {
     description: 'Create a new return request',
     type: ReturnRequestEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -47,6 +49,11 @@ export class ReturnRequestsController {
     description: 'Get all return requests',
     type: [ReturnRequestEntity],
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER', 'ADMIN', 'OPERATOR')
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.returnRequestsService.findAll(
@@ -61,6 +68,11 @@ export class ReturnRequestsController {
     description: 'Get one return request',
     type: ReturnRequestEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER', 'ADMIN', 'OPERATOR')
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.returnRequestsService.findOne(+id);
@@ -72,6 +84,8 @@ export class ReturnRequestsController {
     description: 'Update one return request',
     type: ReturnRequestEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
@@ -90,6 +104,8 @@ export class ReturnRequestsController {
     description: 'Delete one return request',
     type: ReturnRequestEntity,
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')

@@ -22,7 +22,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
-import { Roles } from '@/decorator/customize';
+import { Public, Roles } from '@/decorator/customize';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import type { RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
@@ -52,6 +52,8 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 200, description: 'Get all products' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.productsService.findAll(Number(page), Number(perPage));
@@ -59,6 +61,8 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Get one product' })
   @ApiResponse({ status: 200, description: 'Get one product' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.productsService.findOne(+id);
@@ -66,6 +70,8 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Update one product' })
   @ApiResponse({ status: 200, description: 'Update one product' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -80,6 +86,7 @@ export class ProductsController {
 
   @ApiOperation({ summary: 'Delete one product' })
   @ApiResponse({ status: 200, description: 'Delete one product' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
@@ -93,6 +100,9 @@ export class ProductsController {
     status: 200,
     description: 'Get all product-variants of this product',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @Public()
   @Get('/:id/product-variants')
   async getAllProductVariantsOfProduct(@Param('id') id: string) {
     return await this.productsService.getAllProductVariantsOfProduct(+id);
@@ -103,6 +113,9 @@ export class ProductsController {
     status: 200,
     description: 'Get all reviews of this product',
   })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @Public()
   @Get('/:id/reviews')
   async getAllReviewsOfProduct(
     @Param('id') id: string,
