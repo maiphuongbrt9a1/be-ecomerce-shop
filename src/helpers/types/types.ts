@@ -27,6 +27,17 @@ export type ProductsOfCategoryOfShopOffice = Prisma.ShopOfficeGetPayload<{
   };
 }>;
 
+export type ProductsWithProductVariantsAndTheirMedia =
+  Prisma.ProductsGetPayload<{
+    include: {
+      productVariants: {
+        include: {
+          media: true;
+        };
+      };
+    };
+  }>;
+
 export type ProductVariantsWithMediaInformation =
   Prisma.ProductVariantsGetPayload<{
     include: {

@@ -7,9 +7,14 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma, Products, ProductVariants, Reviews } from '@prisma/client';
+import { Prisma, Products, Reviews } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
+import { formatMediaFieldForProductVariant } from '@/helpers/utils';
+import {
+  ProductsWithProductVariantsAndTheirMedia,
+  ProductVariantsWithMediaInformation,
+} from '@/helpers/types/types';
 
 @Injectable()
 export class ProductsService {
@@ -51,15 +56,51 @@ export class ProductsService {
     }
   }
 
-  async findAll(page: number, perPage: number): Promise<Products[] | []> {
+  async findAll(
+    page: number,
+    perPage: number,
+  ): Promise<ProductsWithProductVariantsAndTheirMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Products, Prisma.ProductsFindManyArgs>(
+      const result = await paginate<
+        ProductsWithProductVariantsAndTheirMedia,
+        Prisma.ProductsFindManyArgs
+      >(
         this.prismaService.products,
-        { orderBy: { id: 'asc' } },
+        {
+          include: {
+            productVariants: {
+              include: {
+                media: true,
+              },
+            },
+          },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
 
+      // generate full http url for media files of each product variant in products
+      for (let i = 0; i < result.data.length; i++) {
+        const productVariantList = result.data[i].productVariants;
+        for (let j = 0; j < productVariantList.length; j++) {
+          const productVariant = productVariantList[j];
+          const originalMedia = productVariant.media; // Store original media for comparison
+          productVariant.media = formatMediaFieldForProductVariant(
+            productVariant.media,
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+          );
+
+          // Check if the media field has changed
+          if (originalMedia !== productVariant.media) {
+            this.logger.log(
+              `Media field changed for product variant ID: ${productVariant.id}`,
+            );
+          }
+        }
+      }
+
+      this.logger.log(`Fetched products - Page: ${page}, PerPage: ${perPage}`);
       return result.data;
     } catch (error) {
       this.logger.log(`Error fetching products: ${error}`);
@@ -67,14 +108,40 @@ export class ProductsService {
     }
   }
 
-  async findOne(id: number): Promise<Products | null> {
+  async findOne(
+    id: number,
+  ): Promise<ProductsWithProductVariantsAndTheirMedia | null> {
     try {
       const product = await this.prismaService.products.findFirst({
+        include: {
+          productVariants: {
+            include: {
+              media: true,
+            },
+          },
+        },
         where: { id: id },
       });
 
       if (!product) {
         throw new NotFoundException('Product not found!');
+      }
+
+      // generate full http url for media files
+      for (let i = 0; i < product.productVariants.length; i++) {
+        const productVariant = product.productVariants[i];
+        const originalMedia = productVariant.media; // Store original media for comparison
+        productVariant.media = formatMediaFieldForProductVariant(
+          productVariant.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+        );
+
+        // Check if the media field has changed
+        if (originalMedia !== productVariant.media) {
+          this.logger.log(
+            `Media field changed for product variant ID: ${productVariant.id}`,
+          );
+        }
       }
 
       this.logger.log(`Product fetched with ID: ${product.id}`);
@@ -117,15 +184,35 @@ export class ProductsService {
 
   async getAllProductVariantsOfProduct(
     id: number,
-  ): Promise<ProductVariants[] | []> {
+  ): Promise<ProductVariantsWithMediaInformation[] | []> {
     try {
       const productVariantsList =
         await this.prismaService.productVariants.findMany({
+          include: {
+            media: true,
+          },
           where: { productId: id },
         });
 
-      if (!productVariantsList) {
+      if (!productVariantsList || productVariantsList.length === 0) {
         throw new NotFoundException('Product Variants not found!');
+      }
+
+      // generate full http url for media files
+      for (let i = 0; i < productVariantsList.length; i++) {
+        const productVariant = productVariantsList[i];
+        const originalMedia = productVariant.media; // Store original media for comparison
+        productVariant.media = formatMediaFieldForProductVariant(
+          productVariant.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+        );
+
+        // Check if the media field has changed
+        if (originalMedia !== productVariant.media) {
+          this.logger.log(
+            `Media field changed for product variant ID: ${productVariant.id}`,
+          );
+        }
       }
 
       this.logger.log(`Product Variants fetched for product ID: ${id}`);
