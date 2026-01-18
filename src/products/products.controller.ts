@@ -18,6 +18,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
@@ -31,11 +32,95 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @ApiOperation({ summary: 'Create a new product' })
-  @ApiResponse({ status: 201, description: 'Create a new product' })
+  @ApiResponse({
+    status: 201,
+    description: 'Product created successfully',
+    schema: {
+      example: {
+        id: 1,
+        name: 'Sample product name',
+        description: 'Sample product description',
+        price: 12,
+        stockKeepingUnit: 'ADSFDSAF1463218FA',
+        stock: 25,
+        createByUserId: 1231,
+        categoryId: 1325,
+        voucherId: 1325,
+        createdAt: '2025-01-18T10:30:00Z',
+        updatedAt: '2025-01-18T10:30:00Z',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Failed to create product or upload files',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - No valid JWT token provided',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - User does not have ADMIN role',
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  @ApiBody({ type: CreateProductDto })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: [
+        'name',
+        'price',
+        'stockKeepingUnit',
+        'stock',
+        'createByUserId',
+      ],
+      properties: {
+        name: {
+          type: 'string',
+          example: 'Sample product name',
+        },
+        description: {
+          type: 'string',
+          example: 'Sample product description',
+        },
+        price: {
+          type: 'number',
+          example: 12,
+        },
+        stockKeepingUnit: {
+          type: 'string',
+          example: 'ADSFDSAF1463218FA',
+        },
+        stock: {
+          type: 'number',
+          example: 25,
+        },
+        createByUserId: {
+          type: 'number',
+          example: 1231,
+        },
+        categoryId: {
+          type: 'number',
+          example: 1325,
+        },
+        voucherId: {
+          type: 'number',
+          example: 1325,
+        },
+        files: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'Product image files',
+        },
+      },
+    },
+  })
   @UseInterceptors(FilesInterceptor('files'))
   @Post()
   async create(
@@ -51,8 +136,76 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: 'Get all products' })
-  @ApiResponse({ status: 200, description: 'Get all products' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Products retrieved successfully with pagination',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', example: 1 },
+          name: { type: 'string', example: 'Sample product name' },
+          description: {
+            type: 'string',
+            example: 'Sample product description',
+          },
+          price: { type: 'number', example: 12 },
+          stockKeepingUnit: { type: 'string', example: 'ADSFDSAF1463218FA' },
+          stock: { type: 'number', example: 25 },
+          createByUserId: { type: 'number', example: 1231 },
+          categoryId: { type: 'number', nullable: true, example: 1325 },
+          voucherId: { type: 'number', nullable: true, example: 1325 },
+          createdAt: {
+            type: 'string',
+            format: 'date-time',
+            example: '2025-01-18T10:30:00Z',
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time',
+            example: '2025-01-18T10:30:00Z',
+          },
+          productVariants: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'number' },
+                productId: { type: 'number' },
+                variantName: { type: 'string' },
+                price: { type: 'number' },
+                stock: { type: 'number' },
+                createdAt: { type: 'string', format: 'date-time' },
+                updatedAt: { type: 'string', format: 'date-time' },
+                media: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'number' },
+                      productVariantId: { type: 'number' },
+                      mediaType: { type: 'string', enum: ['IMAGE', 'VIDEO'] },
+                      mediaPath: {
+                        type: 'string',
+                        example: 'https://cdn.example.com/product.jpg',
+                      },
+                      createdAt: { type: 'string', format: 'date-time' },
+                      updatedAt: { type: 'string', format: 'date-time' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid pagination parameters',
+  })
   @Public()
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
@@ -60,8 +213,74 @@ export class ProductsController {
   }
 
   @ApiOperation({ summary: 'Get one product' })
-  @ApiResponse({ status: 200, description: 'Get one product' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Product retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'number', example: 1 },
+        name: { type: 'string', example: 'Sample product name' },
+        description: { type: 'string', example: 'Sample product description' },
+        price: { type: 'number', example: 12 },
+        stockKeepingUnit: { type: 'string', example: 'ADSFDSAF1463218FA' },
+        stock: { type: 'number', example: 25 },
+        createByUserId: { type: 'number', example: 1231 },
+        categoryId: { type: 'number', nullable: true, example: 1325 },
+        voucherId: { type: 'number', nullable: true, example: 1325 },
+        createdAt: {
+          type: 'string',
+          format: 'date-time',
+          example: '2025-01-18T10:30:00Z',
+        },
+        updatedAt: {
+          type: 'string',
+          format: 'date-time',
+          example: '2025-01-18T10:30:00Z',
+        },
+        productVariants: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'number' },
+              productId: { type: 'number' },
+              variantName: { type: 'string' },
+              price: { type: 'number' },
+              stock: { type: 'number' },
+              createdAt: { type: 'string', format: 'date-time' },
+              updatedAt: { type: 'string', format: 'date-time' },
+              media: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'number' },
+                    productVariantId: { type: 'number' },
+                    mediaType: { type: 'string', enum: ['IMAGE', 'VIDEO'] },
+                    mediaPath: {
+                      type: 'string',
+                      example: 'https://cdn.example.com/product.jpg',
+                    },
+                    createdAt: { type: 'string', format: 'date-time' },
+                    updatedAt: { type: 'string', format: 'date-time' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid product ID format',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - Product with the specified ID does not exist',
+  })
   @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
@@ -98,10 +317,57 @@ export class ProductsController {
   @ApiOperation({ summary: 'Get all product-variants of this product' })
   @ApiResponse({
     status: 200,
-    description: 'Get all product-variants of this product',
+    description: 'Product variants retrieved successfully',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', example: 1 },
+          productId: { type: 'number', example: 1 },
+          variantName: { type: 'string', example: 'Red - Medium' },
+          price: { type: 'number', example: 12.99 },
+          stock: { type: 'number', example: 50 },
+          createdAt: {
+            type: 'string',
+            format: 'date-time',
+            example: '2025-01-18T10:30:00Z',
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time',
+            example: '2025-01-18T10:30:00Z',
+          },
+          media: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'number' },
+                productVariantId: { type: 'number' },
+                mediaType: { type: 'string', enum: ['IMAGE', 'VIDEO'] },
+                mediaPath: {
+                  type: 'string',
+                  example: 'https://cdn.example.com/variant-red-medium.jpg',
+                },
+                createdAt: { type: 'string', format: 'date-time' },
+                updatedAt: { type: 'string', format: 'date-time' },
+              },
+            },
+          },
+        },
+      },
+    },
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid product ID format',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Not Found - Product variants not found for the specified product ID',
+  })
   @Public()
   @Get('/:id/product-variants')
   async getAllProductVariantsOfProduct(@Param('id') id: string) {
