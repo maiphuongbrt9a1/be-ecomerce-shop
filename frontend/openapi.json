@@ -30,22 +30,174 @@
     "/user": {
       "get": {
         "operationId": "UserController_getAllUsers",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "User list found!"
+            "description": "User list retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "firstName": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "John"
+                      },
+                      "lastName": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "Doe"
+                      },
+                      "gender": {
+                        "type": "string",
+                        "enum": [
+                          "MALE",
+                          "FEMALE",
+                          "OTHER"
+                        ],
+                        "example": "MALE"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com"
+                      },
+                      "phone": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "0123456789"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "johndoe"
+                      },
+                      "googleId": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "google-id-123"
+                      },
+                      "role": {
+                        "type": "string",
+                        "enum": [
+                          "USER",
+                          "ADMIN",
+                          "OPERATOR"
+                        ],
+                        "example": "USER"
+                      },
+                      "isActive": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "points": {
+                        "type": "number",
+                        "example": 100
+                      },
+                      "staffCode": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "STAFF001"
+                      },
+                      "loyaltyCard": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "LOYALTY123"
+                      },
+                      "shopOfficeId": {
+                        "type": "number",
+                        "nullable": true,
+                        "example": 1
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-18T10:30:00Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-18T10:30:00Z"
+                      },
+                      "userMedia": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "userId": {
+                              "type": "number"
+                            },
+                            "mediaType": {
+                              "type": "string",
+                              "enum": [
+                                "IMAGE",
+                                "VIDEO",
+                                "DOCUMENT"
+                              ]
+                            },
+                            "mediaPath": {
+                              "type": "string",
+                              "example": "https://cdn.example.com/avatar.jpg"
+                            },
+                            "isAvatarFile": {
+                              "type": "boolean",
+                              "example": true
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request."
+            "description": "Bad Request - Invalid pagination parameters or failed to retrieve users"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
-          },
-          "404": {
-            "description": "Not Found."
+            "description": "Forbidden - User does not have ADMIN or OPERATOR role"
           }
         },
         "security": [
@@ -73,19 +225,65 @@
         },
         "responses": {
           "201": {
-            "description": "User created successfully!"
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "john.doe@example.com"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "john_doe"
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "example": "John"
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "example": "Doe"
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "USER",
+                        "ADMIN",
+                        "OPERATOR"
+                      ],
+                      "example": "USER"
+                    },
+                    "isActive": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request."
+            "description": "Bad Request - Invalid input, missing fields, or email already exists"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only ADMIN can create users"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - Related resource (role/department) not found"
           }
         },
         "security": [
@@ -107,14 +305,147 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "User found!"
+            "description": "User found!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "John"
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "Doe"
+                    },
+                    "gender": {
+                      "type": "string",
+                      "enum": [
+                        "MALE",
+                        "FEMALE",
+                        "OTHER"
+                      ],
+                      "example": "MALE"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "john.doe@example.com"
+                    },
+                    "phone": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "0123456789"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "johndoe"
+                    },
+                    "googleId": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "google-id-123"
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "USER",
+                        "ADMIN",
+                        "OPERATOR"
+                      ],
+                      "example": "USER"
+                    },
+                    "isActive": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "points": {
+                      "type": "number",
+                      "example": 100
+                    },
+                    "staffCode": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "STAFF001"
+                    },
+                    "loyaltyCard": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "LOYALTY123"
+                    },
+                    "shopOfficeId": {
+                      "type": "number",
+                      "nullable": true,
+                      "example": 1
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-01-18T10:30:00Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-01-18T10:30:00Z"
+                    },
+                    "userMedia": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "userId": {
+                            "type": "number"
+                          },
+                          "mediaType": {
+                            "type": "string",
+                            "enum": [
+                              "IMAGE",
+                              "VIDEO",
+                              "DOCUMENT"
+                            ]
+                          },
+                          "mediaPath": {
+                            "type": "string",
+                            "example": "https://cdn.example.com/avatar.jpg"
+                          },
+                          "isAvatarFile": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request."
@@ -146,26 +477,49 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "User deleted successfully!"
+            "description": "User deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "john.doe@example.com"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request."
+            "description": "Bad Request - Invalid user ID or unable to delete"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Insufficient permissions to delete user"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User does not exist"
           }
         },
         "security": [
@@ -185,7 +539,9 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
               "type": "number"
             }
           }
@@ -193,7 +549,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateUserDto"
               }
@@ -202,19 +558,66 @@
         },
         "responses": {
           "200": {
-            "description": "User updated successfully!"
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "john.doe@example.com"
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "example": "John"
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "example": "Doe"
+                    },
+                    "phone": {
+                      "type": "string",
+                      "example": "0123456789"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "userMedia": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "mediaPath": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request."
+            "description": "Bad Request - Invalid input or file upload failed"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Insufficient permissions to update user"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User does not exist"
           }
         },
         "security": [
@@ -244,10 +647,47 @@
         },
         "responses": {
           "201": {
-            "description": "User created successfully!"
+            "description": "User created successfully from Google account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "user@gmail.com"
+                    },
+                    "googleId": {
+                      "type": "string",
+                      "example": "google-oauth-id-123"
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "isActive": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request."
+            "description": "Bad Request - Invalid Google data or email already exists"
           }
         },
         "summary": "Add a new user by Google account",
@@ -264,23 +704,78 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "User address list found!"
+            "description": "User address list retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "street": {
+                        "type": "string"
+                      },
+                      "ward": {
+                        "type": "string"
+                      },
+                      "district": {
+                        "type": "string"
+                      },
+                      "province": {
+                        "type": "string"
+                      },
+                      "zipCode": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Insufficient permissions"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User does not exist"
           }
         },
         "security": [
@@ -302,23 +797,52 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "User shop office found!"
+            "description": "User shop office retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "address": {
+                      "type": "string"
+                    },
+                    "phone": {
+                      "type": "string"
+                    },
+                    "staffs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only ADMIN/OPERATOR can access"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User or shop office not found"
           }
         },
         "security": [
@@ -340,23 +864,51 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get avatar of user"
+            "description": "User avatar retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "mediaPath": {
+                      "type": "string"
+                    },
+                    "mediaType": {
+                      "type": "string",
+                      "enum": [
+                        "IMAGE",
+                        "VIDEO",
+                        "DOCUMENT"
+                      ]
+                    },
+                    "isAvatarFile": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - Token required for some cases"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Insufficient permissions"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User or avatar not found"
           }
         },
         "summary": "Get avatar of user",
@@ -373,23 +925,86 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get vouchers are created by a user"
+            "description": "Vouchers created by user retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "code": {
+                        "type": "string"
+                      },
+                      "discount": {
+                        "type": "number"
+                      },
+                      "discountType": {
+                        "type": "string",
+                        "enum": [
+                          "PERCENTAGE",
+                          "FIXED"
+                        ]
+                      },
+                      "maxUsage": {
+                        "type": "number"
+                      },
+                      "expiryDate": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "isActive": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only ADMIN/OPERATOR can view"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -397,7 +1012,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get vouchers are created by a user",
+        "summary": "Get all vouchers created by user",
         "tags": [
           "User"
         ]
@@ -411,23 +1026,80 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get products are created by a user"
+            "description": "Products created by user retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "number",
+                        "format": "decimal"
+                      },
+                      "isActive": {
+                        "type": "boolean"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only ADMIN/OPERATOR can view"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -435,7 +1107,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get products are created by a user",
+        "summary": "Get all products created by user",
         "tags": [
           "User"
         ]
@@ -449,23 +1121,76 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get product variants are created by a user"
+            "description": "Product variants created by user retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "sku": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "number",
+                        "format": "decimal"
+                      },
+                      "stock": {
+                        "type": "number"
+                      },
+                      "isActive": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only ADMIN/OPERATOR can view"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -473,7 +1198,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get product variants are created by a user",
+        "summary": "Get all product variants created by user",
         "tags": [
           "User"
         ]
@@ -487,23 +1212,76 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get categories are created by a user"
+            "description": "Categories created by user retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "isActive": {
+                        "type": "boolean"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only ADMIN/OPERATOR can view"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -511,7 +1289,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get categories are created by a user",
+        "summary": "Get all categories created by user",
         "tags": [
           "User"
         ]
@@ -525,23 +1303,84 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get orders are created by a user"
+            "description": "Orders created by user retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "orderCode": {
+                        "type": "string"
+                      },
+                      "totalAmount": {
+                        "type": "number",
+                        "format": "decimal"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "PENDING",
+                          "PROCESSING",
+                          "SHIPPED",
+                          "DELIVERED",
+                          "CANCELLED"
+                        ]
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only customer can view their orders"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -549,7 +1388,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get orders are created by a user",
+        "summary": "Get all orders created by user",
         "tags": [
           "User"
         ]
@@ -563,23 +1402,87 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get orders are processed by a user"
+            "description": "Orders processed by user retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "orderCode": {
+                        "type": "string"
+                      },
+                      "totalAmount": {
+                        "type": "number",
+                        "format": "decimal"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "PENDING",
+                          "PROCESSING",
+                          "SHIPPED",
+                          "DELIVERED",
+                          "CANCELLED"
+                        ]
+                      },
+                      "processedBy": {
+                        "type": "string"
+                      },
+                      "processedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only ADMIN/OPERATOR can view processed orders"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -587,7 +1490,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get orders are processed by a user",
+        "summary": "Get all orders processed by user",
         "tags": [
           "User"
         ]
@@ -601,23 +1504,81 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get shipments are processed by a user"
+            "description": "Shipments processed by user retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "trackingNumber": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "PENDING",
+                          "IN_TRANSIT",
+                          "DELIVERED"
+                        ]
+                      },
+                      "carrier": {
+                        "type": "string"
+                      },
+                      "processedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only ADMIN/OPERATOR can view"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -625,7 +1586,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get shipments are processed by a user",
+        "summary": "Get all shipments processed by user",
         "tags": [
           "User"
         ]
@@ -639,23 +1600,86 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get requests of user"
+            "description": "User requests retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "RETURN",
+                          "REFUND",
+                          "COMPLAINT"
+                        ]
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "PENDING",
+                          "APPROVED",
+                          "REJECTED"
+                        ]
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Can only view own requests"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -663,7 +1687,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get requests of user",
+        "summary": "Get all requests of user",
         "tags": [
           "User"
         ]
@@ -677,23 +1701,86 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get processed requests of user"
+            "description": "Processed requests retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "RETURN",
+                          "REFUND",
+                          "COMPLAINT"
+                        ]
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "PENDING",
+                          "APPROVED",
+                          "REJECTED"
+                        ]
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "processedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only ADMIN/OPERATOR can view"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -701,7 +1788,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get processed requests of user",
+        "summary": "Get all requests processed by user",
         "tags": [
           "User"
         ]
@@ -715,23 +1802,78 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get size-profiles of user"
+            "description": "Size profiles retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "chest": {
+                        "type": "number"
+                      },
+                      "waist": {
+                        "type": "number"
+                      },
+                      "height": {
+                        "type": "number"
+                      },
+                      "isDefault": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Can only view own size profiles"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -739,7 +1881,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get size-profiles of user",
+        "summary": "Get all size profiles of user",
         "tags": [
           "User"
         ]
@@ -753,26 +1895,86 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get reviews of user"
+            "description": "User reviews retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "rating": {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 5
+                      },
+                      "comment": {
+                        "type": "string"
+                      },
+                      "productId": {
+                        "type": "number"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Can only view own reviews"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
-        "summary": "Get reviews of user",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all reviews of user",
         "tags": [
           "User"
         ]
@@ -781,7 +1983,18 @@
     "/user/{id}/cart": {
       "post": {
         "operationId": "UserController_createANewCart",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -794,16 +2007,42 @@
         },
         "responses": {
           "201": {
-            "description": "Create a new cart (only initial id user in cart table. Do not add any cart items)"
+            "description": "Cart created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "userId": {
+                      "type": "number"
+                    },
+                    "totalPrice": {
+                      "type": "number",
+                      "format": "decimal"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid cart data"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only USER can create cart"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -823,23 +2062,51 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get cart id of user (only get id user in cart table. Do not get any cart items)"
+            "description": "User cart retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "userId": {
+                      "type": "number"
+                    },
+                    "totalPrice": {
+                      "type": "number",
+                      "format": "decimal"
+                    },
+                    "itemCount": {
+                      "type": "number"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Can only view own cart"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - Cart not found"
           }
         },
         "security": [
@@ -847,7 +2114,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get cart id of user (only get id user in cart table. Do not get any cart items)",
+        "summary": "Get cart of user (only get cart info. Do not get any cart items)",
         "tags": [
           "User"
         ]
@@ -859,8 +2126,10 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
-              "type": "string"
+              "example": 1,
+              "type": "number"
             }
           }
         ],
@@ -876,16 +2145,42 @@
         },
         "responses": {
           "200": {
-            "description": "Update one cart (only update id user in cart table. Do not add any cart items)"
+            "description": "Cart updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "userId": {
+                      "type": "number"
+                    },
+                    "totalPrice": {
+                      "type": "number",
+                      "format": "decimal"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid cart data"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only USER can update own cart"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - Cart not found"
           }
         },
         "security": [
@@ -893,7 +2188,7 @@
             "bearer": []
           }
         ],
-        "summary": "Update one cart (only update id user in cart table. Do not add any cart items)",
+        "summary": "Update user cart (only update cart info. Do not modify any cart items)",
         "tags": [
           "User"
         ]
@@ -902,7 +2197,18 @@
     "/user/{id}/cart/cart-item": {
       "post": {
         "operationId": "UserController_AddANewCart",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -915,16 +2221,48 @@
         },
         "responses": {
           "201": {
-            "description": "Add a new product variant (cart item) to cart"
+            "description": "Cart item added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "cartId": {
+                      "type": "number"
+                    },
+                    "productVariantId": {
+                      "type": "number"
+                    },
+                    "quantity": {
+                      "type": "number"
+                    },
+                    "price": {
+                      "type": "number",
+                      "format": "decimal"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid cart item data or insufficient stock"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Only USER can add to cart"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - Cart or product variant not found"
           }
         },
         "security": [
@@ -946,23 +2284,65 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
-              "type": "string"
+              "example": 1,
+              "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get user cart with cart items detail"
+            "description": "User cart with items retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "userId": {
+                      "type": "number"
+                    },
+                    "totalPrice": {
+                      "type": "number",
+                      "format": "decimal"
+                    },
+                    "cartItems": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "productVariantId": {
+                            "type": "number"
+                          },
+                          "quantity": {
+                            "type": "number"
+                          },
+                          "price": {
+                            "type": "number",
+                            "format": "decimal"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Can only view own cart"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - Cart not found"
           }
         },
         "security": [
@@ -970,7 +2350,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get user cart with cart items detail",
+        "summary": "Get user cart with all cart items details",
         "tags": [
           "User"
         ]
@@ -984,23 +2364,83 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "description": "User ID",
             "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default 10)",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default 1)",
+            "schema": {
+              "example": 1,
               "type": "number"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Get saved vouchers of user"
+            "description": "Saved vouchers retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "code": {
+                        "type": "string"
+                      },
+                      "discount": {
+                        "type": "number"
+                      },
+                      "discountType": {
+                        "type": "string",
+                        "enum": [
+                          "PERCENTAGE",
+                          "FIXED"
+                        ]
+                      },
+                      "expiryDate": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "isUsed": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           },
           "401": {
-            "description": "Unauthorized."
+            "description": "Unauthorized - No valid JWT token provided"
           },
           "403": {
-            "description": "Forbidden."
+            "description": "Forbidden - Can only view own saved vouchers"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - User not found"
           }
         },
         "security": [
@@ -1008,7 +2448,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get saved vouchers of user",
+        "summary": "Get all saved vouchers of user",
         "tags": [
           "User"
         ]
@@ -1292,16 +2732,93 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/CreateProductDto"
+                "type": "object",
+                "required": [
+                  "name",
+                  "price",
+                  "stockKeepingUnit",
+                  "stock",
+                  "createByUserId"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Sample product name"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Sample product description"
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 12
+                  },
+                  "stockKeepingUnit": {
+                    "type": "string",
+                    "example": "ADSFDSAF1463218FA"
+                  },
+                  "stock": {
+                    "type": "number",
+                    "example": 25
+                  },
+                  "createByUserId": {
+                    "type": "number",
+                    "example": 1231
+                  },
+                  "categoryId": {
+                    "type": "number",
+                    "example": 1325
+                  },
+                  "voucherId": {
+                    "type": "number",
+                    "example": 1325
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Product image files"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Create a new product"
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": 1,
+                    "name": "Sample product name",
+                    "description": "Sample product description",
+                    "price": 12,
+                    "stockKeepingUnit": "ADSFDSAF1463218FA",
+                    "stock": 25,
+                    "createByUserId": 1231,
+                    "categoryId": 1325,
+                    "voucherId": 1325,
+                    "createdAt": "2025-01-18T10:30:00Z",
+                    "updatedAt": "2025-01-18T10:30:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Failed to create product or upload files"
+          },
+          "401": {
+            "description": "Unauthorized - No valid JWT token provided"
+          },
+          "403": {
+            "description": "Forbidden - User does not have ADMIN role"
           }
         },
         "security": [
@@ -1316,13 +2833,158 @@
       },
       "get": {
         "operationId": "ProductsController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Get all products"
+            "description": "Products retrieved successfully with pagination",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Sample product name"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Sample product description"
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 12
+                      },
+                      "stockKeepingUnit": {
+                        "type": "string",
+                        "example": "ADSFDSAF1463218FA"
+                      },
+                      "stock": {
+                        "type": "number",
+                        "example": 25
+                      },
+                      "createByUserId": {
+                        "type": "number",
+                        "example": 1231
+                      },
+                      "categoryId": {
+                        "type": "number",
+                        "nullable": true,
+                        "example": 1325
+                      },
+                      "voucherId": {
+                        "type": "number",
+                        "nullable": true,
+                        "example": 1325
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-18T10:30:00Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-18T10:30:00Z"
+                      },
+                      "productVariants": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "productId": {
+                              "type": "number"
+                            },
+                            "variantName": {
+                              "type": "string"
+                            },
+                            "price": {
+                              "type": "number"
+                            },
+                            "stock": {
+                              "type": "number"
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "media": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "number"
+                                  },
+                                  "productVariantId": {
+                                    "type": "number"
+                                  },
+                                  "mediaType": {
+                                    "type": "string",
+                                    "enum": [
+                                      "IMAGE",
+                                      "VIDEO"
+                                    ]
+                                  },
+                                  "mediaPath": {
+                                    "type": "string",
+                                    "example": "https://cdn.example.com/product.jpg"
+                                  },
+                                  "createdAt": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
-          "404": {
-            "description": "Not Found."
+          "400": {
+            "description": "Bad Request - Invalid pagination parameters"
           }
         },
         "summary": "Get all products",
@@ -1346,10 +3008,134 @@
         ],
         "responses": {
           "200": {
-            "description": "Get one product"
+            "description": "Product retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Sample product name"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Sample product description"
+                    },
+                    "price": {
+                      "type": "number",
+                      "example": 12
+                    },
+                    "stockKeepingUnit": {
+                      "type": "string",
+                      "example": "ADSFDSAF1463218FA"
+                    },
+                    "stock": {
+                      "type": "number",
+                      "example": 25
+                    },
+                    "createByUserId": {
+                      "type": "number",
+                      "example": 1231
+                    },
+                    "categoryId": {
+                      "type": "number",
+                      "nullable": true,
+                      "example": 1325
+                    },
+                    "voucherId": {
+                      "type": "number",
+                      "nullable": true,
+                      "example": 1325
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-01-18T10:30:00Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-01-18T10:30:00Z"
+                    },
+                    "productVariants": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "productId": {
+                            "type": "number"
+                          },
+                          "variantName": {
+                            "type": "string"
+                          },
+                          "price": {
+                            "type": "number"
+                          },
+                          "stock": {
+                            "type": "number"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "media": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "number"
+                                },
+                                "productVariantId": {
+                                  "type": "number"
+                                },
+                                "mediaType": {
+                                  "type": "string",
+                                  "enum": [
+                                    "IMAGE",
+                                    "VIDEO"
+                                  ]
+                                },
+                                "mediaPath": {
+                                  "type": "string",
+                                  "example": "https://cdn.example.com/product.jpg"
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "updatedAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid product ID format"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - Product with the specified ID does not exist"
           }
         },
         "summary": "Get one product",
@@ -1446,13 +3232,88 @@
         ],
         "responses": {
           "200": {
-            "description": "Get all product-variants of this product"
+            "description": "Product variants retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "productId": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "variantName": {
+                        "type": "string",
+                        "example": "Red - Medium"
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 12.99
+                      },
+                      "stock": {
+                        "type": "number",
+                        "example": 50
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-18T10:30:00Z"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-18T10:30:00Z"
+                      },
+                      "media": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number"
+                            },
+                            "productVariantId": {
+                              "type": "number"
+                            },
+                            "mediaType": {
+                              "type": "string",
+                              "enum": [
+                                "IMAGE",
+                                "VIDEO"
+                              ]
+                            },
+                            "mediaPath": {
+                              "type": "string",
+                              "example": "https://cdn.example.com/variant-red-medium.jpg"
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request."
+            "description": "Bad Request - Invalid product ID format"
           },
           "404": {
-            "description": "Not Found."
+            "description": "Not Found - Product variants not found for the specified product ID"
           }
         },
         "summary": "Get all product-variants of this product",
@@ -1535,7 +3396,28 @@
       },
       "get": {
         "operationId": "CategoryController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all categories",
@@ -1811,7 +3693,28 @@
       },
       "get": {
         "operationId": "AddressController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all addresses",
@@ -2017,7 +3920,28 @@
       },
       "get": {
         "operationId": "SizeProfilesController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all size profiles",
@@ -2388,7 +4312,28 @@
       },
       "get": {
         "operationId": "ProductVariantsController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all product variant",
@@ -2892,6 +4837,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
           }
         ],
         "responses": {
@@ -3016,6 +4981,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
           }
         ],
         "responses": {
@@ -3073,7 +5058,28 @@
       },
       "get": {
         "operationId": "ReviewsController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all reviews"
@@ -3268,7 +5274,28 @@
       },
       "get": {
         "operationId": "MediaController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all media files",
@@ -3467,7 +5494,28 @@
       },
       "get": {
         "operationId": "OrdersController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all orders",
@@ -3922,7 +5970,28 @@
       },
       "get": {
         "operationId": "OrderItemsController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all order items",
@@ -4131,7 +6200,28 @@
       },
       "get": {
         "operationId": "ShipmentsController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all shipments",
@@ -4340,7 +6430,28 @@
       },
       "get": {
         "operationId": "PaymentsController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all payments",
@@ -4549,7 +6660,28 @@
       },
       "get": {
         "operationId": "CartItemsController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all cart items",
@@ -4758,7 +6890,28 @@
       },
       "get": {
         "operationId": "VouchersController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all vouchers",
@@ -5077,7 +7230,28 @@
       },
       "get": {
         "operationId": "UserVouchersController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all user vouchers",
@@ -5279,7 +7453,28 @@
       },
       "get": {
         "operationId": "RequestsController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all requests"
@@ -5457,7 +7652,28 @@
       },
       "get": {
         "operationId": "ReturnRequestsController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Get all return requests",
@@ -6353,7 +8569,28 @@
       },
       "get": {
         "operationId": "ShopOfficesController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": " shop office list found!",
@@ -6519,6 +8756,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
           }
         ],
         "responses": {
@@ -6595,6 +8852,26 @@
             "in": "path",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
             }
           }
         ],
@@ -6684,6 +8961,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
           }
         ],
         "responses": {
@@ -6762,7 +9059,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.757Z"
+            "example": "2026-01-19T10:19:50.201Z"
           },
           "isActive": {
             "type": "boolean",
@@ -6775,7 +9072,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.758Z"
+            "example": "2026-01-19T10:19:50.202Z"
           },
           "staffCode": {
             "type": "string",
@@ -6841,7 +9138,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.759Z"
+            "example": "2026-01-19T10:19:50.202Z"
           },
           "isActive": {
             "type": "boolean",
@@ -6854,7 +9151,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.759Z"
+            "example": "2026-01-19T10:19:50.203Z"
           },
           "staffCode": {
             "type": "string",
@@ -6921,7 +9218,7 @@
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.770Z"
+            "example": "2026-01-19T10:19:50.220Z"
           }
         },
         "required": [
@@ -6946,12 +9243,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.778Z"
+            "example": "2026-01-19T10:19:50.231Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.778Z"
+            "example": "2026-01-19T10:19:50.231Z"
           }
         },
         "required": [
@@ -6980,12 +9277,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.802Z"
+            "example": "2026-01-19T10:19:50.260Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.802Z"
+            "example": "2026-01-19T10:19:50.260Z"
           }
         },
         "required": [
@@ -7007,12 +9304,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.778Z"
+            "example": "2026-01-19T10:19:50.231Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.778Z"
+            "example": "2026-01-19T10:19:50.231Z"
           }
         }
       },
@@ -7050,7 +9347,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:35.436Z"
+            "example": "2026-01-19T10:19:51.120Z"
           },
           "isActive": {
             "type": "boolean",
@@ -7063,7 +9360,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:35.436Z"
+            "example": "2026-01-19T10:19:51.120Z"
           }
         },
         "required": [
@@ -7175,68 +9472,6 @@
           "activationCode"
         ]
       },
-      "CreateProductDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Sample product name"
-          },
-          "description": {
-            "type": "string",
-            "example": "Sample product description"
-          },
-          "price": {
-            "type": "number",
-            "example": 12
-          },
-          "stockKeepingUnit": {
-            "type": "string",
-            "example": "ADSFDSAF1463218FA"
-          },
-          "stock": {
-            "type": "number",
-            "example": 25
-          },
-          "createByUserId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1231
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2026-01-18T08:11:38.468Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "example": "2026-01-18T08:11:38.468Z"
-          },
-          "categoryId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1325
-          },
-          "voucherId": {
-            "format": "int64",
-            "type": "integer",
-            "example": 1325
-          }
-        },
-        "required": [
-          "name",
-          "description",
-          "price",
-          "stockKeepingUnit",
-          "stock",
-          "createByUserId",
-          "createdAt",
-          "updatedAt",
-          "categoryId",
-          "voucherId"
-        ]
-      },
       "UpdateProductDto": {
         "type": "object",
         "properties": {
@@ -7268,12 +9503,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.468Z"
+            "example": "2026-01-19T10:19:51.682Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.468Z"
+            "example": "2026-01-19T10:19:51.682Z"
           },
           "categoryId": {
             "format": "int64",
@@ -7316,12 +9551,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.554Z"
+            "example": "2026-01-19T10:19:51.812Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.554Z"
+            "example": "2026-01-19T10:19:51.812Z"
           }
         },
         "required": [
@@ -7423,12 +9658,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.554Z"
+            "example": "2026-01-19T10:19:51.812Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.554Z"
+            "example": "2026-01-19T10:19:51.812Z"
           }
         }
       },
@@ -7542,12 +9777,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.642Z"
+            "example": "2026-01-19T10:19:52.002Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.642Z"
+            "example": "2026-01-19T10:19:52.002Z"
           }
         },
         "required": [
@@ -7664,12 +9899,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.642Z"
+            "example": "2026-01-19T10:19:52.002Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.642Z"
+            "example": "2026-01-19T10:19:52.002Z"
           }
         }
       },
@@ -7720,12 +9955,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.773Z"
+            "example": "2026-01-19T10:19:52.223Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.773Z"
+            "example": "2026-01-19T10:19:52.223Z"
           }
         },
         "required": [
@@ -7875,12 +10110,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.773Z"
+            "example": "2026-01-19T10:19:52.223Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:38.773Z"
+            "example": "2026-01-19T10:19:52.223Z"
           }
         }
       },
@@ -8064,12 +10299,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.173Z"
+            "example": "2026-01-19T10:19:52.719Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.173Z"
+            "example": "2026-01-19T10:19:52.719Z"
           }
         },
         "required": [
@@ -8111,12 +10346,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.173Z"
+            "example": "2026-01-19T10:19:52.719Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.173Z"
+            "example": "2026-01-19T10:19:52.719Z"
           }
         }
       },
@@ -8161,12 +10396,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.292Z"
+            "example": "2026-01-19T10:19:53.010Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.292Z"
+            "example": "2026-01-19T10:19:53.010Z"
           }
         },
         "required": [
@@ -8223,12 +10458,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.292Z"
+            "example": "2026-01-19T10:19:53.010Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.292Z"
+            "example": "2026-01-19T10:19:53.010Z"
           }
         }
       },
@@ -8253,7 +10488,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.556Z"
+            "example": "2026-01-19T10:19:53.419Z"
           },
           "status": {
             "type": "string",
@@ -8278,12 +10513,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.556Z"
+            "example": "2026-01-19T10:19:53.419Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.556Z"
+            "example": "2026-01-19T10:19:53.419Z"
           }
         },
         "required": [
@@ -8403,7 +10638,7 @@
           "orderDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.556Z"
+            "example": "2026-01-19T10:19:53.419Z"
           },
           "status": {
             "type": "string",
@@ -8428,12 +10663,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.556Z"
+            "example": "2026-01-19T10:19:53.419Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.556Z"
+            "example": "2026-01-19T10:19:53.419Z"
           }
         }
       },
@@ -8465,12 +10700,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.655Z"
+            "example": "2026-01-19T10:19:53.592Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.655Z"
+            "example": "2026-01-19T10:19:53.592Z"
           }
         },
         "required": [
@@ -8563,12 +10798,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.655Z"
+            "example": "2026-01-19T10:19:53.592Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.655Z"
+            "example": "2026-01-19T10:19:53.592Z"
           }
         }
       },
@@ -8588,22 +10823,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           },
           "carrier": {
             "type": "string",
@@ -8620,12 +10855,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           }
         },
         "required": [
@@ -8742,22 +10977,22 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           },
           "carrier": {
             "type": "string",
@@ -8774,12 +11009,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.775Z"
+            "example": "2026-01-19T10:19:53.777Z"
           }
         }
       },
@@ -8802,7 +11037,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.911Z"
+            "example": "2026-01-19T10:19:53.914Z"
           },
           "amount": {
             "type": "number",
@@ -8892,7 +11127,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:39.911Z"
+            "example": "2026-01-19T10:19:53.914Z"
           },
           "amount": {
             "type": "number",
@@ -8966,12 +11201,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.802Z"
+            "example": "2026-01-19T10:19:50.260Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:28.802Z"
+            "example": "2026-01-19T10:19:50.260Z"
           }
         }
       },
@@ -8997,12 +11232,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.080Z"
+            "example": "2026-01-19T10:19:54.247Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.080Z"
+            "example": "2026-01-19T10:19:54.247Z"
           },
           "usageLimit": {
             "type": "number",
@@ -9019,12 +11254,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.081Z"
+            "example": "2026-01-19T10:19:54.247Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.081Z"
+            "example": "2026-01-19T10:19:54.247Z"
           },
           "createdBy": {
             "format": "int64",
@@ -9153,12 +11388,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.080Z"
+            "example": "2026-01-19T10:19:54.247Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.080Z"
+            "example": "2026-01-19T10:19:54.247Z"
           },
           "usageLimit": {
             "type": "number",
@@ -9175,12 +11410,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.081Z"
+            "example": "2026-01-19T10:19:54.247Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.081Z"
+            "example": "2026-01-19T10:19:54.247Z"
           },
           "createdBy": {
             "format": "int64",
@@ -9205,12 +11440,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.159Z"
+            "example": "2026-01-19T10:19:54.366Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.159Z"
+            "example": "2026-01-19T10:19:54.366Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -9289,12 +11524,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.159Z"
+            "example": "2026-01-19T10:19:54.366Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.159Z"
+            "example": "2026-01-19T10:19:54.366Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -9335,12 +11570,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.235Z"
+            "example": "2026-01-19T10:19:54.473Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.235Z"
+            "example": "2026-01-19T10:19:54.473Z"
           }
         },
         "required": [
@@ -9387,12 +11622,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.235Z"
+            "example": "2026-01-19T10:19:54.473Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.235Z"
+            "example": "2026-01-19T10:19:54.473Z"
           }
         }
       },
@@ -9407,12 +11642,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.295Z"
+            "example": "2026-01-19T10:19:54.579Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.295Z"
+            "example": "2026-01-19T10:19:54.579Z"
           }
         },
         "required": [
@@ -9463,12 +11698,12 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.295Z"
+            "example": "2026-01-19T10:19:54.579Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-01-18T08:11:40.295Z"
+            "example": "2026-01-19T10:19:54.579Z"
           }
         }
       },

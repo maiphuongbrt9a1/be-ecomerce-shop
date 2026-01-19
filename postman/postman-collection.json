@@ -51,6 +51,20 @@
               ],
               "path": [
                 "user"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -73,7 +87,7 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "multipart/form-data"
               }
             ],
             "url": {
@@ -88,7 +102,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"gender\": \"MALE | FEMALE | OTHER\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"1234567890\",\n  \"password\": \"password123\",\n  \"username\": \"johndoe\",\n  \"role\": \"USER | ADMIN | OPERATOR\",\n  \"createdAt\": \"2025-12-04T10:46:26.763Z\",\n  \"isActive\": \"false\",\n  \"codeActive\": false,\n  \"codeActiveExpire\": \"2025-12-04T10:46:26.764Z\",\n  \"staffCode\": \"ADFASFD-4654231-DAFDS\",\n  \"isAdmin\": false,\n  \"loyaltyCard\": \"0987985465231\"\n}",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"gender\": \"MALE | FEMALE | OTHER\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"1234567890\",\n  \"password\": \"password123\",\n  \"username\": \"johndoe\",\n  \"role\": \"USER | ADMIN | OPERATOR\",\n  \"createdAt\": \"2026-01-19T10:20:05.468Z\",\n  \"isActive\": \"false\",\n  \"codeActive\": false,\n  \"codeActiveExpire\": \"2026-01-19T10:20:05.468Z\",\n  \"staffCode\": \"ADFASFD-4654231-DAFDS\",\n  \"loyaltyCard\": \"0987985465231\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -124,8 +138,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -159,8 +173,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -184,7 +198,7 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "multipart/form-data"
               }
             ],
             "url": {
@@ -199,15 +213,57 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"gender\": \"MALE\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"1234567890\",\n  \"password\": \"password123\",\n  \"username\": \"johndoe\",\n  \"updatedAt\": \"2025-12-04T10:46:26.770Z\"\n}",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"gender\": \"MALE\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"1234567890\",\n  \"password\": \"password123\",\n  \"username\": \"johndoe\",\n  \"updatedAt\": \"2026-01-19T10:20:05.475Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add a new user by Google account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/google-account",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "google-account"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"gender\": \"MALE | FEMALE | OTHER\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"1234567890\",\n  \"googleId\": \"1234567 | uuid\",\n  \"username\": \"johndoe\",\n  \"role\": \"USER | ADMIN | OPERATOR\",\n  \"createdAt\": \"2026-01-19T10:20:05.469Z\",\n  \"isActive\": \"false\",\n  \"codeActive\": false,\n  \"codeActiveExpire\": \"2026-01-19T10:20:05.469Z\",\n  \"staffCode\": \"ADFASFD-4654231-DAFDS\",\n  \"loyaltyCard\": \"0987985465231\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -241,11 +297,25 @@
                 "{id}",
                 "address-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -280,8 +350,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -316,8 +386,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -335,7 +405,7 @@
           }
         },
         {
-          "name": "Get vouchers are created by a user",
+          "name": "Get all vouchers created by user",
           "request": {
             "method": "GET",
             "header": [],
@@ -349,11 +419,25 @@
                 "{id}",
                 "created-voucher-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -371,7 +455,7 @@
           }
         },
         {
-          "name": "Get products are created by a user",
+          "name": "Get all products created by user",
           "request": {
             "method": "GET",
             "header": [],
@@ -385,11 +469,25 @@
                 "{id}",
                 "product-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -407,7 +505,7 @@
           }
         },
         {
-          "name": "Get product variants are created by a user",
+          "name": "Get all product variants created by user",
           "request": {
             "method": "GET",
             "header": [],
@@ -421,11 +519,25 @@
                 "{id}",
                 "product-variant-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -443,7 +555,7 @@
           }
         },
         {
-          "name": "Get categories are created by a user",
+          "name": "Get all categories created by user",
           "request": {
             "method": "GET",
             "header": [],
@@ -457,11 +569,25 @@
                 "{id}",
                 "category-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -479,7 +605,7 @@
           }
         },
         {
-          "name": "Get orders are created by a user",
+          "name": "Get all orders created by user",
           "request": {
             "method": "GET",
             "header": [],
@@ -493,11 +619,25 @@
                 "{id}",
                 "order-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -515,7 +655,7 @@
           }
         },
         {
-          "name": "Get orders are processed by a user",
+          "name": "Get all orders processed by user",
           "request": {
             "method": "GET",
             "header": [],
@@ -529,11 +669,25 @@
                 "{id}",
                 "processed-order-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -551,7 +705,7 @@
           }
         },
         {
-          "name": "Get shipments are processed by a user",
+          "name": "Get all shipments processed by user",
           "request": {
             "method": "GET",
             "header": [],
@@ -565,11 +719,25 @@
                 "{id}",
                 "processed-shipment-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -587,7 +755,7 @@
           }
         },
         {
-          "name": "Get requests of user",
+          "name": "Get all requests of user",
           "request": {
             "method": "GET",
             "header": [],
@@ -601,11 +769,25 @@
                 "{id}",
                 "request-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -623,7 +805,7 @@
           }
         },
         {
-          "name": "Get processed requests of user",
+          "name": "Get all requests processed by user",
           "request": {
             "method": "GET",
             "header": [],
@@ -637,11 +819,25 @@
                 "{id}",
                 "processed-request-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -659,7 +855,7 @@
           }
         },
         {
-          "name": "Get size-profiles of user",
+          "name": "Get all size profiles of user",
           "request": {
             "method": "GET",
             "header": [],
@@ -673,11 +869,25 @@
                 "{id}",
                 "size-profile-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -695,7 +905,7 @@
           }
         },
         {
-          "name": "Get reviews of user",
+          "name": "Get all reviews of user",
           "request": {
             "method": "GET",
             "header": [],
@@ -709,11 +919,25 @@
                 "{id}",
                 "review-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -749,12 +973,19 @@
                 "user",
                 "{id}",
                 "cart"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": 1,
+                  "description": "User ID"
+                }
               ]
             },
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 4741,\n  \"createdAt\": \"2025-12-04T10:46:26.784Z\",\n  \"updatedAt\": \"2025-12-04T10:46:26.785Z\"\n}",
+              "raw": "{\n  \"userId\": 4741,\n  \"createdAt\": \"2026-01-19T10:20:05.479Z\",\n  \"updatedAt\": \"2026-01-19T10:20:05.479Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -774,7 +1005,7 @@
           }
         },
         {
-          "name": "Get cart id of user (only get id user in cart table. Do not get any cart items)",
+          "name": "Get cart of user (only get cart info. Do not get any cart items)",
           "request": {
             "method": "GET",
             "header": [],
@@ -791,8 +1022,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -810,7 +1041,7 @@
           }
         },
         {
-          "name": "Update one cart (only update id user in cart table. Do not add any cart items)",
+          "name": "Update user cart (only update cart info. Do not modify any cart items)",
           "request": {
             "method": "PATCH",
             "header": [
@@ -832,15 +1063,15 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 4741,\n  \"createdAt\": \"2025-12-04T10:46:26.784Z\",\n  \"updatedAt\": \"2025-12-04T10:46:26.785Z\"\n}",
+              "raw": "{\n  \"userId\": 4741,\n  \"createdAt\": \"2026-01-19T10:20:05.479Z\",\n  \"updatedAt\": \"2026-01-19T10:20:05.479Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -879,12 +1110,19 @@
                 "{id}",
                 "cart",
                 "cart-item"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": 1,
+                  "description": "User ID"
+                }
               ]
             },
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"cartId\": 4741,\n  \"productVariantId\": 4741,\n  \"quantity\": 4741,\n  \"createdAt\": \"2025-12-04T10:46:26.804Z\",\n  \"updatedAt\": \"2025-12-04T10:46:26.805Z\"\n}",
+              "raw": "{\n  \"cartId\": 4741,\n  \"productVariantId\": 4741,\n  \"quantity\": 4741,\n  \"createdAt\": \"2026-01-19T10:20:05.490Z\",\n  \"updatedAt\": \"2026-01-19T10:20:05.490Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -904,7 +1142,7 @@
           }
         },
         {
-          "name": "Get user cart with cart items detail",
+          "name": "Get user cart with all cart items details",
           "request": {
             "method": "GET",
             "header": [],
@@ -922,8 +1160,8 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -941,7 +1179,7 @@
           }
         },
         {
-          "name": "Get saved vouchers of user",
+          "name": "Get all saved vouchers of user",
           "request": {
             "method": "GET",
             "header": [],
@@ -955,11 +1193,25 @@
                 "{id}",
                 "saved-voucher-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Items per page (default 10)",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (default 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
-                  "value": "",
-                  "description": ""
+                  "value": 1,
+                  "description": "User ID"
                 }
               ]
             },
@@ -1050,13 +1302,70 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"JohnDoe465465\",\n  \"email\": \"xample@gmail.com\",\n  \"password\": \"JohnDoe465465454\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phone\": \"1234567890\",\n  \"role\": \"USER\",\n  \"createdAt\": \"2025-12-04T10:46:27.913Z\",\n  \"isActive\": false,\n  \"codeActive\": \"fddsafds4564521dfsaf\",\n  \"codeActiveExpire\": \"2025-12-04T10:46:27.914Z\"\n}",
+              "raw": "{\n  \"username\": \"JohnDoe465465\",\n  \"email\": \"xample@gmail.com\",\n  \"password\": \"JohnDoe465465454\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phone\": \"1234567890\",\n  \"role\": \"USER\",\n  \"createdAt\": \"2026-01-19T10:20:07.224Z\",\n  \"isActive\": false,\n  \"codeActive\": \"fddsafds4564521dfsaf\",\n  \"codeActiveExpire\": \"2026-01-19T10:20:07.225Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "User login with Google account",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/google",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "google"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Redirect when User login with Google account",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/google/google-redirect",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "google",
+                "google-redirect"
+              ]
+            },
+            "description": "",
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -1295,7 +1604,7 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "multipart/form-data"
               }
             ],
             "url": {
@@ -1310,7 +1619,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Sample product name\",\n  \"description\": \"Sample product description\",\n  \"price\": 12,\n  \"stockKeepingUnit\": \"ADSFDSAF1463218FA\",\n  \"stock\": 25,\n  \"createByUserId\": 1231,\n  \"createdAt\": \"2025-12-04T10:46:30.479Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.479Z\",\n  \"categoryId\": 1325,\n  \"voucherId\": 1325\n}",
+              "raw": "{\n  \"name\": \"Sample product name\",\n  \"description\": \"Sample product description\",\n  \"price\": 12,\n  \"stockKeepingUnit\": \"ADSFDSAF1463218FA\",\n  \"stock\": 25,\n  \"createByUserId\": 1231,\n  \"categoryId\": 1325,\n  \"voucherId\": 1325,\n  \"files\": [\n    \"string\"\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1341,6 +1650,20 @@
               ],
               "path": [
                 "products"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -1421,7 +1744,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Sample product name\",\n  \"description\": \"Sample product description\",\n  \"price\": 12,\n  \"stockKeepingUnit\": \"ADSFDSAF1463218FA\",\n  \"stock\": 25,\n  \"createByUserId\": 1231,\n  \"createdAt\": \"2025-12-04T10:46:30.479Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.479Z\",\n  \"categoryId\": 1325,\n  \"voucherId\": 1325\n}",
+              "raw": "{\n  \"name\": \"Sample product name\",\n  \"description\": \"Sample product description\",\n  \"price\": 12,\n  \"stockKeepingUnit\": \"ADSFDSAF1463218FA\",\n  \"stock\": 25,\n  \"createByUserId\": 1231,\n  \"createdAt\": \"2026-01-19T10:20:07.680Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.680Z\",\n  \"categoryId\": 1325,\n  \"voucherId\": 1325\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1574,7 +1897,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"sample name of category\",\n  \"description\": \"description for category\",\n  \"parentId\": 1231,\n  \"createByUserId\": 12314,\n  \"voucherId\": 1325,\n  \"createdAt\": \"2025-12-04T10:46:30.523Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.523Z\"\n}",
+              "raw": "{\n  \"name\": \"sample name of category\",\n  \"description\": \"description for category\",\n  \"parentId\": 1231,\n  \"createByUserId\": 12314,\n  \"voucherId\": 1325,\n  \"createdAt\": \"2026-01-19T10:20:07.704Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.704Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1605,6 +1928,20 @@
               ],
               "path": [
                 "category"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -1685,7 +2022,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"sample name of category\",\n  \"description\": \"description for category\",\n  \"parentId\": 1231,\n  \"createByUserId\": 12314,\n  \"voucherId\": 1325,\n  \"createdAt\": \"2025-12-04T10:46:30.523Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.523Z\"\n}",
+              "raw": "{\n  \"name\": \"sample name of category\",\n  \"description\": \"description for category\",\n  \"parentId\": 1231,\n  \"createByUserId\": 12314,\n  \"voucherId\": 1325,\n  \"createdAt\": \"2026-01-19T10:20:07.704Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.704Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1838,7 +2175,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 1,\n  \"street\": \"Ho Xuan Huong Street\",\n  \"ward\": \"Dong Hoa\",\n  \"district\": \"Di An\",\n  \"province\": \"Binh Duong\",\n  \"zipCode\": \"ADSAFD797654FDAFD\",\n  \"country\": \"Binh Duong\",\n  \"createdAt\": \"2025-12-04T10:46:30.550Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.550Z\"\n}",
+              "raw": "{\n  \"userId\": 1,\n  \"street\": \"Ho Xuan Huong Street\",\n  \"ward\": \"Dong Hoa\",\n  \"district\": \"Di An\",\n  \"province\": \"Binh Duong\",\n  \"zipCode\": \"ADSAFD797654FDAFD\",\n  \"country\": \"Binh Duong\",\n  \"createdAt\": \"2026-01-19T10:20:07.735Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.735Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1869,6 +2206,20 @@
               ],
               "path": [
                 "address"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -1949,7 +2300,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 1,\n  \"street\": \"Ho Xuan Huong Street\",\n  \"ward\": \"Dong Hoa\",\n  \"district\": \"Di An\",\n  \"province\": \"Binh Duong\",\n  \"zipCode\": \"ADSAFD797654FDAFD\",\n  \"country\": \"Binh Duong\",\n  \"createdAt\": \"2025-12-04T10:46:30.550Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.550Z\"\n}",
+              "raw": "{\n  \"userId\": 1,\n  \"street\": \"Ho Xuan Huong Street\",\n  \"ward\": \"Dong Hoa\",\n  \"district\": \"Di An\",\n  \"province\": \"Binh Duong\",\n  \"zipCode\": \"ADSAFD797654FDAFD\",\n  \"country\": \"Binh Duong\",\n  \"createdAt\": \"2026-01-19T10:20:07.735Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.735Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2030,7 +2381,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 1321546,\n  \"heightCm\": 135.5,\n  \"weightKg\": 85.5,\n  \"chestCm\": 86.5,\n  \"hipCm\": 87.5,\n  \"sleeveLengthCm\": 112.2,\n  \"shoulderLengthCm\": 86,\n  \"inseamCm\": 90,\n  \"bodyType\": \"Body fat\",\n  \"description\": \"This is profile of John. He like wide t shirt and long trouser\",\n  \"createdAt\": \"2025-12-04T10:46:30.586Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.586Z\"\n}",
+              "raw": "{\n  \"userId\": 1321546,\n  \"heightCm\": 135.5,\n  \"weightKg\": 85.5,\n  \"chestCm\": 86.5,\n  \"hipCm\": 87.5,\n  \"sleeveLengthCm\": 112.2,\n  \"shoulderLengthCm\": 86,\n  \"inseamCm\": 90,\n  \"bodyType\": \"Body fat\",\n  \"description\": \"This is profile of John. He like wide t shirt and long trouser\",\n  \"createdAt\": \"2026-01-19T10:20:07.757Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.757Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2061,6 +2412,20 @@
               ],
               "path": [
                 "size-profiles"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -2141,7 +2506,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 1321546,\n  \"heightCm\": 135.5,\n  \"weightKg\": 85.5,\n  \"chestCm\": 86.5,\n  \"hipCm\": 87.5,\n  \"sleeveLengthCm\": 112.2,\n  \"shoulderLengthCm\": 86,\n  \"inseamCm\": 90,\n  \"bodyType\": \"Body fat\",\n  \"description\": \"This is profile of John. He like wide t shirt and long trouser\",\n  \"createdAt\": \"2025-12-04T10:46:30.586Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.586Z\"\n}",
+              "raw": "{\n  \"userId\": 1321546,\n  \"heightCm\": 135.5,\n  \"weightKg\": 85.5,\n  \"chestCm\": 86.5,\n  \"hipCm\": 87.5,\n  \"sleeveLengthCm\": 112.2,\n  \"shoulderLengthCm\": 86,\n  \"inseamCm\": 90,\n  \"bodyType\": \"Body fat\",\n  \"description\": \"This is profile of John. He like wide t shirt and long trouser\",\n  \"createdAt\": \"2026-01-19T10:20:07.757Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.757Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2207,7 +2572,7 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "multipart/form-data"
               }
             ],
             "url": {
@@ -2222,7 +2587,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": 1315,\n  \"createByUserId\": 852,\n  \"variantName\": \"name of product variant\",\n  \"variantColor\": \"red\",\n  \"variantSize\": \"XL\",\n  \"price\": 46546,\n  \"stock\": 851,\n  \"stockKeepingUnit\": \"EWDGDSED715545D\",\n  \"voucherId\": 1325,\n  \"createdAt\": \"2025-12-04T10:46:30.622Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.622Z\"\n}",
+              "raw": "{\n  \"files\": [\n    \"string\"\n  ],\n  \"productId\": 1315,\n  \"createByUserId\": 852,\n  \"variantName\": \"name of product variant\",\n  \"variantColor\": \"red\",\n  \"variantSize\": \"XL\",\n  \"price\": 46546,\n  \"stock\": 851,\n  \"stockKeepingUnit\": \"EWDGDSED715545D\",\n  \"voucherId\": 1325,\n  \"createdAt\": \"2026-01-19T10:20:11.025Z\",\n  \"updatedAt\": \"2026-01-19T10:20:11.026Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2253,6 +2618,20 @@
               ],
               "path": [
                 "product-variants"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -2310,7 +2689,7 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "multipart/form-data"
               }
             ],
             "url": {
@@ -2333,7 +2712,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": 1315,\n  \"createByUserId\": 852,\n  \"variantName\": \"name of product variant\",\n  \"variantColor\": \"red\",\n  \"variantSize\": \"XL\",\n  \"price\": 46546,\n  \"stock\": 851,\n  \"stockKeepingUnit\": \"EWDGDSED715545D\",\n  \"voucherId\": 1325,\n  \"createdAt\": \"2025-12-04T10:46:30.622Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.622Z\"\n}",
+              "raw": "{\n  \"files\": [\n    \"string\"\n  ],\n  \"productId\": 1315,\n  \"variantName\": \"name of product variant\",\n  \"variantColor\": \"red\",\n  \"variantSize\": \"XL\",\n  \"price\": 46546,\n  \"stock\": 851,\n  \"stockKeepingUnit\": \"EWDGDSED715545D\",\n  \"voucherId\": 1325,\n  \"mediaIdsToDelete\": [\n    \"9007199254740993\"\n  ],\n  \"updatedAt\": \"2026-01-19T10:20:11.026Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2402,6 +2781,20 @@
                 "{id}",
                 "review-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -2437,6 +2830,20 @@
                 "product-variants",
                 "{id}",
                 "media-list"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ],
               "variable": [
                 {
@@ -2486,7 +2893,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": 851,\n  \"userId\": 851,\n  \"productVariantId\": 851,\n  \"rating\": 5,\n  \"comment\": \"Perfect\",\n  \"createdAt\": \"2025-12-04T10:46:30.660Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.661Z\"\n}",
+              "raw": "{\n  \"productId\": 851,\n  \"userId\": 851,\n  \"productVariantId\": 851,\n  \"rating\": 5,\n  \"comment\": \"Perfect\",\n  \"createdAt\": \"2026-01-19T10:20:07.817Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.817Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2517,6 +2924,20 @@
               ],
               "path": [
                 "reviews"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -2597,7 +3018,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": 851,\n  \"userId\": 851,\n  \"productVariantId\": 851,\n  \"rating\": 5,\n  \"comment\": \"Perfect\",\n  \"createdAt\": \"2025-12-04T10:46:30.660Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.661Z\"\n}",
+              "raw": "{\n  \"productId\": 851,\n  \"userId\": 851,\n  \"productVariantId\": 851,\n  \"rating\": 5,\n  \"comment\": \"Perfect\",\n  \"createdAt\": \"2026-01-19T10:20:07.817Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.817Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2714,7 +3135,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"url\": \"https://i.ytimg.com/vi/yYDE9gMvMbU/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCn1eyWanaA18fPw7QhCCTftHALFA\",\n  \"type\": \"VIDEO | IMAGE | DOCUMENT\",\n  \"reviewId\": 851,\n  \"userId\": 851,\n  \"productVariantId\": 851,\n  \"isShopLogo\": false,\n  \"isShopBanner\": false,\n  \"isCategoryFile\": false,\n  \"createdAt\": \"2025-12-04T10:46:30.698Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.698Z\"\n}",
+              "raw": "{\n  \"url\": \"https://i.ytimg.com/vi/yYDE9gMvMbU/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCn1eyWanaA18fPw7QhCCTftHALFA\",\n  \"type\": \"VIDEO | IMAGE | DOCUMENT\",\n  \"reviewId\": 851,\n  \"userId\": 851,\n  \"productVariantId\": 851,\n  \"isShopLogo\": false,\n  \"isShopBanner\": false,\n  \"isCategoryFile\": false,\n  \"createdAt\": \"2026-01-19T10:20:07.834Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.834Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2745,6 +3166,20 @@
               ],
               "path": [
                 "media"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -2825,7 +3260,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"url\": \"https://i.ytimg.com/vi/yYDE9gMvMbU/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCn1eyWanaA18fPw7QhCCTftHALFA\",\n  \"type\": \"VIDEO | IMAGE | DOCUMENT\",\n  \"reviewId\": 851,\n  \"userId\": 851,\n  \"productVariantId\": 851,\n  \"isShopLogo\": false,\n  \"isShopBanner\": false,\n  \"isCategoryFile\": false,\n  \"createdAt\": \"2025-12-04T10:46:30.698Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.698Z\"\n}",
+              "raw": "{\n  \"url\": \"https://i.ytimg.com/vi/yYDE9gMvMbU/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCn1eyWanaA18fPw7QhCCTftHALFA\",\n  \"type\": \"VIDEO | IMAGE | DOCUMENT\",\n  \"reviewId\": 851,\n  \"userId\": 851,\n  \"productVariantId\": 851,\n  \"isShopLogo\": false,\n  \"isShopBanner\": false,\n  \"isCategoryFile\": false,\n  \"createdAt\": \"2026-01-19T10:20:07.834Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.834Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2906,7 +3341,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"shippingAddressId\": 851,\n  \"userId\": 851,\n  \"processByStaffId\": 851,\n  \"orderDate\": \"2025-12-04T10:46:30.741Z\",\n  \"status\": \"PENDING\",\n  \"subTotal\": 851,\n  \"shippingFee\": 851,\n  \"discount\": 851,\n  \"totalAmount\": 851,\n  \"createdAt\": \"2025-12-04T10:46:30.741Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.741Z\"\n}",
+              "raw": "{\n  \"shippingAddressId\": 851,\n  \"userId\": 851,\n  \"processByStaffId\": 851,\n  \"orderDate\": \"2026-01-19T10:20:07.848Z\",\n  \"status\": \"PENDING\",\n  \"subTotal\": 851,\n  \"shippingFee\": 851,\n  \"discount\": 851,\n  \"totalAmount\": 851,\n  \"createdAt\": \"2026-01-19T10:20:07.849Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.849Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2937,6 +3372,20 @@
               ],
               "path": [
                 "orders"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -3045,7 +3494,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"shippingAddressId\": 851,\n  \"userId\": 851,\n  \"processByStaffId\": 851,\n  \"orderDate\": \"2025-12-04T10:46:30.741Z\",\n  \"status\": \"PENDING\",\n  \"subTotal\": 851,\n  \"shippingFee\": 851,\n  \"discount\": 851,\n  \"totalAmount\": 851,\n  \"createdAt\": \"2025-12-04T10:46:30.741Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.741Z\"\n}",
+              "raw": "{\n  \"shippingAddressId\": 851,\n  \"userId\": 851,\n  \"processByStaffId\": 851,\n  \"orderDate\": \"2026-01-19T10:20:07.848Z\",\n  \"status\": \"PENDING\",\n  \"subTotal\": 851,\n  \"shippingFee\": 851,\n  \"discount\": 851,\n  \"totalAmount\": 851,\n  \"createdAt\": \"2026-01-19T10:20:07.849Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.849Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3306,7 +3755,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"orderId\": 851,\n  \"productVariantId\": 851,\n  \"quantity\": 851,\n  \"unitPrice\": 851,\n  \"totalPrice\": 851,\n  \"createdAt\": \"2025-12-04T10:46:30.773Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.773Z\"\n}",
+              "raw": "{\n  \"orderId\": 851,\n  \"productVariantId\": 851,\n  \"quantity\": 851,\n  \"unitPrice\": 851,\n  \"totalPrice\": 851,\n  \"createdAt\": \"2026-01-19T10:20:07.866Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.866Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3337,6 +3786,20 @@
               ],
               "path": [
                 "order-items"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -3417,7 +3880,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"orderId\": 851,\n  \"productVariantId\": 851,\n  \"quantity\": 851,\n  \"unitPrice\": 851,\n  \"totalPrice\": 851,\n  \"createdAt\": \"2025-12-04T10:46:30.773Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.773Z\"\n}",
+              "raw": "{\n  \"orderId\": 851,\n  \"productVariantId\": 851,\n  \"quantity\": 851,\n  \"unitPrice\": 851,\n  \"totalPrice\": 851,\n  \"createdAt\": \"2026-01-19T10:20:07.866Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.866Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3498,7 +3961,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"orderId\": 455,\n  \"processByStaffId\": 455,\n  \"estimatedDelivery\": \"2025-12-04T10:46:30.810Z\",\n  \"deliveredAt\": \"2025-12-04T10:46:30.810Z\",\n  \"estimatedShipDate\": \"2025-12-04T10:46:30.810Z\",\n  \"shippedAt\": \"2025-12-04T10:46:30.810Z\",\n  \"carrier\": \"Important and quick\",\n  \"trackingNumber\": \"kjhkjdsfhds65442324sdfds\",\n  \"status\": \"PENDING\",\n  \"createdAt\": \"2025-12-04T10:46:30.811Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.811Z\"\n}",
+              "raw": "{\n  \"orderId\": 455,\n  \"processByStaffId\": 455,\n  \"estimatedDelivery\": \"2026-01-19T10:20:07.879Z\",\n  \"deliveredAt\": \"2026-01-19T10:20:07.879Z\",\n  \"estimatedShipDate\": \"2026-01-19T10:20:07.880Z\",\n  \"shippedAt\": \"2026-01-19T10:20:07.880Z\",\n  \"carrier\": \"Important and quick\",\n  \"trackingNumber\": \"kjhkjdsfhds65442324sdfds\",\n  \"status\": \"PENDING\",\n  \"createdAt\": \"2026-01-19T10:20:07.880Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.880Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3529,6 +3992,20 @@
               ],
               "path": [
                 "shipments"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -3609,7 +4086,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"orderId\": 455,\n  \"processByStaffId\": 455,\n  \"estimatedDelivery\": \"2025-12-04T10:46:30.810Z\",\n  \"deliveredAt\": \"2025-12-04T10:46:30.810Z\",\n  \"estimatedShipDate\": \"2025-12-04T10:46:30.810Z\",\n  \"shippedAt\": \"2025-12-04T10:46:30.810Z\",\n  \"carrier\": \"Important and quick\",\n  \"trackingNumber\": \"kjhkjdsfhds65442324sdfds\",\n  \"status\": \"PENDING\",\n  \"createdAt\": \"2025-12-04T10:46:30.811Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.811Z\"\n}",
+              "raw": "{\n  \"orderId\": 455,\n  \"processByStaffId\": 455,\n  \"estimatedDelivery\": \"2026-01-19T10:20:07.879Z\",\n  \"deliveredAt\": \"2026-01-19T10:20:07.879Z\",\n  \"estimatedShipDate\": \"2026-01-19T10:20:07.880Z\",\n  \"shippedAt\": \"2026-01-19T10:20:07.880Z\",\n  \"carrier\": \"Important and quick\",\n  \"trackingNumber\": \"kjhkjdsfhds65442324sdfds\",\n  \"status\": \"PENDING\",\n  \"createdAt\": \"2026-01-19T10:20:07.880Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.880Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3690,7 +4167,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"orderId\": 4741,\n  \"transactionId\": \"fdsafhdsakjfh56465ewrewr\",\n  \"paymentMethod\": \"COD | VNPAY | MOMO\",\n  \"paymentDate\": \"2025-12-04T10:46:30.844Z\",\n  \"amount\": 4741,\n  \"status\": \"PENDING\"\n}",
+              "raw": "{\n  \"orderId\": 4741,\n  \"transactionId\": \"fdsafhdsakjfh56465ewrewr\",\n  \"paymentMethod\": \"COD | VNPAY | MOMO\",\n  \"paymentDate\": \"2026-01-19T10:20:07.894Z\",\n  \"amount\": 4741,\n  \"status\": \"PENDING\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3721,6 +4198,20 @@
               ],
               "path": [
                 "payments"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -3801,7 +4292,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"orderId\": 4741,\n  \"transactionId\": \"fdsafhdsakjfh56465ewrewr\",\n  \"paymentMethod\": \"COD | VNPAY | MOMO\",\n  \"paymentDate\": \"2025-12-04T10:46:30.844Z\",\n  \"amount\": 4741,\n  \"status\": \"PENDING\"\n}",
+              "raw": "{\n  \"orderId\": 4741,\n  \"transactionId\": \"fdsafhdsakjfh56465ewrewr\",\n  \"paymentMethod\": \"COD | VNPAY | MOMO\",\n  \"paymentDate\": \"2026-01-19T10:20:07.894Z\",\n  \"amount\": 4741,\n  \"status\": \"PENDING\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3882,7 +4373,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"cartId\": 4741,\n  \"productVariantId\": 4741,\n  \"quantity\": 4741,\n  \"createdAt\": \"2025-12-04T10:46:26.804Z\",\n  \"updatedAt\": \"2025-12-04T10:46:26.805Z\"\n}",
+              "raw": "{\n  \"cartId\": 4741,\n  \"productVariantId\": 4741,\n  \"quantity\": 4741,\n  \"createdAt\": \"2026-01-19T10:20:05.490Z\",\n  \"updatedAt\": \"2026-01-19T10:20:05.490Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3913,6 +4404,20 @@
               ],
               "path": [
                 "cart-items"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -3993,7 +4498,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"cartId\": 4741,\n  \"productVariantId\": 4741,\n  \"quantity\": 4741,\n  \"createdAt\": \"2025-12-04T10:46:26.804Z\",\n  \"updatedAt\": \"2025-12-04T10:46:26.805Z\"\n}",
+              "raw": "{\n  \"cartId\": 4741,\n  \"productVariantId\": 4741,\n  \"quantity\": 4741,\n  \"createdAt\": \"2026-01-19T10:20:05.490Z\",\n  \"updatedAt\": \"2026-01-19T10:20:05.490Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4074,7 +4579,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"fdsakjfhds4655456ewrew\",\n  \"description\": \"free ship\",\n  \"discountType\": \"FIXED_AMOUNT\",\n  \"discountValue\": 465,\n  \"validFrom\": \"2025-12-04T10:46:30.912Z\",\n  \"validTo\": \"2025-12-04T10:46:30.912Z\",\n  \"usageLimit\": 4741,\n  \"timesUsed\": 4741,\n  \"isActive\": false,\n  \"createdAt\": \"2025-12-04T10:46:30.912Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.912Z\",\n  \"createdBy\": 4567\n}",
+              "raw": "{\n  \"code\": \"fdsakjfhds4655456ewrew\",\n  \"description\": \"free ship\",\n  \"discountType\": \"FIXED_AMOUNT\",\n  \"discountValue\": 465,\n  \"validFrom\": \"2026-01-19T10:20:07.924Z\",\n  \"validTo\": \"2026-01-19T10:20:07.924Z\",\n  \"usageLimit\": 4741,\n  \"timesUsed\": 4741,\n  \"isActive\": false,\n  \"createdAt\": \"2026-01-19T10:20:07.925Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.925Z\",\n  \"createdBy\": 4567\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4105,6 +4610,20 @@
               ],
               "path": [
                 "vouchers"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -4185,7 +4704,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"code\": \"fdsakjfhds4655456ewrew\",\n  \"description\": \"free ship\",\n  \"discountType\": \"FIXED_AMOUNT\",\n  \"discountValue\": 465,\n  \"validFrom\": \"2025-12-04T10:46:30.912Z\",\n  \"validTo\": \"2025-12-04T10:46:30.912Z\",\n  \"usageLimit\": 4741,\n  \"timesUsed\": 4741,\n  \"isActive\": false,\n  \"createdAt\": \"2025-12-04T10:46:30.912Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.912Z\",\n  \"createdBy\": 4567\n}",
+              "raw": "{\n  \"code\": \"fdsakjfhds4655456ewrew\",\n  \"description\": \"free ship\",\n  \"discountType\": \"FIXED_AMOUNT\",\n  \"discountValue\": 465,\n  \"validFrom\": \"2026-01-19T10:20:07.924Z\",\n  \"validTo\": \"2026-01-19T10:20:07.924Z\",\n  \"usageLimit\": 4741,\n  \"timesUsed\": 4741,\n  \"isActive\": false,\n  \"createdAt\": \"2026-01-19T10:20:07.925Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.925Z\",\n  \"createdBy\": 4567\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4374,7 +4893,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 4741,\n  \"voucherId\": 4741,\n  \"useVoucherAt\": \"2025-12-04T10:46:30.949Z\",\n  \"saveVoucherAt\": \"2025-12-04T10:46:30.949Z\",\n  \"voucherStatus\": \"AVAILABLE\"\n}",
+              "raw": "{\n  \"userId\": 4741,\n  \"voucherId\": 4741,\n  \"useVoucherAt\": \"2026-01-19T10:20:07.939Z\",\n  \"saveVoucherAt\": \"2026-01-19T10:20:07.939Z\",\n  \"voucherStatus\": \"AVAILABLE\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4405,6 +4924,20 @@
               ],
               "path": [
                 "user-vouchers"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -4485,7 +5018,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 4741,\n  \"voucherId\": 4741,\n  \"useVoucherAt\": \"2025-12-04T10:46:30.949Z\",\n  \"saveVoucherAt\": \"2025-12-04T10:46:30.949Z\",\n  \"voucherStatus\": \"AVAILABLE\"\n}",
+              "raw": "{\n  \"userId\": 4741,\n  \"voucherId\": 4741,\n  \"useVoucherAt\": \"2026-01-19T10:20:07.939Z\",\n  \"saveVoucherAt\": \"2026-01-19T10:20:07.939Z\",\n  \"voucherStatus\": \"AVAILABLE\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4566,7 +5099,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 4741,\n  \"processByStaffId\": 4741,\n  \"orderId\": 4741,\n  \"subject\": \"return request\",\n  \"description\": \"I want to return this product in order. Because it\\\"s wide\",\n  \"status\": \"PENDING\",\n  \"createdAt\": \"2025-12-04T10:46:30.996Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.997Z\"\n}",
+              "raw": "{\n  \"userId\": 4741,\n  \"processByStaffId\": 4741,\n  \"orderId\": 4741,\n  \"subject\": \"return request\",\n  \"description\": \"I want to return this product in order. Because it\\\"s wide\",\n  \"status\": \"PENDING\",\n  \"createdAt\": \"2026-01-19T10:20:07.954Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.954Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4597,6 +5130,20 @@
               ],
               "path": [
                 "requests"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -4677,7 +5224,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": 4741,\n  \"processByStaffId\": 4741,\n  \"orderId\": 4741,\n  \"subject\": \"return request\",\n  \"description\": \"I want to return this product in order. Because it\\\"s wide\",\n  \"status\": \"PENDING\",\n  \"createdAt\": \"2025-12-04T10:46:30.996Z\",\n  \"updatedAt\": \"2025-12-04T10:46:30.997Z\"\n}",
+              "raw": "{\n  \"userId\": 4741,\n  \"processByStaffId\": 4741,\n  \"orderId\": 4741,\n  \"subject\": \"return request\",\n  \"description\": \"I want to return this product in order. Because it\\\"s wide\",\n  \"status\": \"PENDING\",\n  \"createdAt\": \"2026-01-19T10:20:07.954Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.954Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4758,7 +5305,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"requestId\": 4741,\n  \"createdAt\": \"2025-12-04T10:46:31.045Z\",\n  \"updatedAt\": \"2025-12-04T10:46:31.045Z\"\n}",
+              "raw": "{\n  \"requestId\": 4741,\n  \"createdAt\": \"2026-01-19T10:20:07.974Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.974Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4789,6 +5336,20 @@
               ],
               "path": [
                 "return-requests"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -4869,7 +5430,7 @@
             "description": "",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"requestId\": 4741,\n  \"createdAt\": \"2025-12-04T10:46:31.045Z\",\n  \"updatedAt\": \"2025-12-04T10:46:31.045Z\"\n}",
+              "raw": "{\n  \"requestId\": 4741,\n  \"createdAt\": \"2026-01-19T10:20:07.974Z\",\n  \"updatedAt\": \"2026-01-19T10:20:07.974Z\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -5003,7 +5564,7 @@
           }
         },
         {
-          "name": "Build a https link for media file stored in S3 bucket using its key",
+          "name": "Build a https link for media file stored in S3 bucket using its key. It\"s key is file url in url field of media table",
           "request": {
             "method": "GET",
             "header": [],
@@ -5042,7 +5603,12 @@
           "name": "Upload logo shop file to server",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/aws-s3/admin/{adminId}/upload-logo-shop-file",
               "host": [
@@ -5063,6 +5629,15 @@
               ]
             },
             "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"file\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -5079,7 +5654,12 @@
           "name": "Upload banner shop file to server",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/aws-s3/admin/{adminId}/upload-banner-shop-file",
               "host": [
@@ -5100,6 +5680,15 @@
               ]
             },
             "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"file\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -5116,7 +5705,12 @@
           "name": "Upload one product file to server",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/aws-s3/admin/{adminId}/upload-one-product-file/{productVariantId}",
               "host": [
@@ -5143,6 +5737,15 @@
               ]
             },
             "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"file\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -5159,7 +5762,12 @@
           "name": "Upload many product file to server",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/aws-s3/admin/{adminId}/upload-many-product-file/{productVariantId}",
               "host": [
@@ -5186,6 +5794,15 @@
               ]
             },
             "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"files\": [\n    \"string\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -5202,9 +5819,14 @@
           "name": "Upload one category file to server",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
             "url": {
-              "raw": "{{baseUrl}}/aws-s3/admin/{adminId}/upload-one-category-file",
+              "raw": "{{baseUrl}}/aws-s3/admin/{adminId}/upload-one-category-file/{categoryId}",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -5212,17 +5834,32 @@
                 "aws-s3",
                 "admin",
                 "{adminId}",
-                "upload-one-category-file"
+                "upload-one-category-file",
+                "{categoryId}"
               ],
               "variable": [
                 {
                   "key": "adminId",
                   "value": "",
                   "description": ""
+                },
+                {
+                  "key": "categoryId",
+                  "value": "",
+                  "description": ""
                 }
               ]
             },
             "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"file\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -5239,7 +5876,12 @@
           "name": "Upload one user avatar file to server",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/aws-s3/user/{userId}/upload-one-user-avatar-file",
               "host": [
@@ -5260,6 +5902,15 @@
               ]
             },
             "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"file\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -5276,7 +5927,12 @@
           "name": "Upload many user avatar file to server",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/aws-s3/user/{userId}/upload-many-user-avatar-file",
               "host": [
@@ -5297,6 +5953,15 @@
               ]
             },
             "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"files\": [\n    \"string\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -5313,7 +5978,12 @@
           "name": "Upload one review file to server",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/aws-s3/user/{userId}/upload-one-review-file/{reviewId}",
               "host": [
@@ -5340,6 +6010,15 @@
               ]
             },
             "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"file\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -5356,7 +6035,12 @@
           "name": "Upload many review product file to server",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/aws-s3/user/{userId}/upload-many-review-file/{reviewId}",
               "host": [
@@ -5383,6 +6067,15 @@
               ]
             },
             "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"files\": [\n    \"string\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -5496,6 +6189,20 @@
               ],
               "path": [
                 "shop-offices"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ]
             },
             "description": "",
@@ -5645,6 +6352,20 @@
                 "{id}",
                 "manager-list"
               ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
+              ],
               "variable": [
                 {
                   "key": "id",
@@ -5716,6 +6437,20 @@
                 "shop-offices",
                 "{id}",
                 "product-list"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ],
               "variable": [
                 {
@@ -5790,6 +6525,20 @@
                 "category",
                 "{categoryId}",
                 "product-list"
+              ],
+              "query": [
+                {
+                  "key": "perPage",
+                  "value": 10,
+                  "description": "Number of items per page",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": 1,
+                  "description": "Page number (starts from 1)",
+                  "disabled": true
+                }
               ],
               "variable": [
                 {
