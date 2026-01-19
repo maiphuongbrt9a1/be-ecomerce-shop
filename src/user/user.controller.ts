@@ -322,7 +322,64 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema
-  @ApiBody({ type: CreateUserDto })
+  @ApiBody({
+    description: 'User creation data with optional avatar file',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'User avatar image file (optional)',
+        },
+        firstName: {
+          type: 'string',
+          example: 'John',
+          description: 'User first name',
+        },
+        lastName: {
+          type: 'string',
+          example: 'Doe',
+          description: 'User last name',
+        },
+        email: {
+          type: 'string',
+          format: 'email',
+          example: 'john.doe@example.com',
+          description: 'User email address (must be unique)',
+        },
+        username: {
+          type: 'string',
+          example: 'johndoe',
+          description: 'Username (must be unique)',
+        },
+        password: {
+          type: 'string',
+          format: 'password',
+          example: 'SecurePass123!',
+          description: 'User password (min 8 characters)',
+        },
+        phone: {
+          type: 'string',
+          example: '0123456789',
+          description: 'Phone number (optional)',
+        },
+        gender: {
+          type: 'string',
+          enum: ['MALE', 'FEMALE', 'OTHER'],
+          example: 'MALE',
+          description: 'User gender',
+        },
+        role: {
+          type: 'string',
+          enum: ['USER', 'ADMIN', 'OPERATOR'],
+          example: 'USER',
+          description: 'User role',
+        },
+      },
+      required: ['email', 'username', 'password'],
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   @Post()
   async createAnUser(
@@ -408,7 +465,83 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'USER', 'OPERATOR') // please check role is in Role enum of prisma schema
-  @ApiBody({ type: UpdateUserDto })
+  @ApiBody({
+    description: 'User update data with optional avatar file',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'User avatar image file (optional)',
+        },
+        firstName: {
+          type: 'string',
+          example: 'John',
+          description: 'User first name (optional)',
+        },
+        lastName: {
+          type: 'string',
+          example: 'Doe',
+          description: 'User last name (optional)',
+        },
+        email: {
+          type: 'string',
+          format: 'email',
+          example: 'john.doe@example.com',
+          description: 'User email address (optional)',
+        },
+        username: {
+          type: 'string',
+          example: 'johndoe',
+          description: 'Username (optional)',
+        },
+        password: {
+          type: 'string',
+          format: 'password',
+          example: 'NewSecurePass123!',
+          description: 'New password (optional, min 8 characters)',
+        },
+        phone: {
+          type: 'string',
+          example: '0123456789',
+          description: 'Phone number (optional)',
+        },
+        gender: {
+          type: 'string',
+          enum: ['MALE', 'FEMALE', 'OTHER'],
+          example: 'MALE',
+          description: 'User gender (optional)',
+        },
+        role: {
+          type: 'string',
+          enum: ['USER', 'ADMIN', 'OPERATOR'],
+          example: 'USER',
+          description: 'User role (optional, ADMIN only)',
+        },
+        isActive: {
+          type: 'boolean',
+          example: true,
+          description: 'Account active status (optional, ADMIN only)',
+        },
+        points: {
+          type: 'number',
+          example: 150,
+          description: 'User loyalty points (optional, ADMIN only)',
+        },
+        staffCode: {
+          type: 'string',
+          example: 'STAFF001',
+          description: 'Staff code for OPERATOR/ADMIN (optional)',
+        },
+        shopOfficeId: {
+          type: 'number',
+          example: 1,
+          description: 'Shop office ID for staff assignment (optional)',
+        },
+      },
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   @Patch('/:id')
   async updateAnUser(

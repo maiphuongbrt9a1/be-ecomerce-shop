@@ -255,7 +255,7 @@ export class UserService {
   async createAnUser(
     file: Express.Multer.File,
     data: CreateUserDto,
-  ): Promise<User> {
+  ): Promise<UserWithUserMedia> {
     try {
       const { firstName, lastName, email, phone, password, username, role } =
         data;
@@ -294,8 +294,33 @@ export class UserService {
         throw new NotFoundException('Failed to upload user avatar file');
       }
 
+      const returnUser = await this.prismaService.user.findUnique({
+        where: { id: newUser.id },
+        include: {
+          userMedia: {
+            where: {
+              userId: newUser.id,
+              isAvatarFile: true,
+            },
+          },
+        },
+      });
+
+      if (!returnUser) {
+        throw new NotFoundException('Failed to retrieve created user');
+      }
+
+      // generate full http url for media files
+      returnUser.userMedia = formatMediaFieldWithLogging(
+        returnUser.userMedia,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'user',
+        returnUser.id,
+        this.logger,
+      );
+
       this.logger.log('User created successfully', newUser.id);
-      return newUser;
+      return returnUser;
     } catch (error) {
       this.logger.log('Error creating user', error);
       throw new BadRequestException('Failed to create user');
