@@ -10,7 +10,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Media, Prisma, ProductVariants, Reviews } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
-import { formatMediaFieldForProductVariant } from '@/helpers/utils';
+import { formatMediaField, formatMediaFieldWithLogging } from '@/helpers/utils';
 import { ProductVariantsWithMediaInformation } from '@/helpers/types/types';
 
 @Injectable()
@@ -63,7 +63,7 @@ export class ProductVariantsService {
       }
 
       // generate full http url for media files
-      newProductVariant.media = formatMediaFieldForProductVariant(
+      newProductVariant.media = formatMediaField(
         newProductVariant.media,
         (url: string) => this.awsService.buildPublicMediaUrl(url),
       );
@@ -102,18 +102,13 @@ export class ProductVariantsService {
       // generate full http url for media files
       for (let i = 0; i < productVariantList.data.length; i++) {
         const productVariant = productVariantList.data[i];
-        const originalMedia = productVariant.media; // Store original media for comparison
-        productVariant.media = formatMediaFieldForProductVariant(
+        productVariant.media = formatMediaFieldWithLogging(
           productVariant.media,
           (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'product variant',
+          productVariant.id,
+          this.logger,
         );
-
-        // Check if the media field has changed
-        if (originalMedia !== productVariant.media) {
-          this.logger.log(
-            `Media field changed for product variant ID: ${productVariant.id}`,
-          );
-        }
       }
 
       this.logger.log(
@@ -145,7 +140,7 @@ export class ProductVariantsService {
 
       // generate full http url for media files
       const originalMedia = productVariant.media; // Store original media for comparison
-      productVariant.media = formatMediaFieldForProductVariant(
+      productVariant.media = formatMediaField(
         productVariant.media,
         (url: string) => this.awsService.buildPublicMediaUrl(url),
       );
@@ -240,7 +235,7 @@ export class ProductVariantsService {
       }
 
       const originalMedia = resultProductVariant.media; // Store original media for comparison
-      resultProductVariant.media = formatMediaFieldForProductVariant(
+      resultProductVariant.media = formatMediaField(
         resultProductVariant.media,
         (url: string) => this.awsService.buildPublicMediaUrl(url),
       );

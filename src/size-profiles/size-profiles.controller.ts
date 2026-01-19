@@ -16,6 +16,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 import { Roles } from '@/decorator/customize';
@@ -50,6 +51,20 @@ export class SizeProfilesController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'USER', 'OPERATOR')

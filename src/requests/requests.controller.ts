@@ -19,6 +19,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -56,6 +57,20 @@ export class RequestsController {
   @ApiResponse({ status: 200, description: 'Get all requests' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')

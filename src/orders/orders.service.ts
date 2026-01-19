@@ -17,8 +17,8 @@ import {
 } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import {
-  OrderWithFullInformation,
-  OrderWithFullInformationInclude,
+  OrdersWithFullInformation,
+  OrdersWithFullInformationInclude,
 } from '@/helpers/types/types';
 
 @Injectable()
@@ -106,11 +106,11 @@ export class OrdersService {
 
   async getOrderDetailInformation(
     id: number,
-  ): Promise<OrderWithFullInformation | null> {
+  ): Promise<OrdersWithFullInformation | null> {
     try {
       const result = await this.prismaService.orders.findFirst({
         where: { id: id },
-        include: OrderWithFullInformationInclude,
+        include: OrdersWithFullInformationInclude,
       });
 
       if (!result) {
@@ -131,16 +131,16 @@ export class OrdersService {
   async getAllOrdersWithDetailInformation(
     page: number,
     perPage: number,
-  ): Promise<OrderWithFullInformation[] | []> {
+  ): Promise<OrdersWithFullInformation[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
       const result = await paginate<
-        OrderWithFullInformation,
+        OrdersWithFullInformation,
         Prisma.OrdersFindManyArgs
       >(
         this.prismaService.orders,
         {
-          include: OrderWithFullInformationInclude,
+          include: OrdersWithFullInformationInclude,
           orderBy: { id: 'asc' },
         },
         { page: page },

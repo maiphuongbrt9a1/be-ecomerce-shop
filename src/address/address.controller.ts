@@ -16,6 +16,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 import { AddressEntity } from './entities/address.entity';
@@ -43,6 +44,20 @@ export class AddressController {
   }
 
   @ApiOperation({ summary: 'Get all addresses' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
   @ApiResponse({
     status: 200,
     description: 'Get all addresses',

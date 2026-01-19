@@ -20,6 +20,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
@@ -141,6 +142,20 @@ export class ProductVariantsController {
   }
 
   @ApiOperation({ summary: 'Get all product variant' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
   @ApiResponse({
     status: 200,
     description: 'Get all product variant',
@@ -420,6 +435,20 @@ export class ProductVariantsController {
       },
     },
   })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
   @Public()
   @Get('/:id/review-list')
   async getReviewsOfProductVariant(
@@ -439,6 +468,20 @@ export class ProductVariantsController {
     status: 200,
     description: 'Get all medias of product variant',
     type: [MediaEntity],
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
   })
   @Public()
   @Get('/:id/media-list')

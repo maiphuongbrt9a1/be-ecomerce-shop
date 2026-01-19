@@ -45,7 +45,7 @@ export type ProductVariantsWithMediaInformation =
     };
   }>;
 
-export const OrderWithFullInformationInclude =
+export const OrdersWithFullInformationInclude =
   Prisma.validator<Prisma.OrdersInclude>()({
     user: {
       select: {
@@ -56,6 +56,7 @@ export const OrderWithFullInformationInclude =
         phone: true,
         points: true,
         gender: true,
+        userMedia: true,
       },
     },
     processByStaff: {
@@ -67,6 +68,7 @@ export const OrderWithFullInformationInclude =
         phone: true,
         points: true,
         gender: true,
+        userMedia: true,
       },
     },
     shippingAddress: true,
@@ -81,17 +83,34 @@ export const OrderWithFullInformationInclude =
             phone: true,
             points: true,
             gender: true,
+            userMedia: true,
           },
         },
       },
     },
     payment: true,
-    requests: true,
+    requests: {
+      include: {
+        processByStaff: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            phone: true,
+            points: true,
+            gender: true,
+            userMedia: true,
+          },
+        },
+        media: true,
+      },
+    },
     orderItems: {
       include: {
         productVariant: {
           include: {
-            product: true,
+            media: true,
           },
         },
       },
@@ -99,8 +118,8 @@ export const OrderWithFullInformationInclude =
   });
 
 // Tạo Type từ validator trên để dùng làm kiểu trả về
-export type OrderWithFullInformation = Prisma.OrdersGetPayload<{
-  include: typeof OrderWithFullInformationInclude;
+export type OrdersWithFullInformation = Prisma.OrdersGetPayload<{
+  include: typeof OrdersWithFullInformationInclude;
 }>;
 
 export type UserCartDetailInformation = Prisma.CartGetPayload<{
@@ -143,3 +162,18 @@ export type VoucherWithAllAppliedProductVariantsDetailInformation =
       voucherForSpecialProductVariant: true;
     };
   }>;
+
+export type RequestsWithMedia = Prisma.RequestsGetPayload<{
+  include: {
+    media: true;
+    processByStaff: {
+      include: { userMedia: true };
+    };
+  };
+}>;
+
+export type ReviewsWithMedia = Prisma.ReviewsGetPayload<{
+  include: {
+    media: true;
+  };
+}>;

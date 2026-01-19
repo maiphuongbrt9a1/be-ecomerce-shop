@@ -10,7 +10,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma, Products, Reviews } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
-import { formatMediaFieldForProductVariant } from '@/helpers/utils';
+import { formatMediaField } from '@/helpers/utils';
 import {
   ProductsWithProductVariantsAndTheirMedia,
   ProductVariantsWithMediaInformation,
@@ -86,7 +86,7 @@ export class ProductsService {
         for (let j = 0; j < productVariantList.length; j++) {
           const productVariant = productVariantList[j];
           const originalMedia = productVariant.media; // Store original media for comparison
-          productVariant.media = formatMediaFieldForProductVariant(
+          productVariant.media = formatMediaField(
             productVariant.media,
             (url: string) => this.awsService.buildPublicMediaUrl(url),
           );
@@ -131,7 +131,7 @@ export class ProductsService {
       for (let i = 0; i < product.productVariants.length; i++) {
         const productVariant = product.productVariants[i];
         const originalMedia = productVariant.media; // Store original media for comparison
-        productVariant.media = formatMediaFieldForProductVariant(
+        productVariant.media = formatMediaField(
           productVariant.media,
           (url: string) => this.awsService.buildPublicMediaUrl(url),
         );
@@ -202,7 +202,7 @@ export class ProductsService {
       for (let i = 0; i < productVariantsList.length; i++) {
         const productVariant = productVariantsList[i];
         const originalMedia = productVariant.media; // Store original media for comparison
-        productVariant.media = formatMediaFieldForProductVariant(
+        productVariant.media = formatMediaField(
           productVariant.media,
           (url: string) => this.awsService.buildPublicMediaUrl(url),
         );

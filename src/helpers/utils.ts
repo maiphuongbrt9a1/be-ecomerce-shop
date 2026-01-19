@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Media } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 const saltOrRounds = 10;
@@ -23,7 +24,7 @@ export const comparePasswordHelper = async (
   }
 };
 
-export const formatMediaFieldForProductVariant = (
+export const formatMediaField = (
   medias: Media[] | [],
   buildPublicMediaUrl: (url: string) => string,
 ): Media[] | [] => {
@@ -38,4 +39,38 @@ export const formatMediaFieldForProductVariant = (
     });
   }
   return [];
+};
+
+// old code to change url media field when not have formatMediaFieldWithLogging function
+// this is an example usage in product-variants.service.ts
+// const originalMedia = productVariant.media; // Store original media for comparison
+// productVariant.media = formatMediaField(
+//   productVariant.media,
+//   (url: string) => this.awsService.buildPublicMediaUrl(url),
+// );
+
+// // Check if the media field has changed
+// if (originalMedia !== productVariant.media) {
+//   this.logger.log(
+//     `Media field changed for product variant ID: ${productVariant.id}`,
+//   );
+// }
+
+export const formatMediaFieldWithLogging = (
+  medias: Media[] | [],
+  buildPublicMediaUrl: (url: string) => string,
+  entityType: string,
+  entityId: number | bigint,
+  logger: Logger,
+): Media[] | [] => {
+  const originalMedia = medias;
+  const convertedMedia = formatMediaField(medias, (url: string) =>
+    buildPublicMediaUrl(url),
+  );
+
+  if (originalMedia !== convertedMedia) {
+    logger.log(`Media field changed for ${entityType} ID: ${entityId}`);
+  }
+
+  return convertedMedia;
 };

@@ -10,14 +10,9 @@ import {
   Role,
   Address,
   Vouchers,
-  Products,
-  ProductVariants,
   Category,
-  Orders,
   Shipments,
-  Requests,
   SizeProfiles,
-  Reviews,
   Cart,
 } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -27,7 +22,10 @@ import {
 } from '@/user/dtos/create.user.dto';
 import { UpdateUserDto } from '@/user/dtos/update.user.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { hashPasswordHelper } from '@/helpers/utils';
+import {
+  formatMediaFieldWithLogging,
+  hashPasswordHelper,
+} from '@/helpers/utils';
 import { createPaginator } from 'prisma-pagination';
 import {
   ChangePasswordAuthDto,
@@ -38,9 +36,16 @@ import dayjs from 'dayjs';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
 import {
+  OrdersWithFullInformation,
+  OrdersWithFullInformationInclude,
+  ProductsWithProductVariantsAndTheirMedia,
+  ProductVariantsWithMediaInformation,
+  RequestsWithMedia,
+  ReviewsWithMedia,
   ShopOfficeWithStaffs,
   UserCartDetailInformation,
   UserVoucherDetailInformation,
+  UserWithUserMedia,
 } from '@/helpers/types/types';
 import { UpdateCartDto } from '@/cart/dto/update-cart.dto';
 import { CreateCartDto } from '@/cart/dto/create-cart.dto';
@@ -58,14 +63,37 @@ export class UserService {
   ) {}
 
   // Get the list of all User
-  async getAllUser(page: number, perPage: number): Promise<User[] | []> {
+  async getAllUser(
+    page: number,
+    perPage: number,
+  ): Promise<UserWithUserMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<User, Prisma.UserFindManyArgs>(
+      const result = await paginate<UserWithUserMedia, Prisma.UserFindManyArgs>(
         this.prismaService.user,
-        { orderBy: { id: 'asc' } },
+        {
+          include: {
+            userMedia: {
+              where: {
+                isAvatarFile: true,
+              },
+            },
+          },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
+
+      // generate full http url for media files
+      for (let index = 0; index < result.data.length; index++) {
+        result.data[index].userMedia = formatMediaFieldWithLogging(
+          result.data[index].userMedia,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'user',
+          result.data[index].id,
+          this.logger,
+        );
+      }
 
       this.logger.log('Users retrieved successfully');
       return result.data;
@@ -76,9 +104,16 @@ export class UserService {
   }
 
   // Get an User by id
-  async getUserDetail(id: number): Promise<User | null> {
+  async getUserDetail(id: number): Promise<UserWithUserMedia | null> {
     try {
       const user = await this.prismaService.user.findFirst({
+        include: {
+          userMedia: {
+            where: {
+              isAvatarFile: true,
+            },
+          },
+        },
         where: {
           id: id,
         },
@@ -87,6 +122,15 @@ export class UserService {
       if (!user) {
         throw new NotFoundException('User not found!');
       }
+
+      // generate full http url for media files
+      user.userMedia = formatMediaFieldWithLogging(
+        user.userMedia,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'user',
+        user.id,
+        this.logger,
+      );
 
       this.logger.log('User retrieved successfully', id);
       return user;
@@ -97,9 +141,16 @@ export class UserService {
   }
 
   // Get an User by email
-  async getUserByEmail(email: string): Promise<User | null> {
+  async getUserByEmail(email: string): Promise<UserWithUserMedia | null> {
     try {
       const user = await this.prismaService.user.findFirst({
+        include: {
+          userMedia: {
+            where: {
+              isAvatarFile: true,
+            },
+          },
+        },
         where: {
           email: email,
         },
@@ -108,6 +159,15 @@ export class UserService {
       if (!user) {
         throw new NotFoundException('User not found!');
       }
+
+      // generate full http url for media files
+      user.userMedia = formatMediaFieldWithLogging(
+        user.userMedia,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'user',
+        user.id,
+        this.logger,
+      );
 
       this.logger.log('User retrieved successfully', email);
       return user;
@@ -118,20 +178,36 @@ export class UserService {
   }
 
   // Get an User by phone
-  async getUserByPhone(phone: string): Promise<User | null> {
+  async getUserByPhone(phone: string): Promise<UserWithUserMedia | null> {
     try {
-      const User = await this.prismaService.user.findFirst({
+      const user = await this.prismaService.user.findFirst({
+        include: {
+          userMedia: {
+            where: {
+              isAvatarFile: true,
+            },
+          },
+        },
         where: {
           phone: phone,
         },
       });
 
-      if (!User) {
+      if (!user) {
         throw new NotFoundException('User not found!');
       }
 
+      // generate full http url for media files
+      user.userMedia = formatMediaFieldWithLogging(
+        user.userMedia,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'user',
+        user.id,
+        this.logger,
+      );
+
       this.logger.log('User retrieved successfully', phone);
-      return User;
+      return user;
     } catch (error) {
       this.logger.log('Error retrieving user', error);
       throw new BadRequestException('Failed to retrieve user');
@@ -139,20 +215,36 @@ export class UserService {
   }
 
   // Get an User by username
-  async getUserByUserName(username: string): Promise<User | null> {
+  async getUserByUserName(username: string): Promise<UserWithUserMedia | null> {
     try {
-      const User = await this.prismaService.user.findFirst({
+      const user = await this.prismaService.user.findFirst({
+        include: {
+          userMedia: {
+            where: {
+              isAvatarFile: true,
+            },
+          },
+        },
         where: {
           username: username,
         },
       });
 
-      if (!User) {
+      if (!user) {
         throw new NotFoundException('User not found!');
       }
 
+      // generate full http url for media files
+      user.userMedia = formatMediaFieldWithLogging(
+        user.userMedia,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'user',
+        user.id,
+        this.logger,
+      );
+
       this.logger.log('User retrieved successfully', username);
-      return User;
+      return user;
     } catch (error) {
       this.logger.log('Error retrieving user', error);
       throw new BadRequestException('Failed to retrieve user');
@@ -246,11 +338,32 @@ export class UserService {
     }
   }
 
-  // Delete an User
+  // Delete an User and their avatar media file
   async deleteAnUser(id: number): Promise<User> {
     try {
-      this.logger.log('User deleted successfully', id);
-      return this.prismaService.user.delete({ where: { id: id } });
+      this.logger.log('User deleted: ', id);
+      const userMedias = await this.prismaService.media.findMany({
+        where: {
+          userId: id,
+          isAvatarFile: true,
+        },
+      });
+      // delete user information
+      const deleteUser = await this.prismaService.user.delete({
+        where: { id: id },
+      });
+
+      if (!deleteUser) {
+        throw new BadRequestException('Failed to delete user');
+      }
+
+      // delete avatar files from s3 and media table
+      for (let index = 0; index < userMedias.length; index++) {
+        const mediaItem = userMedias[index];
+        await this.awsService.deleteFileFromS3(mediaItem.url);
+      }
+
+      return deleteUser;
     } catch (error) {
       this.logger.log('Error deleting user', error);
       throw new BadRequestException('Failed to delete user');
@@ -258,12 +371,24 @@ export class UserService {
   }
 
   // Update an User
-  async updateAnUser(id: number, data: UpdateUserDto): Promise<User> {
+  async updateAnUser(
+    id: number,
+    data: UpdateUserDto,
+    file: Express.Multer.File,
+  ): Promise<UserWithUserMedia> {
     try {
+      // get old avatar media files of user
+      const oldMediaFiles = await this.prismaService.media.findMany({
+        where: {
+          userId: id,
+          isAvatarFile: true,
+        },
+      });
+
+      // Build update payload without password first
       const { firstName, lastName, gender, email, phone, password, username } =
         data;
 
-      // Build update payload without password first
       const updateData: Prisma.UserUpdateInput = {
         firstName,
         lastName,
@@ -274,6 +399,7 @@ export class UserService {
         updatedAt: new Date(Date.now()),
       };
 
+      // create password hash if have new password
       if (password && password.trim().length > 0) {
         const hashed = await hashPasswordHelper(password);
         if (!hashed) {
@@ -282,13 +408,73 @@ export class UserService {
         updateData.password = hashed;
       }
 
+      // update user data in database
       const updatedUser = await this.prismaService.user.update({
         where: { id },
         data: updateData,
       });
 
+      if (!updatedUser) {
+        throw new BadRequestException('Failed to update user');
+      }
+
+      // update avatar media files if have new uploaded files
+      // create new avatar media file for user
+      if (file) {
+        const mediaUploadForUserAvatar =
+          await this.awsService.uploadOneUserAvatarFile(
+            file,
+            updatedUser.id.toString(),
+          );
+
+        if (!mediaUploadForUserAvatar) {
+          throw new BadRequestException('Failed to upload user avatar file');
+        }
+      }
+
+      // Delete old avatar media files if any
+      if (oldMediaFiles && oldMediaFiles.length > 0) {
+        await this.prismaService.media.deleteMany({
+          where: { id: { in: oldMediaFiles.map((media) => media.id) } },
+        });
+
+        for (const media of oldMediaFiles) {
+          await this.awsService.deleteFileFromS3(media.url);
+        }
+      }
+
+      // generate full http url for media files
+      const returnUser = await this.prismaService.user.findUnique({
+        include: {
+          userMedia: {
+            where: {
+              userId: updatedUser.id,
+              isAvatarFile: true,
+            },
+          },
+        },
+        where: { id: updatedUser.id },
+      });
+
+      if (!returnUser) {
+        throw new NotFoundException(
+          'Failed to retrieve updated user information',
+        );
+      }
+
+      returnUser.userMedia = formatMediaFieldWithLogging(
+        returnUser.userMedia,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'user',
+        returnUser.id,
+        this.logger,
+      );
+
+      // return updated user with full media url
+      this.logger.log('User updated successfully with id: ' + returnUser.id);
+
       this.logger.log('User updated successfully', id);
-      return updatedUser;
+      return returnUser;
     } catch (error) {
       this.logger.log('Error updating user', error);
       throw new BadRequestException('Failed to update user');
@@ -593,12 +779,23 @@ export class UserService {
           userId: userId,
           reviewId: null,
           productVariantId: null,
+          isAvatarFile: true,
         },
-        orderBy: { id: 'desc' },
+        orderBy: { createdAt: 'desc' },
       });
 
       if (!mediaInformation) {
         throw new NotFoundException('User avatar not found!');
+      }
+
+      // get full link avatar file
+      const originalMedia = mediaInformation.url;
+      mediaInformation.url = this.awsService.buildPublicMediaUrl(
+        mediaInformation.url,
+      );
+
+      if (originalMedia !== mediaInformation.url) {
+        this.logger.log(`Media field changed for user media`);
       }
 
       this.logger.log('User avatar retrieved successfully', userId);
@@ -639,20 +836,48 @@ export class UserService {
     userId: number,
     page: number,
     perPage: number,
-  ): Promise<Products[] | []> {
+  ): Promise<ProductsWithProductVariantsAndTheirMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Products, Prisma.ProductsFindManyArgs>(
+      const result = await paginate<
+        ProductsWithProductVariantsAndTheirMedia,
+        Prisma.ProductsFindManyArgs
+      >(
         this.prismaService.products,
-        { where: { createByUserId: userId }, orderBy: { id: 'asc' } },
+        {
+          include: {
+            productVariants: {
+              include: {
+                media: true,
+              },
+            },
+          },
+          where: { createByUserId: userId },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
+
+      // generate full http url for media files
+      const products = result.data;
+      for (let i = 0; i < products.length; i++) {
+        const productVariants = products[i].productVariants;
+        for (let j = 0; j < productVariants.length; j++) {
+          productVariants[j].media = formatMediaFieldWithLogging(
+            productVariants[j].media,
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+            'product variant',
+            productVariants[j].id,
+            this.logger,
+          );
+        }
+      }
 
       this.logger.log(
         'Products created by user retrieved successfully',
         userId,
       );
-      return result.data;
+      return products;
     } catch (error) {
       this.logger.log('Error retrieving products created by user', error);
       throw new BadRequestException(
@@ -665,17 +890,33 @@ export class UserService {
     userId: number,
     page: number,
     perPage: number,
-  ): Promise<ProductVariants[] | []> {
+  ): Promise<ProductVariantsWithMediaInformation[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
       const result = await paginate<
-        ProductVariants,
+        ProductVariantsWithMediaInformation,
         Prisma.ProductVariantsFindManyArgs
       >(
         this.prismaService.productVariants,
-        { where: { createByUserId: userId }, orderBy: { id: 'asc' } },
+        {
+          include: { media: true },
+          where: { createByUserId: userId },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
+
+      // generate full http url for media files
+      const productVariants = result.data;
+      for (let i = 0; i < productVariants.length; i++) {
+        productVariants[i].media = formatMediaFieldWithLogging(
+          productVariants[i].media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'product variant',
+          productVariants[i].id,
+          this.logger,
+        );
+      }
 
       this.logger.log(
         'Product variants created by user retrieved successfully',
@@ -723,14 +964,90 @@ export class UserService {
     userId: number,
     page: number,
     perPage: number,
-  ): Promise<Orders[] | []> {
+  ): Promise<OrdersWithFullInformation[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Orders, Prisma.OrdersFindManyArgs>(
+      const result = await paginate<
+        OrdersWithFullInformation,
+        Prisma.OrdersFindManyArgs
+      >(
         this.prismaService.orders,
-        { where: { userId: userId }, orderBy: { id: 'asc' } },
+        {
+          include: OrdersWithFullInformationInclude,
+          where: { userId: userId },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
+
+      // generate full http url for media files
+      const orders = result.data;
+      for (let i = 0; i < orders.length; i++) {
+        const order = orders[i];
+        // convert user media field
+        order.user.userMedia = formatMediaFieldWithLogging(
+          order.user.userMedia,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'user',
+          order.user.id,
+          this.logger,
+        );
+
+        // convert staff process user media field
+        order.processByStaff.userMedia = formatMediaFieldWithLogging(
+          order.processByStaff.userMedia,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'user',
+          order.processByStaff.id,
+          this.logger,
+        );
+
+        // convert product variant media field
+        for (let j = 0; j < order.orderItems.length; j++) {
+          order.orderItems[j].productVariant.media =
+            formatMediaFieldWithLogging(
+              order.orderItems[j].productVariant.media,
+              (url: string) => this.awsService.buildPublicMediaUrl(url),
+              'product variant',
+              order.orderItems[j].productVariant.id,
+              this.logger,
+            );
+        }
+
+        // convert request media field
+        for (let k = 0; k < order.requests.length; k++) {
+          // convert media field of request
+          order.requests[k].media = formatMediaFieldWithLogging(
+            order.requests[k].media,
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+            'request',
+            order.requests[k].id,
+            this.logger,
+          );
+
+          // convert processByStaff user media field of request
+          order.requests[k].processByStaff.userMedia =
+            formatMediaFieldWithLogging(
+              order.requests[k].processByStaff.userMedia,
+              (url: string) => this.awsService.buildPublicMediaUrl(url),
+              'user',
+              order.requests[k].processByStaff.id,
+              this.logger,
+            );
+        }
+
+        // convert shipment media field
+        for (let l = 0; l < order.shipments.length; l++) {
+          order.shipments[l].processByStaff.userMedia =
+            formatMediaFieldWithLogging(
+              order.shipments[l].processByStaff.userMedia,
+              (url: string) => this.awsService.buildPublicMediaUrl(url),
+              'shipment',
+              order.shipments[l].id,
+              this.logger,
+            );
+        }
+      }
 
       this.logger.log('Orders created by user retrieved successfully', userId);
       return result.data;
@@ -746,14 +1063,90 @@ export class UserService {
     userId: number,
     page: number,
     perPage: number,
-  ): Promise<Orders[] | []> {
+  ): Promise<OrdersWithFullInformation[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Orders, Prisma.OrdersFindManyArgs>(
+      const result = await paginate<
+        OrdersWithFullInformation,
+        Prisma.OrdersFindManyArgs
+      >(
         this.prismaService.orders,
-        { where: { processByStaffId: userId }, orderBy: { id: 'asc' } },
+        {
+          include: OrdersWithFullInformationInclude,
+          where: { processByStaffId: userId },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
+
+      // generate full http url for media files
+      const orders = result.data;
+      for (let i = 0; i < orders.length; i++) {
+        const order = orders[i];
+        // convert user media field
+        order.user.userMedia = formatMediaFieldWithLogging(
+          order.user.userMedia,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'user',
+          order.user.id,
+          this.logger,
+        );
+
+        // convert staff process user media field
+        order.processByStaff.userMedia = formatMediaFieldWithLogging(
+          order.processByStaff.userMedia,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'user',
+          order.processByStaff.id,
+          this.logger,
+        );
+
+        // convert product variant media field
+        for (let j = 0; j < order.orderItems.length; j++) {
+          order.orderItems[j].productVariant.media =
+            formatMediaFieldWithLogging(
+              order.orderItems[j].productVariant.media,
+              (url: string) => this.awsService.buildPublicMediaUrl(url),
+              'product variant',
+              order.orderItems[j].productVariant.id,
+              this.logger,
+            );
+        }
+
+        // convert request media field
+        for (let k = 0; k < order.requests.length; k++) {
+          // convert media field of request
+          order.requests[k].media = formatMediaFieldWithLogging(
+            order.requests[k].media,
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+            'request',
+            order.requests[k].id,
+            this.logger,
+          );
+
+          // convert processByStaff user media field of request
+          order.requests[k].processByStaff.userMedia =
+            formatMediaFieldWithLogging(
+              order.requests[k].processByStaff.userMedia,
+              (url: string) => this.awsService.buildPublicMediaUrl(url),
+              'user',
+              order.requests[k].processByStaff.id,
+              this.logger,
+            );
+        }
+
+        // convert shipment media field
+        for (let l = 0; l < order.shipments.length; l++) {
+          order.shipments[l].processByStaff.userMedia =
+            formatMediaFieldWithLogging(
+              order.shipments[l].processByStaff.userMedia,
+              (url: string) => this.awsService.buildPublicMediaUrl(url),
+              'shipment',
+              order.shipments[l].id,
+              this.logger,
+            );
+        }
+      }
 
       this.logger.log(
         'Orders processed by user retrieved successfully',
@@ -798,14 +1191,49 @@ export class UserService {
     userId: number,
     page: number,
     perPage: number,
-  ): Promise<Requests[] | []> {
+  ): Promise<RequestsWithMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Requests, Prisma.RequestsFindManyArgs>(
+      const result = await paginate<
+        RequestsWithMedia,
+        Prisma.RequestsFindManyArgs
+      >(
         this.prismaService.requests,
-        { where: { userId: userId }, orderBy: { id: 'asc' } },
+        {
+          include: {
+            media: true,
+            processByStaff: {
+              include: { userMedia: true },
+            },
+          },
+          where: { userId: userId },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
+
+      // generate full http url for media files
+      const requests = result.data;
+      for (let i = 0; i < requests.length; i++) {
+        const request = requests[i];
+        // convert media field
+        request.media = formatMediaFieldWithLogging(
+          request.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'request',
+          request.id,
+          this.logger,
+        );
+
+        // convert processByStaff user media field
+        request.processByStaff.userMedia = formatMediaFieldWithLogging(
+          request.processByStaff.userMedia,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'user',
+          request.processByStaff.id,
+          this.logger,
+        );
+      }
 
       this.logger.log('Requests of user retrieved successfully', userId);
       return result.data;
@@ -819,14 +1247,47 @@ export class UserService {
     userId: number,
     page: number,
     perPage: number,
-  ): Promise<Requests[] | []> {
+  ): Promise<RequestsWithMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Requests, Prisma.RequestsFindManyArgs>(
+      const result = await paginate<
+        RequestsWithMedia,
+        Prisma.RequestsFindManyArgs
+      >(
         this.prismaService.requests,
-        { where: { processByStaffId: userId }, orderBy: { id: 'asc' } },
+        {
+          include: {
+            media: true,
+            processByStaff: { include: { userMedia: true } },
+          },
+          where: { processByStaffId: userId },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
+
+      // generate full http url for media files
+      const requests = result.data;
+      for (let i = 0; i < requests.length; i++) {
+        const request = requests[i];
+        // convert media field
+        request.media = formatMediaFieldWithLogging(
+          request.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'request',
+          request.id,
+          this.logger,
+        );
+
+        // convert processByStaff user media field
+        request.processByStaff.userMedia = formatMediaFieldWithLogging(
+          request.processByStaff.userMedia,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'user',
+          request.processByStaff.id,
+          this.logger,
+        );
+      }
 
       this.logger.log(
         'Requests processed by user retrieved successfully',
@@ -869,14 +1330,35 @@ export class UserService {
     userId: number,
     page: number,
     perPage: number,
-  ): Promise<Reviews[] | []> {
+  ): Promise<ReviewsWithMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Reviews, Prisma.ReviewsFindManyArgs>(
+      const result = await paginate<
+        ReviewsWithMedia,
+        Prisma.ReviewsFindManyArgs
+      >(
         this.prismaService.reviews,
-        { where: { userId: userId }, orderBy: { id: 'asc' } },
+        {
+          include: { media: true },
+          where: { userId: userId },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
+
+      // generate full http url for media files
+      const reviews = result.data;
+      for (let i = 0; i < reviews.length; i++) {
+        const review = reviews[i];
+        // convert media field
+        review.media = formatMediaFieldWithLogging(
+          review.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'review',
+          review.id,
+          this.logger,
+        );
+      }
 
       this.logger.log('Reviews of user retrieved successfully', userId);
       return result.data;
@@ -955,6 +1437,18 @@ export class UserService {
           throw new NotFoundException('Cart not found!');
         }
 
+        // generate full http url for media files
+        const cartItems = result.cartItems;
+        for (let i = 0; i < cartItems.length; i++) {
+          cartItems[i].productVariant.media = formatMediaFieldWithLogging(
+            cartItems[i].productVariant.media,
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+            'product variant',
+            cartItems[i].productVariant.id,
+            this.logger,
+          );
+        }
+
         return result;
       });
     } catch (error) {
@@ -1021,6 +1515,18 @@ export class UserService {
 
       if (!result) {
         throw new NotFoundException('Cart detail not found!');
+      }
+
+      // generate full http url for media files
+      const cartItems = result.cartItems;
+      for (let i = 0; i < cartItems.length; i++) {
+        cartItems[i].productVariant.media = formatMediaFieldWithLogging(
+          cartItems[i].productVariant.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'product variant',
+          cartItems[i].productVariant.id,
+          this.logger,
+        );
       }
 
       this.logger.log('Cart details retrieved successfully', result.id);
