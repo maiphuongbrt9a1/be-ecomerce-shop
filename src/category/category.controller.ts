@@ -39,7 +39,10 @@ export class CategoryController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  @ApiBody({ type: CreateCategoryDto })
+  @ApiBody({
+    description: 'Category creation data',
+    type: CreateCategoryDto,
+  })
   @Post()
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return await this.categoryService.create(createCategoryDto);
@@ -98,7 +101,10 @@ export class CategoryController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  @ApiBody({ type: UpdateCategoryDto })
+  @ApiBody({
+    description: 'Category update data',
+    type: UpdateCategoryDto,
+  })
   @Patch('/:id')
   async update(
     @Param('id') id: string,

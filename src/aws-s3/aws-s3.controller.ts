@@ -109,6 +109,7 @@ export class AwsS3Controller {
   @Roles('ADMIN', 'OPERATOR')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Logo shop file upload',
     schema: {
       type: 'object',
       properties: {
@@ -142,6 +143,7 @@ export class AwsS3Controller {
   @Roles('ADMIN', 'OPERATOR')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Banner shop file upload',
     schema: {
       type: 'object',
       properties: {
@@ -175,6 +177,7 @@ export class AwsS3Controller {
   @Roles('ADMIN', 'OPERATOR')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Single product file upload',
     schema: {
       type: 'object',
       properties: {
@@ -213,6 +216,7 @@ export class AwsS3Controller {
   @Roles('ADMIN', 'OPERATOR')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Multiple product files upload',
     schema: {
       type: 'object',
       properties: {
@@ -254,6 +258,7 @@ export class AwsS3Controller {
   @Roles('ADMIN', 'OPERATOR')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Category file upload',
     schema: {
       type: 'object',
       properties: {
@@ -294,6 +299,7 @@ export class AwsS3Controller {
   @Roles('USER', 'ADMIN', 'OPERATOR')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'User avatar file upload',
     schema: {
       type: 'object',
       properties: {
@@ -327,6 +333,7 @@ export class AwsS3Controller {
   @Roles('USER', 'ADMIN', 'OPERATOR')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Multiple user avatar files upload',
     schema: {
       type: 'object',
       properties: {
@@ -363,6 +370,7 @@ export class AwsS3Controller {
   @Roles('USER', 'ADMIN', 'OPERATOR')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Review file upload',
     schema: {
       type: 'object',
       properties: {
@@ -401,6 +409,7 @@ export class AwsS3Controller {
   @Roles('USER', 'ADMIN', 'OPERATOR')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Multiple review files upload',
     schema: {
       type: 'object',
       properties: {
@@ -440,6 +449,24 @@ export class AwsS3Controller {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Multiple request files upload',
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'Request files (images or videos, max 10)',
+        },
+      },
+      required: ['files'],
+    },
+  })
   @Post('/user/:userId/upload-many-request-file/:requestId')
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadManyRequestFile(

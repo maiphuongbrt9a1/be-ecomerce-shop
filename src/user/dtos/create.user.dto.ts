@@ -114,7 +114,7 @@ export class CreateUserWithFileDto extends CreateUserDto {
     description: 'Single file to upload',
   })
   @IsNotEmpty()
-  file: any;
+  file: Express.Multer.File;
 }
 export class CreateUserByGoogleAccountDto extends OmitType(CreateUserDto, [
   'password',

@@ -88,5 +88,5 @@ export class UpdateUserWithFileDto extends OmitType(CreateUserWithFileDto, [
   point: number;
 
   @TransformEmptyToUndefined()
-  file: any;
+  file: Express.Multer.File;
 }

@@ -27,7 +27,9 @@ import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles, Public } from '@/decorator/customize';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ProductVariantEntity } from './entities/product-variant.entity';
+import { ProductVariantWithMediaEntity } from './entities/product-variant-with-media.entity';
 import { MediaEntity } from '@/media/entities/media.entity';
+import { ReviewWithMediaEntity } from '@/reviews/entities/review-with-media.entity';
 import type { RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Controller('product-variants')
@@ -40,57 +42,14 @@ export class ProductVariantsController {
   @ApiResponse({
     status: 201,
     description: 'Create a new product variant',
-    schema: {
-      type: 'object',
-      properties: {
-        statusCode: { type: 'number' },
-        message: { type: 'string' },
-        data: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-            productId: { type: 'number' },
-            createByUserId: { type: 'number' },
-            variantName: { type: 'string' },
-            variantColor: { type: 'string' },
-            variantSize: { type: 'string' },
-            price: { type: 'number' },
-            stock: { type: 'number' },
-            stockKeepingUnit: { type: 'string' },
-            createdAt: { type: 'string', format: 'date-time' },
-            updatedAt: { type: 'string', format: 'date-time' },
-            voucherId: { type: 'number', nullable: true },
-            media: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number' },
-                  url: { type: 'string' },
-                  type: { type: 'string' },
-                  reviewId: { type: 'number', nullable: true },
-                  userId: { type: 'number' },
-                  productVariantId: { type: 'number' },
-                  requestId: { type: 'number', nullable: true },
-                  isShopLogo: { type: 'boolean' },
-                  isShopBanner: { type: 'boolean' },
-                  isCategoryFile: { type: 'boolean' },
-                  isAvatarFile: { type: 'boolean' },
-                  createdAt: { type: 'string', format: 'date-time' },
-                  updatedAt: { type: 'string', format: 'date-time' },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    type: ProductVariantWithMediaEntity,
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Product variant creation data with image files',
     schema: {
       type: 'object',
       properties: {
@@ -124,6 +83,7 @@ export class ProductVariantsController {
         'price',
         'stock',
         'stockKeepingUnit',
+        'createdAt',
       ],
     },
   })
@@ -159,51 +119,7 @@ export class ProductVariantsController {
   @ApiResponse({
     status: 200,
     description: 'Get all product variant',
-    schema: {
-      type: 'object',
-      properties: {
-        statusCode: { type: 'number' },
-        message: { type: 'string' },
-        data: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-            productId: { type: 'number' },
-            createByUserId: { type: 'number' },
-            variantName: { type: 'string' },
-            variantColor: { type: 'string' },
-            variantSize: { type: 'string' },
-            price: { type: 'number' },
-            stock: { type: 'number' },
-            stockKeepingUnit: { type: 'string' },
-            createdAt: { type: 'string', format: 'date-time' },
-            updatedAt: { type: 'string', format: 'date-time' },
-            voucherId: { type: 'number', nullable: true },
-            media: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number' },
-                  url: { type: 'string' },
-                  type: { type: 'string' },
-                  reviewId: { type: 'number', nullable: true },
-                  userId: { type: 'number' },
-                  productVariantId: { type: 'number' },
-                  requestId: { type: 'number', nullable: true },
-                  isShopLogo: { type: 'boolean' },
-                  isShopBanner: { type: 'boolean' },
-                  isCategoryFile: { type: 'boolean' },
-                  isAvatarFile: { type: 'boolean' },
-                  createdAt: { type: 'string', format: 'date-time' },
-                  updatedAt: { type: 'string', format: 'date-time' },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    type: [ProductVariantWithMediaEntity],
   })
   @Public()
   @Get()
@@ -218,51 +134,7 @@ export class ProductVariantsController {
   @ApiResponse({
     status: 200,
     description: 'Get one product variant',
-    schema: {
-      type: 'object',
-      properties: {
-        statusCode: { type: 'number' },
-        message: { type: 'string' },
-        data: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-            productId: { type: 'number' },
-            createByUserId: { type: 'number' },
-            variantName: { type: 'string' },
-            variantColor: { type: 'string' },
-            variantSize: { type: 'string' },
-            price: { type: 'number' },
-            stock: { type: 'number' },
-            stockKeepingUnit: { type: 'string' },
-            createdAt: { type: 'string', format: 'date-time' },
-            updatedAt: { type: 'string', format: 'date-time' },
-            voucherId: { type: 'number', nullable: true },
-            media: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number' },
-                  url: { type: 'string' },
-                  type: { type: 'string' },
-                  reviewId: { type: 'number', nullable: true },
-                  userId: { type: 'number' },
-                  productVariantId: { type: 'number' },
-                  requestId: { type: 'number', nullable: true },
-                  isShopLogo: { type: 'boolean' },
-                  isShopBanner: { type: 'boolean' },
-                  isCategoryFile: { type: 'boolean' },
-                  isAvatarFile: { type: 'boolean' },
-                  createdAt: { type: 'string', format: 'date-time' },
-                  updatedAt: { type: 'string', format: 'date-time' },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    type: ProductVariantWithMediaEntity,
   })
   @Public()
   @Get('/:id')
@@ -273,6 +145,7 @@ export class ProductVariantsController {
   @ApiOperation({ summary: 'Update a product variant' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
+    description: 'Product variant update data with optional image files',
     schema: {
       type: 'object',
       properties: {
@@ -307,51 +180,7 @@ export class ProductVariantsController {
   @ApiResponse({
     status: 200,
     description: 'Update a product variant',
-    schema: {
-      type: 'object',
-      properties: {
-        statusCode: { type: 'number' },
-        message: { type: 'string' },
-        data: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-            productId: { type: 'number' },
-            createByUserId: { type: 'number' },
-            variantName: { type: 'string' },
-            variantColor: { type: 'string' },
-            variantSize: { type: 'string' },
-            price: { type: 'number' },
-            stock: { type: 'number' },
-            stockKeepingUnit: { type: 'string' },
-            createdAt: { type: 'string', format: 'date-time' },
-            updatedAt: { type: 'string', format: 'date-time' },
-            voucherId: { type: 'number', nullable: true },
-            media: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number' },
-                  url: { type: 'string' },
-                  type: { type: 'string' },
-                  reviewId: { type: 'number', nullable: true },
-                  userId: { type: 'number' },
-                  productVariantId: { type: 'number' },
-                  requestId: { type: 'number', nullable: true },
-                  isShopLogo: { type: 'boolean' },
-                  isShopBanner: { type: 'boolean' },
-                  isCategoryFile: { type: 'boolean' },
-                  isAvatarFile: { type: 'boolean' },
-                  createdAt: { type: 'string', format: 'date-time' },
-                  updatedAt: { type: 'string', format: 'date-time' },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    type: ProductVariantWithMediaEntity,
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
@@ -390,50 +219,7 @@ export class ProductVariantsController {
   @ApiResponse({
     status: 200,
     description: 'Get all reviews of product variant',
-    schema: {
-      type: 'object',
-      properties: {
-        statusCode: { type: 'number' },
-        message: { type: 'string' },
-        data: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'number' },
-              productId: { type: 'number' },
-              userId: { type: 'number' },
-              productVariantId: { type: 'number' },
-              rating: { type: 'number' },
-              comment: { type: 'string' },
-              createdAt: { type: 'string', format: 'date-time' },
-              updatedAt: { type: 'string', format: 'date-time' },
-              media: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: { type: 'number' },
-                    url: { type: 'string' },
-                    type: { type: 'string' },
-                    reviewId: { type: 'number', nullable: true },
-                    userId: { type: 'number' },
-                    productVariantId: { type: 'number' },
-                    requestId: { type: 'number', nullable: true },
-                    isShopLogo: { type: 'boolean' },
-                    isShopBanner: { type: 'boolean' },
-                    isCategoryFile: { type: 'boolean' },
-                    isAvatarFile: { type: 'boolean' },
-                    createdAt: { type: 'string', format: 'date-time' },
-                    updatedAt: { type: 'string', format: 'date-time' },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    type: [ReviewWithMediaEntity],
   })
   @ApiQuery({
     name: 'page',

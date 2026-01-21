@@ -7,13 +7,14 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma, Products, Reviews } from '@prisma/client';
+import { Prisma, Products } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
-import { formatMediaField } from '@/helpers/utils';
+import { formatMediaField, formatMediaFieldWithLogging } from '@/helpers/utils';
 import {
   ProductsWithProductVariantsAndTheirMedia,
   ProductVariantsWithMediaInformation,
+  ReviewsWithMedia,
 } from '@/helpers/types/types';
 
 @Injectable()
@@ -24,11 +25,7 @@ export class ProductsService {
     private readonly awsService: AwsS3Service,
   ) {}
 
-  async create(
-    files: Express.Multer.File[],
-    createProductDto: CreateProductDto,
-    adminId: string,
-  ): Promise<Products> {
+  async create(createProductDto: CreateProductDto): Promise<Products> {
     try {
       const product = await this.prismaService.products.create({
         data: { ...createProductDto },
@@ -36,16 +33,6 @@ export class ProductsService {
 
       if (!product) {
         throw new NotFoundException('Failed to create product');
-      }
-
-      const mediaForProduct = await this.awsService.uploadManyProductFile(
-        files,
-        adminId,
-        product.id.toString(),
-      );
-
-      if (!mediaForProduct) {
-        throw new NotFoundException('Failed to upload product media file');
       }
 
       this.logger.log(`Product created with ID: ${product.id}`);
@@ -229,14 +216,33 @@ export class ProductsService {
     id: number,
     page: number,
     perPage: number,
-  ): Promise<Reviews[] | []> {
+  ): Promise<ReviewsWithMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Reviews, Prisma.ReviewsFindManyArgs>(
+      const result = await paginate<
+        ReviewsWithMedia,
+        Prisma.ReviewsFindManyArgs
+      >(
         this.prismaService.reviews,
-        { where: { productId: id }, orderBy: { id: 'asc' } },
+        {
+          include: { media: true },
+          where: { productId: id },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
+
+      // generate full http url for media files of each review
+      for (let i = 0; i < result.data.length; i++) {
+        const review = result.data[i];
+        review.media = formatMediaFieldWithLogging(
+          review.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'Review',
+          review.id,
+          this.logger,
+        );
+      }
 
       this.logger.log(`Reviews fetched for product ID: ${id}`);
       return result.data;

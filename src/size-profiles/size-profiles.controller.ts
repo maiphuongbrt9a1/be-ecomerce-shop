@@ -33,7 +33,10 @@ export class SizeProfilesController {
     description: 'Create a new size profile',
     type: SizeProfileEntity,
   })
-  @ApiBody({ type: CreateSizeProfileDto })
+  @ApiBody({
+    description: 'Size profile creation data',
+    type: CreateSizeProfileDto,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
@@ -98,7 +101,10 @@ export class SizeProfilesController {
     description: 'Update one size profile',
     type: SizeProfileEntity,
   })
-  @ApiBody({ type: UpdateSizeProfileDto })
+  @ApiBody({
+    description: 'Size profile update data',
+    type: UpdateSizeProfileDto,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()

@@ -39,7 +39,10 @@ export class ShopOfficesController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
-  @ApiBody({ type: CreateShopOfficeDto })
+  @ApiBody({
+    description: 'Shop office creation data',
+    type: CreateShopOfficeDto,
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema
@@ -98,7 +101,10 @@ export class ShopOfficesController {
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
-  @ApiBody({ type: UpdateShopOfficeDto })
+  @ApiBody({
+    description: 'Shop office update data',
+    type: UpdateShopOfficeDto,
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN') // please check role is in Role enum of prisma schema

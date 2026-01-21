@@ -37,7 +37,10 @@ export class MediaController {
       'Create a new media file. Please use upload file functions in aws-s3 instead',
     type: MediaEntity,
   })
-  @ApiBody({ type: CreateMediaDto })
+  @ApiBody({
+    description: 'Media file creation data',
+    type: CreateMediaDto,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
@@ -101,7 +104,10 @@ export class MediaController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'USER', 'OPERATOR')
-  @ApiBody({ type: UpdateMediaDto })
+  @ApiBody({
+    description: 'Media file update data',
+    type: UpdateMediaDto,
+  })
   @Patch('/:id')
   async update(
     @Param('id') id: string,

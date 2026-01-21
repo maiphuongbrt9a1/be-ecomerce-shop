@@ -8,6 +8,7 @@ export class CreateProductDto {
   name: string;
 
   @ApiProperty({ example: 'Sample product description' })
+  @IsOptional()
   description: string;
 
   @IsNotEmpty()
@@ -47,4 +48,21 @@ export class CreateProductDto {
   @ApiProperty({ example: 1325 })
   @IsOptional()
   voucherId: bigint;
+
+  @ApiProperty({ example: 1325 })
+  @IsOptional()
+  shopOfficeId: bigint;
+}
+
+export class CreateProductWithFileDto extends CreateProductDto {
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
+    description: 'Files array to upload',
+  })
+  @IsNotEmpty()
+  files: Express.Multer.File[];
 }

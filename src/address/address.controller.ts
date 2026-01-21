@@ -34,7 +34,10 @@ export class AddressController {
     type: AddressEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiBody({ type: CreateAddressDto })
+  @ApiBody({
+    description: 'Address creation data',
+    type: CreateAddressDto,
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'USER', 'OPERATOR')
@@ -100,7 +103,10 @@ export class AddressController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'USER', 'OPERATOR')
-  @ApiBody({ type: UpdateAddressDto })
+  @ApiBody({
+    description: 'Address update data',
+    type: UpdateAddressDto,
+  })
   @Patch('/:id')
   async update(
     @Param('id') id: string,
