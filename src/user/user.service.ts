@@ -14,13 +14,14 @@ import {
   Shipments,
   SizeProfiles,
   Cart,
+  ShopOffice,
 } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
   CreateUserByGoogleAccountDto,
-  CreateUserDto,
+  CreateUserWithFileDto,
 } from '@/user/dtos/create.user.dto';
-import { UpdateUserDto } from '@/user/dtos/update.user.dto';
+import { UpdateUserWithFileDto } from '@/user/dtos/update.user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import {
   formatMediaFieldWithLogging,
@@ -42,7 +43,6 @@ import {
   ProductVariantsWithMediaInformation,
   RequestsWithMedia,
   ReviewsWithMedia,
-  ShopOfficeWithStaffs,
   UserCartDetailInformation,
   UserVoucherDetailInformation,
   UserWithUserMedia,
@@ -254,11 +254,22 @@ export class UserService {
   // Create an User
   async createAnUser(
     file: Express.Multer.File,
-    data: CreateUserDto,
+    data: CreateUserWithFileDto,
   ): Promise<UserWithUserMedia> {
     try {
-      const { firstName, lastName, email, phone, password, username, role } =
-        data;
+      const {
+        firstName,
+        lastName,
+        email,
+        phone,
+        password,
+        username,
+        role,
+        staffCode,
+        shopOfficeId,
+        loyaltyCard,
+        point,
+      } = data;
 
       const hashPassword = await hashPasswordHelper(password);
       if (!hashPassword) {
@@ -267,17 +278,21 @@ export class UserService {
 
       const newUser = await this.prismaService.user.create({
         data: {
-          firstName,
-          lastName,
-          email,
-          phone,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phone: phone,
           password: hashPassword,
-          username,
+          username: username,
           role: role ?? Role.USER,
           createdAt: new Date(Date.now()),
           isActive: false,
           codeActive: uuidv4().toString(),
           codeActiveExpire: new Date(Date.now() + 5 * 60 * 1000),
+          staffCode: staffCode,
+          shopOfficeId: shopOfficeId,
+          loyaltyCard: loyaltyCard,
+          points: point ?? 0,
         },
       });
 
@@ -332,22 +347,37 @@ export class UserService {
     data: CreateUserByGoogleAccountDto,
   ): Promise<User> {
     try {
-      const { firstName, lastName, email, phone, googleId, username, role } =
-        data;
+      const {
+        firstName,
+        lastName,
+        email,
+        phone,
+        googleId,
+        username,
+        role,
+        staffCode,
+        shopOfficeId,
+        loyaltyCard,
+        point,
+      } = data;
 
       const newUser = await this.prismaService.user.create({
         data: {
-          firstName,
-          lastName,
-          email,
-          phone,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phone: phone,
           googleId: googleId,
-          username,
+          username: username,
           role: role ?? Role.USER,
           createdAt: new Date(Date.now()),
           isActive: false,
           codeActive: uuidv4().toString(),
           codeActiveExpire: new Date(Date.now() + 5 * 60 * 1000),
+          staffCode: staffCode,
+          shopOfficeId: shopOfficeId,
+          loyaltyCard: loyaltyCard,
+          points: point ?? 0,
         },
       });
 
@@ -398,7 +428,7 @@ export class UserService {
   // Update an User
   async updateAnUser(
     id: number,
-    data: UpdateUserDto,
+    data: UpdateUserWithFileDto,
     file: Express.Multer.File,
   ): Promise<UserWithUserMedia> {
     try {
@@ -411,18 +441,16 @@ export class UserService {
       });
 
       // Build update payload without password first
-      const { firstName, lastName, gender, email, phone, password, username } =
-        data;
+      const { shopOfficeId, password, point, ...otherData } = data;
 
       const updateData: Prisma.UserUpdateInput = {
-        firstName,
-        lastName,
-        gender,
-        email,
-        phone,
-        username,
+        ...otherData,
         updatedAt: new Date(Date.now()),
       };
+
+      if (point !== undefined && point !== null) {
+        updateData.points = point; // map DTO 'point' -> model 'points'
+      }
 
       // create password hash if have new password
       if (password && password.trim().length > 0) {
@@ -431,6 +459,18 @@ export class UserService {
           throw new Error('Hash password for update user failed!');
         }
         updateData.password = hashed;
+      }
+
+      if (shopOfficeId) {
+        updateData.shopOffice = {
+          connect: {
+            id: shopOfficeId,
+          },
+        };
+      } else if (shopOfficeId === null || shopOfficeId === undefined) {
+        updateData.shopOffice = {
+          disconnect: true,
+        };
       }
 
       // update user data in database
@@ -455,16 +495,16 @@ export class UserService {
         if (!mediaUploadForUserAvatar) {
           throw new BadRequestException('Failed to upload user avatar file');
         }
-      }
 
-      // Delete old avatar media files if any
-      if (oldMediaFiles && oldMediaFiles.length > 0) {
-        await this.prismaService.media.deleteMany({
-          where: { id: { in: oldMediaFiles.map((media) => media.id) } },
-        });
+        // Delete old avatar media files if any
+        if (oldMediaFiles && oldMediaFiles.length > 0) {
+          await this.prismaService.media.deleteMany({
+            where: { id: { in: oldMediaFiles.map((media) => media.id) } },
+          });
 
-        for (const media of oldMediaFiles) {
-          await this.awsService.deleteFileFromS3(media.url);
+          for (const media of oldMediaFiles) {
+            await this.awsService.deleteFileFromS3(media.url);
+          }
         }
       }
 
@@ -773,16 +813,22 @@ export class UserService {
     }
   }
 
-  async getShopOfficeOfUser(userId: number): Promise<ShopOfficeWithStaffs> {
+  async getShopOfficeOfUser(userId: number): Promise<ShopOffice> {
     try {
+      const user = await this.prismaService.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw new NotFoundException('User not found!');
+      }
+
+      if (!user.shopOfficeId) {
+        throw new NotFoundException('User has no shop office assigned!');
+      }
+
       const shopInformation = await this.prismaService.shopOffice.findFirst({
-        include: {
-          staffs: {
-            where: {
-              id: userId,
-            },
-          },
-        },
+        where: { id: user.shopOfficeId },
       });
 
       if (!shopInformation) {

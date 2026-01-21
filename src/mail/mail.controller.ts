@@ -33,7 +33,10 @@ export class MailController {
 
   @Post()
   @ApiOperation({ summary: 'Send custom mail' })
-  @ApiBody({ type: CreateMailDto })
+  @ApiBody({
+    type: CreateMailDto,
+    description: 'Custom mail data including recipient, subject, and content',
+  })
   @ApiResponse({
     status: 201,
     description: 'Custom mail sent successfully',

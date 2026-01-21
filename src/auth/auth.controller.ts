@@ -21,6 +21,10 @@ import type {
   RequestWithUserInJWTStrategy,
 } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 import { GoogleOAuthGuard } from './passport/google-oauth.guard';
+import { LoginResponseEntity } from './entities/login-response.entity';
+import { ProfileResponseEntity } from './entities/profile-response.entity';
+import { UserEntity } from '@/user/entities/user.entity';
+import { AuthResponseEntity } from './entities/auth-response.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -35,7 +39,7 @@ export class AuthController {
         username: {
           type: 'string',
           example: 'user@example.com',
-          description: 'Email or username',
+          description: 'Email',
         },
         password: {
           type: 'string',
@@ -50,25 +54,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Login successful',
-    schema: {
-      type: 'object',
-      properties: {
-        access_token: {
-          type: 'string',
-          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-          description: 'JWT access token',
-        },
-        user: {
-          type: 'object',
-          properties: {
-            id: { type: 'number', example: 1 },
-            email: { type: 'string', example: 'user@example.com' },
-            username: { type: 'string', example: 'john_doe' },
-            role: { type: 'string', enum: ['USER', 'ADMIN', 'OPERATOR'] },
-          },
-        },
-      },
-    },
+    type: LoginResponseEntity,
   })
   @ApiResponse({
     status: 401,
@@ -90,19 +76,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'User profile retrieved successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'number', example: 1 },
-        email: { type: 'string', example: 'user@example.com' },
-        username: { type: 'string', example: 'john_doe' },
-        firstName: { type: 'string', example: 'John' },
-        lastName: { type: 'string', example: 'Doe' },
-        role: { type: 'string', enum: ['USER', 'ADMIN', 'OPERATOR'] },
-        isActive: { type: 'boolean', example: true },
-        points: { type: 'number', example: 150 },
-      },
-    },
+    type: ProfileResponseEntity,
   })
   @ApiResponse({
     status: 401,
@@ -123,35 +97,11 @@ export class AuthController {
   @ApiBody({
     type: CreateAuthDto,
     description: 'User registration data',
-    examples: {
-      example1: {
-        value: {
-          email: 'newuser@example.com',
-          username: 'newuser',
-          password: 'SecurePass123!',
-          firstName: 'Jane',
-          lastName: 'Smith',
-        },
-      },
-    },
   })
   @ApiResponse({
     status: 201,
     description: 'User registered successfully. Activation email sent.',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'number', example: 1 },
-        email: { type: 'string', example: 'newuser@example.com' },
-        username: { type: 'string', example: 'newuser' },
-        isActive: { type: 'boolean', example: false },
-        message: {
-          type: 'string',
-          example:
-            'Registration successful. Please check your email to activate your account.',
-        },
-      },
-    },
+    type: UserEntity,
   })
   @ApiResponse({
     status: 400,
@@ -188,22 +138,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Google login successful',
-    schema: {
-      type: 'object',
-      properties: {
-        access_token: { type: 'string', description: 'JWT access token' },
-        user: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-            email: { type: 'string' },
-            firstName: { type: 'string' },
-            lastName: { type: 'string' },
-            googleId: { type: 'string' },
-          },
-        },
-      },
-    },
+    type: LoginResponseEntity,
   })
   @ApiResponse({
     status: 401,
@@ -220,28 +155,11 @@ export class AuthController {
   @ApiBody({
     type: CodeAuthDto,
     description: 'Account activation code verification',
-    examples: {
-      example1: {
-        value: {
-          email: 'user@example.com',
-          code: '123456',
-        },
-      },
-    },
   })
   @ApiResponse({
     status: 200,
     description: 'Account activated successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          example: 'Account activated successfully',
-        },
-        isActive: { type: 'boolean', example: true },
-      },
-    },
+    type: UserEntity,
   })
   @ApiResponse({
     status: 400,
@@ -277,15 +195,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Activation email resent successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          example: 'Activation code has been resent to your email',
-        },
-      },
-    },
+    type: AuthResponseEntity,
   })
   @ApiResponse({
     status: 400,
@@ -321,15 +231,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Password reset email sent successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          example: 'Password reset code has been sent to your email',
-        },
-      },
-    },
+    type: AuthResponseEntity,
   })
   @ApiResponse({
     status: 404,
@@ -350,28 +252,11 @@ export class AuthController {
   @ApiBody({
     type: ChangePasswordAuthDto,
     description: 'Password change with verification code',
-    examples: {
-      example1: {
-        value: {
-          email: 'user@example.com',
-          code: '123456',
-          newPassword: 'NewSecurePass123!',
-        },
-      },
-    },
   })
   @ApiResponse({
     status: 200,
     description: 'Password changed successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          example: 'Password has been changed successfully',
-        },
-      },
-    },
+    type: AuthResponseEntity,
   })
   @ApiResponse({
     status: 400,

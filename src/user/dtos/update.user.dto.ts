@@ -1,54 +1,92 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsDate,
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import { Gender } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { OmitType } from '@nestjs/swagger';
+import { CreateUserDto, CreateUserWithFileDto } from './create.user.dto';
+import { TransformEmptyToUndefined } from '@/decorator/customize';
 
-export class UpdateUserDto {
-  @ApiProperty({ example: 'John' })
-  @IsOptional()
-  @IsString()
+export class UpdateUserDto extends OmitType(CreateUserDto, [
+  'createdAt',
+  'codeActive',
+  'codeActiveExpire',
+  'isActive',
+] as const) {
+  @TransformEmptyToUndefined()
   firstName: string;
 
-  @ApiProperty({ example: 'Doe' })
-  @IsOptional()
+  @TransformEmptyToUndefined()
   lastName: string;
 
-  @ApiProperty({ example: 'MALE', enum: Gender })
-  @IsOptional()
-  @IsEnum(Gender)
-  gender: Gender;
+  @TransformEmptyToUndefined()
+  gender: any;
 
-  @ApiProperty({ example: 'john.doe@example.com' })
-  @IsOptional()
-  @IsString()
-  @IsEmail()
+  @TransformEmptyToUndefined()
   email: string;
 
-  @ApiProperty({ example: '1234567890' })
-  @IsOptional()
-  @IsString()
+  @TransformEmptyToUndefined()
   phone: string;
 
-  @ApiProperty({ example: 'password123' })
-  @IsOptional()
-  @IsString()
+  @TransformEmptyToUndefined()
   password: string;
 
-  @ApiProperty({ example: 'johndoe' })
-  @IsNotEmpty()
-  @IsString()
+  @TransformEmptyToUndefined()
   username: string;
 
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  updatedAt: Date;
+  @TransformEmptyToUndefined()
+  role: any;
+
+  @TransformEmptyToUndefined()
+  staffCode: string;
+
+  @TransformEmptyToUndefined()
+  loyaltyCard: string;
+
+  @TransformEmptyToUndefined()
+  shopOfficeId: bigint;
+
+  @TransformEmptyToUndefined()
+  point: number;
+}
+
+export class UpdateUserWithFileDto extends OmitType(CreateUserWithFileDto, [
+  'createdAt',
+  'codeActive',
+  'codeActiveExpire',
+  'isActive',
+] as const) {
+  @TransformEmptyToUndefined()
+  firstName: string;
+
+  @TransformEmptyToUndefined()
+  lastName: string;
+
+  @TransformEmptyToUndefined()
+  gender: any;
+
+  @TransformEmptyToUndefined()
+  email: string;
+
+  @TransformEmptyToUndefined()
+  phone: string;
+
+  @TransformEmptyToUndefined()
+  password: string;
+
+  @TransformEmptyToUndefined()
+  username: string;
+
+  @TransformEmptyToUndefined()
+  role: any;
+
+  @TransformEmptyToUndefined()
+  staffCode: string;
+
+  @TransformEmptyToUndefined()
+  loyaltyCard: string;
+
+  @TransformEmptyToUndefined()
+  shopOfficeId: bigint;
+
+  @TransformEmptyToUndefined()
+  point: number;
+
+  @TransformEmptyToUndefined()
+  file: any;
 }

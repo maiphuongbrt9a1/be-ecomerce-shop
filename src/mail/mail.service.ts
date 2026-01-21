@@ -28,7 +28,9 @@ export class MailService {
         .catch(() => {});
 
       this.logger.log('Hello email sent successfully');
-      return 'Hello world. This is hello email from ecommerce shop!';
+      return {
+        message: 'Hello world. This is hello email from ecommerce shop!',
+      };
     } catch (error) {
       this.logger.error('Failed to send hello email: ', error);
       throw new Error('Failed to send hello email');
@@ -58,6 +60,9 @@ export class MailService {
           throw new Error('Send email failed!');
         });
       this.logger.log('Email sent successfully to ' + createMailDto.to_email);
+      return {
+        message: 'Send email from ecommerce shop successfully!',
+      };
     } catch (error) {
       this.logger.error(
         'Failed to send email to ' + createMailDto.to_email + ': ',
