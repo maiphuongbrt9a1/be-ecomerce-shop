@@ -22,18 +22,23 @@ import {
 import { OrderItemEntity } from './entities/order-item.entity';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { OrderItemWithVariantEntity } from './entities/order-item-with-variant.entity';
 
 @Controller('order-items')
 export class OrderItemsController {
   constructor(private readonly orderItemsService: OrderItemsService) {}
 
   @ApiOperation({ summary: 'Create a new order item' })
+  @ApiBody({
+    description:
+      'Order item data with product variant and quantity information',
+    type: CreateOrderItemDto,
+  })
   @ApiResponse({
     status: 201,
-    description: 'Create a new order item',
-    type: OrderItemEntity,
+    description: 'Order item created successfully',
+    type: OrderItemWithVariantEntity,
   })
-  @ApiBody({ type: CreateOrderItemDto })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
@@ -47,8 +52,9 @@ export class OrderItemsController {
   @ApiOperation({ summary: 'Get all order items' })
   @ApiResponse({
     status: 200,
-    description: 'Get all order items',
-    type: [OrderItemEntity],
+    description:
+      'List of order items with product variant and media information',
+    type: [OrderItemWithVariantEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -77,8 +83,8 @@ export class OrderItemsController {
   @ApiOperation({ summary: 'Get one order item' })
   @ApiResponse({
     status: 200,
-    description: 'Get one order item',
-    type: OrderItemEntity,
+    description: 'Order item with product variant and media information',
+    type: OrderItemWithVariantEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -91,17 +97,20 @@ export class OrderItemsController {
   }
 
   @ApiOperation({ summary: 'Update one order item' })
+  @ApiBody({
+    description: 'Order item update data with optional fields',
+    type: UpdateOrderItemDto,
+  })
   @ApiResponse({
     status: 200,
-    description: 'Update one order item',
-    type: OrderItemEntity,
+    description: 'Order item updated successfully',
+    type: OrderItemWithVariantEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
-  @ApiBody({ type: UpdateOrderItemDto })
   @Patch('/:id')
   async update(
     @Param('id') id: string,

@@ -7,11 +7,14 @@ import {
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { UpdateProductVariantDto } from './dto/update-product-variant.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Media, Prisma, ProductVariants, Reviews } from '@prisma/client';
+import { Media, Prisma, ProductVariants } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { formatMediaField, formatMediaFieldWithLogging } from '@/helpers/utils';
-import { ProductVariantsWithMediaInformation } from '@/helpers/types/types';
+import {
+  ProductVariantsWithMediaInformation,
+  ReviewsWithMedia,
+} from '@/helpers/types/types';
 
 @Injectable()
 export class ProductVariantsService {
@@ -293,10 +296,13 @@ export class ProductVariantsService {
     id: number,
     page: number,
     perPage: number,
-  ): Promise<Reviews[] | []> {
+  ): Promise<ReviewsWithMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Reviews, Prisma.ReviewsFindManyArgs>(
+      const result = await paginate<
+        ReviewsWithMedia,
+        Prisma.ReviewsFindManyArgs
+      >(
         this.prismaService.reviews,
         {
           include: {
@@ -307,6 +313,19 @@ export class ProductVariantsService {
         },
         { page: page },
       );
+
+      // generate full https link for media files
+      for (let i = 0; i < result.data.length; i++) {
+        const review = result.data[i];
+        review.media = formatMediaFieldWithLogging(
+          review.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'review',
+          review.id,
+          this.logger,
+        );
+      }
+
       this.logger.log(
         `Retrieved ${result.data.length} reviews for product variant id: ${id} successfully`,
       );
@@ -329,6 +348,19 @@ export class ProductVariantsService {
         { where: { productVariantId: id }, orderBy: { id: 'asc' } },
         { page: page },
       );
+
+      // generate full https link for media files
+      for (let i = 0; i < result.data.length; i++) {
+        const media = result.data[i];
+        const originalUrl = media.url;
+        media.url = this.awsService.buildPublicMediaUrl(media.url);
+
+        if (originalUrl !== media.url) {
+          this.logger.log(
+            `Media URL changed for media ID: ${media.id} of product variant ID: ${id}`,
+          );
+        }
+      }
 
       this.logger.log(
         `Retrieved ${result.data.length} media files for product variant id: ${id} successfully`,

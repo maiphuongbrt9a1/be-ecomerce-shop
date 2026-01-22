@@ -1,6 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { Media } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import {
+  OrdersWithFullInformation,
+  ShipmentsWithFullInformation,
+} from './types/types';
 const saltOrRounds = 10;
 
 export const hashPasswordHelper = async (plainPassword: string) => {
@@ -73,4 +77,109 @@ export const formatMediaFieldWithLogging = (
   }
 
   return convertedMedia;
+};
+
+export const formatMediaFieldWithLoggingForOrders = (
+  orders: OrdersWithFullInformation[],
+  buildPublicMediaUrl: (url: string) => string,
+  logger: Logger,
+) => {
+  logger.log(`Starting media field formatting for orders...`);
+  for (let i = 0; i < orders.length; i++) {
+    const order = orders[i];
+    // convert user media field
+    order.user.userMedia = formatMediaFieldWithLogging(
+      order.user.userMedia,
+      buildPublicMediaUrl,
+      'user',
+      order.user.id,
+      logger,
+    );
+
+    // convert staff process user media field
+    order.processByStaff.userMedia = formatMediaFieldWithLogging(
+      order.processByStaff.userMedia,
+      buildPublicMediaUrl,
+      'user',
+      order.processByStaff.id,
+      logger,
+    );
+
+    // convert product variant media field
+    for (let j = 0; j < order.orderItems.length; j++) {
+      order.orderItems[j].productVariant.media = formatMediaFieldWithLogging(
+        order.orderItems[j].productVariant.media,
+        buildPublicMediaUrl,
+        'product variant',
+        order.orderItems[j].productVariant.id,
+        logger,
+      );
+    }
+
+    // convert request media field
+    for (let k = 0; k < order.requests.length; k++) {
+      // convert media field of request
+      order.requests[k].media = formatMediaFieldWithLogging(
+        order.requests[k].media,
+        buildPublicMediaUrl,
+        'request',
+        order.requests[k].id,
+        logger,
+      );
+
+      // convert processByStaff user media field of request
+      order.requests[k].processByStaff.userMedia = formatMediaFieldWithLogging(
+        order.requests[k].processByStaff.userMedia,
+        buildPublicMediaUrl,
+        'user',
+        order.requests[k].processByStaff.id,
+        logger,
+      );
+    }
+
+    // convert shipment media field
+    for (let l = 0; l < order.shipments.length; l++) {
+      order.shipments[l].processByStaff.userMedia = formatMediaFieldWithLogging(
+        order.shipments[l].processByStaff.userMedia,
+        buildPublicMediaUrl,
+        'shipment',
+        order.shipments[l].id,
+        logger,
+      );
+    }
+  }
+  logger.log('Completed media field formatting for orders.');
+  return orders;
+};
+
+export const formatMediaFieldWithLoggingForShipments = (
+  shipments: ShipmentsWithFullInformation[],
+  buildPublicMediaUrl: (url: string) => string,
+  logger: Logger,
+) => {
+  logger.log(`Starting media field formatting for shipments...`);
+  for (let index = 0; index < shipments.length; index++) {
+    const shipment = shipments[index];
+    // convert processByStaff user media field
+    if (shipment.processByStaff && shipment.processByStaff.userMedia) {
+      shipment.processByStaff.userMedia = formatMediaFieldWithLogging(
+        shipment.processByStaff.userMedia,
+        buildPublicMediaUrl,
+        'user',
+        shipment.processByStaff.id,
+        logger,
+      );
+    }
+
+    // convert order user media field
+    if (shipment.order) {
+      shipment.order = formatMediaFieldWithLoggingForOrders(
+        [shipment.order],
+        buildPublicMediaUrl,
+        logger,
+      )[0];
+    }
+  }
+  logger.log('Completed media field formatting for shipments.');
+  return shipments;
 };

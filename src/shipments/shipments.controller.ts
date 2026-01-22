@@ -22,23 +22,28 @@ import {
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import { ShipmentEntity } from './entities/shipment.entity';
+import { ShipmentWithFullInformationEntity } from './entities/shipment-with-full-information.entity';
 
 @Controller('shipments')
 export class ShipmentsController {
   constructor(private readonly shipmentsService: ShipmentsService) {}
 
   @ApiOperation({ summary: 'Create a new shipment' })
+  @ApiBody({
+    description:
+      'Shipment data with order, staff assignment and delivery information',
+    type: CreateShipmentDto,
+  })
   @ApiResponse({
     status: 201,
-    description: 'Create a new shipment',
-    type: ShipmentEntity,
+    description: 'Shipment created successfully',
+    type: ShipmentWithFullInformationEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
-  @ApiBody({ type: CreateShipmentDto })
   @Post()
   async create(@Body() createShipmentDto: CreateShipmentDto) {
     return await this.shipmentsService.create(createShipmentDto);
@@ -47,8 +52,8 @@ export class ShipmentsController {
   @ApiOperation({ summary: 'Get all shipments' })
   @ApiResponse({
     status: 200,
-    description: 'Get all shipments',
-    type: [ShipmentEntity],
+    description: 'List of shipments with staff and order information',
+    type: [ShipmentWithFullInformationEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -77,8 +82,8 @@ export class ShipmentsController {
   @ApiOperation({ summary: 'Get one shipment' })
   @ApiResponse({
     status: 200,
-    description: 'Get one shipment',
-    type: ShipmentEntity,
+    description: 'Shipment with staff and order information',
+    type: ShipmentWithFullInformationEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -91,17 +96,21 @@ export class ShipmentsController {
   }
 
   @ApiOperation({ summary: 'Update one shipment' })
+  @ApiBody({
+    description:
+      'Shipment update data with optional tracking, status and delivery information',
+    type: UpdateShipmentDto,
+  })
   @ApiResponse({
     status: 200,
-    description: 'Update one shipment',
-    type: ShipmentEntity,
+    description: 'Shipment updated successfully',
+    type: ShipmentWithFullInformationEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
-  @ApiBody({ type: UpdateShipmentDto })
   @Patch('/:id')
   async update(
     @Param('id') id: string,

@@ -122,6 +122,30 @@ export type OrdersWithFullInformation = Prisma.OrdersGetPayload<{
   include: typeof OrdersWithFullInformationInclude;
 }>;
 
+export type ShipmentsWithFullInformation = Prisma.ShipmentsGetPayload<{
+  include: {
+    processByStaff: {
+      include: {
+        userMedia: true;
+      };
+    };
+    order: {
+      include: typeof OrdersWithFullInformationInclude;
+    };
+  };
+}>;
+
+export type OrderItemsWithVariantAndMediaInformation =
+  Prisma.OrderItemsGetPayload<{
+    include: {
+      productVariant: {
+        include: {
+          media: true;
+        };
+      };
+    };
+  }>;
+
 export type UserCartDetailInformation = Prisma.CartGetPayload<{
   include: {
     cartItems: {
