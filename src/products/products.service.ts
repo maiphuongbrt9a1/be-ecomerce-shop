@@ -25,7 +25,9 @@ export class ProductsService {
     private readonly awsService: AwsS3Service,
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Products> {
+  async create(
+    createProductDto: CreateProductDto,
+  ): Promise<ProductsWithProductVariantsAndTheirMedia> {
     try {
       const product = await this.prismaService.products.create({
         data: { ...createProductDto },
@@ -35,8 +37,35 @@ export class ProductsService {
         throw new NotFoundException('Failed to create product');
       }
 
+      const returnProduct = await this.prismaService.products.findUnique({
+        where: { id: product.id },
+        include: {
+          productVariants: {
+            include: {
+              media: true,
+            },
+          },
+        },
+      });
+
+      if (!returnProduct) {
+        throw new NotFoundException('Failed to retrieve created product');
+      }
+
+      // generate full http url for media files
+      for (let i = 0; i < returnProduct.productVariants.length; i++) {
+        const productVariant = returnProduct.productVariants[i];
+        productVariant.media = formatMediaFieldWithLogging(
+          productVariant.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'product variant',
+          productVariant.id,
+          this.logger,
+        );
+      }
+
       this.logger.log(`Product created with ID: ${product.id}`);
-      return product;
+      return returnProduct;
     } catch (error) {
       this.logger.log(`Error creating product: ${error}`);
       throw new BadRequestException('Failed to create product');
@@ -142,15 +171,46 @@ export class ProductsService {
   async update(
     id: number,
     updateProductDto: UpdateProductDto,
-  ): Promise<Products> {
+  ): Promise<ProductsWithProductVariantsAndTheirMedia> {
     try {
       const product = await this.prismaService.products.update({
         where: { id: id },
         data: { ...updateProductDto },
       });
 
+      if (!product) {
+        throw new BadRequestException('Failed to update product');
+      }
+
+      const returnProduct = await this.prismaService.products.findUnique({
+        where: { id: product.id },
+        include: {
+          productVariants: {
+            include: {
+              media: true,
+            },
+          },
+        },
+      });
+
+      if (!returnProduct) {
+        throw new NotFoundException('Failed to retrieve updated product');
+      }
+
+      // generate full http url for media files
+      for (let i = 0; i < returnProduct.productVariants.length; i++) {
+        const productVariant = returnProduct.productVariants[i];
+        productVariant.media = formatMediaFieldWithLogging(
+          productVariant.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'product variant',
+          productVariant.id,
+          this.logger,
+        );
+      }
+
       this.logger.log(`Product updated with ID: ${product.id}`);
-      return product;
+      return returnProduct;
     } catch (error) {
       this.logger.log(`Error updating product with ID ${id}: ${error}`);
       throw new BadRequestException('Failed to update product');
@@ -160,8 +220,54 @@ export class ProductsService {
   async remove(id: number): Promise<Products> {
     try {
       this.logger.log(`Deleting product with ID: ${id}`);
-      return await this.prismaService.products.delete({
-        where: { id: id },
+      return await this.prismaService.$transaction(async (tx) => {
+        const product = await tx.products.findUnique({
+          where: { id: id },
+          include: {
+            productVariants: {
+              include: {
+                media: true,
+              },
+            },
+            reviews: {
+              include: {
+                media: true,
+              },
+            },
+          },
+        });
+
+        if (!product) {
+          throw new NotFoundException('Product not found!');
+        }
+
+        if (product.productVariants && product.productVariants.length > 0) {
+          for (const variant of product.productVariants) {
+            // delete variant
+            await tx.productVariants.delete({ where: { id: variant.id } });
+            //delete media associated with variant from aws s3
+            for (const media of variant.media) {
+              await this.awsService.deleteFileFromS3(media.url);
+            }
+          }
+        }
+
+        if (product.reviews && product.reviews.length > 0) {
+          for (const review of product.reviews) {
+            // delete review
+            await tx.reviews.delete({ where: { id: review.id } });
+            //delete media associated with review from aws s3
+            for (const media of review.media) {
+              await this.awsService.deleteFileFromS3(media.url);
+            }
+          }
+        }
+
+        const result = await tx.products.delete({
+          where: { id: id },
+        });
+        this.logger.log(`Product deleted with ID: ${id}`);
+        return result;
       });
     } catch (error) {
       this.logger.log(`Error deleting product with ID ${id}: ${error}`);

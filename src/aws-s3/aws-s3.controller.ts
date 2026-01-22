@@ -425,17 +425,19 @@ export class AwsS3Controller {
       required: ['files'],
     },
   })
-  @Post('/user/:userId/upload-many-review-file/:reviewId')
+  @Post('/user/:userId/upload-many-review-file/:reviewId/:productVariantId')
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadManyReviewFile(
     @UploadedFiles() files: Express.Multer.File[],
     @Param('userId') userId: string,
     @Param('reviewId') reviewId: string,
+    @Param('productVariantId') productVariantId: string,
   ): Promise<AWS.S3.ManagedUpload.SendData[]> {
     return await this.awsS3Service.uploadManyReviewFile(
       files,
       userId,
       reviewId,
+      productVariantId,
     );
   }
 

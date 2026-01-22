@@ -39,6 +39,7 @@ export class ReviewsService {
         files,
         userId,
         result.id.toString(),
+        result.productVariantId.toString(),
       );
 
       if (!mediaForReview) {
@@ -53,6 +54,15 @@ export class ReviewsService {
       if (!returnResult) {
         throw new NotFoundException('Failed to fetch created review');
       }
+
+      // generate full http url for media files
+      returnResult.media = formatMediaFieldWithLogging(
+        returnResult.media,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'review',
+        returnResult.id,
+        this.logger,
+      );
 
       this.logger.log('Review created successfully', returnResult.id);
       return returnResult;
@@ -77,6 +87,17 @@ export class ReviewsService {
         { page: page },
       );
 
+      // generate full http url for media files
+      for (let i = 0; i < result.data.length; i++) {
+        result.data[i].media = formatMediaFieldWithLogging(
+          result.data[i].media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'review',
+          result.data[i].id,
+          this.logger,
+        );
+      }
+
       this.logger.log('Fetched reviews successfully');
       return result.data;
     } catch (error) {
@@ -95,6 +116,17 @@ export class ReviewsService {
       if (!result) {
         throw new NotFoundException('Review not found!');
       }
+
+      // generate full http url for media files
+      result.media = formatMediaFieldWithLogging(
+        result.media,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'review',
+        result.id,
+        this.logger,
+      );
+
+      this.logger.log('Fetched review successfully', id);
 
       return result;
     } catch (error) {
@@ -137,6 +169,7 @@ export class ReviewsService {
           files,
           adminId,
           id.toString(),
+          newReview.productVariantId.toString(),
         );
 
         if (!mediaUploadForReview) {
@@ -193,9 +226,32 @@ export class ReviewsService {
   async remove(id: number): Promise<Reviews> {
     try {
       this.logger.log('Deleting review', id);
-      return await this.prismaService.reviews.delete({
+
+      // get review to delete associated media files from s3
+      const reviewToDelete = await this.prismaService.reviews.findUnique({
+        include: { media: true },
         where: { id: id },
       });
+
+      if (!reviewToDelete) {
+        throw new NotFoundException('Review not found!');
+      }
+
+      // delete review record from database
+      const result = await this.prismaService.reviews.delete({
+        where: { id: id },
+      });
+
+      if (reviewToDelete && reviewToDelete.media.length > 0) {
+        // delete associated media files from s3
+        for (const media of reviewToDelete.media) {
+          await this.awsService.deleteFileFromS3(media.url);
+        }
+      }
+
+      this.logger.log('Review deleted successfully', id);
+
+      return result;
     } catch (error) {
       this.logger.log('Error deleting review', error);
       throw new BadRequestException('Failed to delete review');

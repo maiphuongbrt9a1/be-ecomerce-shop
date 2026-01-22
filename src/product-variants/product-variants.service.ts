@@ -270,6 +270,11 @@ export class ProductVariantsService {
         select: { url: true, id: true },
       });
 
+      // delete product variant and its media files, reviews from postgresql db
+      const productVariant = await this.prismaService.productVariants.delete({
+        where: { id: id },
+      });
+
       try {
         for (const media of mediaFilesToDelete) {
           await this.awsService.deleteFileFromS3(media.url);
@@ -278,11 +283,6 @@ export class ProductVariantsService {
         this.logger.log('Error deleting media files from S3: ' + error);
         throw new BadRequestException('Failed to delete media files from S3');
       }
-
-      // delete product variant and its media files, reviews from postgresql db
-      const productVariant = await this.prismaService.productVariants.delete({
-        where: { id: id },
-      });
 
       this.logger.log('Product variant deleted successfully with id: ' + id);
       return productVariant;

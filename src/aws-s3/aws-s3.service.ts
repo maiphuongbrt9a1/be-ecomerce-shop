@@ -666,6 +666,7 @@ export class AwsS3Service {
     files: Express.Multer.File[],
     userId: string,
     reviewId: string,
+    productVariantId: string,
   ): Promise<AWS.S3.ManagedUpload.SendData[]> {
     try {
       if (!files || files.length === 0) {
@@ -711,7 +712,7 @@ export class AwsS3Service {
           isImage ? MediaType.IMAGE : MediaType.VIDEO,
           Number(reviewId),
           Number(userId),
-          null,
+          Number(productVariantId),
           false,
           false,
           false,

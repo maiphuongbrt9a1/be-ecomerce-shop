@@ -36,7 +36,7 @@ export class ProductsController {
   @ApiResponse({
     status: 201,
     description: 'Product created successfully',
-    type: ProductEntity,
+    type: ProductWithVariantsAndMediaEntity,
   })
   @ApiResponse({
     status: 400,
@@ -55,7 +55,8 @@ export class ProductsController {
   @Roles('ADMIN')
   @ApiConsumes('application/json')
   @ApiBody({
-    description: 'Product creation data with optional image files',
+    description:
+      'Product creation data with name, description, and category information',
     type: CreateProductDto,
   })
   @Post()
@@ -117,7 +118,7 @@ export class ProductsController {
   @ApiResponse({
     status: 200,
     description: 'Product updated successfully',
-    type: ProductEntity,
+    type: ProductWithVariantsAndMediaEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -125,8 +126,9 @@ export class ProductsController {
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @ApiBody({
+    description:
+      'Product update data with optional name, description, and category information',
     type: UpdateProductDto,
-    description: 'Product update data',
   })
   @Patch('/:id')
   async update(

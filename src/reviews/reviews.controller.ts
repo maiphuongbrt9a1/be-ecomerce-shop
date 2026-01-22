@@ -36,40 +36,36 @@ export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @ApiOperation({ summary: 'Create a new review' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description:
+      'Review creation data with product, variant, rating, comment and optional media files',
+    schema: {
+      type: 'object',
+      properties: {
+        productId: { type: 'number', example: 1 },
+        userId: { type: 'number', example: 1 },
+        productVariantId: { type: 'number', example: 1 },
+        rating: { type: 'number', example: 5, minimum: 1, maximum: 5 },
+        comment: { type: 'string', example: 'Great product!' },
+        files: {
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
+          description: 'Review media files',
+        },
+      },
+      required: ['productId', 'userId', 'productVariantId', 'rating'],
+    },
+  })
   @ApiResponse({
     status: 201,
-    description: 'Create a new review',
+    description: 'Review created successfully',
     type: ReviewWithMediaEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'USER', 'OPERATOR')
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Review creation data with optional media files',
-    schema: {
-      type: 'object',
-      properties: {
-        files: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'binary',
-          },
-          description: 'Review media files',
-        },
-        productId: { type: 'number', example: 851 },
-        userId: { type: 'number', example: 851 },
-        productVariantId: { type: 'number', example: 851 },
-        rating: { type: 'number', example: 5, minimum: 1, maximum: 5 },
-        comment: { type: 'string', example: 'Perfect' },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
-      },
-      required: ['productId', 'userId', 'productVariantId', 'rating'],
-    },
-  })
   @UseInterceptors(FilesInterceptor('files'))
   @Post()
   async create(
@@ -87,7 +83,7 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Get all reviews' })
   @ApiResponse({
     status: 200,
-    description: 'Get all reviews',
+    description: 'Reviews retrieved successfully',
     type: [ReviewWithMediaEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -115,7 +111,7 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Get a review' })
   @ApiResponse({
     status: 200,
-    description: 'Get a review',
+    description: 'Review retrieved successfully',
     type: ReviewWithMediaEntity,
   })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -126,9 +122,35 @@ export class ReviewsController {
   }
 
   @ApiOperation({ summary: 'Update a review' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description:
+      'Review update data with optional rating, comment, media files and mediaIdsToDelete',
+    schema: {
+      type: 'object',
+      properties: {
+        productId: { type: 'number', example: 1 },
+        userId: { type: 'number', example: 1 },
+        productVariantId: { type: 'number', example: 1 },
+        rating: { type: 'number', example: 5, minimum: 1, maximum: 5 },
+        comment: { type: 'string', example: 'Updated comment' },
+        files: {
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
+          description: 'Review media files to add',
+        },
+        mediaIdsToDelete: {
+          type: 'array',
+          items: { type: 'string', example: '1' },
+          description: 'Array of media IDs to delete',
+        },
+      },
+      required: [],
+    },
+  })
   @ApiResponse({
     status: 200,
-    description: 'Update a review',
+    description: 'Review updated successfully',
     type: ReviewWithMediaEntity,
   })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -136,40 +158,6 @@ export class ReviewsController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'USER', 'OPERATOR')
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Review update data with optional media files',
-    schema: {
-      type: 'object',
-      properties: {
-        files: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'binary',
-          },
-          description: 'Review media files',
-        },
-        productId: { type: 'number', example: 851 },
-        userId: { type: 'number', example: 851 },
-        productVariantId: { type: 'number', example: 851 },
-        rating: { type: 'number', example: 5, minimum: 1, maximum: 5 },
-        comment: { type: 'string', example: 'Perfect' },
-        mediaIdsToDelete: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'int64',
-            example: '9007199254740993',
-          },
-          description:
-            'Array of media ids to delete. Big integers should be sent as strings.',
-        },
-        updatedAt: { type: 'string', format: 'date-time' },
-      },
-      required: [],
-    },
-  })
   @UseInterceptors(FilesInterceptor('files'))
   @Patch('/:id')
   async update(
@@ -189,7 +177,7 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Delete a review' })
   @ApiResponse({
     status: 200,
-    description: 'Delete a review',
+    description: 'Review deleted successfully',
     type: ReviewEntity,
   })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -205,7 +193,7 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Get all media of review' })
   @ApiResponse({
     status: 200,
-    description: 'Get all media of review',
+    description: 'Review media retrieved successfully',
     type: [MediaEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
