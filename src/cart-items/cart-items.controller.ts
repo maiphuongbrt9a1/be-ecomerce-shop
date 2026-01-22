@@ -22,23 +22,27 @@ import {
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import { CartItemEntity } from './entities/cart-item.entity';
+import { CartItemWithVariantEntity } from './entities/cart-item-with-variant.entity';
 
 @Controller('cart-items')
 export class CartItemsController {
   constructor(private readonly cartItemsService: CartItemsService) {}
 
   @ApiOperation({ summary: 'Create a new cart item' })
+  @ApiBody({
+    description: 'Cart item data with product variant and quantity information',
+    type: CreateCartItemDto,
+  })
   @ApiResponse({
     status: 201,
-    description: 'Create a new cart item',
-    type: CartItemEntity,
+    description: 'Cart item created successfully',
+    type: CartItemWithVariantEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
-  @ApiBody({ type: CreateCartItemDto })
   @Post()
   async create(@Body() createCartItemDto: CreateCartItemDto) {
     return await this.cartItemsService.create(createCartItemDto);
@@ -47,8 +51,9 @@ export class CartItemsController {
   @ApiOperation({ summary: 'Get all cart items' })
   @ApiResponse({
     status: 200,
-    description: 'Get all cart items',
-    type: [CartItemEntity],
+    description:
+      'List of cart items with product variant and media information',
+    type: [CartItemWithVariantEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -77,8 +82,8 @@ export class CartItemsController {
   @ApiOperation({ summary: 'Get one cart item' })
   @ApiResponse({
     status: 200,
-    description: 'Get one cart item',
-    type: CartItemEntity,
+    description: 'Cart item with product variant and media information',
+    type: CartItemWithVariantEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -91,17 +96,20 @@ export class CartItemsController {
   }
 
   @ApiOperation({ summary: 'Update one cart item' })
+  @ApiBody({
+    description: 'Cart item update data with optional fields',
+    type: UpdateCartItemDto,
+  })
   @ApiResponse({
     status: 200,
-    description: 'Update one cart item',
-    type: CartItemEntity,
+    description: 'Cart item updated successfully',
+    type: CartItemWithVariantEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
-  @ApiBody({ type: UpdateCartItemDto })
   @Patch('/:id')
   async update(
     @Param('id') id: string,

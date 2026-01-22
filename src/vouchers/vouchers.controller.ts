@@ -22,18 +22,23 @@ import {
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles, Public } from '@/decorator/customize';
 import { VoucherEntity } from './entities/voucher.entity';
-import { CategoryEntity } from '@/category/entities/category.entity';
-import { ProductEntity } from '@/products/entities/product.entity';
-import { ProductVariantEntity } from '@/product-variants/entities/product-variant.entity';
+import { VoucherWithCategoriesEntity } from './entities/voucher-with-categories.entity';
+import { VoucherWithProductsEntity } from './entities/voucher-with-products.entity';
+import { VoucherWithProductVariantsEntity } from './entities/voucher-with-product-variants.entity';
 
 @Controller('vouchers')
 export class VouchersController {
   constructor(private readonly vouchersService: VouchersService) {}
 
   @ApiOperation({ summary: 'Create a new voucher' })
+  @ApiBody({
+    description:
+      'Voucher data with code, discount type, value and validity period',
+    type: CreateVoucherDto,
+  })
   @ApiResponse({
     status: 201,
-    description: 'Create a new voucher',
+    description: 'Voucher created successfully',
     type: VoucherEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -41,7 +46,6 @@ export class VouchersController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  @ApiBody({ type: CreateVoucherDto })
   @Post()
   async create(@Body() createVoucherDto: CreateVoucherDto) {
     return await this.vouchersService.create(createVoucherDto);
@@ -50,7 +54,7 @@ export class VouchersController {
   @ApiOperation({ summary: 'Get all vouchers' })
   @ApiResponse({
     status: 200,
-    description: 'Get all vouchers',
+    description: 'List of all vouchers',
     type: [VoucherEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -78,7 +82,7 @@ export class VouchersController {
   @ApiOperation({ summary: 'Get a voucher' })
   @ApiResponse({
     status: 200,
-    description: 'Get a voucher',
+    description: 'Voucher details',
     type: VoucherEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -90,9 +94,14 @@ export class VouchersController {
   }
 
   @ApiOperation({ summary: 'Update a voucher' })
+  @ApiBody({
+    description:
+      'Voucher update data with optional fields for discount, validity and status',
+    type: UpdateVoucherDto,
+  })
   @ApiResponse({
     status: 200,
-    description: 'Update a voucher',
+    description: 'Voucher updated successfully',
     type: VoucherEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -100,7 +109,6 @@ export class VouchersController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  @ApiBody({ type: UpdateVoucherDto })
   @Patch('/:id')
   async update(
     @Param('id') id: string,
@@ -112,7 +120,7 @@ export class VouchersController {
   @ApiOperation({ summary: 'Delete a voucher' })
   @ApiResponse({
     status: 200,
-    description: 'Delete a voucher',
+    description: 'Voucher deleted successfully',
     type: VoucherEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -128,11 +136,25 @@ export class VouchersController {
   @ApiOperation({ summary: 'Get all categories are applied this voucher' })
   @ApiResponse({
     status: 200,
-    description: 'Get all categories are applied this voucher',
-    type: [CategoryEntity],
+    description: 'List of vouchers with applied categories',
+    type: [VoucherWithCategoriesEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
   @Public()
   @Get('/:id/all-categories-applied')
   async getAllCategoriesAreAppliedThisVoucher(
@@ -150,11 +172,25 @@ export class VouchersController {
   @ApiOperation({ summary: 'Get all products are applied this voucher' })
   @ApiResponse({
     status: 200,
-    description: 'Get all products are applied this voucher',
-    type: [ProductEntity],
+    description: 'List of vouchers with applied products',
+    type: [VoucherWithProductsEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
   @Public()
   @Get('/:id/all-products-applied')
   async getAllProductsAreAppliedThisVoucher(
@@ -174,11 +210,25 @@ export class VouchersController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Get all product-variants are applied this voucher',
-    type: [ProductVariantEntity],
+    description: 'List of vouchers with applied product variants',
+    type: [VoucherWithProductVariantsEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
   @Public()
   @Get('/:id/all-product-variants-applied')
   async getAllProductVariantsAreAppliedThisVoucher(

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserEntity } from '@/user/entities/user.entity';
+import { UserWithMediaEntity } from '@/user/entities/user-with-media.entity';
 import { OrderFullInformationEntity } from '@/orders/entities/order-full-information.entity';
 
 enum ShipmentStatus {
@@ -51,8 +51,8 @@ export class ShipmentWithFullInformationEntity {
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   updatedAt: Date;
 
-  @ApiProperty({ type: UserEntity })
-  processByStaff: UserEntity;
+  @ApiProperty({ type: UserWithMediaEntity })
+  processByStaff: UserWithMediaEntity;
 
   @ApiProperty({ type: OrderFullInformationEntity })
   order: OrderFullInformationEntity;

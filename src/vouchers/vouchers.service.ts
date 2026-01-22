@@ -112,6 +112,9 @@ export class VouchersService {
       >(
         this.prismaService.vouchers,
         {
+          include: {
+            voucherForCategory: true,
+          },
           where: { id: id },
           orderBy: { id: 'asc' },
         },
@@ -144,6 +147,9 @@ export class VouchersService {
       >(
         this.prismaService.vouchers,
         {
+          include: {
+            voucherForProduct: true,
+          },
           where: { id: id },
           orderBy: { id: 'asc' },
         },
@@ -173,6 +179,9 @@ export class VouchersService {
       >(
         this.prismaService.vouchers,
         {
+          include: {
+            voucherForSpecialProductVariant: true,
+          },
           where: { id: id },
           orderBy: { id: 'asc' },
         },

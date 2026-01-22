@@ -20,6 +20,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { UserVoucherEntity } from './entities/user-voucher.entity';
+import { UserSavedVoucherDetailEntity } from './entities/user-saved-voucher-detail.entity';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -28,17 +29,20 @@ export class UserVouchersController {
   constructor(private readonly userVouchersService: UserVouchersService) {}
 
   @ApiOperation({ summary: 'Create a new user voucher' })
+  @ApiBody({
+    description: 'User voucher data with voucher ID and user ID information',
+    type: CreateUserVoucherDto,
+  })
   @ApiResponse({
     status: 201,
-    description: 'Create a new user voucher',
-    type: UserVoucherEntity,
+    description: 'User voucher created successfully',
+    type: UserSavedVoucherDetailEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
-  @ApiBody({ type: CreateUserVoucherDto })
   @Post()
   async create(@Body() createUserVoucherDto: CreateUserVoucherDto) {
     return await this.userVouchersService.create(createUserVoucherDto);
@@ -47,8 +51,8 @@ export class UserVouchersController {
   @ApiOperation({ summary: 'Get all user vouchers' })
   @ApiResponse({
     status: 200,
-    description: 'Get all user vouchers',
-    type: [UserVoucherEntity],
+    description: 'User vouchers retrieved successfully',
+    type: [UserSavedVoucherDetailEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -80,8 +84,8 @@ export class UserVouchersController {
   @ApiOperation({ summary: 'Get one user voucher' })
   @ApiResponse({
     status: 200,
-    description: 'Get one user voucher',
-    type: UserVoucherEntity,
+    description: 'User voucher retrieved successfully',
+    type: UserSavedVoucherDetailEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -94,17 +98,21 @@ export class UserVouchersController {
   }
 
   @ApiOperation({ summary: 'Update one user voucher' })
+  @ApiBody({
+    description:
+      'User voucher update data with optional status and usage information',
+    type: UpdateUserVoucherDto,
+  })
   @ApiResponse({
     status: 200,
-    description: 'Update one user voucher',
-    type: UserVoucherEntity,
+    description: 'User voucher updated successfully',
+    type: UserSavedVoucherDetailEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('USER')
-  @ApiBody({ type: UpdateUserVoucherDto })
   @Patch('/:id')
   async update(
     @Param('id') id: string,
@@ -116,7 +124,7 @@ export class UserVouchersController {
   @ApiOperation({ summary: 'Delete one user voucher' })
   @ApiResponse({
     status: 200,
-    description: 'Delete one user voucher',
+    description: 'User voucher deleted successfully',
     type: UserVoucherEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })

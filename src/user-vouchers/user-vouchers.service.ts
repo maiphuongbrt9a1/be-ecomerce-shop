@@ -9,6 +9,7 @@ import { UpdateUserVoucherDto } from './dto/update-user-voucher.dto';
 import { Prisma, UserVouchers } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { createPaginator } from 'prisma-pagination';
+import { UserVoucherDetailInformation } from '@/helpers/types/types';
 
 @Injectable()
 export class UserVouchersService {
@@ -16,29 +17,52 @@ export class UserVouchersService {
   constructor(private readonly prismaService: PrismaService) {}
   async create(
     createUserVoucherDto: CreateUserVoucherDto,
-  ): Promise<UserVouchers> {
+  ): Promise<UserVoucherDetailInformation> {
     try {
       const result = await this.prismaService.userVouchers.create({
         data: { ...createUserVoucherDto },
       });
 
-      this.logger.log('User voucher created successfully', result.id);
-      return result;
+      if (!result) {
+        throw new BadRequestException('User voucher creation failed!');
+      }
+
+      const returnResult = await this.prismaService.userVouchers.findUnique({
+        where: { id: result.id },
+        include: {
+          voucher: true,
+        },
+      });
+
+      if (!returnResult) {
+        throw new NotFoundException('Created user voucher not found!');
+      }
+
+      this.logger.log('User voucher created successfully', returnResult.id);
+      return returnResult;
     } catch (error) {
       this.logger.log('Error creating user voucher', error);
       throw new BadRequestException('Failed to create user voucher');
     }
   }
 
-  async findAll(page: number, perPage: number): Promise<UserVouchers[] | []> {
+  async findAll(
+    page: number,
+    perPage: number,
+  ): Promise<UserVoucherDetailInformation[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
       const result = await paginate<
-        UserVouchers,
+        UserVoucherDetailInformation,
         Prisma.UserVouchersFindManyArgs
       >(
         this.prismaService.userVouchers,
-        { orderBy: { id: 'asc' } },
+        {
+          include: {
+            voucher: true,
+          },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
 
@@ -50,9 +74,12 @@ export class UserVouchersService {
     }
   }
 
-  async findOne(id: number): Promise<UserVouchers | null> {
+  async findOne(id: number): Promise<UserVoucherDetailInformation | null> {
     try {
       const result = await this.prismaService.userVouchers.findFirst({
+        include: {
+          voucher: true,
+        },
         where: { id: id },
       });
 
@@ -71,15 +98,30 @@ export class UserVouchersService {
   async update(
     id: number,
     updateUserVoucherDto: UpdateUserVoucherDto,
-  ): Promise<UserVouchers> {
+  ): Promise<UserVoucherDetailInformation> {
     try {
       const result = await this.prismaService.userVouchers.update({
         where: { id: id },
         data: { ...updateUserVoucherDto },
       });
 
+      if (!result) {
+        throw new BadRequestException('User voucher update failed!');
+      }
+
+      const returnResult = await this.prismaService.userVouchers.findUnique({
+        where: { id: result.id },
+        include: {
+          voucher: true,
+        },
+      });
+
+      if (!returnResult) {
+        throw new NotFoundException('Updated user voucher not found!');
+      }
+
       this.logger.log('User voucher updated successfully', id);
-      return result;
+      return returnResult;
     } catch (error) {
       this.logger.log('Error updating user voucher', error);
       throw new BadRequestException('Failed to update user voucher');

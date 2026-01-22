@@ -201,3 +201,13 @@ export type ReviewsWithMedia = Prisma.ReviewsGetPayload<{
     media: true;
   };
 }>;
+
+export type CartItemsWithProductVariantAndMedia = Prisma.CartItemsGetPayload<{
+  include: {
+    productVariant: {
+      include: {
+        media: true;
+      };
+    };
+  };
+}>;
