@@ -23,6 +23,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('documentation', app, document, {
     jsonDocumentUrl: 'documentation-json',
+    swaggerOptions: {
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
   });
 
   (BigInt.prototype as any).toJSON = function () {
