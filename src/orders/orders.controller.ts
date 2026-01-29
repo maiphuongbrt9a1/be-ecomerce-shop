@@ -20,8 +20,13 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { OrderEntity } from './entities/order.entity';
+import { OrderFullInformationEntity } from './entities/order-full-information.entity';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
+import { OrderItemWithVariantEntity } from '@/order-items/entities/order-item-with-variant.entity';
+import { ShipmentWithFullInformationEntity } from '@/shipments/entities/shipment-with-full-information.entity';
+import { PaymentEntity } from '@/payments/entities/payment.entity';
+import { RequestWithMediaEntity } from '@/requests/entities/request-with-media.entity';
 
 @Controller('orders')
 export class OrdersController {
@@ -30,15 +35,20 @@ export class OrdersController {
   @ApiOperation({ summary: 'Create a new order' })
   @ApiResponse({
     status: 201,
-    description: 'Create a new order',
-    type: OrderEntity,
+    description:
+      'Order created successfully with full information including items, payments, and shipments',
+    type: OrderFullInformationEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'USER', 'OPERATOR')
-  @ApiBody({ type: CreateOrderDto })
+  @ApiBody({
+    description:
+      'Order creation data with items, shipping address, and payment method information',
+    type: CreateOrderDto,
+  })
   @Post()
   async create(@Body() createOrderDto: CreateOrderDto) {
     return await this.ordersService.create(createOrderDto);
@@ -47,8 +57,9 @@ export class OrdersController {
   @ApiOperation({ summary: 'Get all orders' })
   @ApiResponse({
     status: 200,
-    description: 'Get all orders',
-    type: [OrderEntity],
+    description:
+      'Retrieved all orders with full information including items, payments, and shipments',
+    type: [OrderFullInformationEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -77,8 +88,9 @@ export class OrdersController {
   @ApiOperation({ summary: 'Get all orders with their detail information' })
   @ApiResponse({
     status: 200,
-    description: 'Get all orders with their detail information',
-    type: [OrderEntity],
+    description:
+      'Retrieved all orders with full information including items, payments, shipments, and requests',
+    type: [OrderFullInformationEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -111,7 +123,12 @@ export class OrdersController {
   }
 
   @ApiOperation({ summary: 'Get one order' })
-  @ApiResponse({ status: 200, description: 'Get one order', type: OrderEntity })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Retrieved order with full information including items, payments, shipments, and requests',
+    type: OrderFullInformationEntity,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
@@ -125,7 +142,7 @@ export class OrdersController {
   @ApiOperation({ summary: 'Update one order' })
   @ApiResponse({
     status: 200,
-    description: 'Update one order',
+    description: 'Order updated successfully',
     type: OrderEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -133,7 +150,11 @@ export class OrdersController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'USER', 'OPERATOR')
-  @ApiBody({ type: UpdateOrderDto })
+  @ApiBody({
+    description:
+      'Order update data with optional status, shipping address, pricing information',
+    type: UpdateOrderDto,
+  })
   @Patch('/:id')
   async update(
     @Param('id') id: string,
@@ -145,7 +166,7 @@ export class OrdersController {
   @ApiOperation({ summary: 'Delete one order' })
   @ApiResponse({
     status: 200,
-    description: 'Delete one order',
+    description: 'Order deleted successfully',
     type: OrderEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -161,8 +182,9 @@ export class OrdersController {
   @ApiOperation({ summary: 'Get order detail information of one order' })
   @ApiResponse({
     status: 200,
-    description: 'Get order detail information of one order',
-    type: OrderEntity,
+    description:
+      'Retrieved order with full information including user, items, shipments, payments, and requests',
+    type: OrderFullInformationEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -179,8 +201,9 @@ export class OrdersController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Get order item list detail information of one order',
-    type: OrderEntity,
+    description:
+      'Retrieved list of order items with product variant and media information',
+    type: [OrderItemWithVariantEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -197,8 +220,9 @@ export class OrdersController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Get order shipments detail information of one order',
-    type: OrderEntity,
+    description:
+      'Retrieved list of shipments with full information including staff and order details',
+    type: [ShipmentWithFullInformationEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -215,8 +239,8 @@ export class OrdersController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Get order payment detail information of one order',
-    type: OrderEntity,
+    description: 'Retrieved list of payments for the order',
+    type: [PaymentEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -233,8 +257,9 @@ export class OrdersController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Get order request detail information of one order',
-    type: OrderEntity,
+    description:
+      'Retrieved list of requests for the order with media and staff information',
+    type: [RequestWithMediaEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })

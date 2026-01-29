@@ -7,8 +7,14 @@ import {
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Payments, Prisma } from '@prisma/client';
+import {
+  Payments,
+  PaymentStatus,
+  Prisma,
+  ShipmentStatus,
+} from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class PaymentsService {
@@ -69,12 +75,48 @@ export class PaymentsService {
   async update(
     id: number,
     updatePaymentDto: UpdatePaymentDto,
+    shipmentCarrier: string,
   ): Promise<Payments> {
     try {
+      const oldPayment = await this.prismaService.payments.findUnique({
+        where: { id: id },
+        include: {
+          order: {
+            select: {
+              userId: true,
+            },
+          },
+        },
+      });
+
+      if (!oldPayment) {
+        throw new NotFoundException('Payment not found!');
+      }
+
       const result = await this.prismaService.payments.update({
         where: { id: id },
         data: { ...updatePaymentDto },
       });
+
+      if (
+        result &&
+        result.status === PaymentStatus.PAID &&
+        oldPayment.status === PaymentStatus.PENDING
+      ) {
+        await this.prismaService.shipments.create({
+          data: {
+            orderId: result.orderId,
+            processByStaffId: null,
+            estimatedDelivery: dayjs().add(1, 'days').toDate(),
+            estimatedShipDate: dayjs().add(2, 'days').toDate(),
+            carrier: shipmentCarrier,
+            trackingNumber: `${Date.now()}-${result.orderId}-${oldPayment.order.userId}-${Math.floor(
+              Math.random() * 10000000,
+            )}`,
+            status: ShipmentStatus.WAITING_FOR_PICKUP,
+          },
+        });
+      }
 
       this.logger.log(`Updated payment with ID: ${id}`);
       return result;

@@ -19,8 +19,26 @@ export class ProductVariantEntity {
   @ApiProperty({ example: 'XL' })
   variantSize: string;
 
+  @ApiProperty({ example: 5.0 })
+  variantWeight: number; // in grams
+
+  @ApiProperty({ example: 50.0 })
+  variantHeight: number; // in cm
+
+  @ApiProperty({ example: 20.0 })
+  variantWidth: number; // in cm
+
+  @ApiProperty({ example: 25.0 })
+  variantLength: number; // in cm
+
+  @ApiProperty({ example: 1 })
+  colorId: number;
+
   @ApiProperty({ example: 46546 })
   price: number;
+
+  @ApiProperty({ example: 'VND' })
+  currencyUnit: string;
 
   @ApiProperty({ example: 851 })
   stock: number;

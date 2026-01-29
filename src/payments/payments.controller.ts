@@ -30,7 +30,7 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Create a new payment' })
   @ApiResponse({
     status: 201,
-    description: 'Create a new payment',
+    description: 'Payment created successfully',
     type: PaymentEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -38,7 +38,11 @@ export class PaymentsController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'USER')
-  @ApiBody({ type: CreatePaymentDto })
+  @ApiBody({
+    description:
+      'Payment creation data with order, transaction, method, and amount information',
+    type: CreatePaymentDto,
+  })
   @Post()
   async create(@Body() createPaymentDto: CreatePaymentDto) {
     return await this.paymentsService.create(createPaymentDto);
@@ -47,7 +51,7 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Get all payments' })
   @ApiResponse({
     status: 200,
-    description: 'Get all payments',
+    description: 'Retrieved all payments successfully',
     type: [PaymentEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -77,7 +81,7 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Get one payment' })
   @ApiResponse({
     status: 200,
-    description: 'Get one payment',
+    description: 'Retrieved payment successfully',
     type: PaymentEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -93,7 +97,7 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Update one payment' })
   @ApiResponse({
     status: 200,
-    description: 'Update one payment',
+    description: 'Payment updated successfully',
     type: PaymentEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -101,19 +105,28 @@ export class PaymentsController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR', 'USER')
-  @ApiBody({ type: UpdatePaymentDto })
+  @ApiBody({
+    description:
+      'Payment update data with status and optional transaction or method information. Also include shipmentCarrier for creating shipment when payment is marked as PAID',
+    type: UpdatePaymentDto,
+  })
   @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updatePaymentDto: UpdatePaymentDto,
+    @Body('shipmentCarrier') shipmentCarrier: string,
   ) {
-    return await this.paymentsService.update(+id, updatePaymentDto);
+    return await this.paymentsService.update(
+      +id,
+      updatePaymentDto,
+      shipmentCarrier,
+    );
   }
 
   @ApiOperation({ summary: 'Delete one payment' })
   @ApiResponse({
     status: 200,
-    description: 'Delete one payment',
+    description: 'Payment deleted successfully',
     type: PaymentEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })

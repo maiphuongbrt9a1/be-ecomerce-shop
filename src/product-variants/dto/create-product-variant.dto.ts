@@ -33,11 +33,40 @@ export class CreateProductVariantDto {
   @IsNotEmpty()
   variantSize: string;
 
+  @ApiProperty({ example: 5.0 })
+  @IsNotEmpty()
+  @IsNumber()
+  @Type(() => Number)
+  variantWeight: number; // in grams
+
+  @ApiProperty({ example: 50.0 })
+  @IsNotEmpty()
+  @IsNumber()
+  @Type(() => Number)
+  variantHeight: number; // in cm
+
+  @ApiProperty({ example: 20.0 })
+  @IsNotEmpty()
+  @IsNumber()
+  @Type(() => Number)
+  variantWidth: number; // in cm
+
+  @ApiProperty({ example: 25.0 })
+  @IsNotEmpty()
+  @IsNumber()
+  @Type(() => Number)
+  variantLength: number; // in cm
+
   @ApiProperty({ example: 46546 })
   @IsNotEmpty()
   @IsNumber()
   @Type(() => Number)
   price: number;
+
+  @ApiProperty({ example: 'VND' })
+  @IsNotEmpty()
+  @Type(() => String)
+  currencyUnit: string;
 
   @ApiProperty({ example: 851 })
   @IsNotEmpty()
@@ -53,6 +82,11 @@ export class CreateProductVariantDto {
   @ApiProperty({ example: '1325', nullable: true })
   @TransformStringToBigint()
   voucherId: bigint | null;
+
+  @ApiProperty({ example: '1' })
+  @IsNotEmpty()
+  @TransformStringToBigint()
+  colorId: bigint;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()

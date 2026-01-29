@@ -97,14 +97,15 @@ export const formatMediaFieldWithLoggingForOrders = (
     );
 
     // convert staff process user media field
-    order.processByStaff.userMedia = formatMediaFieldWithLogging(
-      order.processByStaff.userMedia,
-      buildPublicMediaUrl,
-      'user',
-      order.processByStaff.id,
-      logger,
-    );
-
+    if (order.processByStaff) {
+      order.processByStaff.userMedia = formatMediaFieldWithLogging(
+        order.processByStaff.userMedia,
+        buildPublicMediaUrl,
+        'user',
+        order.processByStaff.id,
+        logger,
+      );
+    }
     // convert product variant media field
     for (let j = 0; j < order.orderItems.length; j++) {
       order.orderItems[j].productVariant.media = formatMediaFieldWithLogging(
@@ -128,24 +129,30 @@ export const formatMediaFieldWithLoggingForOrders = (
       );
 
       // convert processByStaff user media field of request
-      order.requests[k].processByStaff.userMedia = formatMediaFieldWithLogging(
-        order.requests[k].processByStaff.userMedia,
-        buildPublicMediaUrl,
-        'user',
-        order.requests[k].processByStaff.id,
-        logger,
-      );
+      const processByStaff = order.requests[k].processByStaff;
+      if (processByStaff) {
+        processByStaff.userMedia = formatMediaFieldWithLogging(
+          processByStaff.userMedia,
+          buildPublicMediaUrl,
+          'user',
+          processByStaff.id,
+          logger,
+        );
+      }
     }
 
     // convert shipment media field
     for (let l = 0; l < order.shipments.length; l++) {
-      order.shipments[l].processByStaff.userMedia = formatMediaFieldWithLogging(
-        order.shipments[l].processByStaff.userMedia,
-        buildPublicMediaUrl,
-        'shipment',
-        order.shipments[l].id,
-        logger,
-      );
+      const processByStaff = order.shipments[l].processByStaff;
+      if (processByStaff) {
+        processByStaff.userMedia = formatMediaFieldWithLogging(
+          processByStaff.userMedia,
+          buildPublicMediaUrl,
+          'shipment',
+          order.shipments[l].id,
+          logger,
+        );
+      }
     }
   }
   logger.log('Completed media field formatting for orders.');

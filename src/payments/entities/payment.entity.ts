@@ -26,6 +26,9 @@ export class PaymentEntity {
   @ApiProperty({ example: 105.0 })
   amount: number;
 
+  @ApiProperty({ example: 'VND' })
+  currencyUnit: string;
+
   @ApiProperty({ enum: PaymentStatus, example: PaymentStatus.PENDING })
   status: PaymentStatus;
 }

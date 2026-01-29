@@ -31,16 +31,22 @@ export class ShipmentsController {
   @ApiOperation({ summary: 'Create a new shipment' })
   @ApiBody({
     description:
-      'Shipment data with order, staff assignment and delivery information',
+      'Shipment creation data with order, staff assignment and delivery schedule',
     type: CreateShipmentDto,
   })
   @ApiResponse({
     status: 201,
-    description: 'Shipment created successfully',
+    description: 'Shipment created successfully with staff and order details',
     type: ShipmentWithFullInformationEntity,
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid shipment data',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - Order or staff not found',
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -52,11 +58,15 @@ export class ShipmentsController {
   @ApiOperation({ summary: 'Get all shipments' })
   @ApiResponse({
     status: 200,
-    description: 'List of shipments with staff and order information',
+    description:
+      'Retrieved all shipments with staff and order information successfully',
     type: [ShipmentWithFullInformationEntity],
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid pagination parameters',
+  })
+  @ApiResponse({ status: 404, description: 'Not Found - No shipments found' })
   @ApiQuery({
     name: 'page',
     required: false,
@@ -82,11 +92,17 @@ export class ShipmentsController {
   @ApiOperation({ summary: 'Get one shipment' })
   @ApiResponse({
     status: 200,
-    description: 'Shipment with staff and order information',
+    description: 'Retrieved shipment with staff and order details successfully',
     type: ShipmentWithFullInformationEntity,
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid shipment ID',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - Shipment does not exist',
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR', 'USER')
@@ -98,16 +114,22 @@ export class ShipmentsController {
   @ApiOperation({ summary: 'Update one shipment' })
   @ApiBody({
     description:
-      'Shipment update data with optional tracking, status and delivery information',
+      'Shipment update data with optional tracking, status and delivery timestamps',
     type: UpdateShipmentDto,
   })
   @ApiResponse({
     status: 200,
-    description: 'Shipment updated successfully',
+    description: 'Shipment updated successfully with staff and order details',
     type: ShipmentWithFullInformationEntity,
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid update data',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - Shipment does not exist',
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -122,11 +144,17 @@ export class ShipmentsController {
   @ApiOperation({ summary: 'Delete one shipment' })
   @ApiResponse({
     status: 200,
-    description: 'Delete one shipment',
+    description: 'Shipment deleted successfully',
     type: ShipmentEntity,
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid shipment ID',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - Shipment does not exist',
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')

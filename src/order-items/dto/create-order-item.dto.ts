@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateOrderItemDto {
   @ApiProperty({ example: 851 })
@@ -28,6 +34,18 @@ export class CreateOrderItemDto {
   @IsNumber()
   @Type(() => Number)
   totalPrice: number;
+
+  @ApiProperty({ example: 851 })
+  @IsNotEmpty()
+  @IsNumber()
+  @Type(() => Number)
+  discountValue: number;
+
+  @ApiProperty({ example: 'VND' })
+  @IsNotEmpty()
+  @IsString()
+  @Type(() => String)
+  currencyUnit: string;
 
   @ApiProperty({ example: new Date() })
   @IsOptional()

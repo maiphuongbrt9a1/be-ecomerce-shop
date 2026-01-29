@@ -13,6 +13,9 @@ export class ProductEntity {
   @ApiProperty({ example: 99.99 })
   price: number;
 
+  @ApiProperty({ example: 'VND' })
+  currencyUnit: string;
+
   @ApiProperty({ example: 'SKU123456' })
   stockKeepingUnit: string;
 

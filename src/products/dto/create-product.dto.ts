@@ -16,6 +16,11 @@ export class CreateProductDto {
   @Type(() => Number)
   price: number;
 
+  @ApiProperty({ example: 'VND' })
+  @IsNotEmpty()
+  @Type(() => String)
+  currencyUnit: string;
+
   @IsNotEmpty()
   @ApiProperty({ example: 'ADSFDSAF1463218FA' })
   stockKeepingUnit: string;

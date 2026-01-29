@@ -41,7 +41,8 @@ export class ProductVariantsController {
   @ApiOperation({ summary: 'Create a new product variant' })
   @ApiResponse({
     status: 201,
-    description: 'Create a new product variant',
+    description:
+      'Product variant created successfully with uploaded media files',
     type: ProductVariantWithMediaEntity,
   })
   @ApiBearerAuth()
@@ -66,6 +67,19 @@ export class ProductVariantsController {
         variantName: { type: 'string', example: 'name of product variant' },
         variantColor: { type: 'string', example: 'red' },
         variantSize: { type: 'string', example: 'XL' },
+        variantWeight: {
+          type: 'number',
+          example: 1.5,
+          description: 'in grams',
+        },
+        variantHeight: { type: 'number', example: 10, description: 'in cm' },
+        variantLength: { type: 'number', example: 20, description: 'in cm' },
+        variantWidth: { type: 'number', example: 15, description: 'in cm' },
+        colorId: {
+          type: 'number',
+          example: 1,
+          description: 'Color ID from Color model',
+        },
         price: { type: 'number', example: 46546 },
         stock: { type: 'number', example: 851 },
         stockKeepingUnit: { type: 'string', example: 'EWDGDSED715545D' },
@@ -83,6 +97,7 @@ export class ProductVariantsController {
         'price',
         'stock',
         'stockKeepingUnit',
+        'colorId',
         'createdAt',
       ],
     },
@@ -101,7 +116,7 @@ export class ProductVariantsController {
     );
   }
 
-  @ApiOperation({ summary: 'Get all product variant' })
+  @ApiOperation({ summary: 'Get all product variants' })
   @ApiQuery({
     name: 'page',
     required: false,
@@ -118,7 +133,8 @@ export class ProductVariantsController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Get all product variant',
+    description:
+      'Retrieved all product variants with media information successfully',
     type: [ProductVariantWithMediaEntity],
   })
   @Public()
@@ -133,7 +149,8 @@ export class ProductVariantsController {
   @ApiOperation({ summary: 'Get one product variant' })
   @ApiResponse({
     status: 200,
-    description: 'Get one product variant',
+    description:
+      'Retrieved product variant with media information successfully',
     type: ProductVariantWithMediaEntity,
   })
   @Public()
@@ -145,22 +162,36 @@ export class ProductVariantsController {
   @ApiOperation({ summary: 'Update a product variant' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Product variant update data with optional image files',
+    description:
+      'Product variant update data with optional image files and media IDs to delete',
     schema: {
       type: 'object',
       properties: {
         files: {
           type: 'array',
           items: { type: 'string', format: 'binary' },
-          description: 'Product variant image files',
+          description: 'Product variant image files to upload',
         },
         productId: { type: 'number', example: 1315 },
         variantName: { type: 'string', example: 'name of product variant' },
         variantColor: { type: 'string', example: 'red' },
         variantSize: { type: 'string', example: 'XL' },
+        variantWeight: {
+          type: 'number',
+          example: 1.5,
+          description: 'in grams',
+        },
+        variantHeight: { type: 'number', example: 10, description: 'in cm' },
+        variantLength: { type: 'number', example: 20, description: 'in cm' },
+        variantWidth: { type: 'number', example: 15, description: 'in cm' },
         price: { type: 'number', example: 46546 },
         stock: { type: 'number', example: 851 },
         stockKeepingUnit: { type: 'string', example: 'EWDGDSED715545D' },
+        colorId: {
+          type: 'number',
+          example: 1,
+          description: 'Color ID from Color model',
+        },
         voucherId: { type: 'number', example: 1325 },
         mediaIdsToDelete: {
           type: 'array',
@@ -170,7 +201,7 @@ export class ProductVariantsController {
             example: '9007199254740993',
           },
           description:
-            'Array of media ids to delete. Big integers should be sent as strings.',
+            'Array of media IDs to delete. Big integers should be sent as strings.',
         },
         updatedAt: { type: 'string', format: 'date-time' },
       },
@@ -179,7 +210,7 @@ export class ProductVariantsController {
   })
   @ApiResponse({
     status: 200,
-    description: 'Update a product variant',
+    description: 'Product variant updated successfully with new media files',
     type: ProductVariantWithMediaEntity,
   })
   @ApiBearerAuth()
@@ -204,7 +235,8 @@ export class ProductVariantsController {
   @ApiOperation({ summary: 'Delete a product variant' })
   @ApiResponse({
     status: 200,
-    description: 'Delete a product variant',
+    description:
+      'Product variant deleted successfully with all associated media files',
     type: ProductVariantEntity,
   })
   @ApiBearerAuth()
@@ -218,7 +250,8 @@ export class ProductVariantsController {
   @ApiOperation({ summary: 'Get all reviews of product variant' })
   @ApiResponse({
     status: 200,
-    description: 'Get all reviews of product variant',
+    description:
+      'Retrieved all reviews for the product variant with media information successfully',
     type: [ReviewWithMediaEntity],
   })
   @ApiQuery({
@@ -249,10 +282,11 @@ export class ProductVariantsController {
     );
   }
 
-  @ApiOperation({ summary: 'Get all medias of product variant' })
+  @ApiOperation({ summary: 'Get all media of product variant' })
   @ApiResponse({
     status: 200,
-    description: 'Get all medias of product variant',
+    description:
+      'Retrieved all media files for the product variant successfully',
     type: [MediaEntity],
   })
   @ApiQuery({

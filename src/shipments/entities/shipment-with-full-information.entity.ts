@@ -21,19 +21,41 @@ export class ShipmentWithFullInformationEntity {
   @ApiProperty({ example: 1 })
   processByStaffId: bigint;
 
-  @ApiProperty({ example: '2024-01-05T00:00:00.000Z' })
+  @ApiProperty({
+    example: '2024-01-05T00:00:00.000Z',
+    description: 'at shop, estimate time when leave from shop',
+  })
   estimatedDelivery: Date;
 
-  @ApiProperty({ example: '2024-01-05T00:00:00.000Z', nullable: true })
+  @ApiProperty({
+    example: '2024-01-05T00:00:00.000Z',
+    description: 'at shop, actual time when leave from shop',
+    nullable: true,
+  })
   deliveredAt: Date | null;
 
-  @ApiProperty({ example: '2024-01-02T00:00:00.000Z' })
+  @ApiProperty({
+    example: '2024-01-02T00:00:00.000Z',
+    description: 'at customer, estimate time when arrive to customer',
+  })
   estimatedShipDate: Date;
 
-  @ApiProperty({ example: '2024-01-02T00:00:00.000Z', nullable: true })
+  @ApiProperty({
+    example: '2024-01-02T00:00:00.000Z',
+    description: 'at customer, actual time when arrive to customer',
+    nullable: true,
+  })
   shippedAt: Date | null;
 
-  @ApiProperty({ example: 'FedEx' })
+  @ApiProperty({
+    examples: [
+      'Giao hàng nhanh',
+      'Giao hàng tiết kiệm',
+      'GrabExpress',
+      'VNPost',
+      'J&T Express',
+    ],
+  })
   carrier: string;
 
   @ApiProperty({ example: 'TRACK123456' })

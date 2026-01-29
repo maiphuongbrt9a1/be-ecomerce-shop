@@ -37,6 +37,9 @@ export class OrderFullInformationEntity {
   @ApiProperty({ example: 105.0 })
   totalAmount: number;
 
+  @ApiProperty({ example: 'VND' })
+  currencyUnit: string;
+
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   createdAt: Date;
 

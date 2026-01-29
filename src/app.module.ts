@@ -30,6 +30,7 @@ import { RequestsModule } from './requests/requests.module';
 import { ReturnRequestsModule } from './return-requests/return-requests.module';
 import { AwsS3Module } from './aws-s3/aws-s3.module';
 import { ShopOfficesModule } from './shop-offices/shop-offices.module';
+import { ColorModule } from './color/color.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { ShopOfficesModule } from './shop-offices/shop-offices.module';
     ReturnRequestsModule,
     AwsS3Module,
     ShopOfficesModule,
+    ColorModule,
   ],
 
   controllers: [AppController],

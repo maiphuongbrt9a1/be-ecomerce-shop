@@ -18,31 +18,51 @@ export class CreateShipmentDto {
   @IsNotEmpty()
   processByStaffId: bigint;
 
-  @ApiProperty({ example: new Date() })
+  @ApiProperty({
+    example: new Date(),
+    description: 'at shop, estimate time when leave from shop',
+  })
   @IsNotEmpty()
   @IsDate()
   @Type(() => Date)
   estimatedDelivery: Date;
 
-  @ApiProperty({ example: new Date() })
+  @ApiProperty({
+    example: new Date(),
+    description: 'at shop, actual time when leave from shop',
+  })
   @IsOptional()
   @IsDate()
   @Type(() => Date)
   deliveredAt: Date;
 
-  @ApiProperty({ example: new Date() })
+  @ApiProperty({
+    example: new Date(),
+    description: 'at customer, estimate time when arrive to customer',
+  })
   @IsNotEmpty()
   @IsDate()
   @Type(() => Date)
   estimatedShipDate: Date;
 
-  @ApiProperty({ example: new Date() })
+  @ApiProperty({
+    example: new Date(),
+    description: 'at customer, actual time when arrive to customer',
+  })
   @IsOptional()
   @IsDate()
   @Type(() => Date)
   shippedAt: Date;
 
-  @ApiProperty({ example: 'Important and quick' })
+  @ApiProperty({
+    examples: [
+      'Giao hàng nhanh',
+      'Giao hàng tiết kiệm',
+      'GrabExpress',
+      'VNPost',
+      'J&T Express',
+    ],
+  })
   @IsNotEmpty()
   @IsString()
   carrier: string;

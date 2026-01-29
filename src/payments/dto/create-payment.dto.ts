@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaymentStatus } from '@prisma/client';
+import { PaymentMethod, PaymentStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsDate,
@@ -19,10 +19,21 @@ export class CreatePaymentDto {
   @IsString()
   transactionId: string;
 
-  @ApiProperty({ example: 'COD | VNPAY | MOMO' })
+  @ApiProperty({
+    enum: PaymentMethod,
+    enumName: 'PaymentMethod',
+    examples: [
+      'COD',
+      'VNPAY',
+      'MOMO',
+      'ZALOPAY',
+      'CREDIT_CARD',
+      'BANK_TRANSFER',
+    ],
+  })
   @IsNotEmpty()
-  @IsString()
-  paymentMethod: string; // COD, VNPAY, MOMO
+  @IsEnum(PaymentMethod)
+  paymentMethod: PaymentMethod;
 
   @ApiProperty({ example: new Date() })
   @IsNotEmpty()
@@ -35,6 +46,12 @@ export class CreatePaymentDto {
   @IsNumber()
   @Type(() => Number)
   amount: number;
+
+  @ApiProperty({ example: 'VND' })
+  @IsNotEmpty()
+  @IsString()
+  @Type(() => String)
+  currencyUnit: string;
 
   @ApiProperty({ example: 'PENDING' })
   @IsNotEmpty()

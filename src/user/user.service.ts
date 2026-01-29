@@ -1065,13 +1065,15 @@ export class UserService {
         );
 
         // convert staff process user media field
-        order.processByStaff.userMedia = formatMediaFieldWithLogging(
-          order.processByStaff.userMedia,
-          (url: string) => this.awsService.buildPublicMediaUrl(url),
-          'user',
-          order.processByStaff.id,
-          this.logger,
-        );
+        if (order.processByStaff) {
+          order.processByStaff.userMedia = formatMediaFieldWithLogging(
+            order.processByStaff.userMedia,
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+            'user',
+            order.processByStaff.id,
+            this.logger,
+          );
+        }
 
         // convert product variant media field
         for (let j = 0; j < order.orderItems.length; j++) {
@@ -1097,26 +1099,30 @@ export class UserService {
           );
 
           // convert processByStaff user media field of request
-          order.requests[k].processByStaff.userMedia =
-            formatMediaFieldWithLogging(
-              order.requests[k].processByStaff.userMedia,
+          const processByStaff = order.requests[k].processByStaff;
+          if (processByStaff) {
+            processByStaff.userMedia = formatMediaFieldWithLogging(
+              processByStaff.userMedia,
               (url: string) => this.awsService.buildPublicMediaUrl(url),
               'user',
-              order.requests[k].processByStaff.id,
+              processByStaff.id,
               this.logger,
             );
+          }
         }
 
         // convert shipment media field
         for (let l = 0; l < order.shipments.length; l++) {
-          order.shipments[l].processByStaff.userMedia =
-            formatMediaFieldWithLogging(
-              order.shipments[l].processByStaff.userMedia,
+          const processByStaff = order.shipments[l].processByStaff;
+          if (processByStaff) {
+            processByStaff.userMedia = formatMediaFieldWithLogging(
+              processByStaff.userMedia,
               (url: string) => this.awsService.buildPublicMediaUrl(url),
               'shipment',
               order.shipments[l].id,
               this.logger,
             );
+          }
         }
       }
 
@@ -1164,14 +1170,15 @@ export class UserService {
         );
 
         // convert staff process user media field
-        order.processByStaff.userMedia = formatMediaFieldWithLogging(
-          order.processByStaff.userMedia,
-          (url: string) => this.awsService.buildPublicMediaUrl(url),
-          'user',
-          order.processByStaff.id,
-          this.logger,
-        );
-
+        if (order.processByStaff) {
+          order.processByStaff.userMedia = formatMediaFieldWithLogging(
+            order.processByStaff.userMedia,
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+            'user',
+            order.processByStaff.id,
+            this.logger,
+          );
+        }
         // convert product variant media field
         for (let j = 0; j < order.orderItems.length; j++) {
           order.orderItems[j].productVariant.media =
@@ -1196,26 +1203,30 @@ export class UserService {
           );
 
           // convert processByStaff user media field of request
-          order.requests[k].processByStaff.userMedia =
-            formatMediaFieldWithLogging(
-              order.requests[k].processByStaff.userMedia,
+          const processByStaff = order.requests[k].processByStaff;
+          if (processByStaff) {
+            processByStaff.userMedia = formatMediaFieldWithLogging(
+              processByStaff.userMedia,
               (url: string) => this.awsService.buildPublicMediaUrl(url),
               'user',
-              order.requests[k].processByStaff.id,
+              processByStaff.id,
               this.logger,
             );
+          }
         }
 
         // convert shipment media field
         for (let l = 0; l < order.shipments.length; l++) {
-          order.shipments[l].processByStaff.userMedia =
-            formatMediaFieldWithLogging(
-              order.shipments[l].processByStaff.userMedia,
+          const processByStaff = order.shipments[l].processByStaff;
+          if (processByStaff) {
+            processByStaff.userMedia = formatMediaFieldWithLogging(
+              processByStaff.userMedia,
               (url: string) => this.awsService.buildPublicMediaUrl(url),
               'shipment',
               order.shipments[l].id,
               this.logger,
             );
+          }
         }
       }
 
@@ -1297,13 +1308,15 @@ export class UserService {
         );
 
         // convert processByStaff user media field
-        request.processByStaff.userMedia = formatMediaFieldWithLogging(
-          request.processByStaff.userMedia,
-          (url: string) => this.awsService.buildPublicMediaUrl(url),
-          'user',
-          request.processByStaff.id,
-          this.logger,
-        );
+        if (request.processByStaff) {
+          request.processByStaff.userMedia = formatMediaFieldWithLogging(
+            request.processByStaff.userMedia,
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+            'user',
+            request.processByStaff.id,
+            this.logger,
+          );
+        }
       }
 
       this.logger.log('Requests of user retrieved successfully', userId);
@@ -1351,13 +1364,15 @@ export class UserService {
         );
 
         // convert processByStaff user media field
-        request.processByStaff.userMedia = formatMediaFieldWithLogging(
-          request.processByStaff.userMedia,
-          (url: string) => this.awsService.buildPublicMediaUrl(url),
-          'user',
-          request.processByStaff.id,
-          this.logger,
-        );
+        if (request.processByStaff) {
+          request.processByStaff.userMedia = formatMediaFieldWithLogging(
+            request.processByStaff.userMedia,
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+            'user',
+            request.processByStaff.id,
+            this.logger,
+          );
+        }
       }
 
       this.logger.log(

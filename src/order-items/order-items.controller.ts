@@ -31,7 +31,7 @@ export class OrderItemsController {
   @ApiOperation({ summary: 'Create a new order item' })
   @ApiBody({
     description:
-      'Order item data with product variant and quantity information',
+      'Order item creation data with product variant ID, quantity, unit price, and discount information',
     type: CreateOrderItemDto,
   })
   @ApiResponse({
@@ -98,7 +98,8 @@ export class OrderItemsController {
 
   @ApiOperation({ summary: 'Update one order item' })
   @ApiBody({
-    description: 'Order item update data with optional fields',
+    description:
+      'Order item update data with optional quantity, unit price, discount, and pricing information',
     type: UpdateOrderItemDto,
   })
   @ApiResponse({

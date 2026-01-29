@@ -61,6 +61,15 @@ enum PaymentStatus {
     REFUNDED
 }
 
+enum PaymentMethod {
+    COD
+    VNPAY
+    MOMO
+    ZALOPAY
+    CREDIT_CARD
+    BANK_TRANSFER
+}
+
 enum VoucherStatus {
     AVAILABLE
     SAVED
@@ -92,10 +101,10 @@ model User {
     password    String?
     googleId    String?     @unique @db.VarChar(255)
     role        Role        @default(USER)
-    isActive    Boolean     @default(false)
+    isActive    Boolean     @default(false) @db.Boolean
     codeActive  String      @db.Uuid
     codeActiveExpire DateTime
-    points      Int         @default(0)
+    points      Int         @default(0) @db.Integer
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
     
@@ -116,7 +125,7 @@ model User {
     ProductVariantsCreatedByUser ProductVariants[] @relation("ProductVariantCreatedByUser")
     RequestsProcessedByStaff Requests[] @relation("RequestsProcessedByStaff")
     shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    shopOfficeId BigInt?
+    shopOfficeId BigInt?    @db.BigInt
 
     // Customer fields if user is customer
     loyaltyCard String?     @db.VarChar(50)
@@ -155,20 +164,20 @@ model Address {
     updatedAt   DateTime    @updatedAt
     order       Orders[]
     shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    shopOfficeId BigInt? @unique
+    shopOfficeId BigInt? @unique @db.BigInt
 }
 
 model SizeProfiles {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     userId      BigInt      @db.BigInt
-    heightCm      Float?
-    weightKg      Float?
-    chestCm       Float?
-    hipCm       Float?
-    sleeveLengthCm Float?
-    inseamCm      Float?
-    shoulderLengthCm Float?
+    heightCm      Float?    @db.DoublePrecision @default(0) // in cm
+    weightKg      Float?    @db.DoublePrecision @default(0) // in cm
+    chestCm       Float?    @db.DoublePrecision @default(0) // in cm
+    hipCm       Float?    @db.DoublePrecision @default(0) // in cm
+    sleeveLengthCm Float?    @db.DoublePrecision @default(0) // in cm
+    inseamCm      Float?    @db.DoublePrecision @default(0) // in cm
+    shoulderLengthCm Float?    @db.DoublePrecision @default(0) // in cm
     bodyType    String?     @db.VarChar(100)
     description String?     @db.Text
     createdAt   DateTime    @default(now())
@@ -179,9 +188,10 @@ model Products {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     name        String      @db.VarChar(255)
     description String?     @db.Text
-    price       Float
+    price       Float       @db.DoublePrecision
+    currencyUnit String      @db.VarChar(10) @default("VND")
     stockKeepingUnit         String      @unique @db.VarChar(100)
-    stock       Int         @default(0)
+    stock       Int          @db.Integer
     category    Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull, onUpdate: Cascade)
     categoryId    BigInt?      @db.BigInt
     createByUser        User        @relation(fields: [createByUserId], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -191,9 +201,9 @@ model Products {
     productVariants    ProductVariants[]
     reviews     Reviews[]
     voucher Vouchers? @relation(fields: [voucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    voucherId BigInt?
+    voucherId BigInt? @db.BigInt
     shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    shopOfficeId BigInt?
+    shopOfficeId BigInt? @db.BigInt
 
 }
 
@@ -211,10 +221,10 @@ model Category {
     createByUserId      BigInt      @db.BigInt
     
     voucher Vouchers? @relation(fields: [voucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    voucherId BigInt?
+    voucherId BigInt? @db.BigInt
     
     shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    shopOfficeId BigInt?
+    shopOfficeId BigInt? @db.BigInt
 
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
@@ -231,8 +241,13 @@ model ProductVariants {
     variantName String      @db.VarChar(100)
     variantColor String     @db.VarChar(100)
     variantSize String     @db.VarChar(100)
-    price Float   @default(0)
-    stock       Int         @default(0)
+    variantWeight Float   @db.DoublePrecision @default(250) // in grams
+    variantHeight Float   @db.DoublePrecision @default(5) // in cm 
+    variantWidth  Float   @db.DoublePrecision @default(20) // in cm
+    variantLength Float   @db.DoublePrecision @default(25) // in cm
+    price Float      @db.DoublePrecision
+    currencyUnit String      @db.VarChar(10) @default("VND")
+    stock       Int          @db.Integer
     stockKeepingUnit         String      @unique @db.VarChar(100)
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
@@ -241,7 +256,18 @@ model ProductVariants {
     cartItems   CartItems[]
     
     voucher Vouchers? @relation(fields: [voucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    voucherId BigInt? 
+    voucherId BigInt? @db.BigInt
+    productVariantColor Color @relation(fields: [colorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    colorId BigInt @db.BigInt
+}
+
+model Color {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    name        String      @unique @db.VarChar(100)
+    hexCode     String      @db.VarChar(7)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    productVariants ProductVariants[]
 }
 
 model Reviews {
@@ -252,7 +278,7 @@ model Reviews {
     userId  BigInt      @db.BigInt
     productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productVariantId BigInt  @db.BigInt
-    rating      Int
+    rating      Int     @db.Integer
     comment     String?     @db.Text
     media       Media[]
     createdAt   DateTime    @default(now())
@@ -271,10 +297,10 @@ model Media {
     productVariantId BigInt?  @db.BigInt
     request        Requests?        @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     requestId      BigInt?      @db.BigInt
-    isShopLogo Boolean    @default(false)
-    isShopBanner Boolean   @default(false)
-    isCategoryFile Boolean @default(false)
-    isAvatarFile Boolean  @default(false)
+    isShopLogo Boolean    @default(false) @db.Boolean
+    isShopBanner Boolean   @default(false) @db.Boolean
+    isCategoryFile Boolean @default(false) @db.Boolean
+    isAvatarFile Boolean  @default(false) @db.Boolean
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 }
@@ -285,15 +311,16 @@ model Orders {
     shippingAddress Address @relation(fields: [shippingAddressId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     shippingAddressId BigInt  @db.BigInt
     userId  BigInt      @db.BigInt
-    processByStaff        User        @relation("OrderProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-    processByStaffId      BigInt      @db.BigInt 
+    processByStaff        User?        @relation("OrderProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    processByStaffId      BigInt?      @db.BigInt 
     
     orderDate   DateTime    @default(now())
     status      OrderStatus      @default(PENDING)
-    subTotal    Float
-    shippingFee Float
-    discount    Float       @default(0)
-    totalAmount Float
+    subTotal    Float   @db.DoublePrecision  // total before shipping and discount
+    shippingFee Float   @db.DoublePrecision  // shipping fee
+    discount    Float       @db.DoublePrecision  // total discount amount
+    totalAmount Float   @db.DoublePrecision  // total after shipping and discount
+    currencyUnit String      @db.VarChar(10) @default("VND")
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
     orderItems  OrderItems[]
@@ -309,9 +336,11 @@ model OrderItems {
     orderId     BigInt      @db.BigInt
     productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     productVariantId BigInt  @db.BigInt 
-    quantity    Int
-    unitPrice   Float
-    totalPrice  Float
+    quantity    Int     @db.Integer
+    unitPrice   Float   @db.DoublePrecision 
+    totalPrice  Float  @db.DoublePrecision // totalPrice = unitPrice * quantity
+    discountValue Float   @db.DoublePrecision @default(0)// discount amount applied to this item
+    currencyUnit String      @db.VarChar(10) @default("VND")
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 }
@@ -320,13 +349,13 @@ model Shipments {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     orderId     BigInt      @db.BigInt
-    processByStaff        User        @relation("OrderShippedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-    processByStaffId      BigInt      @db.BigInt
+    processByStaff        User?        @relation("OrderShippedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    processByStaffId      BigInt?      @db.BigInt
     
-    estimatedDelivery DateTime
-    deliveredAt DateTime?
-    estimatedShipDate DateTime
-    shippedAt   DateTime?
+    estimatedDelivery DateTime // at shop, estimate time when leave from shop
+    deliveredAt DateTime?  // at shop, actual time when leave from shop
+    estimatedShipDate DateTime // at customer, estimate time when arrive to customer
+    shippedAt   DateTime?  // at customer, actual time when arrive to customer
     carrier     String      @db.VarChar(100)
     trackingNumber String   @db.VarChar(100)
     status      ShipmentStatus      @default(WAITING_FOR_PICKUP)
@@ -339,9 +368,10 @@ model Payments {
     order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     orderId     BigInt      @db.BigInt
     transactionId String    @unique @db.VarChar(100)
-    paymentMethod String    @db.VarChar(100)
+    paymentMethod PaymentMethod    @default(COD)
     paymentDate DateTime    @default(now())
-    amount      Float
+    amount      Float   @db.DoublePrecision 
+    currencyUnit String      @db.VarChar(10) @default("VND")
     status      PaymentStatus      @default(PENDING)
 }
 
@@ -360,7 +390,7 @@ model CartItems {
     cartId      BigInt      @db.BigInt
     productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productVariantId BigInt  @db.BigInt
-    quantity    Int
+    quantity    Int     @db.Integer
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 }
@@ -370,12 +400,12 @@ model Vouchers {
     code        String      @unique @db.VarChar(50)
     description String?     @db.Text
     discountType DiscountType     @default(FIXED_AMOUNT)
-    discountValue Float
+    discountValue Float   @db.DoublePrecision @default(0)
     validFrom   DateTime
     validTo     DateTime
-    usageLimit  Int?
-    timesUsed   Int         @default(0)
-    isActive    Boolean     @default(true)
+    usageLimit  Int?     @db.Integer
+    timesUsed   Int         @default(0) @db.Integer
+    isActive    Boolean     @default(true) @db.Boolean
     createdAt   DateTime    @default(now())
     user        User        @relation(fields: [createdBy], references: [id], onDelete: Restrict, onUpdate: Cascade)
     createdBy   BigInt     @db.BigInt
@@ -401,8 +431,8 @@ model Requests {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     user        User        @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     userId      BigInt      @db.BigInt
-    processByStaff        User        @relation("RequestsProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-    processByStaffId      BigInt      @db.BigInt
+    processByStaff        User?        @relation("RequestsProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    processByStaffId      BigInt?      @db.BigInt
     order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     orderId     BigInt      @db.BigInt
     subject     String      @db.VarChar(255)
@@ -418,6 +448,8 @@ model ReturnRequests {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     request     Requests    @relation(fields: [requestId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     requestId   BigInt      @db.BigInt @unique
+    bankName    String      @db.VarChar(100)
+    bankAccountNumber String @db.VarChar(50) 
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 }
