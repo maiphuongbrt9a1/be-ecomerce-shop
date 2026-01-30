@@ -24,6 +24,32 @@ export class ProductVariantsService {
     private readonly awsService: AwsS3Service,
   ) {}
 
+  /**
+   * Creates a new product variant with media file uploads to S3.
+   *
+   * This method performs the following operations:
+   * 1. Creates a new product variant in the database
+   * 2. Uploads associated media files to S3 storage
+   * 3. Retrieves the created variant with all media information
+   * 4. Formats all media URLs to public HTTPS URLs
+   * 5. Logs the creation operation
+   *
+   * @param {Express.Multer.File[]} files - Array of media files to upload
+   * @param {CreateProductVariantDto} createProductVariantDto - The data transfer object containing variant information:
+   *   - productId, size, color, sku, price, stock details
+   * @param {string} adminId - The ID of the admin creating the variant
+   *
+   * @returns {Promise<ProductVariants>} The created variant with all details including:
+   *   - Variant information (id, sku, size, color, price, stock)
+   *   - Media files with formatted public HTTPS URLs
+   *
+   * @throws {NotFoundException} If variant creation, media upload, or retrieval fails
+   *
+   * @remarks
+   * - Media files are uploaded to S3 before database confirmation
+   * - Media URLs are converted to public HTTPS URLs
+   * - Validates successful creation before returning data
+   */
   async create(
     files: Express.Multer.File[],
     createProductVariantDto: CreateProductVariantDto,
@@ -82,6 +108,30 @@ export class ProductVariantsService {
     }
   }
 
+  /**
+   * Retrieves a paginated list of all product variants with media.
+   *
+   * This method performs the following operations:
+   * 1. Fetches product variants from the database with pagination
+   * 2. Includes all media files for each variant
+   * 3. Formats all media URLs to public HTTPS URLs
+   * 4. Logs retrieval operation and media changes
+   *
+   * @param {number} page - The page number for pagination (1-indexed)
+   * @param {number} perPage - The number of variants to retrieve per page
+   *
+   * @returns {Promise<ProductVariantsWithMediaInformation[] | []>} Array of variants with details including:
+   *   - Variant information (id, sku, size, color, price, stock)
+   *   - Media files with formatted public HTTPS URLs
+   *   Returns empty array if no variants found
+   *
+   * @throws {NotFoundException} If data fetching fails
+   *
+   * @remarks
+   * - Results are ordered by variant ID in ascending order
+   * - Media URLs are converted to public HTTPS URLs
+   * - Logs media field changes during formatting
+   */
   async findAll(
     page: number,
     perPage: number,
@@ -124,6 +174,28 @@ export class ProductVariantsService {
     }
   }
 
+  /**
+   * Retrieves a single product variant by ID with all media.
+   *
+   * This method performs the following operations:
+   * 1. Queries the database for the variant by ID
+   * 2. Includes all associated media files
+   * 3. Formats all media URLs to public HTTPS URLs
+   * 4. Logs retrieval and media changes
+   *
+   * @param {number} id - The unique identifier of the variant to retrieve
+   *
+   * @returns {Promise<ProductVariantsWithMediaInformation | null>} The variant with all details including:
+   *   - Variant information (id, sku, size, color, price, stock)
+   *   - Media files with formatted public HTTPS URLs
+   *   Returns null if variant not found
+   *
+   * @throws {NotFoundException} If variant is not found
+   *
+   * @remarks
+   * - Media URLs are converted to public HTTPS URLs
+   * - Logs media field changes during formatting
+   */
   async findOne(
     id: number,
   ): Promise<ProductVariantsWithMediaInformation | null> {
@@ -162,6 +234,37 @@ export class ProductVariantsService {
     }
   }
 
+  /**
+   * Updates an existing product variant with new data and media file management.
+   *
+   * This method performs the following operations:
+   * 1. Retrieves the current variant with all media information
+   * 2. Updates variant data in the database
+   * 3. Uploads new media files to S3 if provided
+   * 4. Deletes selected media files from S3 and database based on mediaIdsToDelete
+   * 5. Retrieves the updated variant with all media
+   * 6. Formats all media URLs to public HTTPS URLs
+   * 7. Logs the update operation
+   *
+   * @param {Express.Multer.File[]} files - Array of new media files to upload
+   * @param {number} id - The unique identifier of the variant to update
+   * @param {UpdateProductVariantDto} updateProductVariantDto - The data transfer object containing updates:
+   *   - May include size, color, price, stock, or mediaIdsToDelete for removing specific media
+   * @param {string} adminId - The ID of the admin performing the update
+   *
+   * @returns {Promise<ProductVariantsWithMediaInformation>} The updated variant with all details including:
+   *   - Updated variant information
+   *   - Updated media files with formatted public HTTPS URLs
+   *
+   * @throws {NotFoundException} If variant update or retrieval fails
+   * @throws {BadRequestException} If media upload fails
+   *
+   * @remarks
+   * - Handles both adding new media and removing existing media in one operation
+   * - Media files are uploaded to S3 and deleted from S3 as specified
+   * - Validates successful update before returning data
+   * - Media URLs are converted to public HTTPS URLs
+   */
   async update(
     files: Express.Multer.File[],
     id: number,
@@ -262,6 +365,27 @@ export class ProductVariantsService {
     }
   }
 
+  /**
+   * Deletes a product variant and all its associated media files.
+   *
+   * This method performs the following operations:
+   * 1. Retrieves all media files associated with the variant
+   * 2. Deletes the variant from the database
+   * 3. Deletes all associated media files from S3 storage
+   * 4. Logs the deletion operation
+   *
+   * @param {number} id - The unique identifier of the variant to delete
+   *
+   * @returns {Promise<ProductVariants>} The deleted variant record
+   *
+   * @throws {BadRequestException} If variant deletion or media deletion fails
+   *
+   * @remarks
+   * - This operation is cascading and will delete all related media
+   * - Media files are removed from S3 storage along with database records
+   * - Verify before deletion as this action cannot be easily reversed
+   * - Use with caution in production environments
+   */
   async remove(id: number): Promise<ProductVariants> {
     try {
       // delete media files from s3 first
@@ -292,6 +416,31 @@ export class ProductVariantsService {
     }
   }
 
+  /**
+   * Retrieves paginated reviews for a specific product variant with media.
+   *
+   * This method performs the following operations:
+   * 1. Fetches paginated reviews for the variant from the database
+   * 2. Includes all media files associated with each review
+   * 3. Formats all media URLs to public HTTPS URLs
+   * 4. Logs retrieval operation
+   *
+   * @param {number} id - The unique identifier of the product variant
+   * @param {number} page - The page number for pagination (1-indexed)
+   * @param {number} perPage - The number of reviews to retrieve per page
+   *
+   * @returns {Promise<ReviewsWithMedia[] | []>} Array of reviews with details including:
+   *   - Review information (id, rating, comment, author, date)
+   *   - Media files with formatted public HTTPS URLs
+   *   Returns empty array if no reviews found
+   *
+   * @throws {BadRequestException} If pagination or data fetching fails
+   *
+   * @remarks
+   * - Results are ordered by review ID in ascending order
+   * - Media URLs are converted to public HTTPS URLs
+   * - Useful for variant detail pages showing customer reviews
+   */
   async getReviewsOfProductVariant(
     id: number,
     page: number,
@@ -336,6 +485,30 @@ export class ProductVariantsService {
     }
   }
 
+  /**
+   * Retrieves paginated media files for a specific product variant.
+   *
+   * This method performs the following operations:
+   * 1. Fetches paginated media files for the variant from the database
+   * 2. Formats all media URLs to public HTTPS URLs
+   * 3. Logs retrieval and media URL changes
+   *
+   * @param {number} id - The unique identifier of the product variant
+   * @param {number} page - The page number for pagination (1-indexed)
+   * @param {number} perPage - The number of media files to retrieve per page
+   *
+   * @returns {Promise<Media[] | []>} Array of media records with details including:
+   *   - Media information (id, url, type, size)
+   *   - Formatted public HTTPS URLs
+   *   Returns empty array if no media found
+   *
+   * @throws {BadRequestException} If pagination or data fetching fails
+   *
+   * @remarks
+   * - Results are ordered by media ID in ascending order
+   * - Media URLs are converted to public HTTPS URLs
+   * - Useful for media gallery displays and management
+   */
   async getAllMediaOfProductVariant(
     id: number,
     page: number,

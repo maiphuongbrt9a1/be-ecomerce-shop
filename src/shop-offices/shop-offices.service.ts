@@ -23,6 +23,31 @@ export class ShopOfficesService {
   private readonly logger = new Logger(ShopOfficesService.name);
   constructor(private readonly prismaService: PrismaService) {}
 
+  /**
+   * Creates a new shop office location.
+   *
+   * This method performs the following operations:
+   * 1. Creates shop office record in database
+   * 2. Logs successful creation
+   * 3. Returns created shop office
+   *
+   * @param {CreateShopOfficeDto} createShopOfficeDto - The shop office data containing:
+   *   - name, location, address
+   *   - Contact information (phone, email)
+   *   - Operating hours, capacity
+   *
+   * @returns {Promise<ShopOffice>} The created shop office with details:
+   *   - Shop office ID, name, location
+   *   - Address and contact details
+   *   - Created/updated timestamps
+   *
+   * @throws {BadRequestException} If shop office creation fails
+   *
+   * @remarks
+   * - Used for multi-location e-commerce businesses
+   * - Shop offices manage inventory and staff
+   * - Each office can have its own product catalog
+   */
   async create(createShopOfficeDto: CreateShopOfficeDto): Promise<ShopOffice> {
     try {
       const result = await this.prismaService.shopOffice.create({
@@ -37,6 +62,33 @@ export class ShopOfficesService {
     }
   }
 
+  /**
+   * Retrieves paginated list of all shop offices.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries all shop offices from database
+   * 3. Sorts results by shop office ID ascending
+   * 4. Returns paginated shop office data
+   * 5. Logs successful retrieval
+   *
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of shop offices per page
+   *
+   * @returns {Promise<ShopOffice[] | []>} Array of shop offices or empty array:
+   *   - Shop office ID, name, location
+   *   - Address and contact information
+   *   - Operating hours, capacity
+   *   - Created/updated timestamps
+   *
+   * @throws {BadRequestException} If shop office retrieval fails
+   *
+   * @remarks
+   * - Results are paginated based on perPage parameter
+   * - Results are sorted by shop office ID in ascending order
+   * - Returns empty array if no shop offices exist
+   * - Used for admin shop office management
+   */
   async findAll(page: number, perPage: number): Promise<ShopOffice[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
@@ -54,6 +106,31 @@ export class ShopOfficesService {
     }
   }
 
+  /**
+   * Retrieves a single shop office by ID.
+   *
+   * This method performs the following operations:
+   * 1. Queries shop office by ID
+   * 2. Validates shop office exists
+   * 3. Logs successful retrieval
+   * 4. Returns shop office details
+   *
+   * @param {number} id - The shop office ID to retrieve
+   *
+   * @returns {Promise<ShopOffice | null>} The shop office with details:
+   *   - Shop office ID, name, location
+   *   - Address and contact information
+   *   - Operating hours, capacity
+   *   - Created/updated timestamps
+   *
+   * @throws {NotFoundException} If shop office not found
+   * @throws {BadRequestException} If shop office retrieval fails
+   *
+   * @remarks
+   * - Returns null if shop office doesn't exist
+   * - Used for viewing specific shop office details
+   * - Includes all shop office information
+   */
   async findOne(id: number): Promise<ShopOffice | null> {
     try {
       const result = await this.prismaService.shopOffice.findFirst({
@@ -72,6 +149,30 @@ export class ShopOfficesService {
     }
   }
 
+  /**
+   * Updates an existing shop office.
+   *
+   * This method performs the following operations:
+   * 1. Updates shop office in database
+   * 2. Logs successful update
+   * 3. Returns updated shop office
+   *
+   * @param {number} id - The shop office ID to update
+   * @param {UpdateShopOfficeDto} updateShopOfficeDto - The update data containing:
+   *   - name, location, address (optional)
+   *   - Contact information updates (optional)
+   *   - Operating hours, capacity updates (optional)
+   *
+   * @returns {Promise<ShopOffice>} The updated shop office with all details
+   *
+   * @throws {BadRequestException} If shop office update fails
+   * @throws {NotFoundException} If shop office not found
+   *
+   * @remarks
+   * - Only provided fields are updated
+   * - Updates timestamp automatically
+   * - Used for shop office information maintenance
+   */
   async update(
     id: number,
     updateShopOfficeDto: UpdateShopOfficeDto,
@@ -89,6 +190,27 @@ export class ShopOfficesService {
     }
   }
 
+  /**
+   * Deletes a shop office by ID.
+   *
+   * This method performs the following operations:
+   * 1. Logs deletion operation
+   * 2. Deletes shop office from database
+   * 3. Returns deleted shop office
+   *
+   * @param {number} id - The shop office ID to delete
+   *
+   * @returns {Promise<ShopOffice>} The deleted shop office with all details
+   *
+   * @throws {BadRequestException} If shop office deletion fails
+   * @throws {NotFoundException} If shop office not found
+   *
+   * @remarks
+   * - This operation is irreversible
+   * - May affect related products, staff, and inventory
+   * - Database cascades handle related record cleanup
+   * - Used when closing shop locations
+   */
   async remove(id: number): Promise<ShopOffice> {
     try {
       this.logger.log('Shop office deleted successfully', id);
@@ -101,6 +223,31 @@ export class ShopOfficesService {
     }
   }
 
+  /**
+   * Retrieves all managers (admins and operators) of a specific shop office.
+   *
+   * This method performs the following operations:
+   * 1. Queries users assigned to shop office with ADMIN or OPERATOR roles
+   * 2. Validates results exist
+   * 3. Logs successful retrieval
+   * 4. Returns list of manager users
+   *
+   * @param {number} id - The shop office ID to retrieve managers for
+   *
+   * @returns {Promise<User[] | []>} Array of manager users or empty array:
+   *   - User ID, name, email, phone
+   *   - Role (ADMIN or OPERATOR)
+   *   - Staff code, contact information
+   *   - Created/updated timestamps
+   *
+   * @throws {NotFoundException} If no managers found
+   * @throws {BadRequestException} If manager retrieval fails
+   *
+   * @remarks
+   * - Returns only users with ADMIN or OPERATOR roles
+   * - Used for shop office staff management
+   * - Excludes regular staff and customers
+   */
   async findAllManagersOfShopOffice(id: number): Promise<User[] | []> {
     try {
       const result = await this.prismaService.user.findMany({
@@ -118,6 +265,31 @@ export class ShopOfficesService {
     }
   }
 
+  /**
+   * Retrieves the address of a specific shop office.
+   *
+   * This method performs the following operations:
+   * 1. Queries address associated with shop office
+   * 2. Validates address exists
+   * 3. Logs successful retrieval
+   * 4. Returns address details
+   *
+   * @param {number} id - The shop office ID to retrieve address for
+   *
+   * @returns {Promise<Address | null>} The shop office address with details:
+   *   - Address ID, shop office ID
+   *   - Street, ward, district, city, state
+   *   - Postal code, country
+   *   - Created/updated timestamps
+   *
+   * @throws {NotFoundException} If shop office address not found
+   * @throws {BadRequestException} If address retrieval fails
+   *
+   * @remarks
+   * - Returns null if address doesn't exist
+   * - Each shop office has one primary address
+   * - Used for shipping, billing, and contact purposes
+   */
   async findAddressOfShopOffice(id: number): Promise<Address | null> {
     try {
       const result = await this.prismaService.address.findFirst({
@@ -136,6 +308,36 @@ export class ShopOfficesService {
     }
   }
 
+  /**
+   * Retrieves paginated products for a specific shop office.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries products assigned to shop office
+   * 3. Sorts results by product ID ascending
+   * 4. Validates results exist
+   * 5. Logs successful retrieval
+   * 6. Returns paginated product data
+   *
+   * @param {number} id - The shop office ID to retrieve products for
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of products per page
+   *
+   * @returns {Promise<Products[] | []>} Array of products or empty array:
+   *   - Product ID, name, description
+   *   - Price, stock, category
+   *   - Shop office assignment
+   *   - Created/updated timestamps
+   *
+   * @throws {NotFoundException} If shop office products not found
+   * @throws {BadRequestException} If product retrieval fails
+   *
+   * @remarks
+   * - Results are paginated based on perPage parameter
+   * - Results are sorted by product ID in ascending order
+   * - Returns empty array if shop office has no products
+   * - Used for shop office inventory management
+   */
   async findAllProductsOfShopOffice(
     id: number,
     page: number,
@@ -161,6 +363,31 @@ export class ShopOfficesService {
     }
   }
 
+  /**
+   * Retrieves all categories for a specific shop office.
+   *
+   * This method performs the following operations:
+   * 1. Queries categories assigned to shop office
+   * 2. Validates results exist
+   * 3. Logs successful retrieval
+   * 4. Returns list of categories
+   *
+   * @param {number} id - The shop office ID to retrieve categories for
+   *
+   * @returns {Promise<Category[] | []>} Array of categories or empty array:
+   *   - Category ID, name, description
+   *   - Shop office assignment
+   *   - Parent category reference
+   *   - Created/updated timestamps
+   *
+   * @throws {NotFoundException} If shop office categories not found
+   * @throws {BadRequestException} If category retrieval fails
+   *
+   * @remarks
+   * - Returns empty array if shop office has no categories
+   * - Each shop office can manage its own category structure
+   * - Used for shop office product organization
+   */
   async findAllCategoryOfShopOffice(id: number): Promise<Category[] | []> {
     try {
       const result = await this.prismaService.category.findMany({
@@ -181,6 +408,36 @@ export class ShopOfficesService {
     }
   }
 
+  /**
+   * Retrieves paginated products of a specific category within a shop office.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries products matching both shop office and category
+   * 3. Sorts results by shop office ID ascending
+   * 4. Validates results exist
+   * 5. Logs successful retrieval
+   * 6. Returns paginated product data
+   *
+   * @param {number} shopId - The shop office ID
+   * @param {number} categoryId - The category ID to filter products
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of products per page
+   *
+   * @returns {Promise<ProductsOfCategoryOfShopOffice[] | []>} Array of products:
+   *   - Products belonging to specified category
+   *   - Within specified shop office
+   *   - Paginated results
+   *
+   * @throws {NotFoundException} If no products found for category in shop office
+   * @throws {BadRequestException} If product retrieval fails
+   *
+   * @remarks
+   * - Results are paginated based on perPage parameter
+   * - Filters by both shop office and category
+   * - Returns empty array if no matching products
+   * - Used for category-specific inventory views per shop
+   */
   async findAllProductsOfCategoryOfShopOffice(
     shopId: number,
     categoryId: number,

@@ -41,6 +41,42 @@ export class OrdersService {
     private readonly shipmentsService: ShipmentsService,
   ) {}
 
+  /**
+   * Creates a new order with associated shipping address, order items, payment, and shipment (if COD).
+   *
+   * This method performs the following operations within a database transaction:
+   * 1. Creates a new shipping address for the order
+   * 2. Validates that all product variants have sufficient stock
+   * 3. Decrements stock for both product variants and products
+   * 4. Calculates order totals (subtotal, discount, total amount)
+   * 5. Creates the order record
+   * 6. Creates order items linked to the order
+   * 7. Creates a payment record with PENDING status
+   * 8. Creates a shipment record if payment method is COD
+   *
+   * @param {CreateOrderDto} createOrderDto - The data transfer object containing order details including:
+   *   - userId: The ID of the user creating the order
+   *   - orderItems: Array of items to be ordered with productVariantId, quantity, unitPrice, totalPrice, and optional discountValue
+   *   - Shipping address details: street, ward, district, province, zipCode, country
+   *   - paymentMethod: The payment method (e.g., 'COD')
+   *   - carrier: The shipping carrier
+   *
+   * @returns {Promise<OrdersWithFullInformation>} The created order with all related information including:
+   *   - Order details (id, status, dates, amounts)
+   *   - Shipping address
+   *   - Order items
+   *   - Payment information
+   *   - Shipment details
+   *
+   * @throws {NotFoundException} If a product variant is not found or order not found after creation
+   * @throws {BadRequestException} If a product variant has insufficient stock or order creation fails
+   *
+   * @remarks
+   * - Uses database transaction to ensure data consistency
+   * - Shipping fee is currently hardcoded to 0
+   * - Shipment is only created for COD payments; other payment methods create shipment after successful payment
+   * - All monetary amounts are calculated from order item data
+   */
   async create(
     createOrderDto: CreateOrderDto,
   ): Promise<OrdersWithFullInformation> {
@@ -68,6 +104,46 @@ export class OrdersService {
         let subTotal = 0;
         let discount = 0;
         let totalAmount = 0;
+
+        // check order items is stock or out of stock
+        // if order items are out of stock, throw error
+        for (const item of createOrderDto.orderItems) {
+          const productVariant = await tx.productVariants.findUnique({
+            where: { id: BigInt(item.productVariantId) },
+          });
+
+          if (!productVariant) {
+            throw new NotFoundException(
+              `Product variant with ID ${item.productVariantId} not found!`,
+            );
+          }
+
+          if (productVariant.stock < item.quantity) {
+            throw new BadRequestException(
+              `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
+            );
+          }
+
+          // reduce stock quantity for product variant
+          await tx.productVariants.update({
+            where: { id: BigInt(item.productVariantId) },
+            data: {
+              stock: productVariant.stock - item.quantity,
+            },
+          });
+
+          // reduce stock quantity for product
+          await tx.products.update({
+            where: { id: productVariant.productId },
+            data: {
+              stock: {
+                decrement: item.quantity,
+              },
+            },
+          });
+        }
+
+        // calculate sub total, discount and total amount
 
         for (const item of createOrderDto.orderItems) {
           subTotal += item.totalPrice;
@@ -156,6 +232,34 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Retrieves a paginated list of all orders with full information.
+   *
+   * This method performs the following operations:
+   * 1. Fetches orders from the database with pagination
+   * 2. Includes all related information (address, items, payments, shipments)
+   * 3. Formats media URLs for all related entities
+   * 4. Logs the fetch operation
+   *
+   * @param {number} page - The page number for pagination (1-indexed)
+   * @param {number} perPage - The number of orders to retrieve per page
+   *
+   * @returns {Promise<OrdersWithFullInformation[] | []>} Array of orders with full information including:
+   *   - Order details (id, status, dates, amounts)
+   *   - Shipping address
+   *   - Order items
+   *   - Payment information
+   *   - Shipment details
+   *   - Formatted media URLs
+   *   Returns empty array if no orders found
+   *
+   * @throws {BadRequestException} If pagination or data fetching fails
+   *
+   * @remarks
+   * - Results are ordered by order ID in ascending order
+   * - Media URLs are converted to public HTTPS URLs
+   * - Empty array is returned instead of null when no results found
+   */
   async findAll(
     page: number,
     perPage: number,
@@ -190,6 +294,33 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Retrieves a single order by ID with all associated information.
+   *
+   * This method performs the following operations:
+   * 1. Queries the database for the order by ID
+   * 2. Includes all related information (address, items, payments, shipments)
+   * 3. Formats media URLs for all related entities
+   * 4. Logs the fetch operation
+   *
+   * @param {number} id - The unique identifier of the order to retrieve
+   *
+   * @returns {Promise<OrdersWithFullInformation | null>} The order with full information including:
+   *   - Order details (id, status, dates, amounts)
+   *   - Shipping address
+   *   - Order items
+   *   - Payment information
+   *   - Shipment details
+   *   - Formatted media URLs
+   *   Returns null if order not found
+   *
+   * @throws {NotFoundException} If order is not found
+   * @throws {BadRequestException} If data fetching or formatting fails
+   *
+   * @remarks
+   * - Media URLs are converted to public HTTPS URLs
+   * - Throws error if formatting fails after successful fetch
+   */
   async findOne(id: number): Promise<OrdersWithFullInformation | null> {
     try {
       const result = await this.prismaService.orders.findFirst({
@@ -219,6 +350,27 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Updates an existing order with new information.
+   *
+   * This method performs the following operations:
+   * 1. Validates the order ID exists
+   * 2. Updates order fields based on the provided DTO
+   * 3. Logs the update operation
+   *
+   * @param {number} id - The unique identifier of the order to update
+   * @param {UpdateOrderDto} updateOrderDto - The data transfer object containing fields to update:
+   *   - May include status, amounts, addresses, or other order properties
+   *
+   * @returns {Promise<Orders>} The updated order record with new values
+   *
+   * @throws {BadRequestException} If order update fails or validation fails
+   *
+   * @remarks
+   * - Uses shallow merge spread operator to update fields
+   * - Does not update related entities (items, payments, shipments)
+   * - Only updates direct order properties
+   */
   async update(id: number, updateOrderDto: UpdateOrderDto): Promise<Orders> {
     try {
       const result = await this.prismaService.orders.update({
@@ -234,6 +386,25 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Deletes an order and all its associated data from the database.
+   *
+   * This method performs the following operations:
+   * 1. Validates the order ID exists
+   * 2. Deletes the order and cascading related records
+   * 3. Logs the deletion operation
+   *
+   * @param {number} id - The unique identifier of the order to delete
+   *
+   * @returns {Promise<Orders>} The deleted order record
+   *
+   * @throws {BadRequestException} If order deletion fails or order not found
+   *
+   * @remarks
+   * - This operation is cascading and will delete related records
+   * - Verify before deletion as this action cannot be easily reversed
+   * - Use with caution in production environments
+   */
   async remove(id: number): Promise<Orders> {
     try {
       this.logger.log(`Deleting order with ID: ${id}`);
@@ -246,6 +417,34 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Retrieves detailed information for a specific order.
+   *
+   * This method performs the following operations:
+   * 1. Queries the database for the order by ID with full relations
+   * 2. Validates order exists in the database
+   * 3. Formats all media URLs for related entities
+   * 4. Logs the fetch operation
+   *
+   * @param {number} id - The unique identifier of the order
+   *
+   * @returns {Promise<OrdersWithFullInformation | null>} Complete order details including:
+   *   - Order information (id, status, dates, amounts, totals)
+   *   - Shipping address with full location details
+   *   - Order items with product variant information
+   *   - Payment records with status
+   *   - Shipment details with tracking information
+   *   - All media formatted with public HTTPS URLs
+   *   Returns null if order or formatting fails
+   *
+   * @throws {NotFoundException} If order is not found in database
+   * @throws {BadRequestException} If data retrieval or formatting fails
+   *
+   * @remarks
+   * - Includes all related entities for comprehensive order view
+   * - Media URLs are converted to public HTTPS URLs
+   * - Similar to findOne but with explicit detailed naming
+   */
   async getOrderDetailInformation(
     id: number,
   ): Promise<OrdersWithFullInformation | null> {
@@ -280,6 +479,34 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Retrieves a paginated list of all orders with complete detail information.
+   *
+   * This method performs the following operations:
+   * 1. Fetches paginated orders with all related information
+   * 2. Includes full details for each order (address, items, payments, shipments)
+   * 3. Formats media URLs for all related entities
+   * 4. Logs the pagination parameters
+   *
+   * @param {number} page - The page number for pagination (1-indexed)
+   * @param {number} perPage - The number of orders to retrieve per page
+   *
+   * @returns {Promise<OrdersWithFullInformation[] | []>} Paginated array of orders with detail information:
+   *   - Complete order data with all nested relations
+   *   - Shipping address details
+   *   - Order items with product variants
+   *   - Payment and shipment information
+   *   - Formatted media URLs
+   *   Returns empty array if no results
+   *
+   * @throws {BadRequestException} If pagination or data fetching fails
+   *
+   * @remarks
+   * - Results are ordered by order ID in ascending order
+   * - Provides same data as findAll with emphasis on "detail" aspect
+   * - Media URLs are converted to public HTTPS URLs
+   * - Empty array returned instead of null for consistency
+   */
   async getAllOrdersWithDetailInformation(
     page: number,
     perPage: number,
@@ -319,6 +546,32 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Retrieves all items in an order with product variant and media information.
+   *
+   * This method performs the following operations:
+   * 1. Fetches all order items associated with the order ID
+   * 2. Includes product variant details with all media
+   * 3. Formats media URLs for each product variant
+   * 4. Logs the fetch operation
+   *
+   * @param {number} id - The unique identifier of the order
+   *
+   * @returns {Promise<OrderItemsWithVariantAndMediaInformation[] | []>} Array of order items with details:
+   *   - Order item quantities, prices, and discounts
+   *   - Product variant information (size, color, SKU)
+   *   - Product media with formatted HTTPS URLs
+   *   - All images and assets for each variant
+   *   Returns empty array if no items found
+   *
+   * @throws {NotFoundException} If no order items found
+   * @throws {BadRequestException} If data fetching fails
+   *
+   * @remarks
+   * - Includes all media for product variants
+   * - Media URLs are converted to public HTTPS URLs
+   * - Empty array returned for consistency
+   */
   async getOrderItemListDetailInformation(
     id: number,
   ): Promise<OrderItemsWithVariantAndMediaInformation[] | []> {
@@ -361,6 +614,34 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Retrieves all shipment records for a specific order with full details.
+   *
+   * This method performs the following operations:
+   * 1. Fetches all shipments associated with the order
+   * 2. Includes staff information who processed the shipment
+   * 3. Includes staff media and user profile information
+   * 4. Includes complete order information for each shipment
+   * 5. Formats all media URLs to public HTTPS
+   * 6. Logs the fetch operation
+   *
+   * @param {number} id - The unique identifier of the order
+   *
+   * @returns {Promise<ShipmentsWithFullInformation[] | []>} Array of shipments with details:
+   *   - Shipment tracking number, dates, carrier, status
+   *   - Processing staff information with profile media
+   *   - Complete order details for context
+   *   - Formatted media URLs
+   *   Returns empty array if no shipments found
+   *
+   * @throws {NotFoundException} If no shipments found or formatting fails
+   * @throws {BadRequestException} If data retrieval fails
+   *
+   * @remarks
+   * - Includes staff profile information for accountability
+   * - Media URLs are converted to public HTTPS URLs
+   * - Includes full order context for each shipment
+   */
   async getOrderShipmentsDetailInformation(
     id: number,
   ): Promise<ShipmentsWithFullInformation[] | []> {
@@ -404,6 +685,30 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Retrieves all payment records associated with a specific order.
+   *
+   * This method performs the following operations:
+   * 1. Queries the database for all payments linked to the order
+   * 2. Returns payment history and transaction details
+   * 3. Logs the fetch operation
+   *
+   * @param {number} id - The unique identifier of the order
+   *
+   * @returns {Promise<Payments[] | []>} Array of payment records including:
+   *   - Transaction ID and payment method
+   *   - Payment amount and status (PENDING, COMPLETED, FAILED, etc.)
+   *   - Payment dates and timestamps
+   *   Returns empty array if no payments found
+   *
+   * @throws {NotFoundException} If no payments found
+   * @throws {BadRequestException} If payment retrieval fails
+   *
+   * @remarks
+   * - Returns all payment attempts for the order
+   * - Useful for tracking payment history and disputes
+   * - Empty array returned for consistency
+   */
   async getOrderPaymentDetailInformation(id: number): Promise<Payments[] | []> {
     try {
       const result = await this.prismaService.payments.findMany({
@@ -425,6 +730,36 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Retrieves all requests (returns/exchanges/complaints) for a specific order with full details.
+   *
+   * This method performs the following operations:
+   * 1. Fetches all requests associated with the order
+   * 2. Includes return request details and reasons
+   * 3. Includes processing staff information with media
+   * 4. Includes request media (images of issues/returns)
+   * 5. Formats all media URLs to public HTTPS
+   * 6. Logs the fetch operation
+   *
+   * @param {number} id - The unique identifier of the order
+   *
+   * @returns {Promise<Requests[] | []>} Array of requests with details:
+   *   - Request type, status, and reason
+   *   - Return request information if applicable
+   *   - Processing staff details with profile images
+   *   - Request media (proof images, documentation)
+   *   - Formatted media URLs
+   *   Returns empty array if no requests found
+   *
+   * @throws {NotFoundException} If no requests found
+   * @throws {BadRequestException} If request retrieval fails
+   *
+   * @remarks
+   * - Includes all return, exchange, and complaint requests
+   * - Staff media and user profile information included
+   * - Request media URLs converted to public HTTPS URLs
+   * - Empty array returned for consistency
+   */
   async getOrderRequestDetailInformation(id: number): Promise<Requests[] | []> {
     try {
       const result = await this.prismaService.requests.findMany({

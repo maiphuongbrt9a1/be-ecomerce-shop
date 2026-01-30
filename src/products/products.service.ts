@@ -25,6 +25,32 @@ export class ProductsService {
     private readonly awsService: AwsS3Service,
   ) {}
 
+  /**
+   * Creates a new product with associated product variants and media files.
+   *
+   * This method performs the following operations:
+   * 1. Creates a new product in the database with provided data
+   * 2. Retrieves the created product with all product variants and media
+   * 3. Formats all media URLs to public HTTPS URLs for S3 files
+   * 4. Logs the creation operation
+   *
+   * @param {CreateProductDto} createProductDto - The data transfer object containing product information:
+   *   - Product name, description, category, price, stock details
+   *   - Any other product-specific properties
+   *
+   * @returns {Promise<ProductsWithProductVariantsAndTheirMedia>} The created product with all details including:
+   *   - Product information (id, name, price, stock)
+   *   - All associated product variants
+   *   - Media files with formatted public HTTPS URLs
+   *
+   * @throws {NotFoundException} If product creation fails or product retrieval fails
+   * @throws {BadRequestException} If database operation fails
+   *
+   * @remarks
+   * - Media URLs are converted to public HTTPS URLs for S3 access
+   * - Validates successful creation before returning data
+   * - Includes all product variants and their media in response
+   */
   async create(
     createProductDto: CreateProductDto,
   ): Promise<ProductsWithProductVariantsAndTheirMedia> {
@@ -72,6 +98,32 @@ export class ProductsService {
     }
   }
 
+  /**
+   * Retrieves a paginated list of all products with their variants and media.
+   *
+   * This method performs the following operations:
+   * 1. Fetches products from the database with pagination
+   * 2. Includes all product variants and their associated media
+   * 3. Formats all media URLs to public HTTPS URLs for S3 access
+   * 4. Logs pagination details
+   *
+   * @param {number} page - The page number for pagination (1-indexed)
+   * @param {number} perPage - The number of products to retrieve per page
+   *
+   * @returns {Promise<ProductsWithProductVariantsAndTheirMedia[] | []>} Array of products with details including:
+   *   - Product information (id, name, price, stock)
+   *   - All product variants for each product
+   *   - Media files with formatted public HTTPS URLs
+   *   Returns empty array if no products found
+   *
+   * @throws {BadRequestException} If pagination or data fetching fails
+   *
+   * @remarks
+   * - Results are ordered by product ID in ascending order
+   * - Media URLs are converted to public HTTPS URLs
+   * - Logs media field changes during formatting
+   * - Empty array returned for consistency
+   */
   async findAll(
     page: number,
     perPage: number,
@@ -124,6 +176,31 @@ export class ProductsService {
     }
   }
 
+  /**
+   * Retrieves a single product by ID with all variants and media information.
+   *
+   * This method performs the following operations:
+   * 1. Queries the database for the product by ID
+   * 2. Includes all product variants and their associated media
+   * 3. Formats all media URLs to public HTTPS URLs for S3 access
+   * 4. Logs retrieval operation and media changes
+   *
+   * @param {number} id - The unique identifier of the product to retrieve
+   *
+   * @returns {Promise<ProductsWithProductVariantsAndTheirMedia | null>} The product with all details including:
+   *   - Product information (id, name, price, stock)
+   *   - All associated product variants
+   *   - Media files with formatted public HTTPS URLs
+   *   Returns null if product not found
+   *
+   * @throws {NotFoundException} If product is not found
+   * @throws {BadRequestException} If data fetching fails
+   *
+   * @remarks
+   * - Media URLs are converted to public HTTPS URLs
+   * - Logs media field changes during formatting for debugging
+   * - Includes complete product hierarchy with all variants
+   */
   async findOne(
     id: number,
   ): Promise<ProductsWithProductVariantsAndTheirMedia | null> {
@@ -168,6 +245,32 @@ export class ProductsService {
     }
   }
 
+  /**
+   * Updates an existing product with new information.
+   *
+   * This method performs the following operations:
+   * 1. Updates the product in the database with provided data
+   * 2. Retrieves the updated product with all variants and media
+   * 3. Formats all media URLs to public HTTPS URLs
+   * 4. Logs the update operation
+   *
+   * @param {number} id - The unique identifier of the product to update
+   * @param {UpdateProductDto} updateProductDto - The data transfer object containing product updates:
+   *   - May include name, description, price, stock, category, or other properties
+   *
+   * @returns {Promise<ProductsWithProductVariantsAndTheirMedia>} The updated product with all details including:
+   *   - Updated product information
+   *   - All associated product variants
+   *   - Media files with formatted public HTTPS URLs
+   *
+   * @throws {BadRequestException} If product update fails
+   * @throws {NotFoundException} If product not found after update
+   *
+   * @remarks
+   * - Validates successful update before returning data
+   * - Includes all product variants and their media in response
+   * - Media URLs are converted to public HTTPS URLs
+   */
   async update(
     id: number,
     updateProductDto: UpdateProductDto,
@@ -217,6 +320,30 @@ export class ProductsService {
     }
   }
 
+  /**
+   * Deletes a product and all its associated data from the database and storage.
+   *
+   * This method performs the following operations within a database transaction:
+   * 1. Retrieves the product with all variants and reviews including their media
+   * 2. Deletes all product variants and their associated media files from S3
+   * 3. Deletes all reviews and their associated media files from S3
+   * 4. Deletes the product record from the database
+   * 5. Logs the deletion operation
+   *
+   * @param {number} id - The unique identifier of the product to delete
+   *
+   * @returns {Promise<Products>} The deleted product record
+   *
+   * @throws {NotFoundException} If product is not found
+   * @throws {BadRequestException} If deletion fails
+   *
+   * @remarks
+   * - This operation is cascading and will delete all related data
+   * - Media files are removed from S3 storage along with database records
+   * - Uses database transaction to ensure data consistency
+   * - Verify before deletion as this action cannot be easily reversed
+   * - Use with caution in production environments
+   */
   async remove(id: number): Promise<Products> {
     try {
       this.logger.log(`Deleting product with ID: ${id}`);
@@ -275,6 +402,30 @@ export class ProductsService {
     }
   }
 
+  /**
+   * Retrieves all product variants associated with a specific product.
+   *
+   * This method performs the following operations:
+   * 1. Queries the database for all variants of a specific product
+   * 2. Includes all media files associated with each variant
+   * 3. Formats all media URLs to public HTTPS URLs for S3 access
+   * 4. Logs retrieval and media changes
+   *
+   * @param {number} id - The unique identifier of the product
+   *
+   * @returns {Promise<ProductVariantsWithMediaInformation[] | []>} Array of product variants including:
+   *   - Variant information (id, name, sku, color, size, price, stock)
+   *   - Media files with formatted public HTTPS URLs
+   *   Returns empty array if no variants found
+   *
+   * @throws {NotFoundException} If no product variants found
+   * @throws {BadRequestException} If data fetching fails
+   *
+   * @remarks
+   * - Media URLs are converted to public HTTPS URLs
+   * - Logs media field changes during formatting
+   * - Returns all variants for the specified product
+   */
   async getAllProductVariantsOfProduct(
     id: number,
   ): Promise<ProductVariantsWithMediaInformation[] | []> {
@@ -318,6 +469,32 @@ export class ProductsService {
     }
   }
 
+  /**
+   * Retrieves paginated reviews for a specific product with media files.
+   *
+   * This method performs the following operations:
+   * 1. Fetches paginated reviews for the product from the database
+   * 2. Includes all media files associated with each review
+   * 3. Formats all media URLs to public HTTPS URLs for S3 access
+   * 4. Logs retrieval operation
+   *
+   * @param {number} id - The unique identifier of the product
+   * @param {number} page - The page number for pagination (1-indexed)
+   * @param {number} perPage - The number of reviews to retrieve per page
+   *
+   * @returns {Promise<ReviewsWithMedia[] | []>} Array of reviews with details including:
+   *   - Review information (id, rating, comment, author, date)
+   *   - Media files with formatted public HTTPS URLs
+   *   Returns empty array if no reviews found
+   *
+   * @throws {BadRequestException} If pagination or data fetching fails
+   *
+   * @remarks
+   * - Results are ordered by review ID in ascending order
+   * - Media URLs are converted to public HTTPS URLs
+   * - Useful for paginated review displays on product pages
+   * - Empty array returned for consistency
+   */
   async getAllReviewsOfProduct(
     id: number,
     page: number,

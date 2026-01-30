@@ -21,6 +21,40 @@ export class RequestsService {
     private readonly awsService: AwsS3Service,
   ) {}
 
+  /**
+   * Creates a new customer request with media files (returns, exchanges, complaints).
+   *
+   * This method performs the following operations:
+   * 1. Creates request record in database
+   * 2. Uploads request media files to S3
+   * 3. Retrieves created request with media and staff details
+   * 4. Formats media URLs to public HTTPS URLs (request media and staff avatars)
+   * 5. Logs successful creation
+   * 6. Returns request with formatted media
+   *
+   * @param {Express.Multer.File[]} files - Array of media files (images/videos) to upload
+   * @param {CreateRequestDto} createRequestDto - The request data containing:
+   *   - userId, orderId, orderItemId
+   *   - requestType (RETURN, EXCHANGE, COMPLAINT, CANCEL)
+   *   - status, description, reason
+   * @param {string} userId - The user ID creating the request
+   *
+   * @returns {Promise<RequestsWithMedia>} The created request with details:
+   *   - Request ID, user ID, order/item IDs
+   *   - Request type, status, description
+   *   - Media files with formatted HTTPS URLs
+   *   - Staff processor info (if assigned) with avatar URLs
+   *   - Created timestamp
+   *
+   * @throws {NotFoundException} If request creation, media upload, or retrieval fails
+   * @throws {BadRequestException} If overall operation fails
+   *
+   * @remarks
+   * - Request media files are uploaded to S3 storage
+   * - All media URLs (request and staff avatars) are formatted to HTTPS
+   * - Used for customer service requests with visual evidence
+   * - Supports multiple media files per request
+   */
   async create(
     files: Express.Multer.File[],
     createRequestDto: CreateRequestDto,
@@ -94,6 +128,36 @@ export class RequestsService {
     }
   }
 
+  /**
+   * Retrieves paginated list of all requests with media and staff details.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries all requests from database
+   * 3. Includes request media and staff processor info
+   * 4. Sorts results by request ID ascending
+   * 5. Formats all media URLs to public HTTPS URLs (requests and staff avatars)
+   * 6. Logs successful retrieval
+   * 7. Returns paginated request data
+   *
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of requests per page
+   *
+   * @returns {Promise<RequestsWithMedia[] | []>} Array of requests or empty array:
+   *   - Request ID, user ID, order/item IDs
+   *   - Request type, status, description
+   *   - Media with formatted HTTPS URLs
+   *   - Staff processor info with avatar URLs
+   *   - Created/updated/resolved timestamps
+   *
+   * @throws {BadRequestException} If request retrieval or media formatting fails
+   *
+   * @remarks
+   * - Results are paginated based on perPage parameter
+   * - Results are sorted by request ID in ascending order
+   * - All media URLs (requests and staff avatars) are formatted to HTTPS
+   * - Used for customer service request management
+   */
   async findAll(
     page: number,
     perPage: number,
@@ -158,6 +222,35 @@ export class RequestsService {
     }
   }
 
+  /**
+   * Retrieves a single request by ID with media and staff details.
+   *
+   * This method performs the following operations:
+   * 1. Queries request by ID
+   * 2. Includes request media and staff processor info
+   * 3. Validates request exists
+   * 4. Formats media URLs to public HTTPS URLs (request and staff avatars)
+   * 5. Logs successful retrieval
+   * 6. Returns request with formatted media
+   *
+   * @param {number} id - The request ID to retrieve
+   *
+   * @returns {Promise<RequestsWithMedia | null>} The request with details:
+   *   - Request ID, user ID, order/item IDs
+   *   - Request type, status, description, reason
+   *   - Media with formatted HTTPS URLs
+   *   - Staff processor info with avatar URLs (if assigned)
+   *   - Created/updated/resolved timestamps
+   *
+   * @throws {NotFoundException} If request not found
+   * @throws {BadRequestException} If request retrieval or media formatting fails
+   *
+   * @remarks
+   * - Returns null if request doesn't exist
+   * - All media URLs (request and staff avatars) are formatted to HTTPS
+   * - Used for displaying individual request details
+   * - Includes all media files and staff information
+   */
   async findOne(id: number): Promise<RequestsWithMedia | null> {
     try {
       const result = await this.prismaService.requests.findFirst({
@@ -209,6 +302,44 @@ export class RequestsService {
     }
   }
 
+  /**
+   * Updates an existing request with optional media file management.
+   *
+   * This method performs the following operations:
+   * 1. Retrieves existing request with media
+   * 2. Updates request data in database
+   * 3. Uploads new media files to S3 if provided
+   * 4. Deletes specified old media files from S3 and database
+   * 5. Retrieves updated request with all media and staff info
+   * 6. Formats media URLs to public HTTPS URLs
+   * 7. Logs successful update
+   * 8. Returns updated request
+   *
+   * @param {number} id - The request ID to update
+   * @param {UpdateRequestDto} updateRequestDto - The update data containing:
+   *   - status, description, reason (optional)
+   *   - processByStaffId (optional)
+   *   - mediaIdsToDelete (array of media IDs to remove)
+   * @param {Express.Multer.File[]} files - Optional new media files to upload
+   * @param {string} userId - The user/staff ID performing the update
+   *
+   * @returns {Promise<RequestsWithMedia>} The updated request with details:
+   *   - Request ID, user ID, order/item IDs
+   *   - Updated status, description, reason
+   *   - Updated media with formatted HTTPS URLs
+   *   - Staff processor info with avatar URLs
+   *   - Updated timestamp
+   *
+   * @throws {NotFoundException} If request not found or media operations fail
+   * @throws {BadRequestException} If update operation fails
+   *
+   * @remarks
+   * - Can update request status and manage media files simultaneously
+   * - Old media files are deleted from S3 when removed
+   * - New media files are uploaded to S3
+   * - All media URLs are formatted to public HTTPS
+   * - Used for request status updates and adding evidence
+   */
   async update(
     id: number,
     updateRequestDto: UpdateRequestDto,
@@ -298,6 +429,29 @@ export class RequestsService {
     }
   }
 
+  /**
+   * Deletes a request and all associated media files.
+   *
+   * This method performs the following operations:
+   * 1. Retrieves request with media files
+   * 2. Deletes request record from database
+   * 3. Deletes all associated media files from S3
+   * 4. Logs successful deletion
+   * 5. Returns deleted request
+   *
+   * @param {number} id - The request ID to delete
+   *
+   * @returns {Promise<Requests>} The deleted request with all details
+   *
+   * @throws {BadRequestException} If deletion operation fails
+   * @throws {NotFoundException} If request not found
+   *
+   * @remarks
+   * - This operation is irreversible
+   * - All request media files are deleted from S3 storage
+   * - Database cascades handle related record cleanup
+   * - Used for request cleanup and data retention management
+   */
   async remove(id: number): Promise<Requests> {
     try {
       this.logger.log('Deleting request', id);

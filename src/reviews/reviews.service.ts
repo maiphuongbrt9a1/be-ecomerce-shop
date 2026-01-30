@@ -21,6 +21,39 @@ export class ReviewsService {
     private readonly awsService: AwsS3Service,
   ) {}
 
+  /**
+   * Creates a new product review with media files (images/videos).
+   *
+   * This method performs the following operations:
+   * 1. Creates review record in database
+   * 2. Uploads review media files to S3
+   * 3. Retrieves created review with media
+   * 4. Formats media URLs to public HTTPS URLs
+   * 5. Logs successful creation
+   * 6. Returns review with formatted media
+   *
+   * @param {Express.Multer.File[]} files - Array of media files (images/videos) to upload
+   * @param {CreateReviewDto} createReviewDto - The review data containing:
+   *   - userId, productId, productVariantId
+   *   - rating (1-5), comment, title
+   *   - verifiedPurchase status
+   * @param {string} userId - The user ID creating the review
+   *
+   * @returns {Promise<ReviewsWithMedia>} The created review with details:
+   *   - Review ID, user ID, product/variant IDs
+   *   - Rating, comment, title
+   *   - Media files with formatted HTTPS URLs
+   *   - Created timestamp
+   *
+   * @throws {NotFoundException} If review creation, media upload, or retrieval fails
+   * @throws {BadRequestException} If overall operation fails
+   *
+   * @remarks
+   * - Review media files are uploaded to S3 storage
+   * - All media URLs are formatted to public HTTPS format
+   * - Used for customer product feedback with visual evidence
+   * - Supports multiple media files per review
+   */
   async create(
     files: Express.Multer.File[],
     createReviewDto: CreateReviewDto,
@@ -72,6 +105,36 @@ export class ReviewsService {
     }
   }
 
+  /**
+   * Retrieves paginated list of all reviews with media.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries all reviews from database
+   * 3. Includes review media files
+   * 4. Sorts results by review ID ascending
+   * 5. Formats all media URLs to public HTTPS URLs
+   * 6. Logs successful retrieval
+   * 7. Returns paginated review data
+   *
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of reviews per page
+   *
+   * @returns {Promise<ReviewsWithMedia[] | []>} Array of reviews or empty array:
+   *   - Review ID, user ID, product/variant IDs
+   *   - Rating, comment, title
+   *   - Media with formatted HTTPS URLs
+   *   - Helpful count, verified purchase status
+   *   - Created/updated timestamps
+   *
+   * @throws {BadRequestException} If review retrieval or media formatting fails
+   *
+   * @remarks
+   * - Results are paginated based on perPage parameter
+   * - Results are sorted by review ID in ascending order
+   * - All review media URLs are formatted to public HTTPS
+   * - Used for product review displays and admin management
+   */
   async findAll(
     page: number,
     perPage: number,
@@ -106,6 +169,35 @@ export class ReviewsService {
     }
   }
 
+  /**
+   * Retrieves a single review by ID with media.
+   *
+   * This method performs the following operations:
+   * 1. Queries review by ID
+   * 2. Includes review media files
+   * 3. Validates review exists
+   * 4. Formats media URLs to public HTTPS URLs
+   * 5. Logs successful retrieval
+   * 6. Returns review with formatted media
+   *
+   * @param {number} id - The review ID to retrieve
+   *
+   * @returns {Promise<ReviewsWithMedia | null>} The review with details:
+   *   - Review ID, user ID, product/variant IDs
+   *   - Rating, comment, title
+   *   - Media with formatted HTTPS URLs
+   *   - Helpful count, verified purchase status
+   *   - Created/updated timestamps
+   *
+   * @throws {NotFoundException} If review not found
+   * @throws {BadRequestException} If review retrieval or media formatting fails
+   *
+   * @remarks
+   * - Returns null if review doesn't exist
+   * - All review media URLs are formatted to public HTTPS
+   * - Used for displaying individual review details
+   * - Includes all media files associated with review
+   */
   async findOne(id: number): Promise<ReviewsWithMedia | null> {
     try {
       const result = await this.prismaService.reviews.findFirst({
@@ -135,6 +227,42 @@ export class ReviewsService {
     }
   }
 
+  /**
+   * Updates an existing review with optional media file management.
+   *
+   * This method performs the following operations:
+   * 1. Retrieves existing review with media
+   * 2. Updates review data in database
+   * 3. Uploads new media files to S3 if provided
+   * 4. Deletes specified old media files from S3 and database
+   * 5. Retrieves updated review with all media
+   * 6. Formats media URLs to public HTTPS URLs
+   * 7. Logs successful update
+   * 8. Returns updated review
+   *
+   * @param {number} id - The review ID to update
+   * @param {UpdateReviewDto} updateReviewDto - The update data containing:
+   *   - rating, comment, title (optional)
+   *   - mediaIdsToDelete (array of media IDs to remove)
+   * @param {Express.Multer.File[]} files - Optional new media files to upload
+   * @param {string} adminId - The admin/user ID performing the update
+   *
+   * @returns {Promise<ReviewsWithMedia>} The updated review with details:
+   *   - Review ID, user ID, product/variant IDs
+   *   - Updated rating, comment, title
+   *   - Updated media with formatted HTTPS URLs
+   *   - Updated timestamp
+   *
+   * @throws {NotFoundException} If review not found or media operations fail
+   * @throws {BadRequestException} If update operation fails
+   *
+   * @remarks
+   * - Can update review text and manage media files simultaneously
+   * - Old media files are deleted from S3 when removed
+   * - New media files are uploaded to S3
+   * - All media URLs are formatted to public HTTPS
+   * - Used for review editing and moderation
+   */
   async update(
     id: number,
     updateReviewDto: UpdateReviewDto,
@@ -223,6 +351,30 @@ export class ReviewsService {
     }
   }
 
+  /**
+   * Deletes a review and all associated media files.
+   *
+   * This method performs the following operations:
+   * 1. Retrieves review with media files
+   * 2. Validates review exists
+   * 3. Deletes review record from database
+   * 4. Deletes all associated media files from S3
+   * 5. Logs successful deletion
+   * 6. Returns deleted review
+   *
+   * @param {number} id - The review ID to delete
+   *
+   * @returns {Promise<Reviews>} The deleted review with all details
+   *
+   * @throws {NotFoundException} If review not found
+   * @throws {BadRequestException} If deletion operation fails
+   *
+   * @remarks
+   * - This operation is irreversible
+   * - All review media files are deleted from S3 storage
+   * - Database cascades handle related record cleanup
+   * - Used for content moderation and user deletions
+   */
   async remove(id: number): Promise<Reviews> {
     try {
       this.logger.log('Deleting review', id);
@@ -258,6 +410,34 @@ export class ReviewsService {
     }
   }
 
+  /**
+   * Retrieves paginated list of all media files for a specific review.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries media files for review ID
+   * 3. Sorts results by media ID ascending
+   * 4. Returns paginated media data
+   * 5. Logs successful retrieval
+   *
+   * @param {number} id - The review ID to retrieve media for
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of media files per page
+   *
+   * @returns {Promise<Media[] | []>} Array of media files or empty array:
+   *   - Media ID, review ID
+   *   - File URL, type (image/video)
+   *   - File size, dimensions
+   *   - Created timestamp
+   *
+   * @throws {BadRequestException} If media retrieval fails
+   *
+   * @remarks
+   * - Results are paginated based on perPage parameter
+   * - Results are sorted by media ID in ascending order
+   * - Returns empty array if review has no media
+   * - Used for gallery displays and media management
+   */
   async getAllMediaOfReview(
     id: number,
     page: number,
