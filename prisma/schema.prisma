@@ -138,6 +138,8 @@ model User {
     userVouchers UserVouchers[]
     requests    Requests[]
 
+    @@index([shopOfficeId], name: "idx_user_shop_office_id")
+
 }
 
 model ShopOffice {
@@ -147,6 +149,8 @@ model ShopOffice {
     address Address?
     products Products[]
     category Category[]
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
 
 }
 
@@ -165,6 +169,8 @@ model Address {
     order       Orders[]
     shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     shopOfficeId BigInt? @unique @db.BigInt
+    @@index([userId], name: "idx_address_user_id")
+    @@index([shopOfficeId], name: "idx_address_shop_office_id")
 }
 
 model SizeProfiles {
@@ -182,6 +188,8 @@ model SizeProfiles {
     description String?     @db.Text
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+
+    @@index([userId], name: "idx_sizeProfile_user_id")
 }
 
 model Products {
@@ -205,6 +213,10 @@ model Products {
     shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
     shopOfficeId BigInt? @db.BigInt
 
+    @@index([categoryId], name: "idx_product_category_id")
+    @@index([shopOfficeId], name: "idx_product_shop_office_id")
+    @@index([voucherId], name: "idx_product_voucher_id")
+    @@index([createByUserId], name: "idx_product_created_by_user_id")
 }
 
 model Category {
@@ -228,6 +240,11 @@ model Category {
 
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+
+    @@index([parentId], name: "idx_category_parent_id")
+    @@index([shopOfficeId], name: "idx_category_shop_office_id")
+    @@index([voucherId], name: "idx_category_voucher_id")
+    @@index([createByUserId], name: "idx_category_created_by_user_id")
 }
 
 model ProductVariants {
@@ -259,6 +276,11 @@ model ProductVariants {
     voucherId BigInt? @db.BigInt
     productVariantColor Color @relation(fields: [colorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     colorId BigInt @db.BigInt
+
+    @@index([productId], name: "idx_productVariant_product_id")
+    @@index([voucherId], name: "idx_productVariant_voucher_id")
+    @@index([colorId], name: "idx_productVariant_color_id")
+    @@index([createByUserId], name: "idx_productVariant_created_by_user_id")
 }
 
 model Color {
@@ -283,6 +305,10 @@ model Reviews {
     media       Media[]
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+
+    @@index([productId], name: "idx_review_product_id")
+    @@index([userId], name: "idx_review_user_id")
+    @@index([productVariantId], name: "idx_review_product_variant_id")
 }
 
 model Media {
@@ -303,6 +329,11 @@ model Media {
     isAvatarFile Boolean  @default(false) @db.Boolean
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+
+    @@index([reviewId], name: "idx_media_review_id")
+    @@index([userId], name: "idx_media_user_id")
+    @@index([productVariantId], name: "idx_media_product_variant_id")
+    @@index([requestId], name: "idx_media_request_id")
 }
 
 model Orders {
@@ -327,6 +358,11 @@ model Orders {
     shipments   Shipments[]
     payment     Payments[]
     requests Requests[]
+
+    @@index([userId], name: "idx_order_user_id")
+    @@index([shippingAddressId], name: "idx_order_shipping_address_id")
+    @@index([processByStaffId], name: "idx_order_processed_by_staff_id")
+
 }
 
 
@@ -343,6 +379,9 @@ model OrderItems {
     currencyUnit String      @db.VarChar(10) @default("VND")
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+
+    @@index([orderId], name: "idx_orderItem_order_id")
+    @@index([productVariantId], name: "idx_orderItem_product_variant_id")
 }
 
 model Shipments {
@@ -361,6 +400,9 @@ model Shipments {
     status      ShipmentStatus      @default(WAITING_FOR_PICKUP)
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+
+    @@index([orderId], name: "idx_shipment_order_id")
+    @@index([processByStaffId], name: "idx_shipment_processed_by_staff_id")
 }
 
 model Payments {
@@ -373,6 +415,9 @@ model Payments {
     amount      Float   @db.DoublePrecision 
     currencyUnit String      @db.VarChar(10) @default("VND")
     status      PaymentStatus      @default(PENDING)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    @@index([orderId], name: "idx_payment_order_id")
 }
 
 model Cart {
@@ -382,6 +427,8 @@ model Cart {
     cartItems   CartItems[]
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+
+    @@index([userId], name: "idx_cart_user_id")
 }
 
 model CartItems {
@@ -393,6 +440,9 @@ model CartItems {
     quantity    Int     @db.Integer
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+
+    @@index([cartId], name: "idx_cartItem_cart_id")
+    @@index([productVariantId], name: "idx_cartItem_product_variant_id")
 }
 
 model Vouchers {
@@ -414,6 +464,8 @@ model Vouchers {
     voucherForProduct Products[]
     voucherForCategory Category[]
     voucherForSpecialProductVariant ProductVariants[]
+
+    @@index([createdBy], name: "idx_voucher_created_by_user_id")
 }
 
 model UserVouchers {
@@ -425,6 +477,11 @@ model UserVouchers {
     useVoucherAt  DateTime?
     saveVoucherAt   DateTime    @default(now())
     voucherStatus VoucherStatus      @default(SAVED)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+
+    @@index([userId], name: "idx_userVoucher_user_id")
+    @@index([voucherId], name: "idx_userVoucher_voucher_id")
 }
 
 model Requests {
@@ -442,6 +499,10 @@ model Requests {
     updatedAt   DateTime    @updatedAt
     returnRequest ReturnRequests[]
     media       Media[]
+
+    @@index([userId], name: "idx_request_user_id")
+    @@index([processByStaffId], name: "idx_request_processed_by_staff_id")
+    @@index([orderId], name: "idx_request_order_id")
 }
 
 model ReturnRequests {
@@ -452,4 +513,6 @@ model ReturnRequests {
     bankAccountNumber String @db.VarChar(50) 
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+
+    @@index([requestId], name: "idx_returnRequest_request_id")
 }
