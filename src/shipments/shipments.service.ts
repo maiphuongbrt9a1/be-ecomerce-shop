@@ -15,10 +15,17 @@ import {
   ShipmentsWithFullInformation,
 } from '@/helpers/types/types';
 import { formatMediaFieldWithLoggingForShipments } from '@/helpers/utils';
-
+import { Ghn } from 'giaohangnhanh';
 @Injectable()
 export class ShipmentsService {
   private readonly logger = new Logger(ShipmentsService.name);
+  private readonly ghn = new Ghn({
+    token: process.env.GHN_TOKEN!, // Thay bằng token của bạn
+    shopId: Number(process.env.GHN_SHOP1_ID!), // Thay bằng shopId của bạn
+    host: process.env.GHN_HOST!,
+    trackingHost: process.env.GHN_TRACKING_HOST!,
+    testMode: process.env.GHN_TEST_MODE === 'true', // Bật chế độ test sẽ ghi đè tất cả host thành môi trường sandbox
+  });
   constructor(
     private readonly prismaService: PrismaService,
     private readonly awsService: AwsS3Service,

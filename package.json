@@ -38,11 +38,13 @@
     "class-validator": "^0.14.2",
     "dayjs": "^1.11.18",
     "ejs": "^3.1.10",
+    "giaohangnhanh": "^0.0.5",
     "handlebars": "^4.7.8",
     "liquidjs": "^10.21.1",
     "mjml": "^4.16.1",
     "multer": "^2.0.2",
     "nestjs-prisma-pagination": "^1.0.24",
+    "nestjs-vnpay": "^1.0.4",
     "nodemailer": "6.6.5",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
@@ -55,7 +57,8 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "type": "^2.7.3",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "vnpay": "^2.4.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
