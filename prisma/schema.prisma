@@ -144,11 +144,13 @@ model User {
 
 model ShopOffice {
     id BigInt @db.BigInt @id @default(autoincrement())
+    ghnShopId BigInt? @db.BigInt @unique
     shopName String @db.VarChar(255)
     staffs User[]
     address Address?
     products Products[]
     category Category[]
+    shipments Shipments[]
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 
@@ -379,6 +381,7 @@ model OrderItems {
     currencyUnit String      @db.VarChar(10) @default("VND")
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+    shipmentItems ShipmentItems[]
 
     @@index([orderId], name: "idx_orderItem_order_id")
     @@index([productVariantId], name: "idx_orderItem_product_variant_id")
@@ -390,7 +393,10 @@ model Shipments {
     orderId     BigInt      @db.BigInt
     processByStaff        User?        @relation("OrderShippedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     processByStaffId      BigInt?      @db.BigInt
-    
+    ghnOrderCode String? @db.VarChar(100) @unique
+    shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    shopOfficeId BigInt? @db.BigInt
+    shipmentItems ShipmentItems[]    
     estimatedDelivery DateTime // at shop, estimate time when leave from shop
     deliveredAt DateTime?  // at shop, actual time when leave from shop
     estimatedShipDate DateTime // at customer, estimate time when arrive to customer
@@ -403,6 +409,19 @@ model Shipments {
 
     @@index([orderId], name: "idx_shipment_order_id")
     @@index([processByStaffId], name: "idx_shipment_processed_by_staff_id")
+}
+
+model ShipmentItems {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    shipment    Shipments   @relation(fields: [shipmentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    shipmentId  BigInt      @db.BigInt
+    orderItem   OrderItems  @relation(fields: [orderItemId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    orderItemId BigInt      @db.BigInt
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+
+    @@index([shipmentId], name: "idx_shipmentItem_shipment_id")
+    @@index([orderItemId], name: "idx_shipmentItem_order_item_id")
 }
 
 model Payments {
