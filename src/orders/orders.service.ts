@@ -21,6 +21,7 @@ import {
   OrderItemsWithVariantAndMediaInformation,
   OrdersWithFullInformation,
   OrdersWithFullInformationInclude,
+  PackagesForShipping,
   ShipmentsWithFullInformation,
 } from '@/helpers/types/types';
 import dayjs from 'dayjs';
@@ -28,9 +29,11 @@ import {
   formatMediaFieldWithLogging,
   formatMediaFieldWithLoggingForOrders,
   formatMediaFieldWithLoggingForShipments,
+  GHNShops,
 } from '@/helpers/utils';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { ShipmentsService } from '@/shipments/shipments.service';
+import Ghn from 'giaohangnhanh';
 
 @Injectable()
 export class OrdersService {
@@ -99,8 +102,9 @@ export class OrdersService {
         const orderDate = new Date();
         const orderStatus = OrderStatus.PENDING;
 
-        /// is fixing this shipping fee
-        const shippingFee = 0;
+        // grouping order items following shop office id to calculate shipping fee
+        const packages: PackagesForShipping = {};
+        let shippingFee = 0;
         let subTotal = 0;
         let discount = 0;
         let totalAmount = 0;
@@ -110,19 +114,71 @@ export class OrdersService {
         for (const item of createOrderDto.orderItems) {
           const productVariant = await tx.productVariants.findUnique({
             where: { id: BigInt(item.productVariantId) },
+            include: {
+              product: {
+                include: {
+                  shopOffice: {
+                    select: {
+                      ghnShopId: true,
+                    },
+                  },
+                },
+              },
+            },
           });
 
           if (!productVariant) {
+            this.logger.log(
+              `Product variant with ID ${item.productVariantId} not found!`,
+            );
             throw new NotFoundException(
               `Product variant with ID ${item.productVariantId} not found!`,
             );
           }
 
           if (productVariant.stock < item.quantity) {
+            this.logger.log(
+              `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
+            );
             throw new BadRequestException(
               `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
             );
           }
+
+          // grouping order items following shop office id to calculate shipping fee
+          if (
+            !productVariant.product.shopOffice ||
+            !productVariant.product.shopOffice.ghnShopId
+          ) {
+            this.logger.log(
+              `ProductVariant have id ${productVariant.id} has no shop office id or ghn shop office id. Please check again!`,
+            );
+            throw new NotFoundException(
+              `ProductVariant have id ${productVariant.id} has no shop office id or ghn shop office id. Please check again!`,
+            );
+          }
+
+          // add order item to corresponding shop office package
+          const ghnShopId =
+            productVariant.product.shopOffice.ghnShopId.toString();
+
+          packages[ghnShopId].packageItems.push(item);
+
+          packages[ghnShopId].totalWeight +=
+            item.quantity * productVariant.variantWeight;
+
+          packages[ghnShopId].totalHeight +=
+            item.quantity * productVariant.variantHeight;
+
+          packages[ghnShopId].maxLength = Math.max(
+            packages[ghnShopId].maxLength,
+            productVariant.variantLength,
+          );
+
+          packages[ghnShopId].maxWidth = Math.max(
+            packages[ghnShopId].maxWidth,
+            productVariant.variantWidth,
+          );
 
           // reduce stock quantity for product variant
           await tx.productVariants.update({
@@ -141,6 +197,98 @@ export class OrdersService {
               },
             },
           });
+        }
+
+        // calculate shipping fee based on packages from different shop offices
+        for (const ghnShopId in packages) {
+          const ghnConfig = {
+            token: process.env.GHN_TOKEN!, // Thay bằng token của bạn
+            shopId: Number(ghnShopId), // Thay bằng shopId của bạn
+            host: process.env.GHN_HOST!,
+            trackingHost: process.env.GHN_TRACKING_HOST!,
+            testMode: process.env.GHN_TEST_MODE === 'true', // Bật chế độ test sẽ ghi đè tất cả host thành môi trường sandbox
+          };
+          const ghn = new Ghn(ghnConfig);
+          const ghnShops = new GHNShops(ghnConfig);
+
+          const totalWeightForOnePackage = packages[ghnShopId].totalWeight;
+          const totalHeightForOnePackage = packages[ghnShopId].totalHeight;
+          const maxLengthForOnePackage = packages[ghnShopId].maxLength;
+          const maxWidthForOnePackage = packages[ghnShopId].maxWidth;
+
+          // Lấy danh sách các tỉnh
+          const province = await ghn.address.getProvinces();
+          // tìm tỉnh ứng với tỉnh của người khách hàng cung cấp
+          const toProvince = province.find((p) =>
+            p.NameExtension.includes(createOrderDto.province),
+          );
+
+          if (!toProvince) {
+            this.logger.log(`Province ${createOrderDto.province} not found`);
+            throw new NotFoundException(
+              `Province ${createOrderDto.province} not found`,
+            );
+          }
+
+          // Lấy danh sách quận/huyện trong tỉnh đó
+          const district = await ghn.address.getDistricts(
+            toProvince.ProvinceID,
+          );
+          // tìm quận/huyện ứng với quận/huyện của người khách hàng cung cấp
+          const toDistrict = district.find((d) =>
+            d.NameExtension.includes(createOrderDto.district),
+          );
+
+          if (!toDistrict) {
+            this.logger.log(`District ${createOrderDto.district} not found`);
+            throw new NotFoundException(
+              `District ${createOrderDto.district} not found`,
+            );
+          }
+
+          // Lấy danh sách phường/xã trong quận/huyện đó
+          const ward = await ghn.address.getWards(toDistrict.DistrictID);
+          // tìm phường/xã ứng với phường/xã của người khách hàng cung cấp
+          const toWard = ward.find((w) =>
+            w.NameExtension.includes(createOrderDto.ward),
+          );
+          if (!toWard) {
+            this.logger.log(`Ward ${createOrderDto.ward} not found`);
+            throw new NotFoundException(
+              `Ward ${createOrderDto.ward} not found`,
+            );
+          }
+
+          // Lấy ra district id của shop office từ ghnShopId
+          const ghnShopList = await ghnShops.getShopList();
+          const ghnShopInfo = ghnShops.getShopInfo(
+            ghnConfig.shopId,
+            ghnShopList,
+          );
+
+          // Lấy dịch vụ vận chuyển đầu tiên trong danh sách dịch vụ có sẵn (hard code)
+          const service = (
+            await ghn.calculateFee.getServiceList(
+              ghnShopInfo.district_id,
+              toDistrict.DistrictID,
+            )
+          )[0];
+
+          // Tính phí vận chuyển
+          const fee = await ghn.calculateFee.calculateShippingFee({
+            to_district_id: toDistrict.DistrictID,
+            to_ward_code: toWard.WardCode,
+            service_type_id: service.service_type_id,
+
+            // Thông tin sản phẩm cần vận chuyển
+            // Sau đây chỉ là thông tin mẫu, bạn cần thay đổi thông tin sản phẩm cần vận chuyển
+            height: totalHeightForOnePackage,
+            weight: totalWeightForOnePackage,
+            length: maxLengthForOnePackage,
+            width: maxWidthForOnePackage,
+          });
+
+          shippingFee += fee.total;
         }
 
         // calculate sub total, discount and total amount

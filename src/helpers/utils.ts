@@ -2,9 +2,12 @@ import { Logger } from '@nestjs/common';
 import { Media } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import {
+  GHNShopDetail,
+  MyGHNShopList,
   OrdersWithFullInformation,
   ShipmentsWithFullInformation,
 } from './types/types';
+import { GhnAbstract } from 'giaohangnhanh/lib/ghn.abstract';
 const saltOrRounds = 10;
 
 /**
@@ -407,3 +410,50 @@ export const formatMediaFieldWithLoggingForShipments = (
   logger.log('Completed media field formatting for shipments.');
   return shipments;
 };
+
+export function resolveUrl(host: string, ...path: string[]) {
+  const trimmedHost = host.replace(/\/$/, '');
+  const trimmedPaths = path.map((p) =>
+    p
+      .split('/')
+      .filter((part) => part)
+      .join('/'),
+  );
+  return new URL(trimmedPaths.join('/'), trimmedHost);
+}
+
+export class GHNShops extends GhnAbstract {
+  private readonly logger = new Logger(GHNShops.name);
+  public async getShopList(
+    offset: number = 0,
+    limit: number = 50,
+  ): Promise<MyGHNShopList> {
+    const getShopListPath = 'shiip/public-api/v2/shop/all';
+    const response = await this.fetch(
+      resolveUrl(this.globalConfig.host, getShopListPath),
+      {
+        offset: offset,
+        limit: limit,
+      },
+    );
+    const result = (await response.json()) as MyGHNShopList;
+    if (!response.ok) {
+      throw new Error(`Failed to fetch GHN shop list: ${result.message}`);
+    }
+    return result;
+  }
+
+  public getShopInfo(
+    ghnShopId: number,
+    myGHNShopList: MyGHNShopList,
+  ): GHNShopDetail {
+    const shop = myGHNShopList.data.shops.find((s) => s._id === ghnShopId);
+
+    if (!shop) {
+      this.logger.error(`GHNShop with ID ${ghnShopId} not found.`);
+      throw new Error(`GHNShop with ID ${ghnShopId} not found.`);
+    }
+
+    return shop;
+  }
+}

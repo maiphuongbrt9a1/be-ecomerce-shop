@@ -1,3 +1,4 @@
+import { SecondCreateOrderItemsDto } from '@/orders/dto/create-order.dto';
 import { Prisma, User } from '@prisma/client';
 
 /**
@@ -595,3 +596,96 @@ export type CartItemsWithProductVariantAndMedia = Prisma.CartItemsGetPayload<{
     };
   };
 }>;
+
+/**
+ * Product variant with GHN (Giao Hang Nhanh) shop ID for shipping integration.
+ *
+ * Includes product variant with parent product and its shop office's GHN shop ID.
+ * Used when creating shipments or calculating shipping fees via GHN API.
+ *
+ * @remarks
+ * - Includes: product relation (full product details)
+ * - Includes: shopOffice relation within product
+ * - Selects: ghnShopId only from shopOffice (GHN shipping provider ID)
+ * - Used in shipment creation endpoint
+ * - Used for GHN API integration (calculate shipping fees, create shipping orders)
+ * - Required for multi-shop shipping scenarios
+ * - ghnShopId maps to GHN's shop identifier for pickup location
+ * - Avoids loading full shop office data (only ID needed for shipping)
+ *
+ * @example
+ * const variant = await prisma.productVariants.findUnique({
+ *   where: { id: variantId },
+ *   include: {
+ *     product: {
+ *       include: {
+ *         shopOffice: {
+ *           select: { ghnShopId: true }
+ *         }
+ *       }
+ *     }
+ *   }
+ * });
+ * // Use variant.product.shopOffice.ghnShopId for GHN API calls
+ */
+export type ProductVariantsWithShopOfficeId = Prisma.ProductVariantsGetPayload<{
+  include: {
+    product: {
+      include: {
+        shopOffice: {
+          select: {
+            ghnShopId: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
+export type PackageDetail = {
+  packageItems: SecondCreateOrderItemsDto[];
+  totalWeight: number; // in grams
+  totalHeight: number; // in cm
+  maxLength: number; // in cm
+  maxWidth: number; // in cm
+};
+
+export type PackagesForShipping = Record<string, PackageDetail>;
+
+export type GHNShopDetail = {
+  _id: number;
+  name: string;
+  phone: string;
+  address: string;
+  ward_code: string;
+  district_id: number;
+  client_id: number;
+  bank_account_id: number;
+  status: number;
+  location: object;
+  version_no: string;
+  is_created_chat_channel: boolean;
+  address_v2: string;
+  ward_id_v2: number;
+  province_id_v2: number;
+  is_new_address: boolean;
+  updated_ip: string;
+  updated_employee: number;
+  updated_client: number;
+  updated_source: string;
+  updated_date: string;
+  created_ip: string;
+  created_employee: number;
+  created_client: number;
+  created_source: string;
+  created_date: string;
+};
+
+export type MyGHNShopList = {
+  code: number;
+  message: string;
+  data: {
+    last_offset: number;
+    shops: GHNShopDetail[];
+  };
+};
