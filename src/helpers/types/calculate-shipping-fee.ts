@@ -1,6 +1,7 @@
 // this is type for calculate shipping fee
 // this is copy code of type in node_modules/giaohangnhanh/lib/calculate-fee/type.d.ts
-// i can not import type from node_modules/giaohangnhanh/lib/calculate-fee/type.d.ts to my code, so i copy code to my code
+// i can not import type from node_modules/giaohangnhanh/lib/calculate-fee/type.d.ts to my code,
+// so i copy code to my code
 
 export type GetServiceResponse = {
   service_id: number;

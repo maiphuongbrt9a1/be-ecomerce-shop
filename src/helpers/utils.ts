@@ -411,6 +411,34 @@ export const formatMediaFieldWithLoggingForShipments = (
   return shipments;
 };
 
+/**
+ * Construct a properly formatted URL from a base host and path segments.
+ *
+ * Combines base host URL with multiple path segments, removing redundant slashes.
+ * Handles URL normalization including trailing slash removal and path joining.
+ * Used throughout GHN API integration to build consistent endpoint URLs.
+ *
+ * @param {string} host - Base URL host (e.g., "https://api.ghn.vn/" or "https://api.ghn.vn")
+ * @param {...string[]} path - Path segments to append (e.g., "shiip", "public-api", "v2", "shop", "all")
+ *
+ * @returns {URL} Constructed URL object with properly formatted path
+ *
+ * @remarks
+ * - Removes trailing slash from host automatically
+ * - Filters out empty path segments from splitting
+ * - Rejoins path segments with single forward slashes
+ * - Returns native URL object for further manipulation
+ * - Handles multiple consecutive slashes correctly
+ * - Safe for URL encoding and protocol handling
+ *
+ * @example
+ * // Constructing GHN API endpoints
+ * resolveUrl("https://api.ghn.vn/", "shiip", "public-api", "v2", "shop", "all")
+ * // Returns: URL object with href: "https://api.ghn.vn/shiip/public-api/v2/shop/all"
+ *
+ * resolveUrl("https://api.ghn.vn", "foo//bar/", "baz")
+ * // Returns: URL object with href: "https://api.ghn.vn/foo/bar/baz"
+ */
 export function resolveUrl(host: string, ...path: string[]) {
   const trimmedHost = host.replace(/\/$/, '');
   const trimmedPaths = path.map((p) =>
@@ -422,8 +450,62 @@ export function resolveUrl(host: string, ...path: string[]) {
   return new URL(trimmedPaths.join('/'), trimmedHost);
 }
 
+/**
+ * GHN Shops API integration service for retrieving and managing pickup locations.
+ *
+ * Service class extending GhnAbstract to interact with GHN's shop management endpoints.
+ * Provides methods to fetch list of available shops and retrieve specific shop details.
+ * Used in shipment creation flow to validate and select pickup locations.
+ *
+ * @remarks
+ * - Extends GhnAbstract for shared GHN API configuration and fetch utilities
+ * - Requires globalConfig.host for GHN API base URL
+ * - Uses Logger for error tracking and debugging
+ * - Integrates with GHN's public API v2 endpoints
+ * - Shop data retrieved is used for shipment creation and validation
+ *
+ * @example
+ * const ghnShops = new GHNShops();
+ * const shopList = await ghnShops.getShopList(0, 50);
+ * const shopInfo = ghnShops.getShopInfo(1001, shopList);
+ */
 export class GHNShops extends GhnAbstract {
   private readonly logger = new Logger(GHNShops.name);
+
+  /**
+   * Fetch paginated list of all shops registered for this GHN client account.
+   *
+   * Retrieves available pickup locations from GHN's shop management API.
+   * Results are paginated and include complete shop details (address, contact, coordinates).
+   * Used to populate shop selection dropdowns and validate shop availability.
+   *
+   * @param {number} [offset=0] - Pagination offset (starting index for results)
+   * @param {number} [limit=50] - Number of shops to retrieve per page (max 50)
+   *
+   * @returns {Promise<MyGHNShopList>} Complete response with shop list and pagination info
+   *
+   * @throws {Error} 'Failed to fetch GHN shop list: {message}' - If API returns non-2xx status
+   *
+   * @remarks
+   * - Calls GHN endpoint: `shiip/public-api/v2/shop/all`
+   * - Uses resolveUrl() to construct proper endpoint URL
+   * - Pagination allows iterating through large shop lists
+   * - Default offset=0 retrieves first page
+   * - Default limit=50 is GHN recommended maximum per request
+   * - Response includes last_offset for cursor-based pagination
+   * - Throws descriptive error if API call fails
+   * - Used during order shipment creation for shop validation
+   *
+   * @example
+   * // Get first 50 shops
+   * const shopList = await ghnShops.getShopList();
+   *
+   * // Get next page of shops
+   * const nextPage = await ghnShops.getShopList(50, 50);
+   *
+   * // Single shop retrieval
+   * const singleShop = ghnShops.getShopInfo(1001, shopList);
+   */
   public async getShopList(
     offset: number = 0,
     limit: number = 50,
@@ -443,6 +525,39 @@ export class GHNShops extends GhnAbstract {
     return result;
   }
 
+  /**
+   * Look up specific shop details from a shop list by GHN shop ID.
+   *
+   * Searches through fetched shop list to find matching shop by ID.
+   * Returns complete shop information including address, contact, and coordinates.
+   * Used to validate shop exists and retrieve pickup location details for shipment.
+   *
+   * @param {number} ghnShopId - GHN shop ID (internal identifier) to search for
+   * @param {MyGHNShopList} myGHNShopList - Complete shop list response from getShopList()
+   *
+   * @returns {GHNShopDetail} Shop object with complete details (address, phone, coordinates, etc.)
+   *
+   * @throws {Error} 'GHNShop with ID {ghnShopId} not found.' - If shop ID not in list
+   *
+   * @remarks
+   * - Performs linear search through shops array by _id
+   * - Logs error before throwing for debugging trail
+   * - Returns first match (IDs should be unique)
+   * - Used during shipment creation to get pickup location details
+   * - Used to validate shop exists before creating order with GHN
+   * - Typically called after receiving shop list from getShopList()
+   * - Returned shop object includes ghnShopId needed for API calls
+   * - Coordinates and address used for map display
+   *
+   * @example
+   * const shopList = await ghnShops.getShopList();
+   * try {
+   *   const shopDetails = ghnShops.getShopInfo(1001, shopList);
+   *   console.log(`Shop: ${shopDetails.name} at ${shopDetails.address}`);
+   * } catch (error) {
+   *   console.error(`Shop not found: ${error.message}`);
+   * }
+   */
   public getShopInfo(
     ghnShopId: number,
     myGHNShopList: MyGHNShopList,
