@@ -1,5 +1,8 @@
-import { SecondCreateOrderItemsDto } from '@/orders/dto/create-order.dto';
-import { Prisma, User } from '@prisma/client';
+import { DiscountType, Prisma, User } from '@prisma/client';
+import {
+  CalculateExpectedDeliveryTimeResponse,
+  GetServiceResponse,
+} from './calculate-shipping-fee';
 
 /**
  * JWT token payload structure for authentication.
@@ -642,16 +645,218 @@ export type ProductVariantsWithShopOfficeId = Prisma.ProductVariantsGetPayload<{
   };
 }>;
 
+/**
+ * Package item formatted for GHN (Giao Hang Nhanh) create order API request.
+ *
+ * Transforms product variant data into GHN-compatible format for shipment creation.
+ * Used when submitting order items to GHN's shipping API.
+ *
+ * @remarks
+ * - Flattened structure from ProductVariant (no nested objects)
+ * - `price` is the unit price per item for GHN calculation
+ * - `category.level1` is GHN's product category classification
+ * - All dimensions required for GHN's size/weight validation
+ * - Used in shipment creation and shipping fee calculation
+ * - Weight in grams, dimensions in centimeters
+ *
+ * @example
+ * {
+ *   name: "T-Shirt Red",
+ *   code: "TS-RED-001",
+ *   quantity: 2,
+ *   price: 199000,
+ *   length: 20,
+ *   width: 15,
+ *   height: 5,
+ *   weight: 250,
+ *   category: { level1: "Clothing" }
+ * }
+ */
+export type PackageItemDetailForGHNCreateNewOrderRequest = {
+  name: string;
+  code: string;
+  quantity: number;
+  price: number;
+  length: number;
+  width: number;
+  height: number;
+  weight: number;
+  category: {
+    level1: string;
+  };
+};
+
+/**
+ * Order line item package details with pricing and discount information.
+ *
+ * Internal representation of a product variant in a shipping package.
+ * Includes variant details, quantity, pricing, and discount calculations.
+ * Used for order processing, cart updates, and shipment preparation.
+ *
+ * @remarks
+ * - Contains product variant identification (ID, name, size, color, SKU)
+ * - Tracks quantity and unit price at time of addition
+ * - Includes discount details (type, value, description) for final pricing
+ * - `totalPrice` = (unitPrice * quantity)
+ * - `currencyUnit` typically 'VND' for Vietnamese Dong
+ * - Used in order confirmation and invoice generation
+ * - Discount calculations affect final package pricing
+ *
+ * @example
+ * {
+ *   productVariantId: 123n,
+ *   productVariantName: "Nike Shoes",
+ *   productVariantSize: "42",
+ *   productVariantColor: "Black",
+ *   productVariantSKU: "NK-BLK-42",
+ *   quantity: 1,
+ *   unitPrice: 1200000,
+ *   discountDescription: "Summer Sale 10%",
+ *   discountType: "PERCENTAGE",
+ *   discountValue: 10,
+ *   totalPrice: 1080000,
+ *   currencyUnit: "VND"
+ * }
+ */
+export type PackageItemDetail = {
+  productVariantId: bigint;
+  productVariantName: string;
+  productVariantSize: string;
+  productVariantColor: string;
+  productVariantSKU: string;
+  quantity: number;
+  unitPrice: number;
+  discountDescription: string;
+  discountType: DiscountType;
+  discountValue: number;
+  totalPrice: number;
+  currencyUnit: string;
+};
+
+/**
+ * Complete shipping package with all necessary data for shipment creation and delivery.
+ *
+ * Comprehensive package information for a single shop's items being shipped together.
+ * Includes item details, GHN integration data, shipping service selection, and delivery timeline.
+ * Used in shipment creation, shipping fee calculation, and delivery tracking.
+ *
+ * @remarks
+ * - `packageItems`: Internal cart item representation (for order records)
+ * - `packageItemsForGHNCreateNewOrderRequest`: GHN API format items
+ * - Dimensions tracked separately: totalWeight (grams), totalHeight/Length/Width (cm)
+ * - `ghnShopId`: Pickup location for this package (shop's GHN shop ID)
+ * - `ghnShopDetail`: Complete pickup location details from GHN
+ * - `ghnProvinceName/ghnDistrictName/ghnWardName`: Delivery location names (human-readable)
+ * - `shippingService`: Selected GHN service (Express, Standard, Saving)
+ * - `shippingFee`: Calculated cost in VND
+ * - `expectedDeliveryTime`: ETA with leadtime and order_date timestamps
+ * - `from_*`: Pickup location GHN IDs and codes
+ * - `to_*`: Delivery location GHN IDs and codes
+ * - Used in order tracking, invoice generation
+ * - One package per shop (multi-shop orders = multiple packages)
+ *
+ * @example
+ * {
+ *   packageItems: [...],
+ *   packageItemsForGHNCreateNewOrderRequest: [...],
+ *   totalWeight: 1500,
+ *   totalHeight: 20,
+ *   maxLength: 30,
+ *   maxWidth: 25,
+ *   ghnShopId: 1001,
+ *   ghnShopDetail: {...},
+ *   ghnProvinceName: "TP. Hồ Chí Minh",
+ *   ghnDistrictName: "Quận 1",
+ *   ghnWardName: "Phường Bến Nghé",
+ *   shippingService: {...},
+ *   shippingFee: 35000,
+ *   expectedDeliveryTime: { leadtime: 1707993600, order_date: 1707917200 },
+ *   from_district_id: 1,
+ *   from_ward_code: "100320",
+ *   to_district_id: 3,
+ *   to_ward_code: "100010"
+ * }
+ */
 export type PackageDetail = {
-  packageItems: SecondCreateOrderItemsDto[];
+  packageItems: PackageItemDetail[];
+  packageItemsForGHNCreateNewOrderRequest: PackageItemDetailForGHNCreateNewOrderRequest[];
   totalWeight: number; // in grams
   totalHeight: number; // in cm
   maxLength: number; // in cm
   maxWidth: number; // in cm
+  ghnShopId: number;
+  ghnShopDetail: GHNShopDetail;
+  ghnProvinceName: string;
+  ghnDistrictName: string;
+  ghnWardName: string;
+  shippingService: GetServiceResponse;
+  shippingFee: number; // in VND
+  expectedDeliveryTime: CalculateExpectedDeliveryTimeResponse;
+  from_district_id: number;
+  from_ward_code: string;
+  to_district_id: number;
+  to_ward_code: string;
 };
 
+/**
+ * All shipping packages for an order, organized by shop.
+ *
+ * Record of packages grouped by shop office ID (as key).
+ * Each order may have multiple packages if items come from different shops.
+ * Used to organize shipment data and simplify iteration over shop-grouped items.
+ *
+ * @remarks
+ * - Key: shop office ID as string (from package grouping logic)
+ * - Value: Complete PackageDetail for that shop's items
+ * - Multi-shop orders require multiple shipments (one per shop)
+ * - Used in shipment creation endpoint
+ * - Used in shipping fee aggregation
+ * - Simplifies iterating packages by shop during checkout
+ *
+ * @example
+ * {
+ *   "1001": { packageItems: [...], shippingFee: 35000 },
+ *   "1002": { packageItems: [...], shippingFee: 28000 }
+ * }
+ */
 export type PackagesForShipping = Record<string, PackageDetail>;
 
+/**
+ * GHN shop office details with location and system metadata.
+ *
+ * Complete shop information retrieved from GHN's system.
+ * Represents a pickup location for shipments.
+ * Used in shipment creation and shop location validation.
+ *
+ * @remarks
+ * - `_id`: GHN's internal shop identifier (primary key)
+ * - `name/phone/address`: Shop contact and location details
+ * - `ward_code/district_id`: GHN location hierarchy codes
+ * - `client_id/bank_account_id`: Shop's GHN client and payment info
+ * - `status`: Shop active/inactive status (0=inactive, 1=active)
+ * - `location`: Geographic coordinates (latitude/longitude object)
+ * - `version_no`: System version tracking
+ * - `is_created_chat_channel`: Chat support availability flag
+ * - `address_v2/ward_id_v2/province_id_v2`: Updated address format
+ * - `is_new_address`: Indicates if address is newly registered
+ * - `updated_ip/updated_employee/updated_client/updated_source/updated_date`: Audit trail for updates
+ * - `created_ip/created_employee/created_client/created_source/created_date`: Audit trail for creation
+ * - Used in shipment tracking and shop identification
+ * - Retrieved from GHN's get shop details API
+ *
+ * @example
+ * {
+ *   _id: 1001,
+ *   name: "Main Shop",
+ *   phone: "0123456789",
+ *   address: "123 Nguyen Hue, District 1",
+ *   ward_code: "100320",
+ *   district_id: 1,
+ *   client_id: 5001,
+ *   status: 1,
+ *   ...
+ * }
+ */
 export type GHNShopDetail = {
   _id: number;
   name: string;
@@ -681,6 +886,35 @@ export type GHNShopDetail = {
   created_date: string;
 };
 
+/**
+ * GHN API response wrapper containing list of shops for a client account.
+ *
+ * Top-level response from GHN's get shops list API endpoint.
+ * Contains metadata and paginated shop results.
+ * Used when retrieving all available pickup locations for shipment creation.
+ *
+ * @remarks
+ * - `code`: GHN API status code (0=success, non-zero=error)
+ * - `message`: Human-readable API response message
+ * - `data.last_offset`: Pagination cursor for next request (if more results)
+ * - `data.shops`: Array of GHNShopDetail objects
+ * - Used to populate shop selection dropdowns
+ * - Used to validate shop availability for pickup
+ * - Retrieved from GHN's shop management API
+ *
+ * @example
+ * {
+ *   code: 200,
+ *   message: "Success",
+ *   data: {
+ *     last_offset: 5,
+ *     shops: [
+ *       { _id: 1001, name: "Main Shop", ... },
+ *       { _id: 1002, name: "Branch Shop", ... }
+ *     ]
+ *   }
+ * }
+ */
 export type MyGHNShopList = {
   code: number;
   message: string;

@@ -101,6 +101,15 @@ export class CreateOrderDto {
   carrier: string;
 
   @ApiProperty({
+    example: 'This is a description of the order',
+    description: 'Description of the order',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  description: string;
+
+  @ApiProperty({
     example: 'Ho Xuan Huong Street',
     description:
       'please provide shipping address details. I don"t need address id because i will create new address for this order',
@@ -135,6 +144,11 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @IsString()
   province: string;
+
+  @ApiProperty({ example: '0987654321' })
+  @IsNotEmpty()
+  @IsString()
+  phone: string;
 
   @ApiProperty({ example: 'ADSAFD797654FDAFD' })
   @IsNotEmpty()

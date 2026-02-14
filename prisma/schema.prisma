@@ -346,7 +346,7 @@ model Orders {
     userId  BigInt      @db.BigInt
     processByStaff        User?        @relation("OrderProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     processByStaffId      BigInt?      @db.BigInt 
-    
+    description String? @db.VarChar(255)
     orderDate   DateTime    @default(now())
     status      OrderStatus      @default(PENDING)
     subTotal    Float   @db.DoublePrecision  // total before shipping and discount
@@ -403,6 +403,7 @@ model Shipments {
     shippedAt   DateTime?  // at customer, actual time when arrive to customer
     carrier     String      @db.VarChar(100)
     trackingNumber String   @db.VarChar(100)
+    description String?    @db.VarChar(255)
     status      ShipmentStatus      @default(WAITING_FOR_PICKUP)
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
