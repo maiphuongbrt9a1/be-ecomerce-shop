@@ -26,6 +26,7 @@ import {
   PackagesForShipping,
   ShipmentsWithFullInformation,
   PackageItemDetailForGHNCreateNewOrderRequest,
+  GHNShopDetail,
 } from '@/helpers/types/types';
 import {
   formatMediaFieldWithLogging,
@@ -36,6 +37,11 @@ import {
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { ShipmentsService } from '@/shipments/shipments.service';
 import Ghn from 'giaohangnhanh';
+import {
+  CalculateExpectedDeliveryTimeResponse,
+  GetServiceResponse,
+} from '@/helpers/types/calculate-shipping-fee';
+import { GhnDistrict, GhnProvince, GhnWard } from '@/helpers/types/ghn-address';
 
 @Injectable()
 export class OrdersService {
@@ -218,6 +224,30 @@ export class OrdersService {
               },
             };
 
+          if (!packages[ghnShopId]) {
+            packages[ghnShopId] = {
+              packageItems: [] as PackageItemDetail[],
+              packageItemsForGHNCreateNewOrderRequest:
+                [] as PackageItemDetailForGHNCreateNewOrderRequest[],
+              totalWeight: 0, // in grams
+              totalHeight: 0, // in cm
+              maxLength: 0, // in cm
+              maxWidth: 0, // in cm
+              ghnShopId: 0,
+              ghnShopDetail: {} as GHNShopDetail,
+              ghnProvinceName: '',
+              ghnDistrictName: '',
+              ghnWardName: '',
+              shippingService: {} as GetServiceResponse,
+              shippingFee: 0, // in VND
+              expectedDeliveryTime: {} as CalculateExpectedDeliveryTimeResponse,
+              from_district_id: 0,
+              from_ward_code: '',
+              to_district_id: 0,
+              to_ward_code: '',
+            };
+          }
+
           packages[ghnShopId].packageItemsForGHNCreateNewOrderRequest.push(
             itemDetailForGHNCreateNewOrderRequest,
           );
@@ -261,6 +291,32 @@ export class OrdersService {
 
         // calculate shipping fee based on packages from different shop offices
         for (const ghnShopId in packages) {
+          const shopOffice = await tx.shopOffice.findFirst({
+            where: { ghnShopId: BigInt(ghnShopId) },
+          });
+
+          if (!shopOffice || !shopOffice.ghnShopId) {
+            this.logger.log(
+              `Shop office id connect with GHN shop ID ${ghnShopId} not found!`,
+            );
+            throw new NotFoundException(
+              `Shop office id connect with GHN shop ID ${ghnShopId} not found!`,
+            );
+          }
+
+          if (
+            !shopOffice.ghnShopProvinceId ||
+            !shopOffice.ghnShopDistrictId ||
+            !shopOffice.ghnShopWardCode
+          ) {
+            this.logger.log(
+              `Shop office id connect with GHN shop ID ${ghnShopId} has incomplete GHN address information!`,
+            );
+            throw new NotFoundException(
+              `Shop office id connect with GHN shop ID ${ghnShopId} has incomplete GHN address information!`,
+            );
+          }
+
           const ghnConfig = {
             token: process.env.GHN_TOKEN!, // Thay bằng token của bạn
             shopId: Number(ghnShopId), // Thay bằng shopId của bạn
@@ -277,91 +333,160 @@ export class OrdersService {
           const maxWidthForOnePackage = packages[ghnShopId].maxWidth;
 
           // Lấy danh sách các tỉnh
-          const province = await ghn.address.getProvinces();
+          const GHNProvinces = await ghn.address.getProvinces();
+
           // tìm tỉnh ứng với tỉnh của người khách hàng cung cấp
-          const toProvince = province.find((p) =>
-            p.NameExtension.includes(createOrderDto.province),
+          const candidateProvince = GHNProvinces.filter(
+            (p) =>
+              Array.isArray(p.NameExtension) &&
+              p.IsEnable === 1 &&
+              p.Status === 1 &&
+              p.NameExtension.some((name) =>
+                name?.includes(createOrderDto.province),
+              ),
           );
 
-          if (!toProvince) {
+          if (!candidateProvince || candidateProvince.length === 0) {
             this.logger.log(`Province ${createOrderDto.province} not found`);
             throw new NotFoundException(
               `Province ${createOrderDto.province} not found`,
             );
           }
 
-          // Lấy danh sách quận/huyện trong tỉnh đó
-          const district = await ghn.address.getDistricts(
-            toProvince.ProvinceID,
-          );
-          // tìm quận/huyện ứng với quận/huyện của người khách hàng cung cấp
-          const toDistrict = district.find((d) =>
-            d.NameExtension.includes(createOrderDto.district),
-          );
+          let toProvince: GhnProvince | undefined;
+          let toDistrict: GhnDistrict | undefined;
+          let toWard: GhnWard | undefined;
 
-          if (!toDistrict) {
-            this.logger.log(`District ${createOrderDto.district} not found`);
+          for (const province of candidateProvince) {
+            // Lấy danh sách quận/huyện trong tỉnh đó
+            const districtsOfToProvince = await ghn.address.getDistricts(
+              province.ProvinceID,
+            );
+
+            if (!districtsOfToProvince || districtsOfToProvince.length === 0) {
+              continue; // nếu không có quận/huyện nào trong tỉnh này, tiếp tục kiểm tra tỉnh tiếp theo
+            }
+
+            // tìm quận/huyện ứng với quận/huyện của người khách hàng cung cấp
+            toDistrict = districtsOfToProvince.find(
+              (d) =>
+                Array.isArray(d.NameExtension) &&
+                d.NameExtension.some((name) =>
+                  name?.includes(createOrderDto.district),
+                ),
+            );
+
+            if (!toDistrict) {
+              continue; // nếu không tìm thấy quận/huyện trong tỉnh này, tiếp tục tìm ở tỉnh khác
+            }
+
+            // Lấy danh sách phường/xã trong quận/huyện đó
+            const wardsOfToDistrict = await ghn.address.getWards(
+              toDistrict.DistrictID,
+            );
+
+            if (!wardsOfToDistrict || wardsOfToDistrict.length === 0) {
+              continue; // nếu không có phường/xã nào trong quận/huyện này, tiếp tục kiểm tra tỉnh tiếp theo
+            }
+
+            // tìm phường/xã ứng với phường/xã của người khách hàng cung cấp
+            toWard = wardsOfToDistrict.find(
+              (w) =>
+                Array.isArray(w.NameExtension) &&
+                w.NameExtension.some((name) =>
+                  name?.includes(createOrderDto.ward),
+                ),
+            );
+            if (!toWard) {
+              continue; // nếu không tìm thấy phường/xã trong quận/huyện này, tiếp tục tìm ở tỉnh khác
+            }
+
+            // nếu tìm thấy đầy đủ tỉnh, quận/huyện, phường/xã thì dừng việc tìm kiếm
+            toProvince = province;
+            break;
+          }
+
+          if (!toProvince || !toDistrict || !toWard) {
+            this.logger.log(
+              `Could not find complete address information for province: ${createOrderDto.province}, district: ${createOrderDto.district}, ward: ${createOrderDto.ward}`,
+            );
             throw new NotFoundException(
-              `District ${createOrderDto.district} not found`,
+              `Could not find complete address information for province: ${createOrderDto.province}, district: ${createOrderDto.district}, ward: ${createOrderDto.ward}`,
             );
           }
 
-          // Lấy danh sách phường/xã trong quận/huyện đó
-          const ward = await ghn.address.getWards(toDistrict.DistrictID);
-          // tìm phường/xã ứng với phường/xã của người khách hàng cung cấp
-          const toWard = ward.find((w) =>
-            w.NameExtension.includes(createOrderDto.ward),
-          );
-          if (!toWard) {
-            this.logger.log(`Ward ${createOrderDto.ward} not found`);
-            throw new NotFoundException(
-              `Ward ${createOrderDto.ward} not found`,
-            );
-          }
-
-          // Lấy ra district id của shop office từ ghnShopId
+          // Lấy ra thông tin chi chi tiết shop office từ ghnShopId
           const ghnShopList = await ghnShops.getShopList();
           const ghnShopInfo = ghnShops.getShopInfo(
             ghnConfig.shopId,
             ghnShopList,
           );
 
-          const fromDistrict = district.find(
-            (d) => d.DistrictID === ghnShopInfo.district_id,
-          );
-
-          if (!fromDistrict) {
-            this.logger.log(
-              `District with ID ${ghnShopInfo.district_id} not found for shop office with GHN shop ID ${ghnShopId}`,
-            );
-            throw new NotFoundException(
-              `District with ID ${ghnShopInfo.district_id} not found for shop office with GHN shop ID ${ghnShopId}`,
-            );
-          }
-
-          const fromProvince = province.find(
-            (p) => p.ProvinceID === fromDistrict?.ProvinceID,
+          const fromProvince = GHNProvinces.find(
+            (p) => p.ProvinceID == Number(shopOffice.ghnShopProvinceId),
           );
 
           if (!fromProvince) {
             this.logger.log(
-              `Province with ID ${fromDistrict?.ProvinceID} not found for shop office with GHN shop ID ${ghnShopId}`,
+              `Province with ID ${shopOffice.ghnShopProvinceId} not found for shop office with GHN shop ID ${ghnShopId}`,
             );
             throw new NotFoundException(
-              `Province with ID ${fromDistrict?.ProvinceID} not found for shop office with GHN shop ID ${ghnShopId}`,
+              `Province with ID ${shopOffice.ghnShopProvinceId} not found for shop office with GHN shop ID ${ghnShopId}`,
             );
           }
 
-          const fromWard = ward.find(
-            (w) => w.WardCode === ghnShopInfo.ward_code,
+          const districtsOfFromProvince = await ghn.address.getDistricts(
+            fromProvince.ProvinceID,
+          );
+
+          if (
+            !districtsOfFromProvince ||
+            districtsOfFromProvince.length === 0
+          ) {
+            this.logger.log(
+              `Districts not found for province with ID ${shopOffice.ghnShopProvinceId}`,
+            );
+            throw new NotFoundException(
+              `Districts not found for province with ID ${shopOffice.ghnShopProvinceId}`,
+            );
+          }
+
+          const fromDistrict = districtsOfFromProvince.find(
+            (d) => d.DistrictID == Number(shopOffice.ghnShopDistrictId),
+          );
+
+          if (!fromDistrict) {
+            this.logger.log(
+              `District with ID ${shopOffice.ghnShopDistrictId} not found for shop office with GHN shop ID ${ghnShopId}`,
+            );
+            throw new NotFoundException(
+              `District with ID ${shopOffice.ghnShopDistrictId} not found for shop office with GHN shop ID ${ghnShopId}`,
+            );
+          }
+
+          const wardsOfFromDistrict = await ghn.address.getWards(
+            fromDistrict.DistrictID,
+          );
+
+          if (!wardsOfFromDistrict || wardsOfFromDistrict.length === 0) {
+            this.logger.log(
+              `Wards not found for district with ID ${shopOffice.ghnShopDistrictId}`,
+            );
+            throw new NotFoundException(
+              `Wards not found for district with ID ${shopOffice.ghnShopDistrictId}`,
+            );
+          }
+
+          const fromWard = wardsOfFromDistrict.find(
+            (w) => w.WardCode == shopOffice.ghnShopWardCode,
           );
 
           if (!fromWard) {
             this.logger.log(
-              `Ward with code ${ghnShopInfo.ward_code} not found for shop office with GHN shop ID ${ghnShopId}`,
+              `Ward with code ${shopOffice.ghnShopWardCode} not found for shop office with GHN shop ID ${ghnShopId}`,
             );
             throw new NotFoundException(
-              `Ward with code ${ghnShopInfo.ward_code} not found for shop office with GHN shop ID ${ghnShopId}`,
+              `Ward with code ${shopOffice.ghnShopWardCode} not found for shop office with GHN shop ID ${ghnShopId}`,
             );
           }
 
@@ -508,6 +633,20 @@ export class OrdersService {
         // please check update payment method in payments service to see more details about creating shipment after payment is successful
         if (createOrderDto.paymentMethod === PaymentMethod.COD) {
           for (const ghnShopId in packages) {
+            const shopOffice = await tx.shopOffice.findFirst({
+              where: { ghnShopId: BigInt(ghnShopId) },
+              select: { id: true, ghnShopId: true },
+            });
+
+            if (!shopOffice || !shopOffice.ghnShopId) {
+              this.logger.log(
+                `Shop office id connect with GHN shop ID ${ghnShopId} not found!`,
+              );
+              throw new NotFoundException(
+                `Shop office id connect with GHN shop ID ${ghnShopId} not found!`,
+              );
+            }
+
             // create order on GHN
             const ghnConfig = {
               token: process.env.GHN_TOKEN!, // Thay bằng token của bạn
@@ -585,7 +724,7 @@ export class OrdersService {
                 orderId: result.id,
                 processByStaffId: processByStaff,
                 ghnOrderCode: ghnCreateNewOrderRequest.order_code,
-                shopOfficeId: BigInt(ghnShopId),
+                shopOfficeId: BigInt(shopOffice.id),
                 estimatedDelivery:
                   ghnCreateNewOrderRequest.expected_delivery_time,
                 estimatedShipDate:

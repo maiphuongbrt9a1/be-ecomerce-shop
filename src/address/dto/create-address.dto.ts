@@ -12,17 +12,17 @@ export class CreateAddressDto {
   @IsString()
   street: string;
 
-  @ApiProperty({ example: 'Dong Hoa' })
+  @ApiProperty({ example: 'Đông Hòa' })
   @IsNotEmpty()
   @IsString()
   ward: string;
 
-  @ApiProperty({ example: 'Di An' })
+  @ApiProperty({ example: 'Dĩ An' })
   @IsNotEmpty()
   @IsString()
   district: string;
 
-  @ApiProperty({ example: 'Binh Duong' })
+  @ApiProperty({ example: 'Bình Dương' })
   @IsNotEmpty()
   @IsString()
   province: string;
@@ -32,7 +32,7 @@ export class CreateAddressDto {
   @IsString()
   zipCode: string;
 
-  @ApiProperty({ example: 'Binh Duong' })
+  @ApiProperty({ example: 'Bình Dương' })
   @IsNotEmpty()
   @IsString()
   country: string;

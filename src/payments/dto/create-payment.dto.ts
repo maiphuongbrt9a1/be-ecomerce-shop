@@ -30,6 +30,8 @@ export class CreatePaymentDto {
       'CREDIT_CARD',
       'BANK_TRANSFER',
     ],
+    example: 'COD',
+    description: 'Payment method for the order',
   })
   @IsNotEmpty()
   @IsEnum(PaymentMethod)

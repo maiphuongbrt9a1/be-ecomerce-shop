@@ -28,6 +28,8 @@ export class CreateUserDto {
     enum: Gender,
     enumName: 'Gender',
     examples: ['MALE', 'FEMALE', 'OTHER'],
+    example: 'MALE',
+    description: 'Gender of the user',
     required: false,
   })
   @IsOptional()
@@ -59,6 +61,8 @@ export class CreateUserDto {
     enum: Role,
     enumName: 'Role',
     examples: ['USER', 'ADMIN', 'OPERATOR'],
+    example: 'USER',
+    description: 'Role of the user',
   })
   @IsNotEmpty()
   @IsEnum(Role)

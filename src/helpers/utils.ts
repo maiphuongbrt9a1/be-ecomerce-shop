@@ -1,9 +1,10 @@
-import { Logger } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import { Media } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import {
   GHNShopDetail,
   MyGHNShopList,
+  MyGHNShopRegisterResponse,
   OrdersWithFullInformation,
   ShipmentsWithFullInformation,
 } from './types/types';
@@ -510,19 +511,24 @@ export class GHNShops extends GhnAbstract {
     offset: number = 0,
     limit: number = 50,
   ): Promise<MyGHNShopList> {
-    const getShopListPath = 'shiip/public-api/v2/shop/all';
-    const response = await this.fetch(
-      resolveUrl(this.globalConfig.host, getShopListPath),
-      {
-        offset: offset,
-        limit: limit,
-      },
-    );
-    const result = (await response.json()) as MyGHNShopList;
-    if (!response.ok) {
-      throw new Error(`Failed to fetch GHN shop list: ${result.message}`);
+    try {
+      const getShopListPath = 'shiip/public-api/v2/shop/all';
+      const response = await this.fetch(
+        resolveUrl(this.globalConfig.host, getShopListPath),
+        {
+          offset: offset,
+          limit: limit,
+        },
+      );
+      const result = (await response.json()) as MyGHNShopList;
+      if (!response.ok) {
+        throw new Error(`Failed to fetch GHN shop list: ${result.message}`);
+      }
+      return result;
+    } catch (error) {
+      this.logger.error(`Error fetching GHN shop list: ${error}`);
+      throw new BadRequestException(`Failed to fetch GHN shop list: ${error}`);
     }
-    return result;
   }
 
   /**
@@ -562,13 +568,50 @@ export class GHNShops extends GhnAbstract {
     ghnShopId: number,
     myGHNShopList: MyGHNShopList,
   ): GHNShopDetail {
-    const shop = myGHNShopList.data.shops.find((s) => s._id === ghnShopId);
+    try {
+      const shop = myGHNShopList.data.shops.find((s) => s._id === ghnShopId);
 
-    if (!shop) {
-      this.logger.error(`GHNShop with ID ${ghnShopId} not found.`);
-      throw new Error(`GHNShop with ID ${ghnShopId} not found.`);
+      if (!shop) {
+        this.logger.error(`GHNShop with ID ${ghnShopId} not found.`);
+        throw new Error(`GHNShop with ID ${ghnShopId} not found.`);
+      }
+
+      return shop;
+    } catch (error) {
+      this.logger.error(`Error retrieving GHN shop info: ${error}`);
+      throw new BadRequestException(
+        `Failed to retrieve GHN shop info: ${error}`,
+      );
     }
+  }
 
-    return shop;
+  public async registerGHNShopOffice(
+    district_id: number,
+    ward_code: string,
+    name: string,
+    phone: string,
+    address: string,
+  ): Promise<MyGHNShopRegisterResponse> {
+    try {
+      const getShopListPath = 'shiip/public-api/v2/shop/register';
+      const response = await this.fetch(
+        resolveUrl(this.globalConfig.host, getShopListPath),
+        {
+          district_id: district_id,
+          ward_code: ward_code,
+          name: name,
+          phone: phone,
+          address: address,
+        },
+      );
+      const result = (await response.json()) as MyGHNShopRegisterResponse;
+      if (!response.ok) {
+        throw new Error(`Failed to register GHN shop: ${result.message}`);
+      }
+      return result;
+    } catch (error) {
+      this.logger.error(`Error registering GHN shop: ${error}`);
+      throw new BadRequestException(`Failed to register GHN shop: ${error}`);
+    }
   }
 }

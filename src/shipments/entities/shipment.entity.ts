@@ -53,6 +53,8 @@ export class ShipmentEntity {
       'VNPost',
       'J&T Express',
     ],
+    example: 'Giao hàng nhanh',
+    description: 'Carrier for the shipment',
   })
   carrier: string;
 

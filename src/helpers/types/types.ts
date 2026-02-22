@@ -923,3 +923,11 @@ export type MyGHNShopList = {
     shops: GHNShopDetail[];
   };
 };
+
+export type MyGHNShopRegisterResponse = {
+  code: number;
+  message: string;
+  data: {
+    shop_id: number;
+  };
+};

@@ -16,7 +16,14 @@ import {
   User,
 } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
-import { ProductsOfCategoryOfShopOffice } from '@/helpers/types/types';
+import {
+  GHNShopDetail,
+  MyGHNShopRegisterResponse,
+  ProductsOfCategoryOfShopOffice,
+} from '@/helpers/types/types';
+import { GHNShops } from '@/helpers/utils';
+import Ghn from 'giaohangnhanh';
+import { GhnProvince, GhnDistrict, GhnWard } from '@/helpers/types/ghn-address';
 
 @Injectable()
 export class ShopOfficesService {
@@ -50,8 +57,123 @@ export class ShopOfficesService {
    */
   async create(createShopOfficeDto: CreateShopOfficeDto): Promise<ShopOffice> {
     try {
+      const defaultGhnConfig = {
+        token: process.env.GHN_TOKEN!, // Thay bằng token của bạn
+        shopId: Number(process.env.GHN_SHOP1_ID!),
+        host: process.env.GHN_HOST!,
+        trackingHost: process.env.GHN_TRACKING_HOST!,
+        testMode: process.env.GHN_TEST_MODE === 'true', // Bật chế độ test sẽ ghi đè tất cả host thành môi trường sandbox
+      };
+
+      const ghn = new Ghn(defaultGhnConfig);
+      const ghnShops = new GHNShops(defaultGhnConfig);
+
+      // Lấy danh sách các tỉnh
+      const GHNProvinces = await ghn.address.getProvinces();
+      // tìm tỉnh ứng với tỉnh của người khách hàng cung cấp
+      const candidateProvince = GHNProvinces.filter(
+        (p) =>
+          Array.isArray(p.NameExtension) &&
+          p.IsEnable === 1 &&
+          p.Status === 1 &&
+          p.NameExtension.some((name) =>
+            name?.includes(createShopOfficeDto.province),
+          ),
+      );
+
+      if (!candidateProvince || candidateProvince.length === 0) {
+        this.logger.log(`Province ${createShopOfficeDto.province} not found`);
+        throw new NotFoundException(
+          `Province ${createShopOfficeDto.province} not found`,
+        );
+      }
+
+      let shopProvince: GhnProvince | undefined;
+      let shopDistrict: GhnDistrict | undefined;
+      let shopWard: GhnWard | undefined;
+
+      for (const province of candidateProvince) {
+        // Lấy danh sách quận/huyện trong tỉnh đó
+        const districtsOfProvince = await ghn.address.getDistricts(
+          province.ProvinceID,
+        );
+
+        if (!districtsOfProvince || districtsOfProvince.length === 0) {
+          continue; // nếu không có quận/huyện nào trong tỉnh này, tiếp tục kiểm tra tỉnh tiếp theo
+        }
+
+        // tìm quận/huyện ứng với quận/huyện được cung cấp
+        shopDistrict = districtsOfProvince.find(
+          (d) =>
+            Array.isArray(d.NameExtension) &&
+            d.NameExtension.some((name) =>
+              name?.includes(createShopOfficeDto.district),
+            ),
+        );
+
+        if (!shopDistrict) {
+          continue; // nếu không tìm thấy quận/huyện trong tỉnh này, tiếp tục kiểm tra tỉnh tiếp theo
+        }
+
+        // Lấy danh sách phường/xã trong quận/huyện đó
+        const wardsOfDistrict = await ghn.address.getWards(
+          shopDistrict.DistrictID,
+        );
+
+        if (!wardsOfDistrict || wardsOfDistrict.length === 0) {
+          continue; // nếu không có phường/xã nào trong quận/huyện này, tiếp tục kiểm tra tỉnh tiếp theo
+        }
+
+        // tìm phường/xã ứng với phường/xã được cung cấp
+        shopWard = wardsOfDistrict.find(
+          (w) =>
+            Array.isArray(w.NameExtension) &&
+            w.NameExtension.some((name) =>
+              name?.includes(createShopOfficeDto.ward),
+            ),
+        );
+        if (!shopWard) {
+          continue; // nếu không tìm thấy phường/xã trong quận/huyện này, tiếp tục kiểm tra tỉnh tiếp theo
+        }
+
+        // nếu tìm thấy cả tỉnh, quận/huyện và phường/xã thì gán giá trị và thoát vòng lặp
+        shopProvince = province;
+        break;
+      }
+
+      if (!shopProvince || !shopDistrict || !shopWard) {
+        this.logger.log(
+          `Could not find complete address information for province: ${createShopOfficeDto.province}, district: ${createShopOfficeDto.district}, ward: ${createShopOfficeDto.ward}`,
+        );
+        throw new NotFoundException(
+          `Could not find complete address information for province: ${createShopOfficeDto.province}, district: ${createShopOfficeDto.district}, ward: ${createShopOfficeDto.ward}`,
+        );
+      }
+
+      const newGHNShop: MyGHNShopRegisterResponse =
+        await ghnShops.registerGHNShopOffice(
+          shopDistrict.DistrictID,
+          shopWard.WardCode,
+          createShopOfficeDto.shopName,
+          createShopOfficeDto.phone,
+          createShopOfficeDto.address,
+        );
+
+      if (!newGHNShop || newGHNShop.code !== 200) {
+        this.logger.log('Failed to register shop office with GHN', newGHNShop);
+        throw new BadRequestException(
+          'Failed to register shop office with GHN',
+        );
+      }
+
       const result = await this.prismaService.shopOffice.create({
-        data: { ...createShopOfficeDto },
+        data: {
+          shopName: createShopOfficeDto.shopName,
+          ghnShopProvinceId: shopProvince.ProvinceID,
+          ghnShopDistrictId: shopDistrict.DistrictID,
+          ghnShopWardCode: shopWard.WardCode,
+          ghnShopId: newGHNShop.data.shop_id,
+        },
       });
 
       this.logger.log('Shop office created successfully', result.id);
@@ -180,7 +302,7 @@ export class ShopOfficesService {
     try {
       const result = await this.prismaService.shopOffice.update({
         where: { id: id },
-        data: { ...updateShopOfficeDto },
+        data: { shopName: updateShopOfficeDto.shopName },
       });
       this.logger.log('Shop office updated successfully', id);
       return result;
@@ -479,6 +601,53 @@ export class ShopOfficesService {
       );
       throw new BadRequestException(
         'Failed to retrieve shop office products of category',
+      );
+    }
+  }
+
+  async getGHNShopOffice(shopOfficeId: number): Promise<GHNShopDetail | null> {
+    try {
+      const shopOffice = await this.prismaService.shopOffice.findUnique({
+        where: { id: shopOfficeId },
+      });
+
+      if (!shopOffice) {
+        throw new NotFoundException('Shop office not found!');
+      }
+
+      if (!shopOffice.ghnShopId) {
+        throw new NotFoundException('GHN shop office details not found!');
+      }
+
+      const ghnConfig = {
+        token: process.env.GHN_TOKEN!, // Thay bằng token của bạn
+        shopId: Number(shopOffice.ghnShopId), // Thay bằng shopId của bạn
+        host: process.env.GHN_HOST!,
+        trackingHost: process.env.GHN_TRACKING_HOST!,
+        testMode: process.env.GHN_TEST_MODE === 'true', // Bật chế độ test sẽ ghi đè tất cả host thành môi trường sandbox
+      };
+      const ghnShops = new GHNShops(ghnConfig);
+
+      const ghnShopOfficeList = await ghnShops.getShopList();
+      const ghnShopOffice = ghnShops.getShopInfo(
+        Number(shopOffice.ghnShopId),
+        ghnShopOfficeList,
+      );
+
+      if (!ghnShopOffice) {
+        throw new NotFoundException('GHN shop office details not found!');
+      }
+
+      this.logger.log(
+        'GHN shop office details retrieved successfully',
+        shopOfficeId,
+      );
+
+      return ghnShopOffice;
+    } catch (error) {
+      this.logger.log('Error retrieving GHN shop office details', error);
+      throw new BadRequestException(
+        'Failed to retrieve GHN shop office details',
       );
     }
   }

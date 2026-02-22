@@ -15,7 +15,7 @@ export class SecondCreateOrderItemsDto {
   @IsNotEmpty()
   productVariantId: bigint;
 
-  @ApiProperty({ example: 851 })
+  @ApiProperty({ example: 8 })
   @IsNotEmpty()
   @IsNumber()
   @Type(() => Number)
@@ -80,6 +80,7 @@ export class CreateOrderDto {
       'CREDIT_CARD',
       'BANK_TRANSFER',
     ],
+    example: 'COD',
     description: 'Payment method for the order',
   })
   @IsNotEmpty()
@@ -95,6 +96,7 @@ export class CreateOrderDto {
       'J&T Express',
     ],
     description: 'Carrier for the shipment',
+    example: 'Giao hàng nhanh',
   })
   @IsNotEmpty()
   @IsString()
@@ -110,7 +112,7 @@ export class CreateOrderDto {
   description: string;
 
   @ApiProperty({
-    example: 'Ho Xuan Huong Street',
+    example: 'Đường Hồ Xuân Hương',
     description:
       'please provide shipping address details. I don"t need address id because i will create new address for this order',
   })
@@ -119,7 +121,7 @@ export class CreateOrderDto {
   street: string;
 
   @ApiProperty({
-    example: 'Dong Hoa',
+    example: 'Đông Hòa',
     description:
       'please provide shipping address details. I don"t need address id because i will create new address for this order',
   })
@@ -128,7 +130,7 @@ export class CreateOrderDto {
   ward: string;
 
   @ApiProperty({
-    example: 'Di An',
+    example: 'Dĩ An',
     description:
       'please provide shipping address details. I don"t need address id because i will create new address for this order',
   })
@@ -137,7 +139,7 @@ export class CreateOrderDto {
   district: string;
 
   @ApiProperty({
-    example: 'Binh Duong',
+    example: 'Bình Dương',
     description:
       'please provide shipping address details. I don"t need address id because i will create new address for this order',
   })
@@ -156,7 +158,7 @@ export class CreateOrderDto {
   zipCode: string;
 
   @ApiProperty({
-    example: 'Binh Duong',
+    example: 'Việt Nam',
     description:
       'please provide shipping address details. I don"t need address id because i will create new address for this order',
   })

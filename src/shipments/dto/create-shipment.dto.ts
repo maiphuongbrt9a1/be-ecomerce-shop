@@ -62,12 +62,14 @@ export class CreateShipmentDto {
       'VNPost',
       'J&T Express',
     ],
+    example: 'Giao hàng nhanh',
+    description: 'Carrier for the shipment',
   })
   @IsNotEmpty()
   @IsString()
   carrier: string;
 
-  @ApiProperty({ example: 'kjhkjdsfhds65442324sdfds' })
+  @ApiProperty({ example: 'ABC123XYZ' })
   @IsNotEmpty()
   @IsString()
   trackingNumber: string;
