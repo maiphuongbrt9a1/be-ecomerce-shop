@@ -273,49 +273,73 @@ export class DatabaseAddressDto {
 }
 
 /**
- * Create Address For Order Response DTO
+ * GHN Address Components for Order Delivery
  *
- * Response from the create address for order endpoint.
- * Contains the newly created address from database and validated GHN shipping information.
+ * Nested object containing validated address components from GHN shipping system.
+ * Used within CreateAddressForOrderResponseDto to organize delivery location details.
  *
  * @remarks
- * - databaseAddress: The address record created in the database
- * - toProvince: GHN system's validated province information
- * - toDistrict: GHN system's validated district information
- * - toWard: GHN system's validated ward information
- *
- * This response is useful for:
- * - Confirming that the address was created successfully
- * - Getting the new address ID for future reference
- * - Validating that the address is deliverable via GHN
- * - Obtaining GHN's internal IDs for shipping calculations
+ * - toProvince: GHN system's validated province information for delivery location
+ * - toDistrict: GHN system's validated district information for delivery location
+ * - toWard: GHN system's validated ward information for delivery location
+ * All three components are required for shipping fee calculations and shipment creation
  */
-export class CreateAddressForOrderResponseDto {
-  @ApiProperty({
-    type: DatabaseAddressDto,
-    description:
-      'The newly created address record from the database with all stored information',
-  })
-  databaseAddress: DatabaseAddressDto;
-
+export class OrderAddressInGHNDto {
   @ApiProperty({
     type: GhnProvinceDto,
     description:
-      'Validated province information from GHN shipping system. Contains GHN IDs and metadata needed for shipping calculations',
+      'Validated destination province information from GHN shipping system. Contains GHN province ID and metadata needed for GHN API calls',
   })
   toProvince: GhnProvinceDto;
 
   @ApiProperty({
     type: GhnDistrictDto,
     description:
-      'Validated district information from GHN shipping system. Contains pickup/delivery types and other shipping-related metadata',
+      'Validated destination district information from GHN shipping system. Contains pickup/delivery types, COD support, and other shipping-related capabilities',
   })
   toDistrict: GhnDistrictDto;
 
   @ApiProperty({
     type: GhnWardDto,
     description:
-      'Validated ward information from GHN shipping system. Contains final delivery location details',
+      'Validated destination ward information from GHN shipping system. Contains support type for final delivery location and delivery constraints',
   })
   toWard: GhnWardDto;
+}
+
+/**
+ * Create Address For Order Response DTO
+ *
+ * Response from the create address for order endpoint after successful validation with GHN.
+ * Contains both the newly created address from database and validated GHN shipping information.
+ *
+ * @remarks
+ * - orderAddressInDb: The address record created in the local database (contains ID for future reference)
+ * - orderAddressInGHN: GHN system's validated address components for order delivery
+ *   - toProvince: Destination province with GHN province ID
+ *   - toDistrict: Destination district with GHN district ID and delivery capabilities
+ *   - toWard: Destination ward with GHN ward code and support information
+ *
+ * This response is useful for:
+ * - Confirming that the address was created successfully in database
+ * - Getting the new address ID for future reference in orders
+ * - Validating that the address is deliverable via GHN shipping service
+ * - Obtaining GHN's internal location IDs (ProvinceID, DistrictID, WardCode) for shipping calculations and shipment creation
+ *
+ * Used in checkout flow to confirm delivery address and calculate shipping fees
+ */
+export class CreateAddressForOrderResponseDto {
+  @ApiProperty({
+    type: DatabaseAddressDto,
+    description:
+      'The newly created address record from the database with ID and all address components (street, ward, district, province, country, zipCode)',
+  })
+  orderAddressInDb: DatabaseAddressDto;
+
+  @ApiProperty({
+    type: OrderAddressInGHNDto,
+    description:
+      'GHN (Giao Hàng Nhanh) validated address components for order delivery location. Contains province, district, and ward details with their GHN system IDs required for shipping fee calculation and shipment creation',
+  })
+  orderAddressInGHN: OrderAddressInGHNDto;
 }
