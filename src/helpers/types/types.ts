@@ -1,8 +1,9 @@
-import { DiscountType, Prisma, User } from '@prisma/client';
+import { Address, DiscountType, Prisma, User } from '@prisma/client';
 import {
   CalculateExpectedDeliveryTimeResponse,
   GetServiceResponse,
 } from './calculate-shipping-fee';
+import { GhnDistrict, GhnProvince, GhnWard } from './ghn-address';
 
 /**
  * JWT token payload structure for authentication.
@@ -924,10 +925,86 @@ export type MyGHNShopList = {
   };
 };
 
+/**
+ * Response from GHN (Giao Hang Nhanh) API after registering a new shop.
+ *
+ * This type represents the response structure when creating a shop
+ * on the GHN shipping platform. Contains the newly created shop ID.
+ *
+ * @typedef {Object} MyGHNShopRegisterResponse
+ * @property {number} code - Response status code from GHN API (200 = success)
+ * @property {string} message - Response message describing the result
+ * @property {Object} data - Response payload
+ * @property {number} data.shop_id - Unique shop identifier assigned by GHN
+ *
+ * @remarks
+ * - Used during shop office registration with GHN shipping service
+ * - shop_id is stored in database for future shipping calculations
+ * - Required for creating shipments and calculating shipping fees
+ * - Maps to ShopOffice.ghnShopId in database
+ */
 export type MyGHNShopRegisterResponse = {
   code: number;
   message: string;
   data: {
     shop_id: number;
+  };
+};
+
+/**
+ * Combined order delivery address information from database and GHN.
+ *
+ * Contains both the local database Address record and the corresponding
+ * GHN address details (province, district, ward) for order delivery.
+ *
+ * @typedef {Object} createNewAddressForOrderResponseDto
+ * @property {Address} orderAddressInDb - Address record stored in local database
+ * @property {Object} orderAddressInGHN - GHN address components for shipping
+ * @property {GhnProvince} orderAddressInGHN.toProvince - Destination province from GHN
+ * @property {GhnDistrict} orderAddressInGHN.toDistrict - Destination district from GHN
+ * @property {GhnWard} orderAddressInGHN.toWard - Destination ward/commune from GHN
+ *
+ * @remarks
+ * - Used when creating new order delivery addresses
+ * - toProvince/toDistrict/toWard are GHN destination address components
+ * - Required for calculating shipping fees and delivery time
+ * - GHN addresses include IDs needed for shipment creation
+ * - Both database and GHN data needed for order fulfillment
+ */
+export type createNewAddressForOrderResponseDto = {
+  orderAddressInDb: Address;
+  orderAddressInGHN: {
+    toProvince: GhnProvince;
+    toDistrict: GhnDistrict;
+    toWard: GhnWard;
+  };
+};
+
+/**
+ * Combined shop office pickup address information from database and GHN.
+ *
+ * Contains both the local database Address record and the corresponding
+ * GHN address details (province, district, ward) for shop pickup location.
+ *
+ * @typedef {Object} GHNShopOfficeAddress
+ * @property {Address} shopOfficeAddressInDb - Address record stored in local database
+ * @property {Object} shopOfficeAddressInGHN - GHN address components for pickup
+ * @property {GhnProvince} shopOfficeAddressInGHN.fromProvince - Origin province from GHN
+ * @property {GhnDistrict} shopOfficeAddressInGHN.fromDistrict - Origin district from GHN
+ * @property {GhnWard} shopOfficeAddressInGHN.fromWard - Origin ward/commune from GHN
+ *
+ * @remarks
+ * - Used for shop office (warehouse/store) address registration
+ * - fromProvince/fromDistrict/fromWard are GHN origin address components
+ * - Required for calculating shipping fees from shop to customer
+ * - GHN addresses include IDs needed for shipment creation
+ * - Both database and GHN data needed for shipping operations
+ */
+export type GHNShopOfficeAddress = {
+  shopOfficeAddressInDb: Address;
+  shopOfficeAddressInGHN: {
+    fromProvince: GhnProvince;
+    fromDistrict: GhnDistrict;
+    fromWard: GhnWard;
   };
 };

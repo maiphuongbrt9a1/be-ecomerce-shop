@@ -585,6 +585,56 @@ export class GHNShops extends GhnAbstract {
     }
   }
 
+  /**
+   * Register a new shop office as a pickup location in the GHN system.
+   *
+   * Creates a new shop office/warehouse on the GHN platform for order fulfillment.
+   * The registered shop can be used as a pickup/origin location for shipments.
+   * Returns the newly created shop ID which must be stored in database for future use.
+   *
+   * 1. Constructs GHN shop registration endpoint URL
+   * 2. Sends POST request with shop details (district, ward, name, phone, address)
+   * 3. Parses response as MyGHNShopRegisterResponse
+   * 4. Validates response status and throws error if failed
+   * 5. Returns shop registration result with new shop_id
+   *
+   * @param {number} district_id - GHN district ID where shop is located (from GHN district API)
+   * @param {string} ward_code - GHN ward/commune code within the district (from GHN ward API)
+   * @param {string} name - Display name for the shop office (e.g., "Main Warehouse")
+   * @param {string} phone - Contact phone number for the shop (10-11 digits)
+   * @param {string} address - Detailed street address of the shop office
+   *
+   * @returns {Promise<MyGHNShopRegisterResponse>} Registration response with newly created shop_id
+   *
+   * @throws {BadRequestException} 'Failed to register GHN shop: {error}' - If API call or validation fails
+   *
+   * @remarks
+   * - Calls GHN endpoint: `shiip/public-api/v2/shop/register`
+   * - Uses resolveUrl() to construct proper endpoint URL
+   * - Returned shop_id must be stored in ShopOffice.ghnShopId field
+   * - district_id and ward_code must be valid GHN location IDs
+   * - Phone must be valid Vietnamese phone format
+   * - Once registered, shop can be used for shipment creation
+   * - Shop address used as origin point for shipping calculations
+   * - Logs error before throwing BadRequestException for debugging
+   * - Used during shop office creation in shop-offices.service.ts
+   * - Required before creating any shipments from this location
+   *
+   * @example
+   * // Register a new shop office
+   * const response = await ghnShops.registerGHNShopOffice(
+   *   1542, // district_id for District 1, HCMC
+   *   '21211', // ward_code for Ben Nghe Ward
+   *   'Downtown Warehouse',
+   *   '0901234567',
+   *   '123 Nguyen Hue Street'
+   * );
+   * // Store response.data.shop_id in database
+   * await prisma.shopOffice.update({
+   *   where: { id: shopId },
+   *   data: { ghnShopId: response.data.shop_id }
+   * });
+   */
   public async registerGHNShopOffice(
     district_id: number,
     ward_code: string,

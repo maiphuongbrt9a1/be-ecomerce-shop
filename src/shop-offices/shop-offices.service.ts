@@ -31,29 +31,26 @@ export class ShopOfficesService {
   constructor(private readonly prismaService: PrismaService) {}
 
   /**
-   * Creates a new shop office location.
+   * Create a new shop office and register it with GHN as a pickup location.
    *
-   * This method performs the following operations:
-   * 1. Creates shop office record in database
-   * 2. Logs successful creation
-   * 3. Returns created shop office
+   * Resolves GHN province/district/ward by name, registers the shop in GHN,
+   * then creates the shop office and its address in a single transaction.
    *
-   * @param {CreateShopOfficeDto} createShopOfficeDto - The shop office data containing:
-   *   - name, location, address
-   *   - Contact information (phone, email)
-   *   - Operating hours, capacity
+   * @param {CreateShopOfficeDto} createShopOfficeDto - Shop office data including:
+   *   - shopName, phone, address (for GHN registration)
+   *   - province, district, ward (for GHN address resolution)
+   *   - street, zipCode, country (for database address)
    *
-   * @returns {Promise<ShopOffice>} The created shop office with details:
-   *   - Shop office ID, name, location
-   *   - Address and contact details
-   *   - Created/updated timestamps
+   * @returns {Promise<ShopOffice>} The created shop office with GHN IDs
+   *   (ghnShopId, ghnShopProvinceId, ghnShopDistrictId, ghnShopWardCode).
    *
-   * @throws {BadRequestException} If shop office creation fails
+   * @throws {NotFoundException} If province/district/ward cannot be resolved in GHN
+   * @throws {BadRequestException} If GHN registration or database writes fail
    *
    * @remarks
-   * - Used for multi-location e-commerce businesses
-   * - Shop offices manage inventory and staff
-   * - Each office can have its own product catalog
+   * - Uses GHN NameExtension for fuzzy matching
+   * - Requires GHN_TOKEN, GHN_SHOP1_ID, GHN_HOST, GHN_TRACKING_HOST
+   * - Stores GHN IDs for shipping fee calculations and shipment creation
    */
   async create(createShopOfficeDto: CreateShopOfficeDto): Promise<ShopOffice> {
     try {
@@ -166,16 +163,47 @@ export class ShopOfficesService {
         );
       }
 
-      const result = await this.prismaService.shopOffice.create({
-        data: {
-          shopName: createShopOfficeDto.shopName,
-          ghnShopProvinceId: shopProvince.ProvinceID,
-          ghnShopDistrictId: shopDistrict.DistrictID,
-          ghnShopWardCode: shopWard.WardCode,
-          ghnShopId: newGHNShop.data.shop_id,
-        },
-      });
+      const result = await this.prismaService.$transaction(async (tx) => {
+        const newShopOffice = await tx.shopOffice.create({
+          data: {
+            shopName: createShopOfficeDto.shopName,
+            ghnShopProvinceId: shopProvince.ProvinceID,
+            ghnShopDistrictId: shopDistrict.DistrictID,
+            ghnShopWardCode: shopWard.WardCode,
+            ghnShopId: newGHNShop.data.shop_id,
+          },
+        });
 
+        if (!newShopOffice) {
+          this.logger.log('Failed to create shop office in database');
+          throw new BadRequestException(
+            'Failed to create shop office in database',
+          );
+        }
+
+        const newShopOfficeAddressInDB = await tx.address.create({
+          data: {
+            street: createShopOfficeDto.street,
+            province: shopProvince.ProvinceName,
+            district: shopDistrict.DistrictName,
+            ward: shopWard.WardName,
+            shopOffice: {
+              connect: { id: newShopOffice.id },
+            },
+            zipCode: createShopOfficeDto.zipCode,
+            country: createShopOfficeDto.country,
+          },
+        });
+
+        if (!newShopOfficeAddressInDB) {
+          this.logger.log('Failed to create shop office address in database');
+          throw new BadRequestException(
+            'Failed to create shop office address in database',
+          );
+        }
+
+        return newShopOffice;
+      });
       this.logger.log('Shop office created successfully', result.id);
       return result;
     } catch (error) {
@@ -605,6 +633,39 @@ export class ShopOfficesService {
     }
   }
 
+  /**
+   * Retrieves GHN shop office details from the GHN API.
+   *
+   * This method performs the following operations:
+   * 1. Queries shop office by ID from database
+   * 2. Validates shop office exists and has GHN shop ID
+   * 3. Configures GHN client with environment variables
+   * 4. Fetches complete GHN shop list from API
+   * 5. Extracts specific shop information by GHN shop ID
+   * 6. Logs successful retrieval
+   * 7. Returns GHN shop details
+   *
+   * @param {number} shopOfficeId - The shop office ID to retrieve GHN details for
+   *
+   * @returns {Promise<GHNShopDetail | null>} The GHN shop office details:
+   *   - Shop ID, name, address
+   *   - Phone, status, capabilities
+   *   - Province, district, ward codes
+   *   - GHN-specific configuration
+   *   - Operating hours and restrictions
+   *
+   * @throws {NotFoundException} If shop office not found
+   * @throws {NotFoundException} If GHN shop ID not registered
+   * @throws {NotFoundException} If GHN shop details not found in API response
+   * @throws {BadRequestException} If GHN API call fails
+   *
+   * @remarks
+   * - Requires GHN_TOKEN, GHN_HOST, GHN_TRACKING_HOST environment variables
+   * - Uses shop office's stored ghnShopId for lookup
+   * - Fetches live data from GHN API for current shop status
+   * - Used for verifying GHN registration and shop capabilities
+   * - Test mode can be enabled via GHN_TEST_MODE environment variable
+   */
   async getGHNShopOffice(shopOfficeId: number): Promise<GHNShopDetail | null> {
     try {
       const shopOffice = await this.prismaService.shopOffice.findUnique({

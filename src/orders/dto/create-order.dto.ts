@@ -1,4 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
+import type {
+  createNewAddressForOrderResponseDto,
+  PackagesForShipping,
+} from '@/helpers/types/types';
+import { CreateAddressForOrderResponseDto } from '@/address/dto/create-address-for-order-response.dto';
+import { PackageDetailDto } from './group-order-items-package-response.dto';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { DiscountType, OrderStatus, PaymentMethod } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
@@ -66,10 +72,6 @@ export class CreateOrderDto {
   @IsNotEmpty()
   userId: bigint;
 
-  @ApiProperty({ type: [SecondCreateOrderItemsDto] })
-  @IsNotEmpty()
-  orderItems: SecondCreateOrderItemsDto[];
-
   @ApiProperty({
     enumName: 'PaymentMethod',
     examples: [
@@ -111,60 +113,29 @@ export class CreateOrderDto {
   @IsString()
   description: string;
 
-  @ApiProperty({
-    example: 'Đường Hồ Xuân Hương',
-    description:
-      'please provide shipping address details. I don"t need address id because i will create new address for this order',
-  })
-  @IsNotEmpty()
-  @IsString()
-  street: string;
-
-  @ApiProperty({
-    example: 'Đông Hòa',
-    description:
-      'please provide shipping address details. I don"t need address id because i will create new address for this order',
-  })
-  @IsNotEmpty()
-  @IsString()
-  ward: string;
-
-  @ApiProperty({
-    example: 'Dĩ An',
-    description:
-      'please provide shipping address details. I don"t need address id because i will create new address for this order',
-  })
-  @IsNotEmpty()
-  @IsString()
-  district: string;
-
-  @ApiProperty({
-    example: 'Bình Dương',
-    description:
-      'please provide shipping address details. I don"t need address id because i will create new address for this order',
-  })
-  @IsNotEmpty()
-  @IsString()
-  province: string;
-
   @ApiProperty({ example: '0987654321' })
   @IsNotEmpty()
   @IsString()
   phone: string;
 
-  @ApiProperty({ example: 'ADSAFD797654FDAFD' })
-  @IsNotEmpty()
-  @IsString()
-  zipCode: string;
-
   @ApiProperty({
-    example: 'Việt Nam',
     description:
-      'please provide shipping address details. I don"t need address id because i will create new address for this order',
+      'Packages grouped by GHN shop ID. Each key is a shop ID string and each value is a PackageDetail object.',
+    type: 'object',
+    additionalProperties: {
+      $ref: getSchemaPath(PackageDetailDto),
+    },
   })
   @IsNotEmpty()
-  @IsString()
-  country: string;
+  packages: PackagesForShipping;
+
+  @ApiProperty({
+    description:
+      'Validated shipping address for order creation (database address plus GHN location data).',
+    type: CreateAddressForOrderResponseDto,
+  })
+  @IsNotEmpty()
+  shippingAddress: createNewAddressForOrderResponseDto;
 }
 
 export class SecondCreateOrderDto {

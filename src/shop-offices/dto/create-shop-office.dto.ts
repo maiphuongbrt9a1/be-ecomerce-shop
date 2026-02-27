@@ -16,6 +16,11 @@ export class CreateShopOfficeDto {
   @IsString()
   address: string;
 
+  @ApiProperty({ example: 'Ho Xuan Huong Street' })
+  @IsNotEmpty()
+  @IsString()
+  street: string;
+
   @ApiProperty({
     example: 'Đông Hòa',
     description: 'please provide shipping address details.',
@@ -39,6 +44,16 @@ export class CreateShopOfficeDto {
   @IsNotEmpty()
   @IsString()
   province: string;
+
+  @ApiProperty({ example: 'ADSAFD797654FDAFD' })
+  @IsNotEmpty()
+  @IsString()
+  zipCode: string;
+
+  @ApiProperty({ example: 'Bình Dương' })
+  @IsNotEmpty()
+  @IsString()
+  country: string;
 
   @ApiProperty({ example: '0987654321' })
   @IsNotEmpty()

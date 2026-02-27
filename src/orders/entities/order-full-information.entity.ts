@@ -19,6 +19,9 @@ export class OrderFullInformationEntity {
   @ApiProperty({ example: 1 })
   processByStaffId: bigint;
 
+  @ApiProperty({ example: 'This is an order description', required: false })
+  description?: string;
+
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   orderDate: Date;
 

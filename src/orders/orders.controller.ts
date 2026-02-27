@@ -10,14 +10,19 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './dto/create-order.dto';
+import {
+  CreateOrderDto,
+  SecondCreateOrderItemsDto,
+} from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiExtraModels,
   ApiOperation,
   ApiQuery,
   ApiResponse,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { OrderEntity } from './entities/order.entity';
 import { OrderFullInformationEntity } from './entities/order-full-information.entity';
@@ -27,6 +32,14 @@ import { OrderItemWithVariantEntity } from '@/order-items/entities/order-item-wi
 import { ShipmentWithFullInformationEntity } from '@/shipments/entities/shipment-with-full-information.entity';
 import { PaymentEntity } from '@/payments/entities/payment.entity';
 import { RequestWithMediaEntity } from '@/requests/entities/request-with-media.entity';
+import {
+  PackageDetailDto,
+  PackageItemDetailDto,
+  PackageItemDetailForGHNCreateNewOrderRequestDto,
+  GHNShopDetailDto,
+  GetServiceResponseDto,
+  CalculateExpectedDeliveryTimeResponseDto,
+} from './dto/group-order-items-package-response.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -269,5 +282,47 @@ export class OrdersController {
   @Get('/:id/order-request-detail')
   async getOrderRequestDetailInformation(@Param('id') id: string) {
     return await this.ordersService.getOrderRequestDetailInformation(+id);
+  }
+
+  @ApiExtraModels(
+    PackageDetailDto,
+    PackageItemDetailDto,
+    PackageItemDetailForGHNCreateNewOrderRequestDto,
+    GHNShopDetailDto,
+    GetServiceResponseDto,
+    CalculateExpectedDeliveryTimeResponseDto,
+  )
+  @ApiOperation({
+    summary: 'Group order items into packages by shop office',
+    description:
+      'Groups order items by GHN shop ID, validates stock, and returns detailed package data used for shipping fee calculations and GHN order creation.',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Packages grouped by GHN shop ID. Each key is a shop ID string and each value is a PackageDetail object.',
+    schema: {
+      type: 'object',
+      additionalProperties: {
+        $ref: getSchemaPath(PackageDetailDto),
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
+  @ApiBody({
+    description: 'Order items to group by GHN shop ID for shipping preparation',
+    type: [SecondCreateOrderItemsDto],
+  })
+  @Post('/group-order-items-to-packages')
+  async groupOrderItemsToPackageShippingFollowingShopId(
+    @Body() orderItems: SecondCreateOrderItemsDto[],
+  ) {
+    return await this.ordersService.groupOrderItemsToPackageShippingFollowingShopId(
+      orderItems,
+    );
   }
 }

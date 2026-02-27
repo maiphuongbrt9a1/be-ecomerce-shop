@@ -4,10 +4,14 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
+import {
+  CreateOrderDto,
+  SecondCreateOrderItemsDto,
+} from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
+  DiscountType,
   Orders,
   OrderStatus,
   PaymentMethod,
@@ -15,7 +19,6 @@ import {
   PaymentStatus,
   Prisma,
   Requests,
-  ShipmentStatus,
 } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import {
@@ -32,16 +35,14 @@ import {
   formatMediaFieldWithLogging,
   formatMediaFieldWithLoggingForOrders,
   formatMediaFieldWithLoggingForShipments,
-  GHNShops,
 } from '@/helpers/utils';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { ShipmentsService } from '@/shipments/shipments.service';
-import Ghn from 'giaohangnhanh';
 import {
   CalculateExpectedDeliveryTimeResponse,
   GetServiceResponse,
 } from '@/helpers/types/calculate-shipping-fee';
-import { GhnDistrict, GhnProvince, GhnWard } from '@/helpers/types/ghn-address';
+import { createNewShipmentForOrderAndAutoCreateGHNShipmentDto } from '@/shipments/dto/create-shipment.dto';
 
 @Injectable()
 export class OrdersService {
@@ -53,735 +54,307 @@ export class OrdersService {
   ) {}
 
   /**
-   * Creates a new order with associated shipping address, order items, payment, and shipment (if COD).
+   * Creates a new order with all associated data in the system.
    *
-   * This method performs the following operations within a database transaction:
-   * 1. Creates a new shipping address for the order
-   * 2. Validates that all product variants have sufficient stock
-   * 3. Decrements stock for both product variants and products
-   * 4. Calculates order totals (subtotal, discount, total amount)
-   * 5. Creates the order record
-   * 6. Creates order items linked to the order
-   * 7. Creates a payment record with PENDING status
-   * 8. Creates a shipment record if payment method is COD
+   * This method performs a complex multi-step process:
+   * 1. Calculates order totals (shipping fee, subtotal, discount, total amount)
+   * 2. Updates product and variant stock quantities in a database transaction
+   * 3. Creates the order, order items record with payment information
+   * 4. For COD payments, creates shipment, shipment items records and integrates with GHN API
    *
-   * @param {CreateOrderDto} createOrderDto - The data transfer object containing order details including:
-   *   - userId: The ID of the user creating the order
-   *   - orderItems: Array of items to be ordered with productVariantId, quantity, unitPrice, totalPrice, and optional discountValue
-   *   - Shipping address details: street, ward, district, province, zipCode, country
-   *   - paymentMethod: The payment method (e.g., 'COD')
-   *   - carrier: The shipping carrier
+   * @param {CreateOrderDto} createOrderDto - The order creation data including:
+   *   - userId: Customer identifier
+   *   - paymentMethod: Payment type (COD or VNPAY)
+   *   - packages: Grouped items by ghn shop id with shipping fees
+   *   - shippingAddress: Delivery address information
+   *   - phone: Customer contact number
+   *   - carrier: Shipping carrier details
+   *   - description: Optional order notes
    *
-   * @returns {Promise<OrdersWithFullInformation>} The created order with all related information including:
-   *   - Order details (id, status, dates, amounts)
+   * @returns {Promise<OrdersWithFullInformation>} Complete order details including:
+   *   - Order information (id, status, dates, amounts)
    *   - Shipping address
-   *   - Order items
-   *   - Payment information
-   *   - Shipment details
+   *   - Order items with product variants
+   *   - Payment records
+   *   - Shipment details (for COD orders)
    *
-   * @throws {NotFoundException} If a product variant is not found or order not found after creation
-   * @throws {BadRequestException} If a product variant has insufficient stock or order creation fails
+   * @throws {BadRequestException} If any step fails (stock update, order, order items creation, payment creation, shipment, shipment items creation)
+   * @throws {NotFoundException} If order is not found after creation
    *
    * @remarks
-   * - Uses database transaction to ensure data consistency
-   * - Shipping fee is currently hardcoded to 0
-   * - Shipment is only created for COD payments; other payment methods create shipment after successful payment
-   * - All monetary amounts are calculated from order item data
+   * - Uses database transaction to ensure atomic operations for order and stock updates
+   * - Shipments are created separately for COD payments to avoid transaction timeouts
+   * - VNPAY payments skip shipment creation until payment success
+   * - Performance is logged with execution time
+   *
+   * @example
+   * const order = await ordersService.create({
+   *   userId: 1,
+   *   paymentMethod: PaymentMethod.COD,
+   *   packages: { '123': { shippingFee: 50000, packageItems: [...] } },
+   *   shippingAddress: { orderAddressInDb: { ... }, orderAddressInGHN: { toProvince: GhnProvince; toDistrict: GhnDistrict; toWard: GhnWard;}; },
+   *   phone: '0123456789',
+   *   carrier: 'GHN'
+   * });
    */
   async create(
     createOrderDto: CreateOrderDto,
   ): Promise<OrdersWithFullInformation> {
     try {
-      // prepare data for create new order
-      return await this.prismaService.$transaction(async (tx) => {
-        const userId = BigInt(createOrderDto.userId);
-        const userInfo = await tx.user.findUnique({
-          where: { id: userId },
-        });
+      const startTime = Date.now();
+      const processByStaff = null;
+      const orderDate = new Date();
+      const orderStatus = OrderStatus.PENDING;
+      const orderItems: PackageItemDetail[] = [];
 
-        if (!userInfo) {
-          this.logger.log(`User with ID ${userId} not found!`);
-          throw new NotFoundException(`User with ID ${userId} not found!`);
-        }
+      let shippingFee = 0;
+      let subTotal = 0;
+      let discount = 0;
+      let totalAmount = 0;
 
-        const newShippingAddress = await tx.address.create({
-          data: {
-            street: createOrderDto.street,
-            ward: createOrderDto.ward,
-            district: createOrderDto.district,
-            province: createOrderDto.province,
-            zipCode: createOrderDto.zipCode,
-            country: createOrderDto.country,
-            userId: userId,
-          },
-        });
+      // calculate shipping fee based on packages from different shop offices
+      for (const ghnShopId in createOrderDto.packages) {
+        shippingFee += createOrderDto.packages[ghnShopId].shippingFee;
+        orderItems.push(...createOrderDto.packages[ghnShopId].packageItems);
+      }
 
-        if (!newShippingAddress) {
-          this.logger.log(
-            `Failed to create shipping address for user with ID ${userId}`,
-          );
-          throw new BadRequestException(
-            `Failed to create shipping address for user with ID ${userId}`,
-          );
-        }
-
-        const processByStaff = null;
-        const orderDate = new Date();
-        const orderStatus = OrderStatus.PENDING;
-
-        // grouping order items following shop office id to calculate shipping fee
-        const packages: PackagesForShipping = {};
-        let shippingFee = 0;
-        let subTotal = 0;
-        let discount = 0;
-        let totalAmount = 0;
-
-        // check order items is stock or out of stock
-        // if order items are out of stock, throw error
-        for (const item of createOrderDto.orderItems) {
-          const productVariant = await tx.productVariants.findUnique({
-            where: { id: BigInt(item.productVariantId) },
-            include: {
-              product: {
-                include: {
-                  category: {
-                    select: {
-                      name: true,
-                    },
-                  },
-                  shopOffice: {
-                    select: {
-                      ghnShopId: true,
-                    },
-                  },
-                },
-              },
-            },
-          });
-
-          if (!productVariant) {
-            this.logger.log(
-              `Product variant with ID ${item.productVariantId} not found!`,
-            );
-            throw new NotFoundException(
-              `Product variant with ID ${item.productVariantId} not found!`,
-            );
-          }
-
-          if (productVariant.stock < item.quantity) {
-            this.logger.log(
-              `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
-            );
-            throw new BadRequestException(
-              `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
-            );
-          }
-
-          // grouping order items following shop office id to calculate shipping fee
-          if (
-            !productVariant.product.shopOffice ||
-            !productVariant.product.shopOffice.ghnShopId
-          ) {
-            this.logger.log(
-              `ProductVariant have id ${productVariant.id} has no shop office id or ghn shop office id. Please check again!`,
-            );
-            throw new NotFoundException(
-              `ProductVariant have id ${productVariant.id} has no shop office id or ghn shop office id. Please check again!`,
-            );
-          }
-
-          // add order item to corresponding shop office package
-          const ghnShopId =
-            productVariant.product.shopOffice.ghnShopId.toString();
-
-          const itemDetail: PackageItemDetail = {
-            productVariantId: item.productVariantId,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            discountDescription: item.discountDescription,
-            discountType: item.discountType || null,
-            discountValue: item.discountValue || 0,
-            totalPrice: item.totalPrice,
-            currencyUnit: item.currencyUnit,
-            productVariantName: productVariant.variantName,
-            productVariantSize: productVariant.variantSize,
-            productVariantColor: productVariant.variantColor,
-            productVariantSKU: productVariant.stockKeepingUnit,
-          };
-
-          const itemDetailForGHNCreateNewOrderRequest: PackageItemDetailForGHNCreateNewOrderRequest =
-            {
-              name: itemDetail.productVariantName,
-              code: itemDetail.productVariantSKU,
-              quantity: itemDetail.quantity,
-              price: itemDetail.unitPrice,
-              length: productVariant.variantLength,
-              width: productVariant.variantWidth,
-              height: productVariant.variantHeight,
-              weight: productVariant.variantWeight,
-              category: {
-                level1: productVariant.product.category?.name || 'Unknown',
-              },
-            };
-
-          if (!packages[ghnShopId]) {
-            packages[ghnShopId] = {
-              packageItems: [] as PackageItemDetail[],
-              packageItemsForGHNCreateNewOrderRequest:
-                [] as PackageItemDetailForGHNCreateNewOrderRequest[],
-              totalWeight: 0, // in grams
-              totalHeight: 0, // in cm
-              maxLength: 0, // in cm
-              maxWidth: 0, // in cm
-              ghnShopId: 0,
-              ghnShopDetail: {} as GHNShopDetail,
-              ghnProvinceName: '',
-              ghnDistrictName: '',
-              ghnWardName: '',
-              shippingService: {} as GetServiceResponse,
-              shippingFee: 0, // in VND
-              expectedDeliveryTime: {} as CalculateExpectedDeliveryTimeResponse,
-              from_district_id: 0,
-              from_ward_code: '',
-              to_district_id: 0,
-              to_ward_code: '',
-            };
-          }
-
-          packages[ghnShopId].packageItemsForGHNCreateNewOrderRequest.push(
-            itemDetailForGHNCreateNewOrderRequest,
-          );
-
-          packages[ghnShopId].packageItems.push(itemDetail);
-
-          packages[ghnShopId].totalWeight +=
-            item.quantity * productVariant.variantWeight;
-
-          packages[ghnShopId].totalHeight +=
-            item.quantity * productVariant.variantHeight;
-
-          packages[ghnShopId].maxLength = Math.max(
-            packages[ghnShopId].maxLength,
-            productVariant.variantLength,
-          );
-
-          packages[ghnShopId].maxWidth = Math.max(
-            packages[ghnShopId].maxWidth,
-            productVariant.variantWidth,
-          );
-
-          // reduce stock quantity for product variant
-          await tx.productVariants.update({
-            where: { id: BigInt(item.productVariantId) },
-            data: {
-              stock: productVariant.stock - item.quantity,
-            },
-          });
-
-          // reduce stock quantity for product
-          await tx.products.update({
-            where: { id: productVariant.productId },
-            data: {
-              stock: {
-                decrement: item.quantity,
-              },
-            },
-          });
-        }
-
-        // calculate shipping fee based on packages from different shop offices
-        for (const ghnShopId in packages) {
-          const shopOffice = await tx.shopOffice.findFirst({
-            where: { ghnShopId: BigInt(ghnShopId) },
-          });
-
-          if (!shopOffice || !shopOffice.ghnShopId) {
-            this.logger.log(
-              `Shop office id connect with GHN shop ID ${ghnShopId} not found!`,
-            );
-            throw new NotFoundException(
-              `Shop office id connect with GHN shop ID ${ghnShopId} not found!`,
-            );
-          }
-
-          if (
-            !shopOffice.ghnShopProvinceId ||
-            !shopOffice.ghnShopDistrictId ||
-            !shopOffice.ghnShopWardCode
-          ) {
-            this.logger.log(
-              `Shop office id connect with GHN shop ID ${ghnShopId} has incomplete GHN address information!`,
-            );
-            throw new NotFoundException(
-              `Shop office id connect with GHN shop ID ${ghnShopId} has incomplete GHN address information!`,
-            );
-          }
-
-          const ghnConfig = {
-            token: process.env.GHN_TOKEN!, // Thay bằng token của bạn
-            shopId: Number(ghnShopId), // Thay bằng shopId của bạn
-            host: process.env.GHN_HOST!,
-            trackingHost: process.env.GHN_TRACKING_HOST!,
-            testMode: process.env.GHN_TEST_MODE === 'true', // Bật chế độ test sẽ ghi đè tất cả host thành môi trường sandbox
-          };
-          const ghn = new Ghn(ghnConfig);
-          const ghnShops = new GHNShops(ghnConfig);
-
-          const totalWeightForOnePackage = packages[ghnShopId].totalWeight;
-          const totalHeightForOnePackage = packages[ghnShopId].totalHeight;
-          const maxLengthForOnePackage = packages[ghnShopId].maxLength;
-          const maxWidthForOnePackage = packages[ghnShopId].maxWidth;
-
-          // Lấy danh sách các tỉnh
-          const GHNProvinces = await ghn.address.getProvinces();
-
-          // tìm tỉnh ứng với tỉnh của người khách hàng cung cấp
-          const candidateProvince = GHNProvinces.filter(
-            (p) =>
-              Array.isArray(p.NameExtension) &&
-              p.IsEnable === 1 &&
-              p.Status === 1 &&
-              p.NameExtension.some((name) =>
-                name?.includes(createOrderDto.province),
-              ),
-          );
-
-          if (!candidateProvince || candidateProvince.length === 0) {
-            this.logger.log(`Province ${createOrderDto.province} not found`);
-            throw new NotFoundException(
-              `Province ${createOrderDto.province} not found`,
-            );
-          }
-
-          let toProvince: GhnProvince | undefined;
-          let toDistrict: GhnDistrict | undefined;
-          let toWard: GhnWard | undefined;
-
-          for (const province of candidateProvince) {
-            // Lấy danh sách quận/huyện trong tỉnh đó
-            const districtsOfToProvince = await ghn.address.getDistricts(
-              province.ProvinceID,
-            );
-
-            if (!districtsOfToProvince || districtsOfToProvince.length === 0) {
-              continue; // nếu không có quận/huyện nào trong tỉnh này, tiếp tục kiểm tra tỉnh tiếp theo
-            }
-
-            // tìm quận/huyện ứng với quận/huyện của người khách hàng cung cấp
-            toDistrict = districtsOfToProvince.find(
-              (d) =>
-                Array.isArray(d.NameExtension) &&
-                d.NameExtension.some((name) =>
-                  name?.includes(createOrderDto.district),
-                ),
-            );
-
-            if (!toDistrict) {
-              continue; // nếu không tìm thấy quận/huyện trong tỉnh này, tiếp tục tìm ở tỉnh khác
-            }
-
-            // Lấy danh sách phường/xã trong quận/huyện đó
-            const wardsOfToDistrict = await ghn.address.getWards(
-              toDistrict.DistrictID,
-            );
-
-            if (!wardsOfToDistrict || wardsOfToDistrict.length === 0) {
-              continue; // nếu không có phường/xã nào trong quận/huyện này, tiếp tục kiểm tra tỉnh tiếp theo
-            }
-
-            // tìm phường/xã ứng với phường/xã của người khách hàng cung cấp
-            toWard = wardsOfToDistrict.find(
-              (w) =>
-                Array.isArray(w.NameExtension) &&
-                w.NameExtension.some((name) =>
-                  name?.includes(createOrderDto.ward),
-                ),
-            );
-            if (!toWard) {
-              continue; // nếu không tìm thấy phường/xã trong quận/huyện này, tiếp tục tìm ở tỉnh khác
-            }
-
-            // nếu tìm thấy đầy đủ tỉnh, quận/huyện, phường/xã thì dừng việc tìm kiếm
-            toProvince = province;
-            break;
-          }
-
-          if (!toProvince || !toDistrict || !toWard) {
-            this.logger.log(
-              `Could not find complete address information for province: ${createOrderDto.province}, district: ${createOrderDto.district}, ward: ${createOrderDto.ward}`,
-            );
-            throw new NotFoundException(
-              `Could not find complete address information for province: ${createOrderDto.province}, district: ${createOrderDto.district}, ward: ${createOrderDto.ward}`,
-            );
-          }
-
-          // Lấy ra thông tin chi chi tiết shop office từ ghnShopId
-          const ghnShopList = await ghnShops.getShopList();
-          const ghnShopInfo = ghnShops.getShopInfo(
-            ghnConfig.shopId,
-            ghnShopList,
-          );
-
-          const fromProvince = GHNProvinces.find(
-            (p) => p.ProvinceID == Number(shopOffice.ghnShopProvinceId),
-          );
-
-          if (!fromProvince) {
-            this.logger.log(
-              `Province with ID ${shopOffice.ghnShopProvinceId} not found for shop office with GHN shop ID ${ghnShopId}`,
-            );
-            throw new NotFoundException(
-              `Province with ID ${shopOffice.ghnShopProvinceId} not found for shop office with GHN shop ID ${ghnShopId}`,
-            );
-          }
-
-          const districtsOfFromProvince = await ghn.address.getDistricts(
-            fromProvince.ProvinceID,
-          );
-
-          if (
-            !districtsOfFromProvince ||
-            districtsOfFromProvince.length === 0
-          ) {
-            this.logger.log(
-              `Districts not found for province with ID ${shopOffice.ghnShopProvinceId}`,
-            );
-            throw new NotFoundException(
-              `Districts not found for province with ID ${shopOffice.ghnShopProvinceId}`,
-            );
-          }
-
-          const fromDistrict = districtsOfFromProvince.find(
-            (d) => d.DistrictID == Number(shopOffice.ghnShopDistrictId),
-          );
-
-          if (!fromDistrict) {
-            this.logger.log(
-              `District with ID ${shopOffice.ghnShopDistrictId} not found for shop office with GHN shop ID ${ghnShopId}`,
-            );
-            throw new NotFoundException(
-              `District with ID ${shopOffice.ghnShopDistrictId} not found for shop office with GHN shop ID ${ghnShopId}`,
-            );
-          }
-
-          const wardsOfFromDistrict = await ghn.address.getWards(
-            fromDistrict.DistrictID,
-          );
-
-          if (!wardsOfFromDistrict || wardsOfFromDistrict.length === 0) {
-            this.logger.log(
-              `Wards not found for district with ID ${shopOffice.ghnShopDistrictId}`,
-            );
-            throw new NotFoundException(
-              `Wards not found for district with ID ${shopOffice.ghnShopDistrictId}`,
-            );
-          }
-
-          const fromWard = wardsOfFromDistrict.find(
-            (w) => w.WardCode == shopOffice.ghnShopWardCode,
-          );
-
-          if (!fromWard) {
-            this.logger.log(
-              `Ward with code ${shopOffice.ghnShopWardCode} not found for shop office with GHN shop ID ${ghnShopId}`,
-            );
-            throw new NotFoundException(
-              `Ward with code ${shopOffice.ghnShopWardCode} not found for shop office with GHN shop ID ${ghnShopId}`,
-            );
-          }
-
-          // Lấy dịch vụ vận chuyển đầu tiên trong danh sách dịch vụ có sẵn (hard code)
-          const service = (
-            await ghn.calculateFee.getServiceList(
-              ghnShopInfo.district_id,
-              toDistrict.DistrictID,
-            )
-          )[0];
-          this.logger.log(
-            `Found service: ${service?.short_name}. From district ${ghnShopInfo.district_id} to district ${toDistrict.DistrictID}`,
-          );
-
-          // Tính phí vận chuyển
-          const fee = await ghn.calculateFee.calculateShippingFee({
-            to_district_id: toDistrict.DistrictID,
-            to_ward_code: toWard.WardCode,
-            service_type_id: service.service_type_id,
-
-            // Thông tin sản phẩm cần vận chuyển
-            // Sau đây chỉ là thông tin mẫu, bạn cần thay đổi thông tin sản phẩm cần vận chuyển
-            height: totalHeightForOnePackage,
-            weight: totalWeightForOnePackage,
-            length: maxLengthForOnePackage,
-            width: maxWidthForOnePackage,
-          });
-
-          // tính thời gian dự kiến giao hàng
-          const expectedDeliveryTime =
-            await ghn.order.calculateExpectedDeliveryTime({
-              service_id: service.service_id,
-              to_district_id: toDistrict.DistrictID,
-              to_ward_code: toWard.WardCode,
-              from_district_id: ghnShopInfo.district_id,
-              from_ward_code: ghnShopInfo.ward_code,
-            });
-
-          packages[ghnShopId].ghnShopId = Number(ghnShopId);
-          packages[ghnShopId].ghnShopDetail = ghnShopInfo;
-          packages[ghnShopId].ghnProvinceName = fromProvince.ProvinceName;
-          packages[ghnShopId].ghnDistrictName = fromDistrict.DistrictName;
-          packages[ghnShopId].ghnWardName = fromWard.WardName;
-          packages[ghnShopId].shippingFee = fee.total;
-          packages[ghnShopId].shippingService = service;
-          packages[ghnShopId].from_district_id = ghnShopInfo.district_id;
-          packages[ghnShopId].from_ward_code = ghnShopInfo.ward_code;
-          packages[ghnShopId].to_district_id = toDistrict.DistrictID;
-          packages[ghnShopId].to_ward_code = toWard.WardCode;
-          packages[ghnShopId].expectedDeliveryTime = expectedDeliveryTime;
-
-          shippingFee += fee.total;
-        }
-
-        // calculate sub total, discount and total amount
-
-        for (const item of createOrderDto.orderItems) {
+      // calculate sub total, discount and total amount
+      for (const ghnShopId in createOrderDto.packages) {
+        for (const item of createOrderDto.packages[ghnShopId].packageItems) {
           subTotal += item.totalPrice;
-          discount += item.discountValue ? item.discountValue : 0;
-        }
 
-        totalAmount = subTotal + shippingFee - discount;
-
-        // create new order
-        const result = await tx.orders.create({
-          data: {
-            userId: userId,
-            shippingAddressId: newShippingAddress.id,
-            processByStaffId: processByStaff,
-            orderDate: orderDate,
-            status: orderStatus,
-            subTotal: subTotal,
-            shippingFee: shippingFee,
-            discount: discount,
-            totalAmount: totalAmount,
-          },
-        });
-
-        if (!result) {
-          this.logger.log(`Failed to create order for user with ID ${userId}`);
-          throw new BadRequestException(
-            `Failed to create order for user with ID ${userId}`,
-          );
-        }
-
-        // please create order items after creating order
-        const newOrderItemsInDB: Record<string, bigint> = {};
-        for (const item of createOrderDto.orderItems) {
-          const newOrderItem = await tx.orderItems.create({
-            data: {
-              orderId: result.id,
-              productVariantId: BigInt(item.productVariantId),
-              quantity: item.quantity,
-              unitPrice: item.unitPrice,
-              totalPrice: item.totalPrice,
-              discountValue: item.discountValue ? item.discountValue : 0,
-            },
-          });
-
-          if (!newOrderItem) {
-            this.logger.log(
-              `Failed to create order item for product variant with ID ${item.productVariantId}`,
-            );
-            throw new BadRequestException(
-              `Failed to create order item for product variant with ID ${item.productVariantId}`,
-            );
+          // check discount type and calculate discount amount
+          if (
+            item.discountType === DiscountType.PERCENTAGE &&
+            item.discountValue
+          ) {
+            discount += (item.totalPrice * item.discountValue) / 100;
+          } else if (
+            item.discountType === DiscountType.FIXED_AMOUNT &&
+            item.discountValue
+          ) {
+            discount += item.discountValue ? item.discountValue : 0;
+          } else {
+            discount += 0;
           }
-
-          newOrderItemsInDB[item.productVariantId.toString()] = newOrderItem.id;
         }
+      }
 
-        // fix from here. Tomorrow review again
-        /////////////////////////////////////////////////
+      totalAmount = subTotal + shippingFee - discount;
 
-        // please create payments after creating order
-        const newPayment = await tx.payments.create({
-          // todo
-          data: {
-            orderId: result.id,
-            transactionId: `${Date.now()}-${result.id}-${userId}-${Math.floor(
-              Math.random() * 10000000,
-            )}`,
-            paymentMethod: createOrderDto.paymentMethod,
-            amount: result.totalAmount,
-            status: PaymentStatus.PENDING,
-          },
-        });
-
-        if (!newPayment) {
-          this.logger.log(
-            `Failed to create payment for order with ID ${result.id}`,
-          );
-          throw new BadRequestException(
-            `Failed to create payment for order with ID ${result.id}`,
-          );
-        }
-
-        /// fix end here
-        // tomorrow review again
-        ///////////////////////////////
-
-        // if COD, please create shipment after creating order
-        // if other payment method, shipment will be created after payment is successful
-        // please check update payment method in payments service to see more details about creating shipment after payment is successful
-        if (createOrderDto.paymentMethod === PaymentMethod.COD) {
-          for (const ghnShopId in packages) {
-            const shopOffice = await tx.shopOffice.findFirst({
-              where: { ghnShopId: BigInt(ghnShopId) },
-              select: { id: true, ghnShopId: true },
-            });
-
-            if (!shopOffice || !shopOffice.ghnShopId) {
-              this.logger.log(
-                `Shop office id connect with GHN shop ID ${ghnShopId} not found!`,
-              );
-              throw new NotFoundException(
-                `Shop office id connect with GHN shop ID ${ghnShopId} not found!`,
-              );
-            }
-
-            // create order on GHN
-            const ghnConfig = {
-              token: process.env.GHN_TOKEN!, // Thay bằng token của bạn
-              shopId: Number(ghnShopId), // Thay bằng shopId của bạn
-              host: process.env.GHN_HOST!,
-              trackingHost: process.env.GHN_TRACKING_HOST!,
-              testMode: process.env.GHN_TEST_MODE === 'true', // Bật chế độ test sẽ ghi đè tất cả host thành môi trường sandbox
-            };
-            const ghn = new Ghn(ghnConfig);
-            let contentForGhnOrder = '';
-            for (const item of packages[ghnShopId].packageItems) {
-              contentForGhnOrder += `${item.productVariantName} - SKU: ${item.productVariantSKU} - Size: ${item.productVariantSize} - Color: ${item.productVariantColor} - Quantity: ${item.quantity} - Unit Price: ${item.unitPrice} ${item.currencyUnit}\n`;
-            }
-
-            const ghnCreateNewOrderRequest = await ghn.order.createOrder({
-              from_address: packages[ghnShopId].ghnShopDetail.address,
-              from_name: packages[ghnShopId].ghnShopDetail.name,
-              from_phone: packages[ghnShopId].ghnShopDetail.phone,
-              from_province_name: packages[ghnShopId].ghnProvinceName,
-              from_district_name: packages[ghnShopId].ghnDistrictName,
-              from_ward_name: packages[ghnShopId].ghnWardName,
-
-              payment_type_id: 2, // 1: seller pay, 2: buyer pay
-              note: createOrderDto.description
-                ? createOrderDto.description
-                : '',
-              required_note:
-                'KHONGCHOXEMHANG' /**Note shipping order.Allowed values: CHOTHUHANG, CHOXEMHANGKHONGTHU, KHONGCHOXEMHANG. CHOTHUHANG mean Buyer can request to see and trial goods. CHOXEMHANGKHONGTHU mean Buyer can see goods but not allow to trial goods. KHONGCHOXEMHANG mean Buyer not allow to see goods */,
-              return_phone: packages[ghnShopId].ghnShopDetail.phone,
-              return_address: packages[ghnShopId].ghnShopDetail.address,
-              return_district_id: packages[ghnShopId].from_district_id,
-              return_ward_code: packages[ghnShopId].from_ward_code,
-              client_order_code: null,
-              to_name: userInfo.firstName + ' ' + userInfo.lastName,
-              to_phone: createOrderDto.phone,
-              to_address:
-                createOrderDto.street +
-                ' ' +
-                createOrderDto.ward +
-                ' ' +
-                createOrderDto.district +
-                ' ' +
-                createOrderDto.province,
-              to_ward_code: packages[ghnShopId].to_ward_code,
-              to_district_id: packages[ghnShopId].to_district_id,
-              cod_amount: totalAmount,
-              content: contentForGhnOrder,
-              weight: packages[ghnShopId].totalWeight,
-              length: packages[ghnShopId].maxLength,
-              width: packages[ghnShopId].maxWidth,
-              height: packages[ghnShopId].totalHeight,
-              pick_station_id: undefined,
-              insurance_value: totalAmount < 5000000 ? totalAmount : 5000000,
-              service_id: packages[ghnShopId].shippingService.service_id,
-              service_type_id:
-                packages[ghnShopId].shippingService.service_type_id,
-              coupon: null,
-              pick_shift: undefined,
-              items:
-                packages[ghnShopId].packageItemsForGHNCreateNewOrderRequest,
-            });
-
-            if (!ghnCreateNewOrderRequest) {
-              this.logger.log(
-                `Failed to create order on GHN for shop office with GHN shop ID ${ghnShopId}`,
-              );
-              throw new BadRequestException(
-                `Failed to create order on GHN for shop office with GHN shop ID ${ghnShopId}`,
-              );
-            }
-
-            // create shipment record in database
-            const newShipment = await tx.shipments.create({
+      const defaultOrderWithFullInformation: OrdersWithFullInformation =
+        await this.prismaService.$transaction(async (tx) => {
+          // update product and product variant stock quantity
+          for (const item of orderItems) {
+            // reduce stock quantity for product variant
+            const updateProductVariant = await tx.productVariants.update({
+              where: { id: BigInt(item.productVariantId) },
+              include: {
+                product: {
+                  select: {
+                    id: true,
+                  },
+                },
+              },
               data: {
-                orderId: result.id,
-                processByStaffId: processByStaff,
-                ghnOrderCode: ghnCreateNewOrderRequest.order_code,
-                shopOfficeId: BigInt(shopOffice.id),
-                estimatedDelivery:
-                  ghnCreateNewOrderRequest.expected_delivery_time,
-                estimatedShipDate:
-                  ghnCreateNewOrderRequest.expected_delivery_time,
-                carrier: createOrderDto.carrier,
-                trackingNumber: ghnCreateNewOrderRequest.order_code,
-                status: ShipmentStatus.WAITING_FOR_PICKUP,
-                description: createOrderDto.description
-                  ? createOrderDto.description
-                  : '',
+                stock: {
+                  decrement: item.quantity,
+                },
               },
             });
 
-            if (!newShipment) {
+            if (!updateProductVariant) {
               this.logger.log(
-                `Failed to create shipment for order with ID ${result.id}`,
+                `Failed to update product variant with ID ${item.productVariantId}`,
               );
               throw new BadRequestException(
-                `Failed to create shipment for order with ID ${result.id}`,
+                `Failed to update product variant with ID ${item.productVariantId}`,
               );
             }
 
-            // create shipment items record in database
-            for (const item of packages[ghnShopId].packageItems) {
-              const newShipmentItem = await tx.shipmentItems.create({
-                data: {
-                  shipmentId: newShipment.id,
-                  orderItemId:
-                    newOrderItemsInDB[item.productVariantId.toString()],
+            // reduce stock quantity for product
+            const updateProduct = await tx.products.update({
+              where: { id: updateProductVariant.product.id },
+              data: {
+                stock: {
+                  decrement: item.quantity,
                 },
-              });
+              },
+            });
 
-              if (!newShipmentItem) {
-                this.logger.log(
-                  `Failed to create shipment item for order item with product variant ID ${item.productVariantId}`,
-                );
-                throw new BadRequestException(
-                  `Failed to create shipment item for order item with product variant ID ${item.productVariantId}`,
-                );
-              }
+            if (!updateProduct) {
+              this.logger.log(
+                `Failed to update product with ID ${updateProductVariant.product.id}`,
+              );
+              throw new BadRequestException(
+                `Failed to update product with ID ${updateProductVariant.product.id}`,
+              );
             }
           }
-        }
 
-        // log and return result
-        const returnResult = await tx.orders.findUnique({
-          where: { id: result.id },
-          include: OrdersWithFullInformationInclude,
+          // create new order
+          const newOrder = await tx.orders.create({
+            data: {
+              userId: createOrderDto.userId,
+              shippingAddressId:
+                createOrderDto.shippingAddress.orderAddressInDb.id,
+              processByStaffId: processByStaff,
+              orderDate: orderDate,
+              status: orderStatus,
+              subTotal: subTotal,
+              shippingFee: shippingFee,
+              discount: discount,
+              totalAmount: totalAmount,
+              description: createOrderDto.description,
+            },
+          });
+
+          if (!newOrder) {
+            this.logger.log(
+              `Failed to create order for user with ID ${createOrderDto.userId}`,
+            );
+            throw new BadRequestException(
+              `Failed to create order for user with ID ${createOrderDto.userId}`,
+            );
+          }
+
+          // please create order items after creating order
+          for (const item of orderItems) {
+            // check discount type and calculate discount amount
+            let orderItemDiscount = 0;
+            if (
+              item.discountType === DiscountType.PERCENTAGE &&
+              item.discountValue
+            ) {
+              orderItemDiscount += (item.totalPrice * item.discountValue) / 100;
+            } else if (
+              item.discountType === DiscountType.FIXED_AMOUNT &&
+              item.discountValue
+            ) {
+              orderItemDiscount += item.discountValue ? item.discountValue : 0;
+            } else {
+              orderItemDiscount += 0;
+            }
+
+            const newOrderItem = await tx.orderItems.create({
+              data: {
+                orderId: newOrder.id,
+                productVariantId: BigInt(item.productVariantId),
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                totalPrice: item.totalPrice,
+                discountValue: orderItemDiscount,
+              },
+            });
+
+            if (!newOrderItem) {
+              this.logger.log(
+                `Failed to create order item for product variant with ID ${item.productVariantId}`,
+              );
+              throw new BadRequestException(
+                `Failed to create order item for product variant with ID ${item.productVariantId}`,
+              );
+            }
+          }
+
+          // this is default payment information
+          // when payment is paid by vnpay,
+          // you can update this transaction id with vnpay transaction id
+          // you can update payment status to Paid
+          // you need create new shipment and shipment items after payment is successful
+          const newPayment = await tx.payments.create({
+            data: {
+              orderId: newOrder.id,
+              transactionId: `${Date.now()}-${newOrder.id}-${createOrderDto.userId}-${Math.floor(
+                Math.random() * 10000000,
+              )}`,
+              paymentMethod: createOrderDto.paymentMethod,
+              amount: newOrder.totalAmount,
+              status: PaymentStatus.PENDING,
+            },
+          });
+
+          if (!newPayment) {
+            this.logger.log(
+              `Failed to create payment for order with ID ${newOrder.id}`,
+            );
+            throw new BadRequestException(
+              `Failed to create payment for order with ID ${newOrder.id}`,
+            );
+          }
+
+          // about shipment and shipment items i will not create them here
+          // because the customer won't payment successfully
+          // if the payment method is COD, i will create shipment, shipment items after creating order successfully
+          // and in the payment method is cod, create shipment and shipment items is separate transaction
+          // because it will call ghn api and write shipment, shipment items in db.
+          // if i create here, transaction will be too long, it will cause timeout and failed transaction.
+
+          // log and return result
+          const defaultOrderWithFullInformation = await tx.orders.findUnique({
+            where: { id: newOrder.id },
+            include: OrdersWithFullInformationInclude,
+          });
+
+          if (!defaultOrderWithFullInformation) {
+            throw new NotFoundException('Order not found after creation!');
+          }
+
+          return defaultOrderWithFullInformation;
         });
 
-        if (!returnResult) {
-          throw new NotFoundException('Order not found after creation!');
+      // i will create shipment and shipment items for the order if payment method is COD
+      // and i call ghn api here to create shipment in ghn system and get back the shipping fee and expected delivery time
+      let returnOrderWithFullInformation: OrdersWithFullInformation =
+        defaultOrderWithFullInformation;
+
+      if (createOrderDto.paymentMethod === PaymentMethod.COD) {
+        const createNewShipmentForOrderAndAutoCreateGHNShipmentDto: createNewShipmentForOrderAndAutoCreateGHNShipmentDto =
+          {
+            orderId: defaultOrderWithFullInformation.id,
+            carrier: createOrderDto.carrier,
+            packages: createOrderDto.packages,
+            createNewAddressForOrderResponseDto: createOrderDto.shippingAddress,
+            customerPhoneForOrder: createOrderDto.phone,
+          };
+
+        const newShipment =
+          await this.shipmentsService.createNewShipmentForOrderAndAutoCreateGHNShipment(
+            createNewShipmentForOrderAndAutoCreateGHNShipmentDto,
+          );
+
+        if (!newShipment) {
+          this.logger.log(
+            `Failed to create shipment for order with ID ${defaultOrderWithFullInformation.id}`,
+          );
+          throw new BadRequestException(
+            `Failed to create shipment for order with ID ${defaultOrderWithFullInformation.id}`,
+          );
         }
 
-        this.logger.log(`Order created with ID: ${returnResult.id}`);
-        return returnResult;
-      });
+        const tempOrderWithFullInformation =
+          await this.prismaService.orders.findUnique({
+            where: { id: defaultOrderWithFullInformation.id },
+            include: OrdersWithFullInformationInclude,
+          });
+
+        if (!tempOrderWithFullInformation) {
+          throw new NotFoundException(
+            'Order not found after shipment, shipment items creation!',
+          );
+        }
+
+        returnOrderWithFullInformation = tempOrderWithFullInformation;
+      }
+
+      const endTime = Date.now();
+      this.logger.log(
+        `Order created with ID: ${returnOrderWithFullInformation.id}`,
+      );
+      this.logger.log(
+        `Time for creating order with ID ${returnOrderWithFullInformation.id}: ${endTime - startTime} ms`,
+      );
+      return returnOrderWithFullInformation;
     } catch (error) {
       this.logger.error('Failed to create order: ', error);
       throw new BadRequestException('Failed to create order');
@@ -1366,6 +939,230 @@ export class OrdersService {
         error,
       );
       throw new BadRequestException('Failed to fetch order requests');
+    }
+  }
+
+  /**
+   * Groups order items into shipping packages organized by shop office.
+   *
+   * This method performs the following operations:
+   * 1. Validates that all product variants exist and have sufficient stock
+   * 2. Organizes items by their source shop office (for multi-seller orders)
+   * 3. Calculates package dimensions and weight for each shop's shipment
+   * 4. Prepares data for GHN (shipping provider) API integration
+   *
+   * @param {SecondCreateOrderItemsDto[]} orderItems - Array of items to be ordered, each containing:
+   *   - productVariantId: Unique identifier of the product variant
+   *   - quantity: Requested quantity
+   *   - unitPrice: Price per unit
+   *   - totalPrice: Total price for this item (quantity × unitPrice)
+   *   - discountType: Type of discount (PERCENTAGE or FIXED_AMOUNT)
+   *   - discountValue: Discount amount or percentage
+   *   - currencyUnit: Currency code (e.g., VND)
+   *   - discountDescription: Description of the discount applied
+   *
+   * @returns {Promise<PackagesForShipping>} Object mapping shop IDs to package information:
+   *   - packageItems: Detailed item information for order
+   *   - packageItemsForGHNCreateNewOrderRequest: Item data formatted for GHN API
+   *   - totalWeight: Sum of all item weights (in grams)
+   *   - totalHeight: Sum of all item heights (in cm)
+   *   - maxLength: Maximum length among all items (in cm)
+   *   - maxWidth: Maximum width among all items (in cm)
+   *   - shippingFee: Calculated shipping cost (in VND)
+   *   - expectedDeliveryTime: Estimated delivery timeline
+   *   - GHN location details: Province, district, ward information
+   *   - GHN service details: Selected shipping service
+   *
+   * @throws {NotFoundException} If:
+   *   - Product variant doesn't exist in database
+   *   - Product variant has no associated shop office
+   *   - Shop office missing GHN integration details
+   *
+   * @throws {BadRequestException} If:
+   *   - Requested quantity exceeds available stock
+   *
+   * @remarks
+   * - Uses Map for O(1) lookup performance with large product variant lists
+   * - Prevents duplicate database queries by batching variant lookups
+   * - Supports order aggregation from multiple shop offices
+   * - Calculates physical dimensions needed for GHN shipping rate calculation
+   * - Validates stock availability before allowing order processing
+   *
+   * @example
+   * const packages = await ordersService.groupOrderItemsToPackageShippingFollowingShopId([
+   *   {
+   *     productVariantId: '123',
+   *     quantity: 2,
+   *     unitPrice: 100000,
+   *     totalPrice: 200000,
+   *     discountType: DiscountType.PERCENTAGE,
+   *     discountValue: 10,
+   *     currencyUnit: 'VND'
+   *   }
+   * ]);
+   * // Returns: { '456': { packageItems: [...], totalWeight: 500, ... } }
+   */
+  async groupOrderItemsToPackageShippingFollowingShopId(
+    orderItems: SecondCreateOrderItemsDto[],
+  ): Promise<PackagesForShipping> {
+    try {
+      const productVariantIdList = orderItems.map((item) =>
+        BigInt(item.productVariantId),
+      );
+      const productVariants = await this.prismaService.productVariants.findMany(
+        {
+          where: { id: { in: productVariantIdList } },
+          include: {
+            product: {
+              include: {
+                category: {
+                  select: {
+                    name: true,
+                  },
+                },
+                shopOffice: {
+                  select: {
+                    ghnShopId: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      );
+
+      // Create a Map for O(1) lookup by ID
+      const productVariantMap = new Map(
+        productVariants.map((pv) => [pv.id.toString(), pv]),
+      );
+      const packages: PackagesForShipping = {};
+
+      for (const item of orderItems) {
+        const productVariant = productVariantMap.get(
+          item.productVariantId.toString(),
+        );
+
+        // check order items is stock or out of stock
+        // if order items are out of stock, throw error
+        if (!productVariant) {
+          this.logger.log(
+            `Product variant with ID ${item.productVariantId} not found!`,
+          );
+          throw new NotFoundException(
+            `Product variant with ID ${item.productVariantId} not found!`,
+          );
+        }
+
+        if (productVariant.stock < item.quantity) {
+          this.logger.log(
+            `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
+          );
+          throw new BadRequestException(
+            `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
+          );
+        }
+
+        // grouping order items following shop office id to calculate shipping fee
+        if (
+          !productVariant.product.shopOffice ||
+          !productVariant.product.shopOffice.ghnShopId
+        ) {
+          this.logger.log(
+            `ProductVariant have id ${productVariant.id} has no shop office id or ghn shop office id. Please check again!`,
+          );
+          throw new NotFoundException(
+            `ProductVariant have id ${productVariant.id} has no shop office id or ghn shop office id. Please check again!`,
+          );
+        }
+
+        // add order item to corresponding shop office package
+        const ghnShopId =
+          productVariant.product.shopOffice.ghnShopId.toString();
+
+        const itemDetail: PackageItemDetail = {
+          productVariantId: item.productVariantId,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          discountDescription: item.discountDescription,
+          discountType: item.discountType || null,
+          discountValue: item.discountValue || 0,
+          totalPrice: item.totalPrice,
+          currencyUnit: item.currencyUnit,
+          productVariantName: productVariant.variantName,
+          productVariantSize: productVariant.variantSize,
+          productVariantColor: productVariant.variantColor,
+          productVariantSKU: productVariant.stockKeepingUnit,
+        };
+
+        const itemDetailForGHNCreateNewOrderRequest: PackageItemDetailForGHNCreateNewOrderRequest =
+          {
+            name: itemDetail.productVariantName,
+            code: itemDetail.productVariantSKU,
+            quantity: itemDetail.quantity,
+            price: itemDetail.unitPrice,
+            length: productVariant.variantLength,
+            width: productVariant.variantWidth,
+            height: productVariant.variantHeight,
+            weight: productVariant.variantWeight,
+            category: {
+              level1: productVariant.product.category?.name || 'Unknown',
+            },
+          };
+
+        if (!packages[ghnShopId]) {
+          packages[ghnShopId] = {
+            packageItems: [] as PackageItemDetail[],
+            packageItemsForGHNCreateNewOrderRequest:
+              [] as PackageItemDetailForGHNCreateNewOrderRequest[],
+            totalWeight: 0, // in grams
+            totalHeight: 0, // in cm
+            maxLength: 0, // in cm
+            maxWidth: 0, // in cm
+            ghnShopId: 0,
+            ghnShopDetail: {} as GHNShopDetail,
+            ghnProvinceName: '',
+            ghnDistrictName: '',
+            ghnWardName: '',
+            shippingService: {} as GetServiceResponse,
+            shippingFee: 0, // in VND
+            expectedDeliveryTime: {} as CalculateExpectedDeliveryTimeResponse,
+            from_district_id: 0,
+            from_ward_code: '',
+            to_district_id: 0,
+            to_ward_code: '',
+          };
+        }
+
+        packages[ghnShopId].packageItemsForGHNCreateNewOrderRequest.push(
+          itemDetailForGHNCreateNewOrderRequest,
+        );
+
+        packages[ghnShopId].packageItems.push(itemDetail);
+
+        packages[ghnShopId].totalWeight +=
+          item.quantity * productVariant.variantWeight;
+
+        packages[ghnShopId].totalHeight +=
+          item.quantity * productVariant.variantHeight;
+
+        packages[ghnShopId].maxLength = Math.max(
+          packages[ghnShopId].maxLength,
+          productVariant.variantLength,
+        );
+
+        packages[ghnShopId].maxWidth = Math.max(
+          packages[ghnShopId].maxWidth,
+          productVariant.variantWidth,
+        );
+      }
+
+      this.logger.log(
+        `Successfully grouped order items into packages following shop office ID.`,
+      );
+      return packages;
+    } catch (error) {
+      this.logger.error('Failed to group order items to package: ', error);
+      throw error;
     }
   }
 }

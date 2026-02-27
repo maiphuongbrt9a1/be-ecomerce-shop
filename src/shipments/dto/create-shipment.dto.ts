@@ -1,4 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
+import type {
+  createNewAddressForOrderResponseDto,
+  PackagesForShipping,
+} from '@/helpers/types/types';
+import { CreateAddressForOrderResponseDto } from '@/address/dto/create-address-for-order-response.dto';
+import { PackageDetailDto } from '@/orders/dto/group-order-items-package-response.dto';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { ShipmentStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
@@ -90,4 +96,67 @@ export class CreateShipmentDto {
   @IsDate()
   @Type(() => Date)
   updatedAt: Date;
+}
+
+export class createNewShipmentForOrderAndAutoCreateGHNShipmentDto {
+  @ApiProperty({ example: 455 })
+  @IsNotEmpty()
+  orderId: bigint;
+
+  @ApiProperty({
+    examples: [
+      'Giao hàng nhanh',
+      'Giao hàng tiết kiệm',
+      'GrabExpress',
+      'VNPost',
+      'J&T Express',
+    ],
+    example: 'Giao hàng nhanh',
+    description: 'Carrier for the shipment',
+  })
+  @IsNotEmpty()
+  @IsString()
+  carrier: string;
+
+  @ApiProperty({
+    description:
+      'Packages grouped by GHN shop ID. Each key is a shop ID string and each value is a PackageDetail object.',
+    type: 'object',
+    additionalProperties: {
+      $ref: getSchemaPath(PackageDetailDto),
+    },
+  })
+  packages: PackagesForShipping;
+
+  @ApiProperty({
+    description:
+      'Validated shipping address for GHN shipment creation (database address plus GHN location data).',
+    type: CreateAddressForOrderResponseDto,
+  })
+  createNewAddressForOrderResponseDto: createNewAddressForOrderResponseDto;
+
+  @ApiProperty({
+    example: '0987654321',
+    description: 'Customer phone number for GHN order creation',
+  })
+  customerPhoneForOrder: string;
+}
+
+export class PreviewShippingFeeForPackagesDto {
+  @ApiProperty({
+    description:
+      'Packages grouped by GHN shop ID. Each key is a shop ID string and each value is a PackageDetail object containing product variants, dimensions, and weights.',
+    type: 'object',
+    additionalProperties: {
+      $ref: getSchemaPath(PackageDetailDto),
+    },
+  })
+  packages: PackagesForShipping;
+
+  @ApiProperty({
+    description:
+      'Validated shipping address for GHN fee calculation (database address plus GHN location data with province, district, and ward IDs).',
+    type: CreateAddressForOrderResponseDto,
+  })
+  createNewAddressForOrderResponseDto: createNewAddressForOrderResponseDto;
 }

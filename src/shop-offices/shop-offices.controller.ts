@@ -21,7 +21,11 @@ import {
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles, Public } from '@/decorator/customize';
-import { ShopOfficeEntity } from './entities/shop-office.entity';
+import {
+  ShopOfficeEntity,
+  ShopOfficeWithProductsEntity,
+  GHNShopDetailEntity,
+} from './entities/shop-office.entity';
 import { UserEntity } from '@/user/entities/user.entity';
 import { AddressEntity } from '@/address/entities/address.entity';
 import { ProductEntity } from '@/products/entities/product.entity';
@@ -34,13 +38,13 @@ export class ShopOfficesController {
   @ApiOperation({ summary: 'Add new a shop office' })
   @ApiResponse({
     status: 201,
-    description: 'Add new a shop office',
+    description: 'Shop office created successfully and registered with GHN',
     type: ShopOfficeEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBody({
-    description: 'Shop office creation data',
+    description: 'Shop office creation data with address for GHN registration',
     type: CreateShopOfficeDto,
   })
   @ApiBearerAuth()
@@ -54,7 +58,7 @@ export class ShopOfficesController {
   @ApiOperation({ summary: 'Get shop office list' })
   @ApiResponse({
     status: 200,
-    description: ' shop office list found!',
+    description: 'Shop office list retrieved successfully',
     type: [ShopOfficeEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -82,7 +86,7 @@ export class ShopOfficesController {
   @ApiOperation({ summary: 'Get shop office detail by ID' })
   @ApiResponse({
     status: 200,
-    description: 'shop office found!',
+    description: 'Shop office retrieved successfully',
     type: ShopOfficeEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -96,7 +100,7 @@ export class ShopOfficesController {
   @ApiOperation({ summary: 'Update a shop office' })
   @ApiResponse({
     status: 200,
-    description: 'Update a shop office',
+    description: 'Shop office updated successfully',
     type: ShopOfficeEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -119,7 +123,7 @@ export class ShopOfficesController {
   @ApiOperation({ summary: 'Delete a shop office' })
   @ApiResponse({
     status: 200,
-    description: 'Delete a shop office',
+    description: 'Shop office deleted successfully',
     type: ShopOfficeEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -135,7 +139,7 @@ export class ShopOfficesController {
   @ApiOperation({ summary: 'Get shop office"s manager list by ID shop office' })
   @ApiResponse({
     status: 200,
-    description: 'shop office"s manager list found!',
+    description: 'Shop office manager list retrieved successfully',
     type: [UserEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -163,7 +167,7 @@ export class ShopOfficesController {
   @ApiOperation({ summary: 'Get shop office"s address by ID shop office' })
   @ApiResponse({
     status: 200,
-    description: 'shop office"s address found!',
+    description: 'Shop office address retrieved successfully',
     type: AddressEntity,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -177,7 +181,7 @@ export class ShopOfficesController {
   @ApiOperation({ summary: 'Get shop office"s products by ID shop office' })
   @ApiResponse({
     status: 200,
-    description: 'shop office"s products found!',
+    description: 'Shop office products retrieved successfully',
     type: [ProductEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -213,7 +217,7 @@ export class ShopOfficesController {
   @ApiOperation({ summary: 'Get shop office"s categories by ID shop office' })
   @ApiResponse({
     status: 200,
-    description: 'shop office"s categories found!',
+    description: 'Shop office categories retrieved successfully',
     type: [CategoryEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -230,8 +234,8 @@ export class ShopOfficesController {
   })
   @ApiResponse({
     status: 200,
-    description: 'shop office"s products of category found!',
-    type: [ProductEntity],
+    description: 'Shop office products of category retrieved successfully',
+    type: [ShopOfficeWithProductsEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -263,5 +267,21 @@ export class ShopOfficesController {
       Number(page),
       Number(perPage),
     );
+  }
+
+  @ApiOperation({ summary: 'Get GHN shop office details by shop office ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'GHN shop office details retrieved successfully',
+    type: GHNShopDetailEntity,
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/:id/ghn-details')
+  async getGHNShopOffice(@Param('id') id: string) {
+    return await this.shopOfficesService.getGHNShopOffice(+id);
   }
 }
