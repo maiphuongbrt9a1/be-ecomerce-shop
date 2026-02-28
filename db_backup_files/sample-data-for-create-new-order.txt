@@ -1,0 +1,886 @@
+address for order. 
+(input)
+
+{
+  "userId": 1033,
+  "street": "123 Hồ Xuân Hương Street",
+  "ward": "Đông Hòa",
+  "district": "Dĩ An",
+  "province": "Bình Dương",
+  "zipCode": "75000",
+  "country": "Vietnam"
+}
+
+(output)
+
+{
+    "orderAddressInDb": {
+      "id": 2034,
+      "userId": 1033,
+      "street": "123 Hồ Xuân Hương Street",
+      "ward": "Đông Hòa",
+      "district": "Dĩ An",
+      "province": "Bình Dương",
+      "zipCode": "75000",
+      "country": "Vietnam",
+      "createdAt": "2026-02-28T04:14:00.356Z",
+      "updatedAt": "2026-02-28T04:14:00.356Z",
+      "shopOfficeId": null
+    },
+    "orderAddressInGHN": {
+      "toProvince": {
+        "ProvinceID": 205,
+        "ProvinceName": "Bình Dương",
+        "CountryID": 1,
+        "Code": "65",
+        "NameExtension": [
+          "Bình Dương",
+          "Tỉnh Bình Dương",
+          "T.Bình Dương",
+          "T Bình Dương",
+          "binhduong"
+        ],
+        "IsEnable": 1,
+        "RegionID": 4,
+        "RegionCPN": 1,
+        "UpdatedBy": 1718600,
+        "CreatedAt": "2019-12-05 15:41:26.891226 +0700 +07 m=+0.010290886",
+        "UpdatedAt": "2019-12-05 15:41:26.891227 +0700 +07 m=+0.010291916",
+        "CanUpdateCOD": false,
+        "Status": 1,
+        "UpdatedEmployee": 8888,
+        "UpdatedSource": "online--stream--master-data.RawData--UpdateMasterData",
+        "UpdatedDate": "2025-03-05T11:06:57.346Z"
+      },
+      "toDistrict": {
+        "DistrictID": 1540,
+        "ProvinceID": 205,
+        "DistrictName": "Thành phố Dĩ An",
+        "Code": "4405",
+        "Type": 1,
+        "SupportType": 3,
+        "NameExtension": [
+          "Thị xã Dĩ An",
+          "TX.Dĩ An",
+          "TX Dĩ An",
+          "Dĩ An",
+          "Di An",
+          "Thi xa Di An",
+          "dian",
+          "Thành phố Dĩ An",
+          "TP Dĩ An",
+          "TP Di An"
+        ],
+        "IsEnable": 1,
+        "UpdatedBy": 1718600,
+        "CreatedAt": "2019-12-05 15:53:32.431488 +0700 +07 m=+0.015433708",
+        "UpdatedAt": "2020-09-29 13:43:12.27773 +0700 +07 m=+44.779584258",
+        "CanUpdateCOD": false,
+        "Status": 1,
+        "PickType": 0,
+        "DeliverType": 0,
+        "WhiteListClient": {
+          "From": [],
+          "To": [],
+          "Return": []
+        },
+        "WhiteListDistrict": {
+          "From": null,
+          "To": null
+        },
+        "GovernmentCode": "724",
+        "ReasonCode": "",
+        "ReasonMessage": "",
+        "OnDates": null,
+        "UpdatedEmployee": 8888,
+        "UpdatedSource": "online--stream--master-data.RawData--UpdateMasterData",
+        "UpdatedDate": "2025-03-05T11:07:01.376Z"
+      },
+      "toWard": {
+        "WardCode": "440505",
+        "DistrictID": 1540,
+        "WardName": "Phường Đông Hòa",
+        "NameExtension": [
+          "Phường Đông Hòa",
+          "P.Đông Hòa",
+          "P Đông Hòa",
+          "Đông Hòa",
+          "Dong Hoa",
+          "Phuong Dong Hoa",
+          "donghoa"
+        ],
+        "IsEnable": 1,
+        "CanUpdateCOD": false,
+        "UpdatedBy": 1718600,
+        "CreatedAt": "2019-12-05 16:02:20.39387 +0700 +07 m=+0.030207784",
+        "UpdatedAt": "2020-09-29 13:52:33.148391 +0700 +07 m=+177.811830576",
+        "SupportType": 3,
+        "PickType": 1,
+        "DeliverType": 1,
+        "WhiteListClient": {
+          "From": [],
+          "To": [],
+          "Return": []
+        },
+        "WhiteListWard": {
+          "From": null,
+          "To": null
+        },
+        "GovernmentCode": "25957",
+        "Status": 1,
+        "Config": {
+          "From": {
+            "LockType": "unlocked"
+          },
+          "To": {
+            "LockType": "unlocked"
+          },
+          "Return": {
+            "LockType": "unlocked"
+          }
+        },
+        "ReasonCode": "",
+        "ReasonMessage": "",
+        "OnDates": [
+          "2023-01-25T17:00:00Z",
+          "2024-02-13T17:00:00Z"
+        ],
+        "UpdatedEmployee": 8888,
+        "UpdatedSource": "online--stream--master-data.RawData--UpdateMasterData",
+        "UpdatedDate": "2025-03-05T11:08:08.737Z"
+      }
+    }
+  }
+
+
+/////////////////////////////////////
+
+group order items for package for order 
+
+(input)
+
+[
+  {
+    "productVariantId": 851,
+    "quantity": 8,
+    "unitPrice": 851,
+    "discountDescription": "free ship",
+    "discountType": "FIXED_AMOUNT",
+    "discountValue": 465,
+    "totalPrice": 851,
+    "currencyUnit": "VND"
+  }
+]
+
+(output)
+
+{
+    "199348": {
+      "packageItems": [
+        {
+          "productVariantId": 851,
+          "quantity": 8,
+          "unitPrice": 851,
+          "discountDescription": "free ship",
+          "discountType": "FIXED_AMOUNT",
+          "discountValue": 465,
+          "totalPrice": 851,
+          "currencyUnit": "VND",
+          "productVariantName": "Variant for Product 4851 - Option S - Red",
+          "productVariantSize": "S",
+          "productVariantColor": "Red",
+          "productVariantSKU": "PV-4851-V190"
+        }
+      ],
+      "packageItemsForGHNCreateNewOrderRequest": [
+        {
+          "name": "Variant for Product 4851 - Option S - Red",
+          "code": "PV-4851-V190",
+          "quantity": 8,
+          "price": 851,
+          "length": 25,
+          "width": 20,
+          "height": 5,
+          "weight": 250,
+          "category": {
+            "level1": "Áo Thun & Polo"
+          }
+        }
+      ],
+      "totalWeight": 2000,
+      "totalHeight": 40,
+      "maxLength": 25,
+      "maxWidth": 20,
+      "ghnShopId": 0,
+      "ghnShopDetail": {},
+      "ghnProvinceName": "",
+      "ghnDistrictName": "",
+      "ghnWardName": "",
+      "shippingService": {},
+      "shippingFee": 0,
+      "expectedDeliveryTime": {},
+      "from_district_id": 0,
+      "from_ward_code": "",
+      "to_district_id": 0,
+      "to_ward_code": ""
+    }
+  }
+
+
+///////////////////////////////////////////////
+
+preview shipping fee
+(input)
+
+{
+  "packages": {
+    "199348": {
+      "packageItems": [
+        {
+          "productVariantId": 851,
+          "quantity": 8,
+          "unitPrice": 851,
+          "discountDescription": "free ship",
+          "discountType": "FIXED_AMOUNT",
+          "discountValue": 465,
+          "totalPrice": 851,
+          "currencyUnit": "VND",
+          "productVariantName": "Variant for Product 4851 - Option S - Red",
+          "productVariantSize": "S",
+          "productVariantColor": "Red",
+          "productVariantSKU": "PV-4851-V190"
+        }
+      ],
+      "packageItemsForGHNCreateNewOrderRequest": [
+        {
+          "name": "Variant for Product 4851 - Option S - Red",
+          "code": "PV-4851-V190",
+          "quantity": 8,
+          "price": 851,
+          "length": 25,
+          "width": 20,
+          "height": 5,
+          "weight": 250,
+          "category": {
+            "level1": "Áo Thun & Polo"
+          }
+        }
+      ],
+      "totalWeight": 2000,
+      "totalHeight": 40,
+      "maxLength": 25,
+      "maxWidth": 20,
+      "ghnShopId": 0,
+      "ghnShopDetail": {},
+      "ghnProvinceName": "",
+      "ghnDistrictName": "",
+      "ghnWardName": "",
+      "shippingService": {},
+      "shippingFee": 0,
+      "expectedDeliveryTime": {},
+      "from_district_id": 0,
+      "from_ward_code": "",
+      "to_district_id": 0,
+      "to_ward_code": ""
+    }
+  },
+  "createNewAddressForOrderResponseDto": {
+    "orderAddressInDb": {
+      "id": 2034,
+      "userId": 1033,
+      "street": "123 Hồ Xuân Hương Street",
+      "ward": "Đông Hòa",
+      "district": "Dĩ An",
+      "province": "Bình Dương",
+      "zipCode": "75000",
+      "country": "Vietnam",
+      "createdAt": "2026-02-28T04:14:00.356Z",
+      "updatedAt": "2026-02-28T04:14:00.356Z",
+      "shopOfficeId": null
+    },
+    "orderAddressInGHN": {
+      "toProvince": {
+        "ProvinceID": 205,
+        "ProvinceName": "Bình Dương",
+        "CountryID": 1,
+        "Code": "65",
+        "NameExtension": [
+          "Bình Dương",
+          "Tỉnh Bình Dương",
+          "T.Bình Dương",
+          "T Bình Dương",
+          "binhduong"
+        ],
+        "IsEnable": 1,
+        "RegionID": 4,
+        "RegionCPN": 1,
+        "UpdatedBy": 1718600,
+        "CreatedAt": "2019-12-05 15:41:26.891226 +0700 +07 m=+0.010290886",
+        "UpdatedAt": "2019-12-05 15:41:26.891227 +0700 +07 m=+0.010291916",
+        "CanUpdateCOD": false,
+        "Status": 1,
+        "UpdatedEmployee": 8888,
+        "UpdatedSource": "online--stream--master-data.RawData--UpdateMasterData",
+        "UpdatedDate": "2025-03-05T11:06:57.346Z"
+      },
+      "toDistrict": {
+        "DistrictID": 1540,
+        "ProvinceID": 205,
+        "DistrictName": "Thành phố Dĩ An",
+        "Code": "4405",
+        "Type": 1,
+        "SupportType": 3,
+        "NameExtension": [
+          "Thị xã Dĩ An",
+          "TX.Dĩ An",
+          "TX Dĩ An",
+          "Dĩ An",
+          "Di An",
+          "Thi xa Di An",
+          "dian",
+          "Thành phố Dĩ An",
+          "TP Dĩ An",
+          "TP Di An"
+        ],
+        "IsEnable": 1,
+        "UpdatedBy": 1718600,
+        "CreatedAt": "2019-12-05 15:53:32.431488 +0700 +07 m=+0.015433708",
+        "UpdatedAt": "2020-09-29 13:43:12.27773 +0700 +07 m=+44.779584258",
+        "CanUpdateCOD": false,
+        "Status": 1,
+        "PickType": 0,
+        "DeliverType": 0,
+        "WhiteListClient": {
+          "From": [],
+          "To": [],
+          "Return": []
+        },
+        "WhiteListDistrict": {
+          "From": null,
+          "To": null
+        },
+        "GovernmentCode": "724",
+        "ReasonCode": "",
+        "ReasonMessage": "",
+        "OnDates": null,
+        "UpdatedEmployee": 8888,
+        "UpdatedSource": "online--stream--master-data.RawData--UpdateMasterData",
+        "UpdatedDate": "2025-03-05T11:07:01.376Z"
+      },
+      "toWard": {
+        "WardCode": "440505",
+        "DistrictID": 1540,
+        "WardName": "Phường Đông Hòa",
+        "NameExtension": [
+          "Phường Đông Hòa",
+          "P.Đông Hòa",
+          "P Đông Hòa",
+          "Đông Hòa",
+          "Dong Hoa",
+          "Phuong Dong Hoa",
+          "donghoa"
+        ],
+        "IsEnable": 1,
+        "CanUpdateCOD": false,
+        "UpdatedBy": 1718600,
+        "CreatedAt": "2019-12-05 16:02:20.39387 +0700 +07 m=+0.030207784",
+        "UpdatedAt": "2020-09-29 13:52:33.148391 +0700 +07 m=+177.811830576",
+        "SupportType": 3,
+        "PickType": 1,
+        "DeliverType": 1,
+        "WhiteListClient": {
+          "From": [],
+          "To": [],
+          "Return": []
+        },
+        "WhiteListWard": {
+          "From": null,
+          "To": null
+        },
+        "GovernmentCode": "25957",
+        "Status": 1,
+        "Config": {
+          "From": {
+            "LockType": "unlocked"
+          },
+          "To": {
+            "LockType": "unlocked"
+          },
+          "Return": {
+            "LockType": "unlocked"
+          }
+        },
+        "ReasonCode": "",
+        "ReasonMessage": "",
+        "OnDates": [
+          "2023-01-25T17:00:00Z",
+          "2024-02-13T17:00:00Z"
+        ],
+        "UpdatedEmployee": 8888,
+        "UpdatedSource": "online--stream--master-data.RawData--UpdateMasterData",
+        "UpdatedDate": "2025-03-05T11:08:08.737Z"
+      }
+    }
+  }
+}
+
+(output)
+
+{
+    "199348": {
+      "packageItems": [
+        {
+          "productVariantId": 851,
+          "quantity": 8,
+          "unitPrice": 851,
+          "discountDescription": "free ship",
+          "discountType": "FIXED_AMOUNT",
+          "discountValue": 465,
+          "totalPrice": 851,
+          "currencyUnit": "VND",
+          "productVariantName": "Variant for Product 4851 - Option S - Red",
+          "productVariantSize": "S",
+          "productVariantColor": "Red",
+          "productVariantSKU": "PV-4851-V190"
+        }
+      ],
+      "packageItemsForGHNCreateNewOrderRequest": [
+        {
+          "name": "Variant for Product 4851 - Option S - Red",
+          "code": "PV-4851-V190",
+          "quantity": 8,
+          "price": 851,
+          "length": 25,
+          "width": 20,
+          "height": 5,
+          "weight": 250,
+          "category": {
+            "level1": "Áo Thun & Polo"
+          }
+        }
+      ],
+      "totalWeight": 2000,
+      "totalHeight": 40,
+      "maxLength": 25,
+      "maxWidth": 20,
+      "ghnShopId": 199348,
+      "ghnShopDetail": {
+        "_id": 199348,
+        "name": "Cửa hàng Hồ Chí Minh",
+        "phone": "0707255821",
+        "address": "123 Lê Lợi",
+        "ward_code": "20102",
+        "district_id": 1442,
+        "client_id": 2511048,
+        "bank_account_id": 0,
+        "status": 1,
+        "location": {},
+        "version_no": "f7a4ff4d-b683-40a1-8223-a19be645f1c4",
+        "is_created_chat_channel": false,
+        "address_v2": "123 Lê Lợi",
+        "ward_id_v2": 0,
+        "province_id_v2": 0,
+        "is_new_address": false,
+        "updated_ip": "149.50.211.155",
+        "updated_employee": 0,
+        "updated_client": 2511048,
+        "updated_source": "shiip",
+        "updated_date": "2026-02-09T10:52:47.547Z",
+        "created_ip": "",
+        "created_employee": 0,
+        "created_client": 0,
+        "created_source": "registration-flow-v3",
+        "created_date": "2026-02-09T08:27:08.766Z"
+      },
+      "ghnProvinceName": "Hồ Chí Minh",
+      "ghnDistrictName": "Quận 1",
+      "ghnWardName": "Phường Bến Thành",
+      "shippingService": {
+        "service_id": 53321,
+        "short_name": "Hàng nhẹ",
+        "service_type_id": 2,
+        "config_fee_id": "",
+        "extra_cost_id": "",
+        "standard_config_fee_id": "",
+        "standard_extra_cost_id": "",
+        "ecom_config_fee_id": 117,
+        "ecom_extra_cost_id": 66,
+        "ecom_standard_config_fee_id": 0,
+        "ecom_standard_extra_cost_id": 0
+      },
+      "shippingFee": 84700,
+      "expectedDeliveryTime": {
+        "leadtime": 1772384399,
+        "leadtime_order": {
+          "from_estimate_date": "2026-03-01T16:59:59Z",
+          "to_estimate_date": "2026-03-02T16:59:59Z"
+        }
+      },
+      "from_district_id": 1442,
+      "from_ward_code": "20102",
+      "to_district_id": 1540,
+      "to_ward_code": "440505"
+    }
+  }
+
+
+/////
+/////
+
+order create
+(input)
+
+{
+  "userId": 851,
+  "paymentMethod": "COD",
+  "carrier": "Giao hàng nhanh",
+  "description": "This is a description of the order",
+  "phone": "0987654321",
+  "packages": {
+    "199348": {
+      "packageItems": [
+        {
+          "productVariantId": 851,
+          "quantity": 8,
+          "unitPrice": 851,
+          "discountDescription": "free ship",
+          "discountType": "FIXED_AMOUNT",
+          "discountValue": 465,
+          "totalPrice": 851,
+          "currencyUnit": "VND",
+          "productVariantName": "Variant for Product 4851 - Option S - Red",
+          "productVariantSize": "S",
+          "productVariantColor": "Red",
+          "productVariantSKU": "PV-4851-V190"
+        }
+      ],
+      "packageItemsForGHNCreateNewOrderRequest": [
+        {
+          "name": "Variant for Product 4851 - Option S - Red",
+          "code": "PV-4851-V190",
+          "quantity": 8,
+          "price": 851,
+          "length": 25,
+          "width": 20,
+          "height": 5,
+          "weight": 250,
+          "category": {
+            "level1": "Áo Thun & Polo"
+          }
+        }
+      ],
+      "totalWeight": 2000,
+      "totalHeight": 40,
+      "maxLength": 25,
+      "maxWidth": 20,
+      "ghnShopId": 199348,
+      "ghnShopDetail": {
+        "_id": 199348,
+        "name": "Cửa hàng Hồ Chí Minh",
+        "phone": "0707255821",
+        "address": "123 Lê Lợi",
+        "ward_code": "20102",
+        "district_id": 1442,
+        "client_id": 2511048,
+        "bank_account_id": 0,
+        "status": 1,
+        "location": {},
+        "version_no": "f7a4ff4d-b683-40a1-8223-a19be645f1c4",
+        "is_created_chat_channel": false,
+        "address_v2": "123 Lê Lợi",
+        "ward_id_v2": 0,
+        "province_id_v2": 0,
+        "is_new_address": false,
+        "updated_ip": "149.50.211.155",
+        "updated_employee": 0,
+        "updated_client": 2511048,
+        "updated_source": "shiip",
+        "updated_date": "2026-02-09T10:52:47.547Z",
+        "created_ip": "",
+        "created_employee": 0,
+        "created_client": 0,
+        "created_source": "registration-flow-v3",
+        "created_date": "2026-02-09T08:27:08.766Z"
+      },
+      "ghnProvinceName": "Hồ Chí Minh",
+      "ghnDistrictName": "Quận 1",
+      "ghnWardName": "Phường Bến Thành",
+      "shippingService": {
+        "service_id": 53321,
+        "short_name": "Hàng nhẹ",
+        "service_type_id": 2,
+        "config_fee_id": "",
+        "extra_cost_id": "",
+        "standard_config_fee_id": "",
+        "standard_extra_cost_id": "",
+        "ecom_config_fee_id": 117,
+        "ecom_extra_cost_id": 66,
+        "ecom_standard_config_fee_id": 0,
+        "ecom_standard_extra_cost_id": 0
+      },
+      "shippingFee": 84700,
+      "expectedDeliveryTime": {
+        "leadtime": 1772384399,
+        "leadtime_order": {
+          "from_estimate_date": "2026-03-01T16:59:59Z",
+          "to_estimate_date": "2026-03-02T16:59:59Z"
+        }
+      },
+      "from_district_id": 1442,
+      "from_ward_code": "20102",
+      "to_district_id": 1540,
+      "to_ward_code": "440505"
+    }
+  },
+  "shippingAddress": {
+    "orderAddressInDb": {
+      "id": 2034,
+      "userId": 1033,
+      "street": "123 Hồ Xuân Hương Street",
+      "ward": "Đông Hòa",
+      "district": "Dĩ An",
+      "province": "Bình Dương",
+      "zipCode": "75000",
+      "country": "Vietnam",
+      "createdAt": "2026-02-28T04:14:00.356Z",
+      "updatedAt": "2026-02-28T04:14:00.356Z",
+      "shopOfficeId": null
+    },
+    "orderAddressInGHN": {
+      "toProvince": {
+        "ProvinceID": 205,
+        "ProvinceName": "Bình Dương",
+        "CountryID": 1,
+        "Code": "65",
+        "NameExtension": [
+          "Bình Dương",
+          "Tỉnh Bình Dương",
+          "T.Bình Dương",
+          "T Bình Dương",
+          "binhduong"
+        ],
+        "IsEnable": 1,
+        "RegionID": 4,
+        "RegionCPN": 1,
+        "UpdatedBy": 1718600,
+        "CreatedAt": "2019-12-05 15:41:26.891226 +0700 +07 m=+0.010290886",
+        "UpdatedAt": "2019-12-05 15:41:26.891227 +0700 +07 m=+0.010291916",
+        "CanUpdateCOD": false,
+        "Status": 1,
+        "UpdatedEmployee": 8888,
+        "UpdatedSource": "online--stream--master-data.RawData--UpdateMasterData",
+        "UpdatedDate": "2025-03-05T11:06:57.346Z"
+      },
+      "toDistrict": {
+        "DistrictID": 1540,
+        "ProvinceID": 205,
+        "DistrictName": "Thành phố Dĩ An",
+        "Code": "4405",
+        "Type": 1,
+        "SupportType": 3,
+        "NameExtension": [
+          "Thị xã Dĩ An",
+          "TX.Dĩ An",
+          "TX Dĩ An",
+          "Dĩ An",
+          "Di An",
+          "Thi xa Di An",
+          "dian",
+          "Thành phố Dĩ An",
+          "TP Dĩ An",
+          "TP Di An"
+        ],
+        "IsEnable": 1,
+        "UpdatedBy": 1718600,
+        "CreatedAt": "2019-12-05 15:53:32.431488 +0700 +07 m=+0.015433708",
+        "UpdatedAt": "2020-09-29 13:43:12.27773 +0700 +07 m=+44.779584258",
+        "CanUpdateCOD": false,
+        "Status": 1,
+        "PickType": 0,
+        "DeliverType": 0,
+        "WhiteListClient": {
+          "From": [],
+          "To": [],
+          "Return": []
+        },
+        "WhiteListDistrict": {
+          "From": null,
+          "To": null
+        },
+        "GovernmentCode": "724",
+        "ReasonCode": "",
+        "ReasonMessage": "",
+        "OnDates": null,
+        "UpdatedEmployee": 8888,
+        "UpdatedSource": "online--stream--master-data.RawData--UpdateMasterData",
+        "UpdatedDate": "2025-03-05T11:07:01.376Z"
+      },
+      "toWard": {
+        "WardCode": "440505",
+        "DistrictID": 1540,
+        "WardName": "Phường Đông Hòa",
+        "NameExtension": [
+          "Phường Đông Hòa",
+          "P.Đông Hòa",
+          "P Đông Hòa",
+          "Đông Hòa",
+          "Dong Hoa",
+          "Phuong Dong Hoa",
+          "donghoa"
+        ],
+        "IsEnable": 1,
+        "CanUpdateCOD": false,
+        "UpdatedBy": 1718600,
+        "CreatedAt": "2019-12-05 16:02:20.39387 +0700 +07 m=+0.030207784",
+        "UpdatedAt": "2020-09-29 13:52:33.148391 +0700 +07 m=+177.811830576",
+        "SupportType": 3,
+        "PickType": 1,
+        "DeliverType": 1,
+        "WhiteListClient": {
+          "From": [],
+          "To": [],
+          "Return": []
+        },
+        "WhiteListWard": {
+          "From": null,
+          "To": null
+        },
+        "GovernmentCode": "25957",
+        "Status": 1,
+        "Config": {
+          "From": {
+            "LockType": "unlocked"
+          },
+          "To": {
+            "LockType": "unlocked"
+          },
+          "Return": {
+            "LockType": "unlocked"
+          }
+        },
+        "ReasonCode": "",
+        "ReasonMessage": "",
+        "OnDates": [
+          "2023-01-25T17:00:00Z",
+          "2024-02-13T17:00:00Z"
+        ],
+        "UpdatedEmployee": 8888,
+        "UpdatedSource": "online--stream--master-data.RawData--UpdateMasterData",
+        "UpdatedDate": "2025-03-05T11:08:08.737Z"
+      }
+    }
+  }
+}
+
+(output) 
+
+{
+    "id": 1008,
+    "shippingAddressId": 2034,
+    "userId": 851,
+    "processByStaffId": null,
+    "description": "This is a description of the order",
+    "orderDate": "2026-02-28T04:18:43.031Z",
+    "status": "PENDING",
+    "subTotal": 851,
+    "shippingFee": 84700,
+    "discount": 465,
+    "totalAmount": 85086,
+    "currencyUnit": "VND",
+    "createdAt": "2026-02-28T04:18:43.113Z",
+    "updatedAt": "2026-02-28T04:18:43.113Z",
+    "user": {
+      "id": 851,
+      "email": "user_820@example.com",
+      "firstName": "UserFirst_820",
+      "lastName": "UserLast_820",
+      "phone": "0909364633",
+      "points": 3564,
+      "gender": "FEMALE",
+      "userMedia": []
+    },
+    "processByStaff": null,
+    "shippingAddress": {
+      "id": 2034,
+      "userId": 1033,
+      "street": "123 Hồ Xuân Hương Street",
+      "ward": "Đông Hòa",
+      "district": "Dĩ An",
+      "province": "Bình Dương",
+      "zipCode": "75000",
+      "country": "Vietnam",
+      "createdAt": "2026-02-28T04:14:00.356Z",
+      "updatedAt": "2026-02-28T04:14:00.356Z",
+      "shopOfficeId": null
+    },
+    "shipments": [
+      {
+        "id": 1006,
+        "orderId": 1008,
+        "processByStaffId": null,
+        "ghnOrderCode": "LTVU83",
+        "shopOfficeId": 1,
+        "estimatedDelivery": "2026-03-01T16:59:59.000Z",
+        "deliveredAt": null,
+        "estimatedShipDate": "2026-03-01T16:59:59.000Z",
+        "shippedAt": null,
+        "carrier": "Giao hàng nhanh",
+        "trackingNumber": "LTVU83",
+        "description": "This is a description of the order",
+        "status": "WAITING_FOR_PICKUP",
+        "createdAt": "2026-02-28T04:18:44.452Z",
+        "updatedAt": "2026-02-28T04:18:44.452Z",
+        "processByStaff": null
+      }
+    ],
+    "payment": [
+      {
+        "id": 1008,
+        "orderId": 1008,
+        "transactionId": "1772252323156-1008-851-4690404",
+        "paymentMethod": "COD",
+        "paymentDate": "2026-02-28T04:18:43.159Z",
+        "amount": 85086,
+        "currencyUnit": "VND",
+        "status": "PENDING",
+        "createdAt": "2026-02-28T04:18:43.159Z",
+        "updatedAt": "2026-02-28T04:18:43.159Z"
+      }
+    ],
+    "requests": [],
+    "orderItems": [
+      {
+        "id": 1010,
+        "orderId": 1008,
+        "productVariantId": 851,
+        "quantity": 8,
+        "unitPrice": 851,
+        "totalPrice": 851,
+        "discountValue": 465,
+        "currencyUnit": "VND",
+        "createdAt": "2026-02-28T04:18:43.146Z",
+        "updatedAt": "2026-02-28T04:18:43.146Z",
+        "productVariant": {
+          "id": 851,
+          "productId": 4851,
+          "createByUserId": 113,
+          "variantName": "Variant for Product 4851 - Option S - Red",
+          "variantColor": "Red",
+          "variantSize": "S",
+          "variantWeight": 250,
+          "variantHeight": 5,
+          "variantWidth": 20,
+          "variantLength": 25,
+          "price": 715000,
+          "currencyUnit": "VND",
+          "stock": 27,
+          "stockKeepingUnit": "PV-4851-V190",
+          "createdAt": "2025-11-20T15:10:44.959Z",
+          "updatedAt": "2026-02-28T04:18:43.075Z",
+          "voucherId": null,
+          "colorId": 1,
+          "media": []
+        }
+      }
+    ]
+  }
