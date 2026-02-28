@@ -347,6 +347,8 @@ export class OrdersService {
         returnOrderWithFullInformation = tempOrderWithFullInformation;
       }
 
+      // fix here to format media url for order, order items, shipment and shipment items
+
       const endTime = Date.now();
       this.logger.log(
         `Order created with ID: ${returnOrderWithFullInformation.id}`,

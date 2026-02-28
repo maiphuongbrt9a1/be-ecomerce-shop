@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  HttpCode,
 } from '@nestjs/common';
 import { ShipmentsService } from './shipments.service';
 import {
@@ -32,6 +33,14 @@ import {
   EnrichedPackageDetailEntity,
 } from './entities/shipment.entity';
 import { ShipmentWithFullInformationEntity } from './entities/shipment-with-full-information.entity';
+import {
+  CalculateExpectedDeliveryTimeResponseDto,
+  GetServiceResponseDto,
+  GHNShopDetailDto,
+  PackageDetailDto,
+  PackageItemDetailDto,
+  PackageItemDetailForGHNCreateNewOrderRequestDto,
+} from '@/orders/dto/group-order-items-package-response.dto';
 
 @ApiExtraModels(EnrichedPackageDetailEntity)
 @Controller('shipments')
@@ -105,6 +114,14 @@ export class ShipmentsController {
     );
   }
 
+  @ApiExtraModels(
+    PackageDetailDto,
+    PackageItemDetailDto,
+    PackageItemDetailForGHNCreateNewOrderRequestDto,
+    GHNShopDetailDto,
+    GetServiceResponseDto,
+    CalculateExpectedDeliveryTimeResponseDto,
+  )
   @ApiOperation({
     summary: 'Preview shipping fees for packages before creating shipments',
     description:
@@ -122,7 +139,7 @@ export class ShipmentsController {
     schema: {
       type: 'object',
       additionalProperties: {
-        $ref: getSchemaPath(EnrichedPackageDetailEntity),
+        $ref: getSchemaPath(PackageDetailDto),
       },
       description:
         'Object with ghnShopId as keys and enriched PackageDetail as values',
@@ -141,6 +158,7 @@ export class ShipmentsController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR', 'USER')
+  @HttpCode(200)
   @Post('/preview-shipping-fee')
   async previewShippingFeeForEachPackageForOrder(
     @Body() previewShippingFeeDto: PreviewShippingFeeForPackagesDto,

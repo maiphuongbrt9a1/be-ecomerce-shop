@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  HttpCode,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import {
@@ -317,6 +318,7 @@ export class OrdersController {
     description: 'Order items to group by GHN shop ID for shipping preparation',
     type: [SecondCreateOrderItemsDto],
   })
+  @HttpCode(200)
   @Post('/group-order-items-to-packages')
   async groupOrderItemsToPackageShippingFollowingShopId(
     @Body() orderItems: SecondCreateOrderItemsDto[],

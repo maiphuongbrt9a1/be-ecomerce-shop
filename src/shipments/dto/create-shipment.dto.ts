@@ -126,6 +126,7 @@ export class createNewShipmentForOrderAndAutoCreateGHNShipmentDto {
       $ref: getSchemaPath(PackageDetailDto),
     },
   })
+  @IsNotEmpty()
   packages: PackagesForShipping;
 
   @ApiProperty({
@@ -133,12 +134,16 @@ export class createNewShipmentForOrderAndAutoCreateGHNShipmentDto {
       'Validated shipping address for GHN shipment creation (database address plus GHN location data).',
     type: CreateAddressForOrderResponseDto,
   })
+  @IsNotEmpty()
+  @Type(() => CreateAddressForOrderResponseDto)
   createNewAddressForOrderResponseDto: createNewAddressForOrderResponseDto;
 
   @ApiProperty({
     example: '0987654321',
     description: 'Customer phone number for GHN order creation',
   })
+  @IsNotEmpty()
+  @IsString()
   customerPhoneForOrder: string;
 }
 
@@ -151,6 +156,7 @@ export class PreviewShippingFeeForPackagesDto {
       $ref: getSchemaPath(PackageDetailDto),
     },
   })
+  @IsNotEmpty()
   packages: PackagesForShipping;
 
   @ApiProperty({
@@ -158,5 +164,7 @@ export class PreviewShippingFeeForPackagesDto {
       'Validated shipping address for GHN fee calculation (database address plus GHN location data with province, district, and ward IDs).',
     type: CreateAddressForOrderResponseDto,
   })
+  @IsNotEmpty()
+  @Type(() => CreateAddressForOrderResponseDto)
   createNewAddressForOrderResponseDto: createNewAddressForOrderResponseDto;
 }

@@ -206,6 +206,11 @@ export class ShipmentsService {
 
       const result: Shipments[] = [];
 
+      // Debug: Log the  orderId being used
+      this.logger.log(
+        `Querying for order with ID: ${createNewShipmentForOrderAndAutoCreateGHNShipmentDto.orderId}`,
+      );
+
       const orderInformationDetailFromDB =
         await this.prismaService.orders.findUnique({
           where: {
@@ -237,14 +242,42 @@ export class ShipmentsService {
         );
       }
 
+      // Debug: Log order items from database
+      this.logger.log(
+        `Order items from DB: ${JSON.stringify(
+          orderInformationDetailFromDB.orderItems.map((oi) => ({
+            id: oi.id.toString(),
+            productVariantId: oi.productVariantId.toString(),
+            quantity: oi.quantity,
+          })),
+        )}`,
+      );
+
       const orderItemIdMap = new Map(
         orderInformationDetailFromDB.orderItems.map((orderItem) => [
-          orderItem.productVariantId,
+          orderItem.productVariantId.toString(),
           orderItem,
         ]),
       );
 
+      // Debug: Log map keys
+      this.logger.log(
+        `orderItemIdMap keys: ${JSON.stringify(Array.from(orderItemIdMap.keys()))}`,
+      );
+      this.logger.log(`orderItemIdMap size: ${orderItemIdMap.size}`);
+
       for (const ghnShopId in packages) {
+        // Debug: Log package items for this shop
+        this.logger.log(
+          `Processing package for ghnShopId: ${ghnShopId}, packageItems: ${JSON.stringify(
+            packages[ghnShopId].packageItems.map((pi) => ({
+              productVariantId: pi.productVariantId,
+              quantity: pi.quantity,
+              productVariantName: pi.productVariantName,
+            })),
+          )}`,
+        );
+
         const shopOffice = await this.prismaService.shopOffice.findFirst({
           where: { ghnShopId: BigInt(ghnShopId) },
           select: { id: true, ghnShopId: true },
@@ -393,8 +426,13 @@ export class ShipmentsService {
 
               // create shipment items record in database
               for (const item of packages[ghnShopId].packageItems) {
+                // Debug: Log what we're looking for
+                this.logger.log(
+                  `Looking for productVariantId: ${item.productVariantId} (type: ${typeof item.productVariantId})`,
+                );
+
                 const orderItemId = orderItemIdMap.get(
-                  item.productVariantId,
+                  item.productVariantId.toString(),
                 )?.id;
 
                 if (!orderItemId) {
@@ -813,7 +851,7 @@ export class ShipmentsService {
   async previewShippingFeeForEachPackageForOrder(
     packages: PackagesForShipping,
     createNewAddressForOrderResponseDto: createNewAddressForOrderResponseDto,
-  ) {
+  ): Promise<PackagesForShipping> {
     try {
       // calculate shipping fee based on packages from different shop offices
       for (const ghnShopId in packages) {
