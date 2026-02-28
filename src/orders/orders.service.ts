@@ -347,8 +347,21 @@ export class OrdersService {
         returnOrderWithFullInformation = tempOrderWithFullInformation;
       }
 
+      /*
       // fix here to format media url for order, order items, shipment and shipment items
+      
+      // Note: this is expensive operation about time,
+      // i will not format media url for order, order items, shipment and shipment items here
+      // if you want to format media url for order, order items, shipment and shipment items, you can call getOrderDetailInformation api to get order detail information with formatted media url
+      // or you can get builPublicMediaUrl from aws service and format media url in client side
 
+      returnOrderWithFullInformation = formatMediaFieldWithLoggingForOrders(
+        [returnOrderWithFullInformation],
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      )[0];
+
+      */
       const endTime = Date.now();
       this.logger.log(
         `Order created with ID: ${returnOrderWithFullInformation.id}`,
