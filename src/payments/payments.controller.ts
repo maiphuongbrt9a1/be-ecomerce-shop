@@ -12,6 +12,7 @@ import {
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { CreateVNPayPaymentUrlDto } from './dto/create-vnpay-payment-url.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -48,6 +49,28 @@ export class PaymentsController {
     return await this.paymentsService.create(createPaymentDto);
   }
 
+  @ApiOperation({ summary: 'Build VNPay payment URL' })
+  @ApiResponse({
+    status: 200,
+    description: 'Built VNPay payment URL successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR', 'USER')
+  @ApiBody({
+    description:
+      'VNPay payment URL payload with BuildPaymentUrl data and optional BuildPaymentUrlOptions',
+    type: CreateVNPayPaymentUrlDto,
+  })
+  @Post('/vnpay-payment-url')
+  buildVNPayPaymentUrl(
+    @Body() createVNPayPaymentUrlDto: CreateVNPayPaymentUrlDto,
+  ) {
+    return this.paymentsService.buildVNPayPaymentUrl(createVNPayPaymentUrlDto);
+  }
+
   @ApiOperation({ summary: 'Get all payments' })
   @ApiResponse({
     status: 200,
@@ -76,6 +99,21 @@ export class PaymentsController {
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.paymentsService.findAll(Number(page), Number(perPage));
+  }
+
+  @ApiOperation({ summary: 'Get list of supported banks by VNPAY' })
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieved bank list successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR', 'USER')
+  @Get('/vnpay-banks')
+  async getBankList() {
+    return await this.paymentsService.getVNPayBankList();
   }
 
   @ApiOperation({ summary: 'Get one payment' })

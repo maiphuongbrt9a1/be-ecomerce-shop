@@ -15,11 +15,27 @@ import {
 } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import dayjs from 'dayjs';
+import {
+  BuildPaymentUrlOptions,
+  VerifyReturnUrlOptions,
+  VnpayService,
+} from 'nestjs-vnpay';
+import type {
+  Bank,
+  BuildPaymentUrl,
+  VerifyReturnUrl,
+  ReturnQueryFromVNPay,
+} from 'vnpay';
+import { CreateVNPayPaymentUrlDto } from './dto/create-vnpay-payment-url.dto';
+import { VerifyVNPayReturnUrlDto } from './dto/verify-vnpay-return-url.dto';
 
 @Injectable()
 export class PaymentsService {
   private readonly logger = new Logger(PaymentsService.name);
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly vnpayService: VnpayService,
+  ) {}
 
   /**
    * Creates a new payment record for an order.
@@ -242,6 +258,46 @@ export class PaymentsService {
     } catch (error) {
       this.logger.error('Failed to remove payment: ', error);
       throw new BadRequestException('Failed to remove payment');
+    }
+  }
+
+  async getVNPayBankList(): Promise<Bank[]> {
+    try {
+      return await this.vnpayService.getBankList();
+    } catch (error) {
+      this.logger.error('Failed to get bank list: ', error);
+      throw new BadRequestException('Failed to get bank list');
+    }
+  }
+
+  buildVNPayPaymentUrl(
+    createVNPayPaymentUrlDto: CreateVNPayPaymentUrlDto,
+  ): string {
+    try {
+      const { data, options } = createVNPayPaymentUrlDto;
+      // Cast to compatible types for vnpay library
+      return this.vnpayService.buildPaymentUrl(
+        data as BuildPaymentUrl,
+        options as BuildPaymentUrlOptions,
+      );
+    } catch (error) {
+      this.logger.error('Failed to build VNPAY payment URL: ', error);
+      throw new BadRequestException('Failed to build VNPAY payment URL');
+    }
+  }
+
+  async verifyVNPayReturnUrl(
+    verifyVNPayReturnUrlDto: VerifyVNPayReturnUrlDto,
+  ): Promise<VerifyReturnUrl> {
+    try {
+      const { data, options } = verifyVNPayReturnUrlDto;
+      return this.vnpayService.verifyReturnUrl(
+        data as ReturnQueryFromVNPay,
+        options as VerifyReturnUrlOptions,
+      );
+    } catch (error) {
+      this.logger.error('Failed to verify VNPAY return URL: ', error);
+      throw new BadRequestException('Failed to verify VNPAY return URL');
     }
   }
 }

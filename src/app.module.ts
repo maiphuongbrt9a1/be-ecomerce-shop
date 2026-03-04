@@ -66,6 +66,7 @@ import { ColorModule } from './color/color.module';
       }),
       inject: [ConfigService],
     }),
+
     MailModule,
     ProductsModule,
     CategoryModule,
