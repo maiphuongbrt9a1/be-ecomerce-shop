@@ -9,52 +9,80 @@ import {
 import { Type } from 'class-transformer';
 
 export class ReturnQueryFromVNPayDto {
+  // ============ REQUIRED FIELDS ============
   @ApiProperty({
-    description: 'Payment amount',
-    example: 150000,
-    type: 'number',
+    description: 'Merchant TMN code - 8 alphanumeric characters',
+    example: 'L62FDD2R',
   })
-  vnp_Amount: number | string;
+  @IsString()
+  vnp_TmnCode: string;
 
   @ApiProperty({
-    description: 'Payment description from original transaction',
+    description:
+      'Payment amount - Numeric string, VNPAY returns amount multiplied by 100',
+    example: '15000000',
+  })
+  @IsString()
+  vnp_Amount: string;
+
+  @ApiProperty({
+    description:
+      'Bank code used for payment - 3-20 alphanumeric characters. Example: NCB',
+    example: 'NCB',
+  })
+  @IsString()
+  vnp_BankCode: string;
+
+  @ApiProperty({
+    description:
+      'Payment description from original transaction - Vietnamese without accents',
     example: 'Thanh toan don hang 12345',
   })
   @IsString()
   vnp_OrderInfo: string;
 
   @ApiProperty({
-    description: 'Merchant transaction reference from original request',
+    description:
+      'Transaction code recorded in VNPAY system - 1-15 numeric characters',
+    example: '20170829153052',
+  })
+  @IsString()
+  vnp_TransactionNo: string;
+
+  @ApiProperty({
+    description: 'Response code from VNPAY (00 = success)',
+    example: '00',
+  })
+  @IsString()
+  vnp_ResponseCode: string;
+
+  @ApiProperty({
+    description:
+      'Transaction status at VNPAY (00 = successful, others = failed)',
+    example: '00',
+  })
+  @IsString()
+  vnp_TransactionStatus: string;
+
+  @ApiProperty({
+    description:
+      'Merchant transaction reference from original request - 1-100 alphanumeric characters',
     example: 'ORDER_12345',
   })
   @IsString()
   vnp_TxnRef: string;
 
   @ApiProperty({
-    description: 'Response code from VNPAY (00 = success, other = failed)',
-    example: '00',
-    type: 'string',
+    description:
+      'Secure hash from VNPAY callback - 32-256 alphanumeric characters for checksum verification',
+    example: '5CC2F6B77D96B5D7F3B5E4C3D2A1E9F8B7C6D5E4F3A2B1C0D9E8F7A6B5C4D3',
   })
-  vnp_ResponseCode: number | string;
-
-  @ApiPropertyOptional({
-    description: 'Merchant TMN code',
-    example: 'TMN_CODE',
-  })
-  @IsOptional()
   @IsString()
-  vnp_TmnCode?: string;
+  vnp_SecureHash: string;
 
+  // ============ OPTIONAL FIELDS ============
   @ApiPropertyOptional({
-    description: 'Bank code used for payment',
-    example: 'NCB',
-  })
-  @IsOptional()
-  @IsString()
-  vnp_BankCode?: string;
-
-  @ApiPropertyOptional({
-    description: 'Transaction code at bank',
+    description: 'Transaction code at bank - 1-255 alphanumeric characters',
     example: 'NCB20170829152730',
   })
   @IsOptional()
@@ -62,7 +90,7 @@ export class ReturnQueryFromVNPayDto {
   vnp_BankTranNo?: string;
 
   @ApiPropertyOptional({
-    description: 'Type of customer account/card used: ATM, QRCODE',
+    description: 'Type of account/card used: ATM, QRCODE',
     example: 'ATM',
   })
   @IsOptional()
@@ -70,30 +98,16 @@ export class ReturnQueryFromVNPayDto {
   vnp_CardType?: string;
 
   @ApiPropertyOptional({
+    description:
+      'Payment date - Format: yyyyMMddHHmmss (14 numeric characters)',
     example: '20170829152730',
-    type: 'string',
-  })
-  @IsOptional()
-  vnp_PayDate?: number | string;
-
-  @ApiPropertyOptional({
-    description: 'Transaction code recorded in VNPAY system',
-    example: '20170829153052',
-    type: 'string',
-  })
-  @IsOptional()
-  vnp_TransactionNo?: number | string;
-
-  @ApiPropertyOptional({
-    description: 'Secure hash from VNPAY callback',
-    example: 'hash_string_here',
   })
   @IsOptional()
   @IsString()
-  vnp_SecureHash?: string;
+  vnp_PayDate?: string;
 
   @ApiPropertyOptional({
-    description: 'Secure hash type',
+    description: 'Secure hash type algorithm',
     example: 'HmacSHA512',
   })
   @IsOptional()

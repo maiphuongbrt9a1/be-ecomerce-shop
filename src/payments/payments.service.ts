@@ -17,6 +17,9 @@ import { createPaginator } from 'prisma-pagination';
 import dayjs from 'dayjs';
 import {
   BuildPaymentUrlOptions,
+  QueryDrOptions,
+  RefundOptions,
+  VerifyIpnCallOptions,
   VerifyReturnUrlOptions,
   VnpayService,
 } from 'nestjs-vnpay';
@@ -25,9 +28,16 @@ import type {
   BuildPaymentUrl,
   VerifyReturnUrl,
   ReturnQueryFromVNPay,
+  VerifyIpnCall,
+  QueryDrResponse,
+  QueryDr,
+  Refund,
 } from 'vnpay';
 import { CreateVNPayPaymentUrlDto } from './dto/create-vnpay-payment-url.dto';
 import { VerifyVNPayReturnUrlDto } from './dto/verify-vnpay-return-url.dto';
+import { VerifyVNPayIPNCallDto } from './dto/verify-vnpay-ipn-call.dto';
+import { VnpayQueryDrDto } from './dto/vnpay-query-dr.dto';
+import { VnpayRefundDto } from './dto/vnpay-refund.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -263,7 +273,10 @@ export class PaymentsService {
 
   async getVNPayBankList(): Promise<Bank[]> {
     try {
-      return await this.vnpayService.getBankList();
+      this.logger.log('Fetching VNPAY bank list');
+      const result = await this.vnpayService.getBankList();
+      this.logger.log('Retrieved VNPAY bank list: ', JSON.stringify(result));
+      return result;
     } catch (error) {
       this.logger.error('Failed to get bank list: ', error);
       throw new BadRequestException('Failed to get bank list');
@@ -274,12 +287,18 @@ export class PaymentsService {
     createVNPayPaymentUrlDto: CreateVNPayPaymentUrlDto,
   ): string {
     try {
+      this.logger.log(
+        'Building VNPAY payment URL with data: ',
+        JSON.stringify(createVNPayPaymentUrlDto),
+      );
       const { data, options } = createVNPayPaymentUrlDto;
       // Cast to compatible types for vnpay library
-      return this.vnpayService.buildPaymentUrl(
+      const result = this.vnpayService.buildPaymentUrl(
         data as BuildPaymentUrl,
         options as BuildPaymentUrlOptions,
       );
+      this.logger.log('Generated VNPAY payment URL: ', JSON.stringify(result));
+      return result;
     } catch (error) {
       this.logger.error('Failed to build VNPAY payment URL: ', error);
       throw new BadRequestException('Failed to build VNPAY payment URL');
@@ -290,14 +309,81 @@ export class PaymentsService {
     verifyVNPayReturnUrlDto: VerifyVNPayReturnUrlDto,
   ): Promise<VerifyReturnUrl> {
     try {
+      this.logger.log(
+        'Verifying VNPAY return URL with data: ',
+        JSON.stringify(verifyVNPayReturnUrlDto),
+      );
       const { data, options } = verifyVNPayReturnUrlDto;
-      return this.vnpayService.verifyReturnUrl(
+      const result = await this.vnpayService.verifyReturnUrl(
         data as ReturnQueryFromVNPay,
         options as VerifyReturnUrlOptions,
       );
+      this.logger.log('Verified VNPAY return URL: ', JSON.stringify(result));
+      return result;
     } catch (error) {
       this.logger.error('Failed to verify VNPAY return URL: ', error);
       throw new BadRequestException('Failed to verify VNPAY return URL');
+    }
+  }
+
+  async handleVNPayIPNCall(
+    verifyVNPayIPNCallDto: VerifyVNPayIPNCallDto,
+  ): Promise<VerifyIpnCall> {
+    try {
+      this.logger.log(
+        'Verifying VNPAY IPN call with data: ',
+        JSON.stringify(verifyVNPayIPNCallDto),
+      );
+      const { data, options } = verifyVNPayIPNCallDto;
+      const result = await this.vnpayService.verifyIpnCall(
+        data as ReturnQueryFromVNPay,
+        options as VerifyIpnCallOptions,
+      );
+      this.logger.log('Verified VNPAY IPN call: ', JSON.stringify(result));
+      return result;
+    } catch (error) {
+      this.logger.error('Failed to verify VNPAY IPN call: ', error);
+      throw new BadRequestException('Failed to verify VNPAY IPN call');
+    }
+  }
+
+  async VNPayQueryDr(
+    vnpayQueryDrDto: VnpayQueryDrDto,
+  ): Promise<QueryDrResponse> {
+    try {
+      this.logger.log(
+        'Querying VNPAY DR with data: ',
+        JSON.stringify(vnpayQueryDrDto),
+      );
+      const { data, options } = vnpayQueryDrDto;
+      const result = await this.vnpayService.queryDr(
+        data as QueryDr,
+        options as QueryDrOptions,
+      );
+      this.logger.log('Queried VNPAY DR: ', JSON.stringify(result));
+      return result;
+    } catch (error) {
+      this.logger.error('Failed to query VNPAY DR: ', error);
+      throw new BadRequestException('Failed to query VNPAY DR');
+    }
+  }
+
+  async VNPayRefund(vnpayRefundDto: VnpayRefundDto) {
+    try {
+      this.logger.log(
+        'Processing VNPAY refund with data: ',
+        JSON.stringify(vnpayRefundDto),
+      );
+      const { data, options } = vnpayRefundDto;
+      const result = await this.vnpayService.refund(
+        data as Refund,
+        options as RefundOptions,
+      );
+      this.logger.log('Processed VNPAY refund: ', JSON.stringify(result));
+      return result;
+    } catch (error) {
+      this.logger.error('Failed to process VNPAY refund: ', error);
+      throw new BadRequestException('Failed to process VNPAY refund');
     }
   }
 }
