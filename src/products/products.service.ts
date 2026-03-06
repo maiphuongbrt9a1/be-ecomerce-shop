@@ -7,12 +7,13 @@ import {
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma, Products } from '@prisma/client';
+import { Media, Prisma, Products } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { formatMediaField, formatMediaFieldWithLogging } from '@/helpers/utils';
 import {
-  ProductsWithProductVariantsAndTheirMedia,
+  Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia,
+  ProductsWithProductsMedia,
   ProductVariantsWithMediaInformation,
   ReviewsWithMedia,
 } from '@/helpers/types/types';
@@ -30,30 +31,45 @@ export class ProductsService {
    *
    * This method performs the following operations:
    * 1. Creates a new product in the database with provided data
-   * 2. Retrieves the created product with all product variants and media
-   * 3. Formats all media URLs to public HTTPS URLs for S3 files
-   * 4. Logs the creation operation
+   * 2. Uploads media files to S3 storage if files are provided
+   * 3. Retrieves the created product with all product variants and media
+   * 4. Formats all media URLs to public HTTPS URLs for S3 files (for both variants and product)
+   * 5. Logs the creation operation
+   *
+   * @param {Express.Multer.File[]} files - Array of media files to upload for the product
+   *   - Files are uploaded to S3 with unique naming based on product ID
+   *   - Used for product avatar/image files
+   *   - Required to proceed with product creation
    *
    * @param {CreateProductDto} createProductDto - The data transfer object containing product information:
    *   - Product name, description, category, price, stock details
    *   - Any other product-specific properties
    *
-   * @returns {Promise<ProductsWithProductVariantsAndTheirMedia>} The created product with all details including:
-   *   - Product information (id, name, price, stock)
-   *   - All associated product variants
-   *   - Media files with formatted public HTTPS URLs
+   * @param {string} adminId - The ID of the admin creating the product
+   *   - Used for tracking which admin uploaded the media files
+   *   - Associated with all uploaded media records
    *
-   * @throws {NotFoundException} If product creation fails or product retrieval fails
+   * @returns {Promise<Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia>} The created product with all details including:
+   *   - Product information (id, name, price, stock)
+   *   - Product media files with formatted public HTTPS URLs
+   *   - All associated product variants
+   *   - Variant media files with formatted public HTTPS URLs
+   *
+   * @throws {NotFoundException} If product creation fails, media upload fails, or product retrieval fails
    * @throws {BadRequestException} If database operation fails
    *
    * @remarks
-   * - Media URLs are converted to public HTTPS URLs for S3 access
-   * - Validates successful creation before returning data
+   * - Media files must be successfully uploaded to S3 before product is considered created
+   * - Media URLs are converted to public HTTPS URLs for client access
+   * - Validates successful creation and upload before returning data
    * - Includes all product variants and their media in response
+   * - All media associations are logged with their respective entity IDs
    */
   async create(
+    files: Express.Multer.File[],
     createProductDto: CreateProductDto,
-  ): Promise<ProductsWithProductVariantsAndTheirMedia> {
+    adminId: string,
+  ): Promise<Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia> {
     try {
       const product = await this.prismaService.products.create({
         data: { ...createProductDto },
@@ -63,16 +79,30 @@ export class ProductsService {
         throw new NotFoundException('Failed to create product');
       }
 
-      const returnProduct = await this.prismaService.products.findUnique({
-        where: { id: product.id },
-        include: {
-          productVariants: {
-            include: {
-              media: true,
+      // upload media files for product if have supplied files and create new product successfully
+      const mediaForProduct = await this.awsService.uploadManyProductAvatarFile(
+        files,
+        adminId,
+        product.id.toString(),
+      );
+
+      if (!mediaForProduct) {
+        this.logger.log('Failed to upload product media file');
+        throw new NotFoundException('Failed to upload product media file');
+      }
+
+      const returnProduct: Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia | null =
+        await this.prismaService.products.findUnique({
+          where: { id: product.id },
+          include: {
+            media: true,
+            productVariants: {
+              include: {
+                media: true,
+              },
             },
           },
-        },
-      });
+        });
 
       if (!returnProduct) {
         throw new NotFoundException('Failed to retrieve created product');
@@ -90,6 +120,14 @@ export class ProductsService {
         );
       }
 
+      returnProduct.media = formatMediaFieldWithLogging(
+        returnProduct.media,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'product',
+        returnProduct.id,
+        this.logger,
+      );
+
       this.logger.log(`Product created with ID: ${product.id}`);
       return returnProduct;
     } catch (error) {
@@ -102,36 +140,47 @@ export class ProductsService {
    * Retrieves a paginated list of all products with their variants and media.
    *
    * This method performs the following operations:
-   * 1. Fetches products from the database with pagination
-   * 2. Includes all product variants and their associated media
-   * 3. Formats all media URLs to public HTTPS URLs for S3 access
-   * 4. Logs pagination details
+   * 1. Fetches products from the database with applied pagination
+   * 2. Includes all product variants and their associated media for each product
+   * 3. Formats all product variant media URLs to public HTTPS URLs
+   * 4. Formats all product media URLs to public HTTPS URLs
+   * 5. Logs pagination request details and any media field changes
    *
    * @param {number} page - The page number for pagination (1-indexed)
-   * @param {number} perPage - The number of products to retrieve per page
+   *   - Must be greater than 0
+   *   - First page is page number 1
    *
-   * @returns {Promise<ProductsWithProductVariantsAndTheirMedia[] | []>} Array of products with details including:
-   *   - Product information (id, name, price, stock)
+   * @param {number} perPage - The number of products to retrieve per page
+   *   - Defines the pagination limit
+   *   - Controls result set size
+   *
+   * @returns {Promise<Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia[] | []>} Array of products with details including:
+   *   - Product information (id, name, price, stock, etc.)
+   *   - Product media files with formatted public HTTPS URLs
    *   - All product variants for each product
-   *   - Media files with formatted public HTTPS URLs
-   *   Returns empty array if no products found
+   *   - Variant media files with formatted public HTTPS URLs
+   *   - Returns empty array if no products found
    *
    * @throws {BadRequestException} If pagination or data fetching fails
    *
    * @remarks
-   * - Results are ordered by product ID in ascending order
-   * - Media URLs are converted to public HTTPS URLs
-   * - Logs media field changes during formatting
+   * - Results are always ordered by product ID in ascending order
+   * - Media URLs are converted to public HTTPS URLs for client access
+   * - Logs media field changes during formatting for debugging
    * - Empty array returned for consistency
+   * - Pagination uses createPaginator helper for offset/limit calculation
    */
   async findAll(
     page: number,
     perPage: number,
-  ): Promise<ProductsWithProductVariantsAndTheirMedia[] | []> {
+  ): Promise<
+    | Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia[]
+    | []
+  > {
     try {
       const paginate = createPaginator({ perPage: perPage });
       const result = await paginate<
-        ProductsWithProductVariantsAndTheirMedia,
+        Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia,
         Prisma.ProductsFindManyArgs
       >(
         this.prismaService.products,
@@ -142,6 +191,7 @@ export class ProductsService {
                 media: true,
               },
             },
+            media: true,
           },
           orderBy: { id: 'asc' },
         },
@@ -166,6 +216,15 @@ export class ProductsService {
             );
           }
         }
+
+        // generate full http url for media files of each product
+        result.data[i].media = formatMediaFieldWithLogging(
+          result.data[i].media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'product',
+          result.data[i].id,
+          this.logger,
+        );
       }
 
       this.logger.log(`Fetched products - Page: ${page}, PerPage: ${perPage}`);
@@ -182,45 +241,53 @@ export class ProductsService {
    * This method performs the following operations:
    * 1. Queries the database for the product by ID
    * 2. Includes all product variants and their associated media
-   * 3. Formats all media URLs to public HTTPS URLs for S3 access
-   * 4. Logs retrieval operation and media changes
+   * 3. Formats all product variant media URLs to public HTTPS URLs
+   * 4. Formats all product media URLs to public HTTPS URLs
+   * 5. Logs retrieval operation and any media field changes
    *
    * @param {number} id - The unique identifier of the product to retrieve
+   *   - Must reference an existing product in the database
+   *   - Used to locate and fetch specific product record
    *
-   * @returns {Promise<ProductsWithProductVariantsAndTheirMedia | null>} The product with all details including:
-   *   - Product information (id, name, price, stock)
-   *   - All associated product variants
-   *   - Media files with formatted public HTTPS URLs
-   *   Returns null if product not found
+   * @returns {Promise<Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia | null>} The product with all details including:
+   *   - Product information (id, name, price, stock, etc.)
+   *   - Product media files with formatted public HTTPS URLs
+   *   - All associated product variants with their metadata
+   *   - Variant media files with formatted public HTTPS URLs
+   *   - Returns null if product not found
    *
-   * @throws {NotFoundException} If product is not found
+   * @throws {NotFoundException} If product is not found by the provided ID
    * @throws {BadRequestException} If data fetching fails
    *
    * @remarks
-   * - Media URLs are converted to public HTTPS URLs
+   * - Media URLs are converted to public HTTPS URLs for client access
    * - Logs media field changes during formatting for debugging
-   * - Includes complete product hierarchy with all variants
+   * - Includes complete product hierarchy with all variants and their media
+   * - Uses findFirst query for flexibility (could be replaced with findUnique)
+   * - All associated data is eagerly loaded in single query
    */
   async findOne(
     id: number,
-  ): Promise<ProductsWithProductVariantsAndTheirMedia | null> {
+  ): Promise<Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia | null> {
     try {
-      const product = await this.prismaService.products.findFirst({
-        include: {
-          productVariants: {
-            include: {
-              media: true,
+      const product: Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia | null =
+        await this.prismaService.products.findFirst({
+          include: {
+            media: true,
+            productVariants: {
+              include: {
+                media: true,
+              },
             },
           },
-        },
-        where: { id: id },
-      });
+          where: { id: id },
+        });
 
       if (!product) {
         throw new NotFoundException('Product not found!');
       }
 
-      // generate full http url for media files
+      // generate full http url for media files for product variants of product
       for (let i = 0; i < product.productVariants.length; i++) {
         const productVariant = product.productVariants[i];
         const originalMedia = productVariant.media; // Store original media for comparison
@@ -237,6 +304,15 @@ export class ProductsService {
         }
       }
 
+      // generate full http url for media files of product
+      product.media = formatMediaFieldWithLogging(
+        product.media,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'product',
+        product.id,
+        this.logger,
+      );
+
       this.logger.log(`Product fetched with ID: ${product.id}`);
       return product;
     } catch (error) {
@@ -246,48 +322,117 @@ export class ProductsService {
   }
 
   /**
-   * Updates an existing product with new information.
+   * Updates an existing product with new information and manages media files.
    *
    * This method performs the following operations:
-   * 1. Updates the product in the database with provided data
-   * 2. Retrieves the updated product with all variants and media
-   * 3. Formats all media URLs to public HTTPS URLs
-   * 4. Logs the update operation
+   * 1. Retrieves the existing product with current media files
+   * 2. Extracts mediaIdsToDelete from DTO (if provided)
+   * 3. Updates the product record with provided data
+   * 4. Uploads new media files to S3 if files are provided
+   * 5. Deletes specified media files from S3 and database
+   * 6. Retrieves the updated product with all variants and media
+   * 7. Formats all media URLs to public HTTPS URLs for both product and variants
+   * 8. Logs the update operation
    *
    * @param {number} id - The unique identifier of the product to update
+   *   - Must reference an existing product in the database
+   *   - Used to locate and update specific product record
+   *
    * @param {UpdateProductDto} updateProductDto - The data transfer object containing product updates:
-   *   - May include name, description, price, stock, category, or other properties
+   *   - Standard fields: name, description, price, stock, category, etc.
+   *   - mediaIdsToDelete: Array of media IDs to remove from product (extracted and processed separately)
+   *   - Only provided fields are updated, null fields are skipped
    *
-   * @returns {Promise<ProductsWithProductVariantsAndTheirMedia>} The updated product with all details including:
-   *   - Updated product information
-   *   - All associated product variants
-   *   - Media files with formatted public HTTPS URLs
+   * @param {string} adminId - The ID of the admin performing the update
+   *   - Used for tracking which admin uploaded new media files
+   *   - Associated with all newly uploaded media records
    *
-   * @throws {BadRequestException} If product update fails
-   * @throws {NotFoundException} If product not found after update
+   * @param {Express.Multer.File[]} files - Array of new media files to upload for the product
+   *   - Files are uploaded to S3 with unique naming based on product ID
+   *   - Empty array if no new files are being added
+   *   - Upload is skipped if files array is empty or null
+   *
+   * @returns {Promise<Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia>} The updated product with all details including:
+   *   - Updated product information (id, name, price, stock, etc.)
+   *   - Product media files with formatted public HTTPS URLs
+   *   - All associated product variants with their metadata
+   *   - Variant media files with formatted public HTTPS URLs
+   *
+   * @throws {BadRequestException} If product update fails, file upload fails, or file deletion from S3 fails
+   * @throws {NotFoundException} If product is not found
    *
    * @remarks
-   * - Validates successful update before returning data
-   * - Includes all product variants and their media in response
-   * - Media URLs are converted to public HTTPS URLs
+   * - Media file operations (upload/delete) are performed after product update validation
+   * - Deleted media files are removed from both S3 storage and database
+   * - New media files are uploaded to S3 and database records created
+   * - Media URLs are converted to public HTTPS URLs for client access
+   * - Supports selective media deletion using mediaIdsToDelete array
+   * - All media file associations are logged during formatting
+   * - Product update is committed before media operations begin
    */
   async update(
+    files: Express.Multer.File[],
     id: number,
     updateProductDto: UpdateProductDto,
-  ): Promise<ProductsWithProductVariantsAndTheirMedia> {
+    adminId: string,
+  ): Promise<Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia> {
     try {
+      // Find old product with media files and prepare to delete selected media files
+      const oldProduct: ProductsWithProductsMedia | null =
+        await this.prismaService.products.findUnique({
+          include: { media: true },
+          where: { id: id },
+        });
+
+      const oldMediaFiles: Media[] | undefined = oldProduct?.media;
+
+      // dto have media ids to delete if you want to delete some media files and upload new files
+      const { mediaIdsToDelete, ...updateData } = updateProductDto;
+
       const product = await this.prismaService.products.update({
         where: { id: id },
-        data: { ...updateProductDto },
+        data: { ...updateData },
       });
 
       if (!product) {
         throw new BadRequestException('Failed to update product');
       }
 
+      // update media files if have new uploaded files
+      if (files && files.length > 0) {
+        const mediaUploadForProduct =
+          await this.awsService.uploadManyProductAvatarFile(
+            files,
+            adminId,
+            id.toString(),
+          );
+
+        if (!mediaUploadForProduct) {
+          throw new BadRequestException('Failed to upload product media files');
+        }
+      }
+
+      // Delete media files from s3 and database if update product and media files successfully
+      if (mediaIdsToDelete && mediaIdsToDelete.length > 0) {
+        const mediaFilesToDelete = oldMediaFiles?.filter((media) =>
+          mediaIdsToDelete.includes(media.id),
+        );
+
+        if (mediaFilesToDelete && mediaFilesToDelete.length > 0) {
+          for (const media of mediaFilesToDelete) {
+            await this.awsService.deleteFileFromS3(media.url);
+          }
+
+          await this.prismaService.media.deleteMany({
+            where: { id: { in: mediaIdsToDelete } },
+          });
+        }
+      }
+
       const returnProduct = await this.prismaService.products.findUnique({
         where: { id: product.id },
         include: {
+          media: true,
           productVariants: {
             include: {
               media: true,
@@ -300,7 +445,7 @@ export class ProductsService {
         throw new NotFoundException('Failed to retrieve updated product');
       }
 
-      // generate full http url for media files
+      // generate full http url for media files of each product variant in products
       for (let i = 0; i < returnProduct.productVariants.length; i++) {
         const productVariant = returnProduct.productVariants[i];
         productVariant.media = formatMediaFieldWithLogging(
@@ -311,6 +456,15 @@ export class ProductsService {
           this.logger,
         );
       }
+
+      // generate full http url for media files of product
+      returnProduct.media = formatMediaFieldWithLogging(
+        returnProduct.media,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'product',
+        returnProduct.id,
+        this.logger,
+      );
 
       this.logger.log(`Product updated with ID: ${product.id}`);
       return returnProduct;
@@ -324,33 +478,46 @@ export class ProductsService {
    * Deletes a product and all its associated data from the database and storage.
    *
    * This method performs the following operations within a database transaction:
-   * 1. Retrieves the product with all variants and reviews including their media
-   * 2. Deletes all product variants and their associated media files from S3
-   * 3. Deletes all reviews and their associated media files from S3
-   * 4. Deletes the product record from the database
-   * 5. Logs the deletion operation
+   * 1. Retrieves the product with all variants, reviews, and their media files
+   * 2. Deletes all product media files from S3 storage
+   * 3. Deletes all product variants from database
+   * 4. Deletes all variant media files from S3 storage
+   * 5. Deletes all product reviews from database
+   * 6. Deletes all review media files from S3 storage
+   * 7. Deletes the product record from the database
+   * 8. Logs the deletion operation
    *
    * @param {number} id - The unique identifier of the product to delete
+   *   - Must reference an existing product in the database
+   *   - Used to locate and delete specific product and all related records
    *
    * @returns {Promise<Products>} The deleted product record
+   *   - Returns the product object that was removed from the database
    *
-   * @throws {NotFoundException} If product is not found
+   * @throws {NotFoundException} If product is not found by the provided ID
    * @throws {BadRequestException} If deletion fails
    *
    * @remarks
-   * - This operation is cascading and will delete all related data
-   * - Media files are removed from S3 storage along with database records
-   * - Uses database transaction to ensure data consistency
+   * - This operation is cascading and will delete all related data (variants, reviews, media)
+   * - Media files are removed from S3 storage before database records are deleted
+   * - Uses database transaction to ensure data consistency across all deletions
+   * - If any operation fails, the entire transaction is rolled back
    * - Verify before deletion as this action cannot be easily reversed
    * - Use with caution in production environments
+   * - All media files are permanently removed from AWS S3 storage
    */
   async remove(id: number): Promise<Products> {
     try {
       this.logger.log(`Deleting product with ID: ${id}`);
       return await this.prismaService.$transaction(async (tx) => {
+        // find the product with all variants and reviews
+        // including their media files
+        // to delete media files from s3
+        // before delete product, variants, reviews in database
         const product = await tx.products.findUnique({
           where: { id: id },
           include: {
+            media: true,
             productVariants: {
               include: {
                 media: true,
@@ -366,6 +533,11 @@ export class ProductsService {
 
         if (!product) {
           throw new NotFoundException('Product not found!');
+        }
+
+        // delete media files of product from aws s3
+        for (const media of product.media) {
+          await this.awsService.deleteFileFromS3(media.url);
         }
 
         if (product.productVariants && product.productVariants.length > 0) {
@@ -390,6 +562,7 @@ export class ProductsService {
           }
         }
 
+        // delete product
         const result = await tx.products.delete({
           where: { id: id },
         });

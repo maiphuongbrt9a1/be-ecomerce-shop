@@ -123,6 +123,60 @@ export type ProductsWithProductVariantsAndTheirMedia =
   }>;
 
 /**
+ * Complete product information including product media, all variants, and their media.
+ *
+ * Most comprehensive product type including product-level media files,
+ * all product variants (size/color combinations), and media for each variant.
+ * Used when displaying full product details with all media and available options.
+ *
+ * @remarks
+ * - Includes: media array with product-level images/videos
+ * - Includes: productVariants array with all product variants
+ * - Includes: media array for each product variant
+ * - Used in product CRUD operations (create, update, findOne)
+ * - Used in product detail pages showing full product hierarchy
+ * - Media URLs need conversion from S3 keys to full HTTPS URLs
+ * - Heaviest product query - loads all product, variant, and media information
+ * - Each variant includes its own media array separate from product media
+ * - Product media used for main product showcase/avatar
+ * - Variant media used for option-specific images (e.g., different colors)
+ */
+export type Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia =
+  Prisma.ProductsGetPayload<{
+    include: {
+      media: true;
+      productVariants: {
+        include: {
+          media: true;
+        };
+      };
+    };
+  }>;
+
+/**
+ * Product information with product-level media only (no variants).
+ *
+ * Basic product type including only product-level media files.
+ * Does not include product variants or their media. Used when only
+ * product media is needed without variant information.
+ *
+ * @remarks
+ * - Includes: media array with product-level images/videos only
+ * - Does NOT include: productVariants or variant media
+ * - Used for lightweight product displays
+ * - Used in listing pages where variant details are not needed
+ * - Media URLs need conversion from S3 keys to full HTTPS URLs
+ * - Lighter query than variant-inclusive types
+ * - Suitable for product galleries and search results
+ * - Product media used for thumbnails and main product representation
+ */
+export type ProductsWithProductsMedia = Prisma.ProductsGetPayload<{
+  include: {
+    media: true;
+  };
+}>;
+
+/**
  * Product variant (size/color combination) with all associated media.
  *
  * Single product variant including size, color, price and all media files.

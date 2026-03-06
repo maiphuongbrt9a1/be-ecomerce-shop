@@ -674,6 +674,134 @@ export class AwsS3Service {
   }
 
   /**
+   * Uploads multiple product media files (images/videos) to S3 and saves metadata to database.
+   *
+   * This method performs the following operations:
+   * 1. Validates that at least one file is provided
+   * 2. Iterates through each file in the array
+   * 3. Validates each file is either an image or video (rejects other types)
+   * 4. Determines target S3 location based on file type:
+   *    - Images: shops/shop-products/product-images/productId/
+   *    - Videos: shops/shop-products/product-videos/productId/
+   * 5. Uploads each file to S3 at determined location
+   * 6. Creates media record in database linking file to product and admin
+   * 7. Collects all S3 upload results
+   * 8. Logs successful batch upload
+   * 9. Returns array of all S3 upload results
+   *
+   * @param {Express.Multer.File[]} files - Array of uploaded files from multer containing:
+   *   - buffer: File content in memory
+   *   - originalname: Original filename
+   *   - mimetype: File MIME type (must be image/* or video/*)
+   *   - Must contain at least one file
+   *
+   * @param {string} adminId - The ID of the admin user uploading the files
+   *   - Used to track which admin uploaded the media
+   *   - Stored in media record userId field
+   *
+   * @param {string} productId - The ID of the product these media files belong to
+   *   - Used to organize files in S3 folder structure
+   *   - Stored in media record productId field
+   *   - Links media files to specific product
+   *
+   * @returns {Promise<AWS.S3.ManagedUpload.SendData[]>} Array of S3 upload results, each containing:
+   *   - Location: Full S3 HTTPS URL to access the file
+   *   - Key: S3 object key (path within bucket)
+   *   - Bucket: S3 bucket name
+   *   - ETag: File version identifier
+   *   - Array length matches input files array length
+   *
+   * @throws {BadRequestException} If no files provided, file type is not image/video, or database save fails
+   * @throws {NotFoundException} If S3 upload fails or any operation in the batch fails
+   *
+   * @remarks
+   * - Only accepts image and video file types (validated by MIME type)
+   * - Files are organized in S3 by type (images/videos) and product ID
+   * - Each file creates a corresponding media record in database
+   * - Media records have productVariantId set to null (for product-level media)
+   * - All boolean flags (isShopLogo, isShopBanner, etc.) set to false
+   * - Operation is not transactional - partial uploads may occur on failure
+   * - Successfully uploaded files remain in S3 even if later files fail
+   * - Used for batch uploading product avatar/showcase images and videos
+   * - Maximum file count typically limited by FilesInterceptor configuration
+   */
+  async uploadManyProductAvatarFile(
+    files: Express.Multer.File[],
+    adminId: string,
+    productId: string,
+  ): Promise<AWS.S3.ManagedUpload.SendData[]> {
+    try {
+      if (!files || files.length === 0) {
+        throw new BadRequestException('At least one file is required');
+      }
+
+      const results: AWS.S3.ManagedUpload.SendData[] = [];
+
+      for (const file of files) {
+        let targetLocation: string = 'shops/shop-products/';
+
+        // e.g. "image/png" or "video/mp4"
+        const mime = file.mimetype;
+
+        const isImage = mime.startsWith('image/');
+        const isVideo = mime.startsWith('video/');
+
+        if (!isImage && !isVideo) {
+          throw new BadRequestException(
+            'Only image or video files are allowed',
+          );
+        }
+
+        if (isImage) {
+          this.logger.log('Uploading an image file');
+          targetLocation += 'product-images/';
+        } else if (isVideo) {
+          this.logger.log('Uploading a video file');
+          targetLocation += 'product-videos/';
+        }
+
+        targetLocation += productId.toString() + '/';
+        this.logger.log(
+          'Received request to upload file ' +
+            file.originalname +
+            ' to location ' +
+            targetLocation,
+        );
+        const resultUploadFile = await this.uploadFile(file, targetLocation);
+
+        const newMediaInDatabase: Media = await this.prismaService.media.create(
+          {
+            data: {
+              url: resultUploadFile.Key,
+              type: isImage ? MediaType.IMAGE : MediaType.VIDEO,
+              userId: Number(adminId),
+              productVariantId: null,
+              productId: Number(productId),
+              isShopLogo: false,
+              isShopBanner: false,
+              isCategoryFile: false,
+              isAvatarFile: false,
+              requestId: null,
+            },
+          },
+        );
+
+        if (!newMediaInDatabase) {
+          throw new BadRequestException('Cannot save media file to database');
+        }
+
+        results.push(resultUploadFile);
+      }
+
+      this.logger.log('Uploaded many product files successfully');
+      return results;
+    } catch (error) {
+      this.logger.log('Error uploading many product files: ' + error);
+      throw new NotFoundException('Failed to upload many product media files');
+    }
+  }
+
+  /**
    * Uploads a single category media file (image or video) to S3 and saves metadata.
    *
    * This method performs the following operations:

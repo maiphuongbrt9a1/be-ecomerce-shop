@@ -9,6 +9,8 @@ import {
   UseGuards,
   Patch,
   Request,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -27,6 +29,8 @@ import { ProductEntity } from './entities/product.entity';
 import { ProductWithVariantsAndMediaEntity } from './entities/product-with-variants-and-media.entity';
 import { ProductVariantWithMediaEntity } from '@/product-variants/entities/product-variant-with-media.entity';
 import { ReviewWithMediaEntity } from '@/reviews/entities/review-with-media.entity';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import type { RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 
 @Controller('products')
 export class ProductsController {
@@ -59,9 +63,18 @@ export class ProductsController {
       'Product creation data with name, description, and category information',
     type: CreateProductDto,
   })
+  @UseInterceptors(FilesInterceptor('files', 10))
   @Post()
-  async create(@Body() createProductDto: CreateProductDto) {
-    return await this.productsService.create(createProductDto);
+  async create(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body() createProductDto: CreateProductDto,
+    @Request() req: RequestWithUserInJWTStrategy,
+  ) {
+    return await this.productsService.create(
+      files,
+      createProductDto,
+      req.user.userId.toString(),
+    );
   }
 
   @ApiOperation({ summary: 'Get all products' })
@@ -130,12 +143,20 @@ export class ProductsController {
       'Product update data with optional name, description, and category information',
     type: UpdateProductDto,
   })
+  @UseInterceptors(FilesInterceptor('files', 10))
   @Patch('/:id')
   async update(
+    @UploadedFiles() files: Express.Multer.File[],
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
+    @Request() req: RequestWithUserInJWTStrategy,
   ) {
-    return await this.productsService.update(+id, updateProductDto);
+    return await this.productsService.update(
+      files,
+      +id,
+      updateProductDto,
+      req.user.userId.toString(),
+    );
   }
 
   @ApiOperation({ summary: 'Delete one product' })

@@ -213,6 +213,7 @@ model Products {
     updatedAt   DateTime    @updatedAt
     productVariants    ProductVariants[]
     reviews     Reviews[]
+    media       Media[]
     voucher Vouchers? @relation(fields: [voucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
     voucherId BigInt? @db.BigInt
     shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -326,6 +327,8 @@ model Media {
     userId      BigInt?      @db.BigInt
     productVariant ProductVariants? @relation(fields: [productVariantId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     productVariantId BigInt?  @db.BigInt
+    product Products? @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    productId BigInt?  @db.BigInt
     request        Requests?        @relation(fields: [requestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     requestId      BigInt?      @db.BigInt
     isShopLogo Boolean    @default(false) @db.Boolean
