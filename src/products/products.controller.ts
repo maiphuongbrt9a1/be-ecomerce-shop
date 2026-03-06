@@ -57,11 +57,46 @@ export class ProductsController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
-  @ApiConsumes('application/json')
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description:
-      'Product creation data with name, description, and category information',
-    type: CreateProductDto,
+    description: 'Product creation data with image files',
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'Product image files',
+        },
+        name: { type: 'string', example: 'Sample product name' },
+        description: {
+          type: 'string',
+          example: 'Sample product description',
+        },
+        price: { type: 'number', example: 12 },
+        currencyUnit: { type: 'string', example: 'VND' },
+        stockKeepingUnit: { type: 'string', example: 'ADSFDSAF1463218FA' },
+        stock: { type: 'number', example: 25 },
+        createByUserId: { type: 'number', example: 1231 },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        categoryId: { type: 'number', example: 1325 },
+        voucherId: { type: 'number', example: 1325 },
+        shopOfficeId: { type: 'number', example: 1325 },
+      },
+      required: [
+        'files',
+        'name',
+        'price',
+        'currencyUnit',
+        'stockKeepingUnit',
+        'stock',
+        'createByUserId',
+      ],
+    },
   })
   @UseInterceptors(FilesInterceptor('files', 10))
   @Post()
@@ -138,10 +173,46 @@ export class ProductsController {
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     description:
-      'Product update data with optional name, description, and category information',
-    type: UpdateProductDto,
+      'Product update data with optional image files and media IDs to delete',
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
+          description: 'Product image files to upload',
+        },
+        name: { type: 'string', example: 'Updated product name' },
+        description: {
+          type: 'string',
+          example: 'Updated product description',
+        },
+        price: { type: 'number', example: 12 },
+        currencyUnit: { type: 'string', example: 'VND' },
+        stockKeepingUnit: { type: 'string', example: 'ADSFDSAF1463218FA' },
+        stock: { type: 'number', example: 25 },
+        createByUserId: { type: 'number', example: 1231 },
+        createdAt: { type: 'string', format: 'date-time' },
+        updatedAt: { type: 'string', format: 'date-time' },
+        categoryId: { type: 'number', example: 1325 },
+        voucherId: { type: 'number', example: 1325 },
+        shopOfficeId: { type: 'number', example: 1325 },
+        mediaIdsToDelete: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'int64',
+            example: '9007199254740993',
+          },
+          description:
+            'Array of media IDs to delete. Big integers should be sent as strings.',
+        },
+      },
+      required: [],
+    },
   })
   @UseInterceptors(FilesInterceptor('files', 10))
   @Patch('/:id')
