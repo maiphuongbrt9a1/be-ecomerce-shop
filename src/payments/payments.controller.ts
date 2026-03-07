@@ -128,7 +128,7 @@ export class PaymentsController {
     description: 'VNPay IPN callback data',
     type: VerifyVNPayIPNCallDto,
   })
-  @Post('/vnpay-ipn')
+  @Get('/vnpay_ipn')
   async handleVNPayIPNCall(
     @Body() verifyVNPayIPNCallDto: VerifyVNPayIPNCallDto,
   ) {

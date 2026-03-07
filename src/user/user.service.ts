@@ -1528,7 +1528,14 @@ export class UserService {
       >(
         this.prismaService.productVariants,
         {
-          include: { media: true },
+          include: {
+            media: true,
+            product: {
+              select: {
+                shopOfficeId: true,
+              },
+            },
+          },
           where: { createByUserId: userId },
           orderBy: { id: 'asc' },
         },

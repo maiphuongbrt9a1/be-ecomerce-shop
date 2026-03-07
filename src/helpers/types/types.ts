@@ -195,6 +195,11 @@ export type ProductVariantsWithMediaInformation =
   Prisma.ProductVariantsGetPayload<{
     include: {
       media: true;
+      product: {
+        select: {
+          shopOfficeId: true;
+        };
+      };
     };
   }>;
 
