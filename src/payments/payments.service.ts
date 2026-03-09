@@ -34,7 +34,10 @@ import type {
   Refund,
 } from 'vnpay';
 import { CreateVNPayPaymentUrlDto } from './dto/create-vnpay-payment-url.dto';
-import { VerifyVNPayReturnUrlDto } from './dto/verify-vnpay-return-url.dto';
+import {
+  ReturnQueryFromVNPayDto,
+  VerifyVNPayReturnUrlDto,
+} from './dto/verify-vnpay-return-url.dto';
 import { VerifyVNPayIPNCallDto } from './dto/verify-vnpay-ipn-call.dto';
 import { VnpayQueryDrDto } from './dto/vnpay-query-dr.dto';
 import { VnpayRefundDto } from './dto/vnpay-refund.dto';
@@ -327,19 +330,38 @@ export class PaymentsService {
   }
 
   async handleVNPayIPNCall(
-    verifyVNPayIPNCallDto: VerifyVNPayIPNCallDto,
+    query: ReturnQueryFromVNPayDto,
   ): Promise<VerifyIpnCall> {
     try {
       this.logger.log(
         'Verifying VNPAY IPN call with data: ',
+        JSON.stringify(query),
+      );
+
+      const verifyVNPayIPNCallDto: VerifyVNPayIPNCallDto = {
+        data: query,
+        options: {
+          withHash: true,
+          logger: {
+            type: 'all',
+          },
+        },
+      };
+
+      this.logger.log(
+        'Constructed VerifyVNPayIPNCallDto: ',
         JSON.stringify(verifyVNPayIPNCallDto),
       );
+
       const { data, options } = verifyVNPayIPNCallDto;
       const result = await this.vnpayService.verifyIpnCall(
         data as ReturnQueryFromVNPay,
         options as VerifyIpnCallOptions,
       );
       this.logger.log('Verified VNPAY IPN call: ', JSON.stringify(result));
+
+      // fix here to update database
+      // todo
       return result;
     } catch (error) {
       this.logger.error('Failed to verify VNPAY IPN call: ', error);

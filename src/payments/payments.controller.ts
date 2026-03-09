@@ -25,8 +25,10 @@ import { Public, Roles } from '@/decorator/customize';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { VnpayRefundDto } from './dto/vnpay-refund.dto';
 import { VnpayQueryDrDto } from './dto/vnpay-query-dr.dto';
-import { VerifyVNPayIPNCallDto } from './dto/verify-vnpay-ipn-call.dto';
-import { VerifyVNPayReturnUrlDto } from './dto/verify-vnpay-return-url.dto';
+import {
+  ReturnQueryFromVNPayDto,
+  VerifyVNPayReturnUrlDto,
+} from './dto/verify-vnpay-return-url.dto';
 import {
   VNPayBankResponseDto,
   VNPayQueryDrResponseDto,
@@ -123,16 +125,14 @@ export class PaymentsController {
     status: 400,
     description: 'Bad Request or Invalid signature.',
   })
-  @Public()
   @ApiBody({
     description: 'VNPay IPN callback data',
-    type: VerifyVNPayIPNCallDto,
+    type: ReturnQueryFromVNPayDto,
   })
+  @Public()
   @Get('/vnpay_ipn')
-  async handleVNPayIPNCall(
-    @Body() verifyVNPayIPNCallDto: VerifyVNPayIPNCallDto,
-  ) {
-    return await this.paymentsService.handleVNPayIPNCall(verifyVNPayIPNCallDto);
+  async handleVNPayIPNCall(@Query() query: ReturnQueryFromVNPayDto) {
+    return await this.paymentsService.handleVNPayIPNCall(query);
   }
 
   @ApiOperation({ summary: 'Query VNPay transaction status (Query DR)' })

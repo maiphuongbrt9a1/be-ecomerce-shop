@@ -179,12 +179,12 @@ export type ProductsWithProductsMedia = Prisma.ProductsGetPayload<{
 /**
  * Product variant (size/color combination) with all associated media.
  *
- * Single product variant including size, color, price and all media files.
+ * Single product variant including size, color, price, shop office id and all media files.
  * Used when retrieving details for specific product variant.
  *
  * @remarks
  * - Includes: media array with all images/videos for this variant
- * - Variant includes: size, color, price, stock, SKU
+ * - Variant includes: size, color, price, stock, SKU, shopOfficeId
  * - Used in product detail pages
  * - Used in cart and order displays
  * - Media URLs need conversion from S3 keys to full URLs
