@@ -253,13 +253,6 @@ export class DatabaseAddressDto {
   country: string;
 
   @ApiProperty({
-    example: 1,
-    nullable: true,
-    description: 'Shop office ID if address belongs to a shop',
-  })
-  shopOfficeId: bigint | null;
-
-  @ApiProperty({
     example: '2024-01-15T10:30:00.000Z',
     description: 'Address creation timestamp',
   })

@@ -43,18 +43,6 @@ export class EnrichedPackageDetailEntity {
   maxWidth: number;
 
   @ApiProperty({
-    example: 1001,
-    description: 'GHN shop ID for the pickup location (warehouse/shop office)',
-  })
-  ghnShopId: number;
-
-  @ApiProperty({
-    description:
-      'Complete GHN shop details from GHN API (_id, name, phone, address, ward_code, district_id, location, version_no, is_created_chat_channel, address_v2, ward_id_v2, province_id_v2, status, updated/created metadata)',
-  })
-  ghnShopDetail: object;
-
-  @ApiProperty({
     example: 'TP. Hồ Chí Minh',
     description: 'Province name for pickup location from GHN API',
   })
@@ -128,9 +116,6 @@ export class ShipmentEntity {
 
   @ApiProperty({ example: 'GHN12345', nullable: true })
   ghnOrderCode: string | null;
-
-  @ApiProperty({ example: 1, nullable: true })
-  shopOfficeId: bigint | null;
 
   @ApiProperty({
     example: '2024-01-05T00:00:00.000Z',

@@ -39,9 +39,6 @@ export class UpdateUserDto extends OmitType(CreateUserDto, [
   loyaltyCard: string;
 
   @TransformEmptyToUndefined()
-  shopOfficeId: bigint;
-
-  @TransformEmptyToUndefined()
   point: number;
 }
 
@@ -80,9 +77,6 @@ export class UpdateUserWithFileDto extends OmitType(CreateUserWithFileDto, [
 
   @TransformEmptyToUndefined()
   loyaltyCard: string;
-
-  @TransformEmptyToUndefined()
-  shopOfficeId: bigint;
 
   @TransformEmptyToUndefined()
   point: number;

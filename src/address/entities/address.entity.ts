@@ -25,9 +25,6 @@ export class AddressEntity {
   @ApiProperty({ example: 'Vietnam' })
   country: string;
 
-  @ApiProperty({ example: 1, nullable: true })
-  shopOfficeId: bigint | null;
-
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   createdAt: Date;
 

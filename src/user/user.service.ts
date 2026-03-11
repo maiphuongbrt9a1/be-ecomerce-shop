@@ -14,7 +14,6 @@ import {
   Shipments,
   SizeProfiles,
   Cart,
-  ShopOffice,
 } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
@@ -382,7 +381,7 @@ export class UserService {
    * @param {Express.Multer.File} file - The avatar image file to upload
    * @param {CreateUserWithFileDto} data - The data transfer object containing user information:
    *   - firstName, lastName, email, phone, password, username
-   *   - role (defaults to USER), staffCode, shopOfficeId
+   *   - role (defaults to USER), staffCode,
    *   - loyaltyCard, point
    *
    * @returns {Promise<UserWithUserMedia>} The created user with details including:
@@ -414,7 +413,6 @@ export class UserService {
         username,
         role,
         staffCode,
-        shopOfficeId,
         loyaltyCard,
         point,
       } = data;
@@ -438,7 +436,6 @@ export class UserService {
           codeActive: uuidv4().toString(),
           codeActiveExpire: new Date(Date.now() + 5 * 60 * 1000),
           staffCode: staffCode,
-          shopOfficeId: shopOfficeId,
           loyaltyCard: loyaltyCard,
           points: point ?? 0,
         },
@@ -504,7 +501,7 @@ export class UserService {
    *   - firstName, lastName, email, phone
    *   - googleId (unique identifier from Google OAuth)
    *   - username, role (defaults to USER)
-   *   - staffCode, shopOfficeId, loyaltyCard, point
+   *   - staffCode, loyaltyCard, point
    *
    * @returns {Promise<User>} The created user with details including:
    *   - User ID, email, phone, username, role
@@ -535,7 +532,6 @@ export class UserService {
         username,
         role,
         staffCode,
-        shopOfficeId,
         loyaltyCard,
         point,
       } = data;
@@ -554,7 +550,6 @@ export class UserService {
           codeActive: uuidv4().toString(),
           codeActiveExpire: new Date(Date.now() + 5 * 60 * 1000),
           staffCode: staffCode,
-          shopOfficeId: shopOfficeId,
           loyaltyCard: loyaltyCard,
           points: point ?? 0,
         },
@@ -634,17 +629,16 @@ export class UserService {
    * 1. Retrieves existing avatar media files
    * 2. Prepares update payload with new user information
    * 3. Hashes new password if provided
-   * 4. Updates shop office relationship (connect/disconnect)
-   * 5. Uploads new avatar file to S3 if provided
-   * 6. Removes old avatar files from S3
-   * 7. Retrieves updated user with formatted media URLs
-   * 8. Logs the update operation
+   * 4. Uploads new avatar file to S3 if provided
+   * 5. Removes old avatar files from S3
+   * 6. Retrieves updated user with formatted media URLs
+   * 7. Logs the update operation
    *
    * @param {number} id - The user ID to update
    * @param {UpdateUserWithFileDto} data - The data transfer object containing:
    *   - firstName, lastName, email, phone, username
    *   - password (optional, will be hashed)
-   *   - role, staffCode, shopOfficeId, loyaltyCard, point
+   *   - role, staffCode, loyaltyCard, point
    * @param {Express.Multer.File} file - Optional new avatar image file (replaces existing)
    *
    * @returns {Promise<UserWithUserMedia>} The updated user with details including:
@@ -658,7 +652,6 @@ export class UserService {
    * @remarks
    * - Password is only updated if provided and non-empty
    * - Old avatar files are deleted when new avatar is uploaded
-   * - Shop office relationship can be connected, disconnected, or left unchanged
    * - All timestamps and media URLs are updated during operation
    */
   // Update an User
@@ -677,7 +670,7 @@ export class UserService {
       });
 
       // Build update payload without password first
-      const { shopOfficeId, password, point, ...otherData } = data;
+      const { password, point, ...otherData } = data;
 
       const updateData: Prisma.UserUpdateInput = {
         ...otherData,
@@ -695,18 +688,6 @@ export class UserService {
           throw new Error('Hash password for update user failed!');
         }
         updateData.password = hashed;
-      }
-
-      if (shopOfficeId) {
-        updateData.shopOffice = {
-          connect: {
-            id: shopOfficeId,
-          },
-        };
-      } else if (shopOfficeId === null || shopOfficeId === undefined) {
-        updateData.shopOffice = {
-          disconnect: true,
-        };
       }
 
       // update user data in database
@@ -1229,62 +1210,6 @@ export class UserService {
   }
 
   /**
-   * Retrieves shop office information assigned to a user.
-   *
-   * This method performs the following operations:
-   * 1. Finds user by ID
-   * 2. Validates user exists and has shop office assigned
-   * 3. Retrieves shop office details
-   * 4. Logs successful retrieval
-   * 5. Returns shop office information
-   *
-   * @param {number} userId - The user ID to get shop office for
-   *
-   * @returns {Promise<ShopOffice>} The shop office details including:
-   *   - Shop office ID, name, location
-   *   - Address details, contact information
-   *   - Created/updated timestamps
-   *
-   * @throws {NotFoundException} If user not found or has no shop office assigned
-   * @throws {BadRequestException} If shop office retrieval fails
-   *
-   * @remarks
-   * - Only staff/admin users have shop office assignments
-   * - User must have shopOfficeId field populated
-   * - Throws error if shop office not found in database
-   * - Used for staff profile and office management
-   */
-  async getShopOfficeOfUser(userId: number): Promise<ShopOffice> {
-    try {
-      const user = await this.prismaService.user.findUnique({
-        where: { id: userId },
-      });
-
-      if (!user) {
-        throw new NotFoundException('User not found!');
-      }
-
-      if (!user.shopOfficeId) {
-        throw new NotFoundException('User has no shop office assigned!');
-      }
-
-      const shopInformation = await this.prismaService.shopOffice.findFirst({
-        where: { id: user.shopOfficeId },
-      });
-
-      if (!shopInformation) {
-        throw new NotFoundException('Shop Information not found!');
-      }
-
-      this.logger.log('Shop information retrieved successfully', userId);
-      return shopInformation;
-    } catch (error) {
-      this.logger.log('Error retrieving shop information', error);
-      throw new BadRequestException('Failed to retrieve shop information');
-    }
-  }
-
-  /**
    * Retrieves the avatar URL for a user.
    *
    * This method performs the following operations:
@@ -1530,11 +1455,7 @@ export class UserService {
         {
           include: {
             media: true,
-            product: {
-              select: {
-                shopOfficeId: true,
-              },
-            },
+            product: true,
           },
           where: { createByUserId: userId },
           orderBy: { id: 'asc' },

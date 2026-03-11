@@ -22,9 +22,6 @@ export class CategoryEntity {
   @ApiProperty({ example: 1, nullable: true })
   voucherId: bigint | null;
 
-  @ApiProperty({ example: 1, nullable: true })
-  shopOfficeId: bigint | null;
-
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   createdAt: Date;
 

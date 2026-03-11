@@ -85,7 +85,6 @@ export class ProductsController {
         updatedAt: { type: 'string', format: 'date-time' },
         categoryId: { type: 'number', example: 1325 },
         voucherId: { type: 'number', example: 1325 },
-        shopOfficeId: { type: 'number', example: 1325 },
       },
       required: [
         'files',
@@ -199,7 +198,6 @@ export class ProductsController {
         updatedAt: { type: 'string', format: 'date-time' },
         categoryId: { type: 'number', example: 1325 },
         voucherId: { type: 'number', example: 1325 },
-        shopOfficeId: { type: 'number', example: 1325 },
         mediaIdsToDelete: {
           type: 'array',
           items: {

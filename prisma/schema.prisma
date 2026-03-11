@@ -136,9 +136,6 @@ model User {
     CategoryCreatedByUser Category[] @relation("CategoryCreatedByUser")
     ProductVariantsCreatedByUser ProductVariants[] @relation("ProductVariantCreatedByUser")
     RequestsProcessedByStaff Requests[] @relation("RequestsProcessedByStaff")
-    shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    shopOfficeId BigInt?    @db.BigInt
-
     // Customer fields if user is customer
     loyaltyCard String?     @db.VarChar(50)
 
@@ -150,26 +147,9 @@ model User {
     userVouchers UserVouchers[]
     requests    Requests[]
 
-    @@index([shopOfficeId], name: "idx_user_shop_office_id")
-
+    
 }
 
-model ShopOffice {
-    id BigInt @db.BigInt @id @default(autoincrement())
-    ghnShopId BigInt? @db.BigInt @unique
-    ghnShopProvinceId BigInt? @db.BigInt
-    ghnShopDistrictId BigInt? @db.BigInt
-    ghnShopWardCode String? @db.VarChar(20)
-    shopName String @db.VarChar(255)
-    staffs User[]
-    address Address?
-    products Products[]
-    category Category[]
-    shipments Shipments[]
-    createdAt   DateTime    @default(now())
-    updatedAt   DateTime    @updatedAt
-
-}
 
 model Address {
     id          BigInt      @db.BigInt @id @default(autoincrement())
@@ -184,10 +164,8 @@ model Address {
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
     order       Orders[]
-    shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    shopOfficeId BigInt? @unique @db.BigInt
     @@index([userId], name: "idx_address_user_id")
-    @@index([shopOfficeId], name: "idx_address_shop_office_id")
+    
 }
 
 model SizeProfiles {
@@ -228,11 +206,8 @@ model Products {
     media       Media[]
     voucher Vouchers? @relation(fields: [voucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
     voucherId BigInt? @db.BigInt
-    shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    shopOfficeId BigInt? @db.BigInt
-
+    
     @@index([categoryId], name: "idx_product_category_id")
-    @@index([shopOfficeId], name: "idx_product_shop_office_id")
     @@index([voucherId], name: "idx_product_voucher_id")
     @@index([createByUserId], name: "idx_product_created_by_user_id")
 }
@@ -253,14 +228,11 @@ model Category {
     voucher Vouchers? @relation(fields: [voucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
     voucherId BigInt? @db.BigInt
     
-    shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    shopOfficeId BigInt? @db.BigInt
-
+    
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 
     @@index([parentId], name: "idx_category_parent_id")
-    @@index([shopOfficeId], name: "idx_category_shop_office_id")
     @@index([voucherId], name: "idx_category_voucher_id")
     @@index([createByUserId], name: "idx_category_created_by_user_id")
 }
@@ -412,8 +384,6 @@ model Shipments {
     processByStaff        User?        @relation("OrderShippedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     processByStaffId      BigInt?      @db.BigInt
     ghnOrderCode String? @db.VarChar(100) @unique
-    shopOffice ShopOffice? @relation(fields: [shopOfficeId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-    shopOfficeId BigInt? @db.BigInt
     shipmentItems ShipmentItems[]    
     estimatedDelivery DateTime // at shop, estimate time when leave from shop
     deliveredAt DateTime?  // at shop, actual time when leave from shop

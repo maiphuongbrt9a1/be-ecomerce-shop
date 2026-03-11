@@ -53,10 +53,6 @@ export class CreateProductDto {
   @ApiProperty({ example: 1325 })
   @IsOptional()
   voucherId: bigint;
-
-  @ApiProperty({ example: 1325 })
-  @IsOptional()
-  shopOfficeId: bigint;
 }
 
 export class CreateProductWithFileDto extends CreateProductDto {

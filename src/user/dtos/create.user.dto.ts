@@ -101,10 +101,6 @@ export class CreateUserDto {
   @IsString()
   loyaltyCard: string;
 
-  @ApiProperty({ example: 1, description: 'Shop office ID', required: false })
-  @IsOptional()
-  shopOfficeId?: bigint;
-
   @ApiProperty({ example: 0, description: 'point of user', required: false })
   @IsOptional()
   @IsNumber()

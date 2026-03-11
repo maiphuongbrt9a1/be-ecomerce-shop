@@ -20,12 +20,8 @@ import {
   ApiQuery,
   ApiResponse,
   ApiInternalServerErrorResponse,
-  ApiParam,
 } from '@nestjs/swagger';
-import {
-  AddressEntity,
-  GHNShopOfficeAddressEntity,
-} from './entities/address.entity';
+import { AddressEntity } from './entities/address.entity';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 
@@ -187,44 +183,5 @@ export class AddressController {
   @Post('/order-address')
   async createNewAddressForOrder(@Body() createAddressDto: CreateAddressDto) {
     return await this.addressService.createNewAddressForOrder(createAddressDto);
-  }
-
-  @ApiOperation({
-    summary: 'Get GHN shop office address by shop office ID',
-    description:
-      'Retrieves the complete address information for a shop office from both the local database and the GHN (Giao Hàng Nhanh) shipping system. This endpoint validates that the shop office exists, has a registered GHN shop ID, and retrieves the corresponding GHN province, district, and ward details needed for shipping operations.',
-  })
-  @ApiParam({
-    name: 'shopOfficeId',
-    type: Number,
-    description: 'The shop office ID to retrieve address information for',
-    example: 1,
-  })
-  @ApiResponse({
-    status: 200,
-    description:
-      'Shop office address retrieved successfully from database and GHN system. Returns both the local address record and the validated GHN address components (province, district, ward) with their IDs required for shipping fee calculations and shipment creation.',
-    type: GHNShopOfficeAddressEntity,
-  })
-  @ApiResponse({
-    status: 400,
-    description:
-      'Bad Request - Failed to retrieve shop office address. This may occur if communication with GHN API fails or if the GHN address components cannot be resolved.',
-  })
-  @ApiResponse({
-    status: 404,
-    description:
-      'Not Found - Shop office not found, shop office does not have an address in database, shop office is not registered with GHN (missing ghnShopId), shop office has incomplete GHN address information (missing province, district, or ward IDs), or the GHN province/district/ward could not be found in the GHN system.',
-  })
-  @ApiBearerAuth()
-  @UseGuards(RolesGuard)
-  @Roles('ADMIN', 'OPERATOR')
-  @Get('/shop-office/:shopOfficeId/ghn-address')
-  async getGHNShopOfficeAddressByShopOfficeId(
-    @Param('shopOfficeId') shopOfficeId: string,
-  ) {
-    return await this.addressService.getGHNShopOfficeAddressByShopOfficeId(
-      +shopOfficeId,
-    );
   }
 }

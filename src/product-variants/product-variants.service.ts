@@ -146,11 +146,7 @@ export class ProductVariantsService {
         {
           include: {
             media: true,
-            product: {
-              select: {
-                shopOfficeId: true,
-              },
-            },
+            product: true,
           },
           orderBy: { id: 'asc' },
         },
@@ -209,11 +205,7 @@ export class ProductVariantsService {
         {
           include: {
             media: true,
-            product: {
-              select: {
-                shopOfficeId: true,
-              },
-            },
+            product: true,
           },
           where: { id: id },
         },
@@ -342,11 +334,7 @@ export class ProductVariantsService {
         await this.prismaService.productVariants.findUnique({
           include: {
             media: true,
-            product: {
-              select: {
-                shopOfficeId: true,
-              },
-            },
+            product: true,
           },
           where: { id: newProductVariant.id },
         });

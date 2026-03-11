@@ -607,11 +607,7 @@ export class ProductsService {
         await this.prismaService.productVariants.findMany({
           include: {
             media: true,
-            product: {
-              select: {
-                shopOfficeId: true,
-              },
-            },
+            product: true,
           },
           where: { productId: id },
         });

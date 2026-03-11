@@ -38,25 +38,6 @@ export type Payload = {
 };
 
 /**
- * Shop office with complete staff member information.
- *
- * Includes all staff members assigned to the shop office.
- * Used when displaying shop management pages or staffing details.
- *
- * @remarks
- * - Includes: staffs array with all User records assigned to shop
- * - Used in admin shop management interfaces
- * - Loads complete User objects for staff members
- * - Staffs array contains all staff User objects
- * - Used for permission and role validation in shop context
- */
-export type ShopOfficeWithStaffs = Prisma.ShopOfficeGetPayload<{
-  include: {
-    staffs: true;
-  };
-}>;
-
-/**
  * User with all associated media files (avatars, reviews, etc.).
  *
  * Includes all Media records related to the user (avatars, review uploads, etc.).
@@ -73,26 +54,6 @@ export type ShopOfficeWithStaffs = Prisma.ShopOfficeGetPayload<{
 export type UserWithUserMedia = Prisma.UserGetPayload<{
   include: {
     userMedia: true;
-  };
-}>;
-
-/**
- * All products belonging to a shop office's categories.
- *
- * Retrieves only the products array from a shop office.
- * Used for efficient product listing within a shop's scope.
- *
- * @remarks
- * - Selects: only products array from ShopOffice
- * - Used for shop product catalog display
- * - Lighter than loading entire ShopOffice with all relations
- * - Products array contains Product records in shop
- * - Used in shop product filtering and browsing
- * - Optimized for product listing performance
- */
-export type ProductsOfCategoryOfShopOffice = Prisma.ShopOfficeGetPayload<{
-  select: {
-    products: true;
   };
 }>;
 
@@ -179,12 +140,12 @@ export type ProductsWithProductsMedia = Prisma.ProductsGetPayload<{
 /**
  * Product variant (size/color combination) with all associated media.
  *
- * Single product variant including size, color, price, shop office id and all media files.
+ * Single product variant including size, color, price and all media files.
  * Used when retrieving details for specific product variant.
  *
  * @remarks
  * - Includes: media array with all images/videos for this variant
- * - Variant includes: size, color, price, stock, SKU, shopOfficeId
+ * - Variant includes: size, color, price, stock, SKU
  * - Used in product detail pages
  * - Used in cart and order displays
  * - Media URLs need conversion from S3 keys to full URLs
@@ -195,11 +156,7 @@ export type ProductVariantsWithMediaInformation =
   Prisma.ProductVariantsGetPayload<{
     include: {
       media: true;
-      product: {
-        select: {
-          shopOfficeId: true;
-        };
-      };
+      product: true;
     };
   }>;
 
@@ -655,51 +612,6 @@ export type CartItemsWithProductVariantAndMedia = Prisma.CartItemsGetPayload<{
     productVariant: {
       include: {
         media: true;
-      };
-    };
-  };
-}>;
-
-/**
- * Product variant with GHN (Giao Hang Nhanh) shop ID for shipping integration.
- *
- * Includes product variant with parent product and its shop office's GHN shop ID.
- * Used when creating shipments or calculating shipping fees via GHN API.
- *
- * @remarks
- * - Includes: product relation (full product details)
- * - Includes: shopOffice relation within product
- * - Selects: ghnShopId only from shopOffice (GHN shipping provider ID)
- * - Used in shipment creation endpoint
- * - Used for GHN API integration (calculate shipping fees, create shipping orders)
- * - Required for multi-shop shipping scenarios
- * - ghnShopId maps to GHN's shop identifier for pickup location
- * - Avoids loading full shop office data (only ID needed for shipping)
- *
- * @example
- * const variant = await prisma.productVariants.findUnique({
- *   where: { id: variantId },
- *   include: {
- *     product: {
- *       include: {
- *         shopOffice: {
- *           select: { ghnShopId: true }
- *         }
- *       }
- *     }
- *   }
- * });
- * // Use variant.product.shopOffice.ghnShopId for GHN API calls
- */
-export type ProductVariantsWithShopOfficeId = Prisma.ProductVariantsGetPayload<{
-  include: {
-    product: {
-      include: {
-        shopOffice: {
-          select: {
-            ghnShopId: true;
-          };
-        };
       };
     };
   };

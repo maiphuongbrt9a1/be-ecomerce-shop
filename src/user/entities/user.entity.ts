@@ -64,9 +64,6 @@ export class UserEntity {
   })
   staffCode?: string;
 
-  @ApiProperty({ example: 1, description: 'Shop office ID', required: false })
-  shopOfficeId?: bigint;
-
   @ApiProperty({
     example: 'LOYAL123',
     description: 'Loyalty card number',

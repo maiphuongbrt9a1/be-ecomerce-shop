@@ -47,7 +47,6 @@ import { UserSavedVoucherDetailEntity } from '@/user-vouchers/entities/user-save
 import { UserWithMediaEntity } from './entities/user-with-media.entity';
 import { UserEntity } from './entities/user.entity';
 import { AddressEntity } from '@/address/entities/address.entity';
-import { ShopOfficeEntity } from '@/shop-offices/entities/shop-office.entity';
 import { VoucherEntity } from '@/vouchers/entities/voucher.entity';
 
 @Controller('user')
@@ -297,33 +296,6 @@ export class UserController {
       Number(page),
       Number(perPage),
     );
-  }
-
-  @ApiOperation({ summary: 'Get shop office of a user' })
-  @ApiResponse({
-    status: 200,
-    description: 'User shop office retrieved successfully',
-    type: ShopOfficeEntity,
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized - No valid JWT token provided',
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden - Only ADMIN/OPERATOR can access',
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'Not Found - User or shop office not found',
-  })
-  @ApiParam({ name: 'id', type: Number, example: 1, description: 'User ID' })
-  @ApiBearerAuth()
-  @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
-  @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
-  @Get('/:id/shop-office')
-  async getShopOfficeOfUser(@Param('id', ParseIntPipe) id: number) {
-    return await this.userService.getShopOfficeOfUser(id);
   }
 
   @ApiOperation({ summary: 'Get avatar of user' })
