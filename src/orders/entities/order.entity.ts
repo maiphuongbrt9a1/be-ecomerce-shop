@@ -1,13 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-enum OrderStatus {
-  PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING',
-  SHIPPED = 'SHIPPED',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED',
-  RETURNED = 'RETURNED',
-}
+import { OrderStatus } from '@prisma/client';
 
 export class OrderEntity {
   @ApiProperty({ example: 1 })

@@ -11,6 +11,7 @@ import {
 import { UpdateShipmentDto } from './dto/update-shipment.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
+  OrderStatus,
   PaymentMethod,
   PaymentStatus,
   Prisma,
@@ -395,6 +396,24 @@ export class ShipmentsService {
           // create shipment record in database
           const createNewShipmentForOrderAndAutoCreateGHNShipmentResponseDto =
             await this.prismaService.$transaction(async (tx) => {
+              const updatedOrder = await tx.orders.update({
+                where: {
+                  id: orderInformationDetailFromDB.id,
+                },
+                data: {
+                  status: OrderStatus.PAYMENT_CONFIRMED,
+                },
+              });
+
+              if (!updatedOrder) {
+                this.logger.log(
+                  `Failed to update status for order with ID ${orderInformationDetailFromDB.id}`,
+                );
+                throw new BadRequestException(
+                  `Failed to update status for order with ID ${orderInformationDetailFromDB.id}`,
+                );
+              }
+
               const newShipment = await tx.shipments.create({
                 data: {
                   orderId: orderInformationDetailFromDB.id,
@@ -408,7 +427,7 @@ export class ShipmentsService {
                   carrier:
                     createNewShipmentForOrderAndAutoCreateGHNShipmentDto.carrier,
                   trackingNumber: ghnCreateNewOrderRequest.order_code,
-                  status: ShipmentStatus.WAITING_FOR_PICKUP,
+                  status: ShipmentStatus.PENDING,
                   description: orderInformationDetailFromDB.description
                     ? orderInformationDetailFromDB.description
                     : '',

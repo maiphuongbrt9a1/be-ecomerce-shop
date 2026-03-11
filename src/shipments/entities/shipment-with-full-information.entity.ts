@@ -1,15 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserWithMediaEntity } from '@/user/entities/user-with-media.entity';
 import { OrderFullInformationEntity } from '@/orders/entities/order-full-information.entity';
-
-enum ShipmentStatus {
-  WAITING_FOR_PICKUP = 'WAITING_FOR_PICKUP',
-  IN_TRANSIT = 'IN_TRANSIT',
-  OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
-  DELIVERED = 'DELIVERED',
-  DELIVERED_FAILED = 'DELIVERED_FAILED',
-  RETURNED_TO_SENDER = 'RETURNED_TO_SENDER',
-}
+import { ShipmentStatus } from '@prisma/client';
 
 export class ShipmentWithFullInformationEntity {
   @ApiProperty({ example: 1 })
@@ -65,7 +57,7 @@ export class ShipmentWithFullInformationEntity {
 
   @ApiProperty({
     enum: ShipmentStatus,
-    example: ShipmentStatus.WAITING_FOR_PICKUP,
+    example: ShipmentStatus.PENDING,
   })
   status: ShipmentStatus;
 

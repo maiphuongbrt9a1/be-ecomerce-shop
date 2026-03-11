@@ -105,6 +105,7 @@ export class OrdersService {
       const processByStaff = null;
       const orderDate = new Date();
       const orderStatus = OrderStatus.PENDING;
+      const productVariantIdList: bigint[] = [];
       const orderItems: PackageItemDetail[] = [];
 
       let shippingFee = 0;
@@ -142,10 +143,78 @@ export class OrdersService {
 
       totalAmount = subTotal + shippingFee - discount;
 
+      // get product variant id list for checking stock quantity and updating stock quantity
+      for (const item of orderItems) {
+        productVariantIdList.push(BigInt(item.productVariantId));
+      }
+
       const defaultOrderWithFullInformation: OrdersWithFullInformation =
         await this.prismaService.$transaction(async (tx) => {
+          // get product variant list for checking stock quantity
+          const productVariants = await tx.productVariants.findMany({
+            where: { id: { in: productVariantIdList } },
+            include: {
+              product: {
+                include: {
+                  category: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                  shopOffice: {
+                    select: {
+                      ghnShopId: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          // Create a Map for O(1) lookup by ID
+          const productVariantMap = new Map(
+            productVariants.map((pv) => [pv.id.toString(), pv]),
+          );
+
           // update product and product variant stock quantity
           for (const item of orderItems) {
+            const productVariant = productVariantMap.get(
+              item.productVariantId.toString(),
+            );
+
+            // check order items is stock or out of stock
+            // if order items are out of stock, throw error
+            if (!productVariant) {
+              this.logger.log(
+                `Product variant with ID ${item.productVariantId} not found!`,
+              );
+              throw new NotFoundException(
+                `Product variant with ID ${item.productVariantId} not found!`,
+              );
+            }
+
+            if (productVariant.stock < item.quantity) {
+              this.logger.log(
+                `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
+              );
+              throw new BadRequestException(
+                `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
+              );
+            }
+
+            // grouping order items following shop office id to calculate shipping fee
+            if (
+              !productVariant.product.shopOffice ||
+              !productVariant.product.shopOffice.ghnShopId
+            ) {
+              this.logger.log(
+                `ProductVariant have id ${productVariant.id} has no shop office id or ghn shop office id. Please check again!`,
+              );
+              throw new NotFoundException(
+                `ProductVariant have id ${productVariant.id} has no shop office id or ghn shop office id. Please check again!`,
+              );
+            }
+
             // reduce stock quantity for product variant
             const updateProductVariant = await tx.productVariants.update({
               where: { id: BigInt(item.productVariantId) },
@@ -258,6 +327,7 @@ export class OrdersService {
           }
 
           // this is default payment information
+          // and this is only one payment record for one order.
           // when payment is paid by vnpay,
           // you can update this transaction id with vnpay transaction id
           // you can update payment status to Paid

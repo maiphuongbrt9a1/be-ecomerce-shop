@@ -36,29 +36,41 @@ enum MediaType {
     DOCUMENT
 }
 
+// Order lifecycle: PENDING → PAYMENT_PROCESSING (VNPay) → PAYMENT_CONFIRMED (payment success) 
+// → WAITING_FOR_PICKUP (shipment created) → SHIPPED → DELIVERED → COMPLETED
 enum OrderStatus {
-    PENDING
-    PROCESSING
-    SHIPPED
-    DELIVERED
-    CANCELLED
-    RETURNED
+    PENDING              // Order just created, no payment confirmed yet
+    PAYMENT_PROCESSING   // VNPay payment in progress (waiting for IPN callback)
+    PAYMENT_CONFIRMED    // Payment confirmed (COD or VNPay PAID), ready to prepare shipment
+    WAITING_FOR_PICKUP   // Shipment created, waiting for carrier pickup
+    SHIPPED              // In transit to customer
+    DELIVERED            // Delivered to customer
+    COMPLETED            // Customer confirmed receipt, order complete
+    CANCELLED            // Order cancelled (timeout, user cancel, or payment failed)
+    RETURNED             // Order returned by customer
 }
 
+// Shipment lifecycle syncs with OrderStatus:
+// OrderStatus.PAYMENT_CONFIRMED → Shipment created with ShipmentStatus.PENDING
+// OrderStatus.WAITING_FOR_PICKUP → ShipmentStatus.WAITING_FOR_PICKUP
+// OrderStatus.SHIPPED → ShipmentStatus.SHIPPED
+// OrderStatus.DELIVERED → ShipmentStatus.DELIVERED
+// OrderStatus.RETURNED → ShipmentStatus.RETURNED
 enum ShipmentStatus {
-    WAITING_FOR_PICKUP
-    IN_TRANSIT
-    OUT_FOR_DELIVERY
-    DELIVERED
-    DELIVERED_FAILED
-    RETURNED_TO_SENDER
+    PENDING              // Shipment NOT PACKAGED YET, waiting for staff to create shipment
+    WAITING_FOR_PICKUP   // Ready at shop, waiting for GHN pickup
+    SHIPPED              // Picked up, on the way to customer
+    DELIVERED            // Successfully delivered to customer
+    DELIVERED_FAILED     // Delivery attempt failed
+    RETURNED             // Returned to shop
 }
 
+// Payment status: PENDING → PAID (success) or FAILED (error)
 enum PaymentStatus {
-    PENDING
-    PAID
-    FAILED
-    REFUNDED
+    PENDING    // Payment initiated but not confirmed
+    PAID       // Payment confirmed (COD at delivery, or VNPay IPN success)
+    FAILED     // Payment failed or cancelled
+    REFUNDED   // Payment refunded to customer
 }
 
 enum PaymentMethod {
@@ -410,7 +422,7 @@ model Shipments {
     carrier     String      @db.VarChar(100)
     trackingNumber String   @db.VarChar(100)
     description String?    @db.VarChar(255)
-    status      ShipmentStatus      @default(WAITING_FOR_PICKUP)
+    status      ShipmentStatus      @default(PENDING)
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 

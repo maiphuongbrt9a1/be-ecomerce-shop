@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-enum PaymentStatus {
-  PENDING = 'PENDING',
-  PAID = 'PAID',
-  FAILED = 'FAILED',
-  REFUNDED = 'REFUNDED',
-}
-
+import { PaymentStatus } from '@prisma/client';
 export class PaymentEntity {
   @ApiProperty({ example: 1 })
   id: bigint;

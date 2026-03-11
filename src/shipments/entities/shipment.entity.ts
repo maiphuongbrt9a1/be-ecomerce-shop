@@ -1,13 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-enum ShipmentStatus {
-  WAITING_FOR_PICKUP = 'WAITING_FOR_PICKUP',
-  IN_TRANSIT = 'IN_TRANSIT',
-  OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
-  DELIVERED = 'DELIVERED',
-  DELIVERED_FAILED = 'DELIVERED_FAILED',
-  RETURNED_TO_SENDER = 'RETURNED_TO_SENDER',
-}
+import { ShipmentStatus } from '@prisma/client';
 
 export class EnrichedPackageDetailEntity {
   @ApiProperty({
@@ -187,7 +179,7 @@ export class ShipmentEntity {
 
   @ApiProperty({
     enum: ShipmentStatus,
-    example: ShipmentStatus.WAITING_FOR_PICKUP,
+    example: ShipmentStatus.PENDING,
   })
   status: ShipmentStatus;
 

@@ -23,15 +23,22 @@ import {
   VerifyReturnUrlOptions,
   VnpayService,
 } from 'nestjs-vnpay';
-import type {
-  Bank,
-  BuildPaymentUrl,
-  VerifyReturnUrl,
-  ReturnQueryFromVNPay,
-  VerifyIpnCall,
-  QueryDrResponse,
-  QueryDr,
-  Refund,
+import {
+  type Bank,
+  type BuildPaymentUrl,
+  type VerifyReturnUrl,
+  type ReturnQueryFromVNPay,
+  type VerifyIpnCall,
+  type QueryDrResponse,
+  type QueryDr,
+  type Refund,
+  IpnFailChecksum,
+  IpnResponse,
+  IpnSuccess,
+  IpnOrderNotFound,
+  IpnInvalidAmount,
+  InpOrderAlreadyConfirmed,
+  IpnUnknownError,
 } from 'vnpay';
 import { CreateVNPayPaymentUrlDto } from './dto/create-vnpay-payment-url.dto';
 import {
@@ -231,7 +238,7 @@ export class PaymentsService {
             trackingNumber: `${Date.now()}-${result.orderId}-${oldPayment.order.userId}-${Math.floor(
               Math.random() * 10000000,
             )}`,
-            status: ShipmentStatus.WAITING_FOR_PICKUP,
+            status: ShipmentStatus.PENDING,
           },
         });
       }
@@ -331,7 +338,7 @@ export class PaymentsService {
 
   async handleVNPayIPNCall(
     query: ReturnQueryFromVNPayDto,
-  ): Promise<VerifyIpnCall> {
+  ): Promise<IpnResponse> {
     try {
       this.logger.log(
         'Verifying VNPAY IPN call with data: ',
@@ -354,18 +361,83 @@ export class PaymentsService {
       );
 
       const { data, options } = verifyVNPayIPNCallDto;
-      const result = await this.vnpayService.verifyIpnCall(
-        data as ReturnQueryFromVNPay,
-        options as VerifyIpnCallOptions,
+      const verifyIPNCallResult: VerifyIpnCall =
+        await this.vnpayService.verifyIpnCall(
+          data as ReturnQueryFromVNPay,
+          options as VerifyIpnCallOptions,
+        );
+      this.logger.log(
+        'Verified VNPAY IPN call: ',
+        JSON.stringify(verifyIPNCallResult),
       );
-      this.logger.log('Verified VNPAY IPN call: ', JSON.stringify(result));
 
-      // fix here to update database
-      // todo
-      return result;
+      if (!verifyIPNCallResult.isVerified) {
+        return IpnFailChecksum;
+      }
+
+      const foundOrder = await this.prismaService.orders.findUnique({
+        where: {
+          id: Number(verifyIPNCallResult.vnp_TxnRef),
+        },
+        include: {
+          payment: true,
+        },
+      });
+
+      if (!foundOrder) {
+        return IpnOrderNotFound;
+      }
+
+      if (foundOrder.totalAmount !== Number(verifyIPNCallResult.vnp_Amount)) {
+        return IpnInvalidAmount;
+      }
+
+      if (foundOrder.payment[0].status === PaymentStatus.PAID) {
+        return InpOrderAlreadyConfirmed;
+      }
+
+      // update db here
+      // update payment to Paid
+      // and create shipment and shipment items in db.
+      // and need to create ghn shipment.
+      const updateDatabaseResult = await this.prismaService.$transaction(
+        async (tx) => {
+          // update payment to Paid
+          // update transaction id to vnpay transaction id
+          const updatePayment = await tx.payments.update({
+            where: {
+              // when order created, we create only one payment, so we can safely access the first element
+              id: foundOrder.payment[0].id,
+            },
+            data: {
+              status: PaymentStatus.PAID,
+              transactionId: String(verifyIPNCallResult.vnp_TransactionNo),
+            },
+          });
+
+          if (!updatePayment) {
+            this.logger.log(
+              '[handleVNPayIPNCall] Failed to update payment for order ID: ',
+              foundOrder.id,
+            );
+            throw new Error(
+              'Failed to update payment for order ID: ' + foundOrder.id,
+            );
+          }
+
+          // create shipment and shipment items in db.
+
+          // call ghn api to create ghn shipment here.
+        },
+      );
+
+      return IpnSuccess;
     } catch (error) {
-      this.logger.error('Failed to verify VNPAY IPN call: ', error);
-      throw new BadRequestException('Failed to verify VNPAY IPN call');
+      this.logger.error(
+        '[handleVNPayIPNCall] Failed to process VNPAY IPN call: ',
+        error,
+      );
+      return IpnUnknownError;
     }
   }
 
