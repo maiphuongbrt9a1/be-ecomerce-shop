@@ -1,6 +1,9 @@
-import type { createNewAddressForOrderResponseDto } from '@/helpers/types/types';
+import type {
+  createNewAddressForOrderResponseDto,
+  PackagesForShipping,
+} from '@/helpers/types/types';
 import { CreateAddressForOrderResponseDto } from '@/address/dto/create-address-for-order-response.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { DiscountType, OrderStatus, PaymentMethod } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
@@ -11,6 +14,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { PackageDetailDto } from './group-order-items-package-response.dto';
 
 export class SecondCreateOrderItemsDto {
   @ApiProperty({ example: 851 })
@@ -121,6 +125,17 @@ export class CreateOrderDto {
   })
   @IsNotEmpty()
   shippingAddress: createNewAddressForOrderResponseDto;
+
+  @ApiProperty({
+    description:
+      'Packages grouped by GHN shop ID. Each key is a shop ID string and each value is a PackageDetail object.',
+    type: 'object',
+    additionalProperties: {
+      $ref: getSchemaPath(PackageDetailDto),
+    },
+  })
+  @IsNotEmpty()
+  packages: PackagesForShipping;
 }
 
 export class SecondCreateOrderDto {

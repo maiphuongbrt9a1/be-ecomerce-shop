@@ -385,10 +385,10 @@ model Shipments {
     processByStaffId      BigInt?      @db.BigInt
     ghnOrderCode String? @db.VarChar(100) @unique
     shipmentItems ShipmentItems[]    
-    estimatedDelivery DateTime // at shop, estimate time when leave from shop
-    deliveredAt DateTime?  // at shop, actual time when leave from shop
-    estimatedShipDate DateTime // at customer, estimate time when arrive to customer
-    shippedAt   DateTime?  // at customer, actual time when arrive to customer
+    estimatedDelivery DateTime // at customer, estimated delivery date by GHN
+    deliveredAt DateTime?  // at customer, actual delivery date by GHN
+    estimatedShipDate DateTime // at shop, estimated pickup date by GHN
+    shippedAt   DateTime?   // at shop, actual pickup date by GHN
     carrier     String      @db.VarChar(100)
     trackingNumber String   @db.VarChar(100)
     description String?    @db.VarChar(255)

@@ -7,6 +7,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  Post,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -25,32 +26,33 @@ import { OrderItemWithVariantEntity } from '@/order-items/entities/order-item-wi
 import { ShipmentWithFullInformationEntity } from '@/shipments/entities/shipment-with-full-information.entity';
 import { PaymentEntity } from '@/payments/entities/payment.entity';
 import { RequestWithMediaEntity } from '@/requests/entities/request-with-media.entity';
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  // @ApiOperation({ summary: 'Create a new order' })
-  // @ApiResponse({
-  //   status: 201,
-  //   description:
-  //     'Order created successfully with full information including items, payments, and shipments',
-  //   type: OrderFullInformationEntity,
-  // })
-  // @ApiResponse({ status: 400, description: 'Bad Request.' })
-  // @ApiResponse({ status: 404, description: 'Not Found.' })
-  // @ApiBearerAuth()
-  // @UseGuards(RolesGuard)
-  // @Roles('ADMIN', 'USER', 'OPERATOR')
-  // @ApiBody({
-  //   description:
-  //     'Order creation data with items, shipping address, and payment method information',
-  //   type: CreateOrderDto,
-  // })
-  // @Post()
-  // async create(@Body() createOrderDto: CreateOrderDto) {
-  //   return await this.ordersService.create(createOrderDto);
-  // }
+  @ApiOperation({ summary: 'Create a new order' })
+  @ApiResponse({
+    status: 201,
+    description:
+      'Order created successfully with full information including items, payments, and shipments',
+    type: OrderFullInformationEntity,
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
+  @ApiBody({
+    description:
+      'Order creation data with items, shipping address, and payment method information',
+    type: CreateOrderDto,
+  })
+  @Post()
+  async create(@Body() createOrderDto: CreateOrderDto) {
+    return await this.ordersService.create(createOrderDto);
+  }
 
   @ApiOperation({ summary: 'Get all orders' })
   @ApiResponse({

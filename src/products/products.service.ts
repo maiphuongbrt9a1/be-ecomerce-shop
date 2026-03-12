@@ -87,7 +87,7 @@ export class ProductsService {
       );
 
       if (!mediaForProduct) {
-        this.logger.log('Failed to upload product media file');
+        this.logger.error('Failed to upload product media file');
         throw new NotFoundException('Failed to upload product media file');
       }
 
@@ -131,7 +131,7 @@ export class ProductsService {
       this.logger.log(`Product created with ID: ${product.id}`);
       return returnProduct;
     } catch (error) {
-      this.logger.log(`Error creating product: ${error}`);
+      this.logger.error(`Error creating product: ${error}`);
       throw new BadRequestException('Failed to create product');
     }
   }
@@ -230,7 +230,7 @@ export class ProductsService {
       this.logger.log(`Fetched products - Page: ${page}, PerPage: ${perPage}`);
       return result.data;
     } catch (error) {
-      this.logger.log(`Error fetching products: ${error}`);
+      this.logger.error(`Error fetching products: ${error}`);
       throw new BadRequestException('Failed to fetch products');
     }
   }
@@ -316,7 +316,7 @@ export class ProductsService {
       this.logger.log(`Product fetched with ID: ${product.id}`);
       return product;
     } catch (error) {
-      this.logger.log(`Error fetching product with ID ${id}: ${error}`);
+      this.logger.error(`Error fetching product with ID ${id}: ${error}`);
       throw new BadRequestException('Failed to fetch product');
     }
   }
@@ -469,7 +469,7 @@ export class ProductsService {
       this.logger.log(`Product updated with ID: ${product.id}`);
       return returnProduct;
     } catch (error) {
-      this.logger.log(`Error updating product with ID ${id}: ${error}`);
+      this.logger.error(`Error updating product with ID ${id}: ${error}`);
       throw new BadRequestException('Failed to update product');
     }
   }
@@ -570,7 +570,7 @@ export class ProductsService {
         return result;
       });
     } catch (error) {
-      this.logger.log(`Error deleting product with ID ${id}: ${error}`);
+      this.logger.error(`Error deleting product with ID ${id}: ${error}`);
       throw new BadRequestException('Failed to delete product');
     }
   }
@@ -636,7 +636,7 @@ export class ProductsService {
       this.logger.log(`Product Variants fetched for product ID: ${id}`);
       return productVariantsList;
     } catch (error) {
-      this.logger.log(
+      this.logger.error(
         `Error fetching product variants for product ID ${id}: ${error}`,
       );
       throw new BadRequestException('Failed to fetch product variants');
@@ -704,7 +704,7 @@ export class ProductsService {
       this.logger.log(`Reviews fetched for product ID: ${id}`);
       return result.data;
     } catch (error) {
-      this.logger.log(`Error fetching reviews for product ID ${id}: ${error}`);
+      this.logger.error(`Error fetching reviews for product ID ${id}: ${error}`);
       throw new BadRequestException('Failed to fetch product reviews');
     }
   }

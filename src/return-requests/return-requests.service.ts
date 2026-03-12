@@ -54,7 +54,7 @@ export class ReturnRequestsService {
       this.logger.log('Return request created successfully', result.id);
       return result;
     } catch (error) {
-      this.logger.log('Error creating return request', error);
+      this.logger.error('Error creating return request', error);
       throw new BadRequestException('Failed to create return request');
     }
   }
@@ -101,7 +101,7 @@ export class ReturnRequestsService {
       this.logger.log('Fetched return requests successfully');
       return result.data;
     } catch (error) {
-      this.logger.log('Error fetching return requests', error);
+      this.logger.error('Error fetching return requests', error);
       throw new BadRequestException('Failed to fetch return requests');
     }
   }
@@ -144,7 +144,7 @@ export class ReturnRequestsService {
       this.logger.log('Fetched return request successfully', id);
       return result;
     } catch (error) {
-      this.logger.log('Error fetching return request', error);
+      this.logger.error('Error fetching return request', error);
       throw new BadRequestException('Failed to fetch return request');
     }
   }
@@ -188,7 +188,7 @@ export class ReturnRequestsService {
       this.logger.log('Return request updated successfully', id);
       return result;
     } catch (error) {
-      this.logger.log('Error updating return request', error);
+      this.logger.error('Error updating return request', error);
       throw new BadRequestException('Failed to update return request');
     }
   }
@@ -221,7 +221,7 @@ export class ReturnRequestsService {
         where: { id: id },
       });
     } catch (error) {
-      this.logger.log('Error deleting return request', error);
+      this.logger.error('Error deleting return request', error);
       throw new BadRequestException('Failed to delete return request');
     }
   }

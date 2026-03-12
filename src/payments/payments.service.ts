@@ -88,7 +88,7 @@ export class PaymentsService {
       this.logger.log(`Payment created with ID: ${result.id}`);
       return result;
     } catch (error) {
-      this.logger.log('Failed to create payment: ', error);
+      this.logger.error('Failed to create payment: ', error);
       throw new BadRequestException('Failed to create payment');
     }
   }

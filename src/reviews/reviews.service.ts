@@ -100,7 +100,7 @@ export class ReviewsService {
       this.logger.log('Review created successfully', returnResult.id);
       return returnResult;
     } catch (error) {
-      this.logger.log('Error creating review', error);
+      this.logger.error('Error creating review', error);
       throw new BadRequestException('Failed to create review');
     }
   }
@@ -164,7 +164,7 @@ export class ReviewsService {
       this.logger.log('Fetched reviews successfully');
       return result.data;
     } catch (error) {
-      this.logger.log('Error fetching reviews', error);
+      this.logger.error('Error fetching reviews', error);
       throw new BadRequestException('Failed to fetch reviews');
     }
   }
@@ -222,7 +222,7 @@ export class ReviewsService {
 
       return result;
     } catch (error) {
-      this.logger.log('Error fetching review', error);
+      this.logger.error('Error fetching review', error);
       throw new BadRequestException('Failed to fetch review');
     }
   }
@@ -346,7 +346,7 @@ export class ReviewsService {
 
       return resultReview;
     } catch (error) {
-      this.logger.log('Error updating review', error);
+      this.logger.error('Error updating review', error);
       throw new BadRequestException('Failed to update review');
     }
   }
@@ -405,7 +405,7 @@ export class ReviewsService {
 
       return result;
     } catch (error) {
-      this.logger.log('Error deleting review', error);
+      this.logger.error('Error deleting review', error);
       throw new BadRequestException('Failed to delete review');
     }
   }
@@ -454,7 +454,7 @@ export class ReviewsService {
       this.logger.log('Fetched media of review successfully', id);
       return result.data;
     } catch (error) {
-      this.logger.log('Error fetching media of review', error);
+      this.logger.error('Error fetching media of review', error);
       throw new BadRequestException('Failed to fetch media of review');
     }
   }

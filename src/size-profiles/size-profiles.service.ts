@@ -52,7 +52,7 @@ export class SizeProfilesService {
       this.logger.log('Size profile created successfully', result.id);
       return result;
     } catch (error) {
-      this.logger.log('Error creating size profile', error);
+      this.logger.error('Error creating size profile', error);
       throw new BadRequestException('Failed to create size profile');
     }
   }
@@ -99,7 +99,7 @@ export class SizeProfilesService {
       this.logger.log('Size profiles retrieved successfully');
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving size profiles', error);
+      this.logger.error('Error retrieving size profiles', error);
       throw new BadRequestException('Failed to retrieve size profiles');
     }
   }
@@ -143,7 +143,7 @@ export class SizeProfilesService {
       this.logger.log('Size profile retrieved successfully', id);
       return result;
     } catch (error) {
-      this.logger.log('Error retrieving size profile', error);
+      this.logger.error('Error retrieving size profile', error);
       throw new BadRequestException('Failed to retrieve size profile');
     }
   }
@@ -186,7 +186,7 @@ export class SizeProfilesService {
       this.logger.log('Size profile updated successfully', id);
       return result;
     } catch (error) {
-      this.logger.log('Error updating size profile', error);
+      this.logger.error('Error updating size profile', error);
       throw new BadRequestException('Failed to update size profile');
     }
   }
@@ -219,7 +219,7 @@ export class SizeProfilesService {
         where: { id: id },
       });
     } catch (error) {
-      this.logger.log('Error deleting size profile', error);
+      this.logger.error('Error deleting size profile', error);
       throw new BadRequestException('Failed to delete size profile');
     }
   }

@@ -49,7 +49,7 @@ export class VouchersService {
       this.logger.log('Voucher created successfully', result.id);
       return result;
     } catch (error) {
-      this.logger.log('Error creating voucher', error);
+      this.logger.error('Error creating voucher', error);
       throw new BadRequestException('Failed to create voucher');
     }
   }
@@ -86,7 +86,7 @@ export class VouchersService {
       this.logger.log('Vouchers retrieved successfully');
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving vouchers', error);
+      this.logger.error('Error retrieving vouchers', error);
       throw new BadRequestException('Failed to retrieve vouchers');
     }
   }
@@ -122,7 +122,7 @@ export class VouchersService {
       this.logger.log('Voucher retrieved successfully', id);
       return result;
     } catch (error) {
-      this.logger.log('Error retrieving voucher', error);
+      this.logger.error('Error retrieving voucher', error);
       throw new BadRequestException('Failed to retrieve voucher');
     }
   }
@@ -158,7 +158,7 @@ export class VouchersService {
       this.logger.log('Voucher updated successfully', id);
       return result;
     } catch (error) {
-      this.logger.log('Error updating voucher', error);
+      this.logger.error('Error updating voucher', error);
       throw new BadRequestException('Failed to update voucher');
     }
   }
@@ -187,7 +187,7 @@ export class VouchersService {
         where: { id: id },
       });
     } catch (error) {
-      this.logger.log('Error deleting voucher', error);
+      this.logger.error('Error deleting voucher', error);
       throw new BadRequestException('Failed to delete voucher');
     }
   }
@@ -242,7 +242,10 @@ export class VouchersService {
       );
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving categories applied to voucher', error);
+      this.logger.error(
+        'Error retrieving categories applied to voucher',
+        error,
+      );
       throw new BadRequestException(
         'Failed to retrieve categories applied to voucher',
       );
@@ -296,7 +299,7 @@ export class VouchersService {
       this.logger.log('Products applied to voucher retrieved successfully', id);
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving products applied to voucher', error);
+      this.logger.error('Error retrieving products applied to voucher', error);
       throw new BadRequestException(
         'Failed to retrieve products applied to voucher',
       );

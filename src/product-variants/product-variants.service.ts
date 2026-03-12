@@ -62,7 +62,7 @@ export class ProductVariantsService {
       });
 
       if (!productVariant) {
-        this.logger.log('Failed to create product variant');
+        this.logger.error('Failed to create product variant');
         throw new NotFoundException('Failed to create product variant');
       }
 
@@ -75,7 +75,7 @@ export class ProductVariantsService {
         );
 
       if (!mediaForProductVariant) {
-        this.logger.log('Failed to upload product media file');
+        this.logger.error('Failed to upload product media file');
         throw new NotFoundException('Failed to upload product media file');
       }
 
@@ -87,7 +87,7 @@ export class ProductVariantsService {
         });
 
       if (!newProductVariant) {
-        this.logger.log('Failed to retrieve new product variant');
+        this.logger.error('Failed to retrieve new product variant');
         throw new NotFoundException('Failed to retrieve new product variant');
       }
 
@@ -103,7 +103,7 @@ export class ProductVariantsService {
 
       return newProductVariant;
     } catch (error) {
-      this.logger.log('Error creating product variant: ' + error);
+      this.logger.error('Error creating product variant: ' + error);
       throw new NotFoundException('Failed to create product variant');
     }
   }
@@ -170,7 +170,7 @@ export class ProductVariantsService {
       );
       return productVariantList.data;
     } catch (error) {
-      this.logger.log('Error retrieving product variants: ' + error);
+      this.logger.error('Error retrieving product variants: ' + error);
       throw new NotFoundException('Failed to retrieve product variants');
     }
   }
@@ -231,7 +231,7 @@ export class ProductVariantsService {
       this.logger.log('Retrieved product variant successfully with id: ' + id);
       return productVariant;
     } catch (error) {
-      this.logger.log('Error retrieving product variant: ' + error);
+      this.logger.error('Error retrieving product variant: ' + error);
       throw new NotFoundException('Failed to retrieve product variant');
     }
   }
@@ -365,7 +365,7 @@ export class ProductVariantsService {
 
       return resultProductVariant;
     } catch (error) {
-      this.logger.log('Error updating product variant: ' + error);
+      this.logger.error('Error updating product variant: ' + error);
       throw new NotFoundException('Failed to update product variant');
     }
   }
@@ -409,14 +409,14 @@ export class ProductVariantsService {
           await this.awsService.deleteFileFromS3(media.url);
         }
       } catch (error) {
-        this.logger.log('Error deleting media files from S3: ' + error);
+        this.logger.error('Error deleting media files from S3: ' + error);
         throw new BadRequestException('Failed to delete media files from S3');
       }
 
       this.logger.log('Product variant deleted successfully with id: ' + id);
       return productVariant;
     } catch (error) {
-      this.logger.log('Error deleting product variant: ' + error);
+      this.logger.error('Error deleting product variant: ' + error);
       throw new BadRequestException('Failed to delete product variant');
     }
   }
@@ -485,7 +485,7 @@ export class ProductVariantsService {
       );
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving reviews: ' + error);
+      this.logger.error('Error retrieving reviews: ' + error);
       throw new BadRequestException('Failed to retrieve reviews');
     }
   }
@@ -545,7 +545,7 @@ export class ProductVariantsService {
       );
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving media files: ' + error);
+      this.logger.error('Error retrieving media files: ' + error);
       throw new BadRequestException('Failed to retrieve media files');
     }
   }

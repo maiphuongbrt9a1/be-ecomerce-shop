@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  HttpCode,
 } from '@nestjs/common';
 import { ShipmentsService } from './shipments.service';
 import { CreateShipmentDto } from './dto/create-shipment.dto';
@@ -19,6 +20,7 @@ import {
   ApiOperation,
   ApiQuery,
   ApiResponse,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
@@ -27,6 +29,17 @@ import {
   EnrichedPackageDetailEntity,
 } from './entities/shipment.entity';
 import { ShipmentWithFullInformationEntity } from './entities/shipment-with-full-information.entity';
+import {
+  CalculateExpectedDeliveryTimeResponseDto,
+  GetServiceResponseDto,
+  GHNShopDetailDto,
+  PackageDetailDto,
+  PackageItemDetailDto,
+  PackageItemDetailForGHNCreateNewOrderRequestDto,
+} from '@/orders/dto/group-order-items-package-response.dto';
+import { PreviewShippingFeeForPackagesDto } from './dto/preview-shipping-fee-for-order.dto';
+import { SecondCreateOrderItemsDto } from '@/orders/dto/create-order.dto';
+import { CreateAddressForOrderResponseDto } from '@/address/dto/create-address-for-order-response.dto';
 
 @ApiExtraModels(EnrichedPackageDetailEntity)
 @Controller('shipments')
@@ -58,6 +71,64 @@ export class ShipmentsController {
   @Post()
   async create(@Body() createShipmentDto: CreateShipmentDto) {
     return await this.shipmentsService.create(createShipmentDto);
+  }
+
+  @ApiExtraModels(
+    PreviewShippingFeeForPackagesDto,
+    SecondCreateOrderItemsDto,
+    CreateAddressForOrderResponseDto,
+    PackageDetailDto,
+    PackageItemDetailDto,
+    PackageItemDetailForGHNCreateNewOrderRequestDto,
+    GHNShopDetailDto,
+    GetServiceResponseDto,
+    CalculateExpectedDeliveryTimeResponseDto,
+  )
+  @ApiOperation({
+    summary: 'Preview shipping fees for packages before creating shipments',
+    description:
+      'Calculates shipping fees and expected delivery time from GHN for order items before order confirmation. Input must include orderItems and createNewAddressForOrderResponseDto. Returns a record keyed by GHN shop ID, where each value is the computed package detail with GHN service, fee, pickup info, destination info, and ETA.',
+  })
+  @ApiBody({
+    description:
+      'Input payload for previewShippingFeeForOrder(orderItems, createNewAddressForOrderResponseDto).',
+    type: PreviewShippingFeeForPackagesDto,
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Shipping preview calculated successfully. Response is Record<string, PackageDetailDto>, where key = ghnShopId and value = package detail enriched by GHN data (shippingService, shippingFee, expectedDeliveryTime, ghnShopDetail, from/to district & ward codes).',
+    schema: {
+      type: 'object',
+      additionalProperties: {
+        $ref: getSchemaPath(PackageDetailDto),
+      },
+      description:
+        'Map with GHN shop ID as object key and PackageDetailDto as value',
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Bad Request - Failed to calculate shipping fees. This may occur if GHN API communication fails, invalid package dimensions provided, or shipping service unavailable for the route.',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Not Found - Shop office not found for GHN shop ID, shop office has incomplete GHN address information (missing province/district/ward IDs), GHN province/district/ward not found in GHN system, or shipping service not available for the specified route.',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR', 'USER')
+  @HttpCode(200)
+  @Post('/preview-shipping-fee')
+  async previewShippingFeeForEachPackageForOrder(
+    @Body() previewShippingFeeDto: PreviewShippingFeeForPackagesDto,
+  ) {
+    return await this.shipmentsService.previewShippingFeeForOrder(
+      previewShippingFeeDto.orderItems,
+      previewShippingFeeDto.createNewAddressForOrderResponseDto,
+    );
   }
 
   @ApiOperation({ summary: 'Get all shipments' })

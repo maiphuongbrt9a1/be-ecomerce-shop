@@ -119,7 +119,7 @@ export class AwsS3Service {
         return result;
       });
     } catch (error) {
-      this.logger.log('Error saving media file to database: ' + error);
+      this.logger.error('Error saving media file to database: ' + error);
       throw new BadRequestException('Failed to save media file to database');
     }
   }
@@ -172,7 +172,7 @@ export class AwsS3Service {
         file.mimetype,
       );
     } catch (error) {
-      this.logger.log('Error uploading file to S3: ' + error);
+      this.logger.error('Error uploading file to S3: ' + error);
       throw new BadRequestException('Failed to upload file to S3 bucket');
     }
   }
@@ -279,7 +279,7 @@ export class AwsS3Service {
       this.logger.log('List object: ' + JSON.stringify(result.Contents));
       return result;
     } catch (error) {
-      this.logger.log('Error listing objects in S3 bucket: ' + error);
+      this.logger.error('Error listing objects in S3 bucket: ' + error);
       throw new BadRequestException('Failed to list objects in S3 bucket');
     }
   }
@@ -324,7 +324,7 @@ export class AwsS3Service {
       this.logger.log('Url to download file: ' + url);
       return url;
     } catch (error) {
-      this.logger.log('Error downloading file from S3 bucket: ' + error);
+      this.logger.error('Error downloading file from S3 bucket: ' + error);
       throw new BadRequestException('Failed to download file from S3 bucket');
     }
   }
@@ -408,7 +408,7 @@ export class AwsS3Service {
       this.logger.log('Upload one product file successfully');
       return resultUploadFile;
     } catch (error) {
-      this.logger.log('Error uploading one product file: ' + error);
+      this.logger.error('Error uploading one product file: ' + error);
       throw new BadRequestException('Failed to upload one product media file');
     }
   }
@@ -486,7 +486,7 @@ export class AwsS3Service {
       this.logger.log('Upload logo shop file successfully');
       return resultUploadFile;
     } catch (error) {
-      this.logger.log('Error uploading logo shop media file: ' + error);
+      this.logger.error('Error uploading logo shop media file: ' + error);
       throw new BadRequestException(
         'Failed to upload one logo shop media file',
       );
@@ -566,7 +566,7 @@ export class AwsS3Service {
       this.logger.log('Upload banner shop file successfully');
       return resultUploadFile;
     } catch (error) {
-      this.logger.log('Error uploading banner shop media file: ' + error);
+      this.logger.error('Error uploading banner shop media file: ' + error);
       throw new BadRequestException(
         'Failed to upload one banner shop media file',
       );
@@ -668,7 +668,7 @@ export class AwsS3Service {
       this.logger.log('Uploaded many product files successfully');
       return results;
     } catch (error) {
-      this.logger.log('Error uploading many product files: ' + error);
+      this.logger.error('Error uploading many product files: ' + error);
       throw new NotFoundException('Failed to upload many product media files');
     }
   }
@@ -796,7 +796,7 @@ export class AwsS3Service {
       this.logger.log('Uploaded many product files successfully');
       return results;
     } catch (error) {
-      this.logger.log('Error uploading many product files: ' + error);
+      this.logger.error('Error uploading many product files: ' + error);
       throw new NotFoundException('Failed to upload many product media files');
     }
   }
@@ -880,7 +880,7 @@ export class AwsS3Service {
       this.logger.log('Upload one category file successfully');
       return resultUploadFile;
     } catch (error) {
-      this.logger.log('Error uploading one category file: ' + error);
+      this.logger.error('Error uploading one category file: ' + error);
       throw new BadRequestException('Failed to upload one category media file');
     }
   }
@@ -963,7 +963,7 @@ export class AwsS3Service {
       this.logger.log('Upload one user avatar file successfully');
       return resultUploadFile;
     } catch (error) {
-      this.logger.log('Error uploading one user avatar file: ' + error);
+      this.logger.error('Error uploading one user avatar file: ' + error);
       throw new BadRequestException(
         'Failed to upload one user avatar media file',
       );
@@ -1061,7 +1061,7 @@ export class AwsS3Service {
       this.logger.log('Uploaded many user avatar files successfully');
       return results;
     } catch (error) {
-      this.logger.log('Error uploading many user avatar files: ' + error);
+      this.logger.error('Error uploading many user avatar files: ' + error);
       throw new BadRequestException(
         'Failed to upload many user avatar media files',
       );
@@ -1147,7 +1147,7 @@ export class AwsS3Service {
       this.logger.log('Upload one product review file successfully');
       return resultUploadFile;
     } catch (error) {
-      this.logger.log('Error uploading one product review file: ' + error);
+      this.logger.error('Error uploading one product review file: ' + error);
       throw new BadRequestException(
         'Failed to upload one product review media file',
       );
@@ -1250,7 +1250,7 @@ export class AwsS3Service {
       this.logger.log('Uploaded many review files successfully');
       return results;
     } catch (error) {
-      this.logger.log('Error uploading many review files: ' + error);
+      this.logger.error('Error uploading many review files: ' + error);
       throw new BadRequestException('Failed to upload many review media files');
     }
   }
@@ -1350,7 +1350,7 @@ export class AwsS3Service {
       this.logger.log('Uploaded many request files successfully');
       return results;
     } catch (error) {
-      this.logger.log('Error uploading many request files: ' + error);
+      this.logger.error('Error uploading many request files: ' + error);
       throw new BadRequestException(
         'Failed to upload many request media files',
       );
@@ -1395,7 +1395,7 @@ export class AwsS3Service {
       this.logger.log('Deleted file from S3 bucket successfully');
       return result;
     } catch (error) {
-      this.logger.log('Error deleting file from S3 bucket: ' + error);
+      this.logger.error('Error deleting file from S3 bucket: ' + error);
       throw new BadRequestException('Failed to delete file from S3 bucket');
     }
   }

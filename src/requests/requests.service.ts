@@ -123,7 +123,7 @@ export class RequestsService {
       this.logger.log('Request created successfully', returnResult.id);
       return returnResult;
     } catch (error) {
-      this.logger.log('Error creating request', error);
+      this.logger.error('Error creating request', error);
       throw new BadRequestException('Error creating request');
     }
   }
@@ -217,7 +217,7 @@ export class RequestsService {
       );
       return result.data;
     } catch (error) {
-      this.logger.log('Error fetching all requests', error);
+      this.logger.error('Error fetching all requests', error);
       throw new BadRequestException('Error fetching all requests');
     }
   }
@@ -297,7 +297,7 @@ export class RequestsService {
       this.logger.log('Fetched request successfully', id);
       return result;
     } catch (error) {
-      this.logger.log('Error fetching request', error);
+      this.logger.error('Error fetching request', error);
       throw new BadRequestException('Error fetching request');
     }
   }
@@ -424,7 +424,7 @@ export class RequestsService {
       this.logger.log('Request updated successfully', id);
       return resultRequest;
     } catch (error) {
-      this.logger.log('Error updating request', error);
+      this.logger.error('Error updating request', error);
       throw new BadRequestException('Error updating request');
     }
   }
@@ -476,7 +476,7 @@ export class RequestsService {
       this.logger.log('Request deleted successfully', id);
       return result;
     } catch (error) {
-      this.logger.log('Error deleting request', error);
+      this.logger.error('Error deleting request', error);
       throw new BadRequestException('Error deleting request');
     }
   }

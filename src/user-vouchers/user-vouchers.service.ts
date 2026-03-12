@@ -72,7 +72,7 @@ export class UserVouchersService {
       this.logger.log('User voucher created successfully', returnResult.id);
       return returnResult;
     } catch (error) {
-      this.logger.log('Error creating user voucher', error);
+      this.logger.error('Error creating user voucher', error);
       throw new BadRequestException('Failed to create user voucher');
     }
   }
@@ -129,7 +129,7 @@ export class UserVouchersService {
       this.logger.log('User vouchers retrieved successfully');
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving user vouchers', error);
+      this.logger.error('Error retrieving user vouchers', error);
       throw new BadRequestException('Failed to retrieve user vouchers');
     }
   }
@@ -178,7 +178,7 @@ export class UserVouchersService {
       this.logger.log('User voucher retrieved successfully', id);
       return result;
     } catch (error) {
-      this.logger.log('Error retrieving user voucher', error);
+      this.logger.error('Error retrieving user voucher', error);
       throw new BadRequestException('Failed to retrieve user voucher');
     }
   }
@@ -241,7 +241,7 @@ export class UserVouchersService {
       this.logger.log('User voucher updated successfully', id);
       return returnResult;
     } catch (error) {
-      this.logger.log('Error updating user voucher', error);
+      this.logger.error('Error updating user voucher', error);
       throw new BadRequestException('Failed to update user voucher');
     }
   }
@@ -275,7 +275,7 @@ export class UserVouchersService {
         where: { id: id },
       });
     } catch (error) {
-      this.logger.log('Error deleting user voucher', error);
+      this.logger.error('Error deleting user voucher', error);
       throw new BadRequestException('Failed to delete user voucher');
     }
   }

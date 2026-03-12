@@ -122,7 +122,7 @@ export class UserService {
       this.logger.log('Users retrieved successfully');
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving users', error);
+      this.logger.error('Error retrieving users', error);
       throw new BadRequestException('Failed to retrieve users');
     }
   }
@@ -182,7 +182,7 @@ export class UserService {
       this.logger.log('User retrieved successfully', id);
       return user;
     } catch (error) {
-      this.logger.log('Error retrieving user', error);
+      this.logger.error('Error retrieving user', error);
       throw new BadRequestException('Failed to retrieve user');
     }
   }
@@ -242,7 +242,7 @@ export class UserService {
       this.logger.log('User retrieved successfully', email);
       return user;
     } catch (error) {
-      this.logger.log('Error retrieving user', error);
+      this.logger.error('Error retrieving user', error);
       throw new BadRequestException('Failed to retrieve user');
     }
   }
@@ -302,7 +302,7 @@ export class UserService {
       this.logger.log('User retrieved successfully', phone);
       return user;
     } catch (error) {
-      this.logger.log('Error retrieving user', error);
+      this.logger.error('Error retrieving user', error);
       throw new BadRequestException('Failed to retrieve user');
     }
   }
@@ -362,7 +362,7 @@ export class UserService {
       this.logger.log('User retrieved successfully', username);
       return user;
     } catch (error) {
-      this.logger.log('Error retrieving user', error);
+      this.logger.error('Error retrieving user', error);
       throw new BadRequestException('Failed to retrieve user');
     }
   }
@@ -482,7 +482,7 @@ export class UserService {
       this.logger.log('User created successfully', newUser.id);
       return returnUser;
     } catch (error) {
-      this.logger.log('Error creating user', error);
+      this.logger.error('Error creating user', error);
       throw new BadRequestException('Failed to create user');
     }
   }
@@ -562,7 +562,7 @@ export class UserService {
       this.logger.log('User created successfully', newUser.id);
       return newUser;
     } catch (error) {
-      this.logger.log('Error creating user', error);
+      this.logger.error('Error creating user', error);
       throw new BadRequestException('Failed to create user');
     }
   }
@@ -617,7 +617,7 @@ export class UserService {
 
       return deleteUser;
     } catch (error) {
-      this.logger.log('Error deleting user', error);
+      this.logger.error('Error deleting user', error);
       throw new BadRequestException('Failed to delete user');
     }
   }
@@ -758,7 +758,7 @@ export class UserService {
       this.logger.log('User updated successfully', id);
       return returnUser;
     } catch (error) {
-      this.logger.log('Error updating user', error);
+      this.logger.error('Error updating user', error);
       throw new BadRequestException('Failed to update user');
     }
   }
@@ -856,7 +856,7 @@ export class UserService {
       this.logger.log('User registered successfully', user.id);
       return user;
     } catch (error) {
-      this.logger.log('Error registering user', error);
+      this.logger.error('Error registering user', error);
       throw new BadRequestException('Failed to register user');
     }
   }
@@ -924,7 +924,7 @@ export class UserService {
         throw new BadRequestException('Code active is expired or invalid');
       }
     } catch (error) {
-      this.logger.log('Error activating user', error);
+      this.logger.error('Error activating user', error);
       throw new BadRequestException('Failed to activate user');
     }
   }
@@ -1001,7 +1001,7 @@ export class UserService {
       this.logger.log('User re-activation email sent successfully', user.id);
       return userAfterUpdate;
     } catch (error) {
-      this.logger.log('Error re-activating user', error);
+      this.logger.error('Error re-activating user', error);
       throw new BadRequestException('Failed to re-activate user');
     }
   }
@@ -1075,7 +1075,7 @@ export class UserService {
       this.logger.log('User retry-password email sent successfully', user.id);
       return userAfterUpdate;
     } catch (error) {
-      this.logger.log('Error retry-password user', error);
+      this.logger.error('Error retry-password user', error);
       throw new BadRequestException('Failed to retry-password user');
     }
   }
@@ -1155,7 +1155,7 @@ export class UserService {
         );
       }
     } catch (error) {
-      this.logger.log('Error changing password for user', error);
+      this.logger.error('Error changing password for user', error);
       throw new BadRequestException('Failed to change password for user');
     }
   }
@@ -1204,7 +1204,7 @@ export class UserService {
       this.logger.log('User addresses retrieved successfully', userId);
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving user addresses', error);
+      this.logger.error('Error retrieving user addresses', error);
       throw new BadRequestException('Failed to retrieve user addresses');
     }
   }
@@ -1263,7 +1263,7 @@ export class UserService {
       this.logger.log('User avatar retrieved successfully', userId);
       return mediaInformation.url;
     } catch (error) {
-      this.logger.log('Error retrieving user avatar', error);
+      this.logger.error('Error retrieving user avatar', error);
       throw new BadRequestException('Failed to retrieve user avatar');
     }
   }
@@ -1317,7 +1317,7 @@ export class UserService {
       );
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving vouchers created by user', error);
+      this.logger.error('Error retrieving vouchers created by user', error);
       throw new BadRequestException(
         'Failed to retrieve vouchers created by user',
       );
@@ -1402,7 +1402,7 @@ export class UserService {
       );
       return products;
     } catch (error) {
-      this.logger.log('Error retrieving products created by user', error);
+      this.logger.error('Error retrieving products created by user', error);
       throw new BadRequestException(
         'Failed to retrieve products created by user',
       );
@@ -1481,7 +1481,7 @@ export class UserService {
       );
       return result.data;
     } catch (error) {
-      this.logger.log(
+      this.logger.error(
         'Error retrieving product variants created by user',
         error,
       );
@@ -1539,7 +1539,7 @@ export class UserService {
       );
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving category created by user', error);
+      this.logger.error('Error retrieving category created by user', error);
       throw new BadRequestException(
         'Failed to retrieve category created by user',
       );
@@ -1675,7 +1675,7 @@ export class UserService {
       this.logger.log('Orders created by user retrieved successfully', userId);
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving orders created by user', error);
+      this.logger.error('Error retrieving orders created by user', error);
       throw new BadRequestException(
         'Failed to retrieve orders created by user',
       );
@@ -1816,7 +1816,7 @@ export class UserService {
       );
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving orders processed by user', error);
+      this.logger.error('Error retrieving orders processed by user', error);
       throw new BadRequestException(
         'Failed to retrieve orders processed by user',
       );
@@ -1874,7 +1874,7 @@ export class UserService {
       );
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving shipments processed by user', error);
+      this.logger.error('Error retrieving shipments processed by user', error);
       throw new BadRequestException(
         'Failed to retrieve shipments processed by user',
       );
@@ -1966,7 +1966,7 @@ export class UserService {
       this.logger.log('Requests of user retrieved successfully', userId);
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving requests of user', error);
+      this.logger.error('Error retrieving requests of user', error);
       throw new BadRequestException('Failed to retrieve requests of user');
     }
   }
@@ -2057,7 +2057,7 @@ export class UserService {
       );
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving requests processed by user', error);
+      this.logger.error('Error retrieving requests processed by user', error);
       throw new BadRequestException(
         'Failed to retrieve requests processed by user',
       );
@@ -2111,7 +2111,7 @@ export class UserService {
       this.logger.log('Size profiles of user retrieved successfully', userId);
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving size profiles of user', error);
+      this.logger.error('Error retrieving size profiles of user', error);
       throw new BadRequestException('Failed to retrieve size profiles of user');
     }
   }
@@ -2185,7 +2185,7 @@ export class UserService {
       this.logger.log('Reviews of user retrieved successfully', userId);
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving reviews of user', error);
+      this.logger.error('Error retrieving reviews of user', error);
       throw new BadRequestException('Failed to retrieve reviews of user');
     }
   }
@@ -2224,7 +2224,7 @@ export class UserService {
       this.logger.log('New cart created successfully', result.id);
       return result;
     } catch (error) {
-      this.logger.log('Error creating new cart', error);
+      this.logger.error('Error creating new cart', error);
       throw new BadRequestException('Failed to create new cart');
     }
   }
@@ -2330,7 +2330,7 @@ export class UserService {
         return result;
       });
     } catch (error) {
-      this.logger.log('Error adding new cart item', error);
+      this.logger.error('Error adding new cart item', error);
       throw new BadRequestException('Failed to add new cart item');
     }
   }
@@ -2375,7 +2375,7 @@ export class UserService {
       this.logger.log('Cart of user retrieved successfully', result.id);
       return result;
     } catch (error) {
-      this.logger.log('Error retrieving cart of user', error);
+      this.logger.error('Error retrieving cart of user', error);
       throw new BadRequestException('Failed to retrieve cart of user');
     }
   }
@@ -2421,7 +2421,7 @@ export class UserService {
       this.logger.log('Cart updated successfully', result.id);
       return result;
     } catch (error) {
-      this.logger.log('Error updating cart', error);
+      this.logger.error('Error updating cart', error);
       throw new BadRequestException('Failed to update cart');
     }
   }
@@ -2493,7 +2493,7 @@ export class UserService {
       this.logger.log('Cart details retrieved successfully', result.id);
       return result;
     } catch (error) {
-      this.logger.log('Error retrieving cart details', error);
+      this.logger.error('Error retrieving cart details', error);
       throw new BadRequestException('Failed to retrieve cart details');
     }
   }
@@ -2554,7 +2554,7 @@ export class UserService {
       this.logger.log('Saved vouchers of user retrieved successfully', userId);
       return result.data;
     } catch (error) {
-      this.logger.log('Error retrieving saved vouchers of user', error);
+      this.logger.error('Error retrieving saved vouchers of user', error);
       throw new BadRequestException(
         'Failed to retrieve saved vouchers of user',
       );
