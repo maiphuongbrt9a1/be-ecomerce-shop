@@ -125,7 +125,7 @@ export class ShipmentsController {
   async previewShippingFeeForEachPackageForOrder(
     @Body() previewShippingFeeDto: PreviewShippingFeeForPackagesDto,
   ) {
-    return await this.shipmentsService.previewShippingFeeForOrder(
+    return await this.shipmentsService.previewShippingFeeAndDiscountForEachOrderItemInOrder(
       previewShippingFeeDto.orderItems,
       previewShippingFeeDto.createNewAddressForOrderResponseDto,
     );

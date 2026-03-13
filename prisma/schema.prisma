@@ -350,7 +350,7 @@ model Orders {
     shipments   Shipments[]
     payment     Payments[]
     requests Requests[]
-
+    
     @@index([userId], name: "idx_order_user_id")
     @@index([shippingAddressId], name: "idx_order_shipping_address_id")
     @@index([processByStaffId], name: "idx_order_processed_by_staff_id")
@@ -523,4 +523,16 @@ model ReturnRequests {
     updatedAt   DateTime    @updatedAt
 
     @@index([requestId], name: "idx_returnRequest_request_id")
+}
+
+model PackageChecksums {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    ghnShopId      BigInt?      @db.BigInt
+    shopId      BigInt?      @db.BigInt
+    checksumData String      @db.Text
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    
+    @@index([shopId], name: "idx_packageChecksum_shop_id")
+    @@index([ghnShopId], name: "idx_packageChecksum_ghn_shop_id")
 }

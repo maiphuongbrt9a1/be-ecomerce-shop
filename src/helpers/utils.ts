@@ -1,6 +1,7 @@
 import { BadRequestException, Logger } from '@nestjs/common';
-import { Media } from '@prisma/client';
+import { DiscountType, Media, Vouchers } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { createHmac } from 'node:crypto';
 import {
   GHNShopDetail,
   MyGHNShopList,
@@ -665,3 +666,84 @@ export class GHNShops extends GhnAbstract {
     }
   }
 }
+
+export const isVoucherWithinUsageLimit = (v: Vouchers | null | undefined) => {
+  if (!v) return false;
+  if (v.usageLimit === null) return true;
+  return v.timesUsed < v.usageLimit;
+};
+
+export const calculateDiscountAmount = (
+  voucher: Vouchers,
+  baseAmount: number,
+): number => {
+  if (voucher.discountType === DiscountType.FIXED_AMOUNT) {
+    return voucher.discountValue;
+  }
+  if (voucher.discountType === DiscountType.PERCENTAGE) {
+    return (baseAmount * voucher.discountValue) / 100;
+  }
+  return 0;
+};
+
+/**
+ * Convert any value to a stable JSON string for checksum/signature use.
+ *
+ * Why not plain JSON.stringify?
+ * - It throws when encountering bigint values.
+ * - Object key order may be non-deterministic across callers.
+ *
+ * This helper normalizes:
+ * - bigint -> string
+ * - Date -> ISO string
+ * - object keys -> sorted alphabetically (deterministic output)
+ */
+export const stableStringifyForChecksum = (value: unknown): string => {
+  const normalize = (input: unknown): unknown => {
+    if (typeof input === 'bigint') return input.toString();
+    if (input instanceof Date) return input.toISOString();
+    if (Array.isArray(input)) return input.map(normalize);
+    if (input && typeof input === 'object') {
+      return Object.keys(input as Record<string, unknown>)
+        .sort()
+        .reduce<Record<string, unknown>>((acc, key) => {
+          acc[key] = normalize((input as Record<string, unknown>)[key]);
+          return acc;
+        }, {});
+    }
+    return input;
+  };
+
+  return JSON.stringify(normalize(value));
+};
+
+/**
+ * Create a deterministic HMAC-SHA512 checksum for package integrity checks.
+ *
+ * IMPORTANT:
+ * - Do not reuse bcrypt password hashing for this use case.
+ * - Bcrypt is salted and non-deterministic, so it cannot be used for payload
+ *   integrity verification between preview and create-order.
+ */
+export const createPackageChecksum = (
+  payload: unknown,
+  secret = process.env.PACKAGE_CHECKSUM_SECRET,
+): string => {
+  if (!secret) {
+    throw new Error('PACKAGE_CHECKSUM_SECRET is required for package checksum');
+  }
+
+  const payloadString = stableStringifyForChecksum(payload);
+  return createHmac('sha512', secret).update(payloadString).digest('hex');
+};
+
+/**
+ * Verify checksum for package integrity.
+ */
+export const verifyPackageChecksum = (
+  payload: unknown,
+  checksum: string,
+  secret = process.env.PACKAGE_CHECKSUM_SECRET,
+): boolean => {
+  return createPackageChecksum(payload, secret) === checksum;
+};

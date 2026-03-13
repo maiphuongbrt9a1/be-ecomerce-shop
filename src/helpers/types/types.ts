@@ -1,4 +1,4 @@
-import { Address, DiscountType, Prisma, User } from '@prisma/client';
+import { Address, DiscountType, Prisma, User, Vouchers } from '@prisma/client';
 import {
   CalculateExpectedDeliveryTimeResponse,
   GetServiceResponse,
@@ -698,9 +698,12 @@ export type PackageItemDetail = {
   productVariantSKU: string;
   quantity: number;
   unitPrice: number;
+  appliedVoucher: Vouchers | null;
   discountDescription: string;
   discountType: DiscountType;
   discountValue: number;
+  totalDiscountAmount: number;
+  subTotalPrice: number;
   totalPrice: number;
   currencyUnit: string;
 };
@@ -752,6 +755,10 @@ export type PackageItemDetail = {
 export type PackageDetail = {
   packageItems: PackageItemDetail[];
   packageItemsForGHNCreateNewOrderRequest: PackageItemDetailForGHNCreateNewOrderRequest[];
+  userVoucher: UserVoucherDetailInformation | null;
+  subTotalPriceForPackage: number; // calculated by sum all packageItems.totalPrice
+  specialUserDiscountAmountForPackage: number; // get from userVoucher if available, otherwise 0
+  totalPriceForPackage: number; // calculated by subTotalPrice + shippingFee - specialUserDiscountAmountForPackage
   totalWeight: number; // in grams
   totalHeight: number; // in cm
   maxLength: number; // in cm
@@ -787,11 +794,17 @@ export type PackageDetail = {
  *
  * @example
  * {
- *   "1001": { packageItems: [...], shippingFee: 35000 },
+ *   "1001": { PackageDetail: { packageItems: [...], shippingFee: 35000 }, checksumInformation: { checksumIdInDB: 1n, checksumData: "abc123" } },
  *   "1002": { packageItems: [...], shippingFee: 28000 }
  * }
  */
-export type PackagesForShipping = Record<string, PackageDetail>;
+export type PackagesForShipping = Record<
+  string,
+  {
+    PackageDetail: PackageDetail;
+    checksumInformation: { checksumIdInDB: bigint; checksumData: string };
+  }
+>;
 
 /**
  * GHN shop office details with location and system metadata.

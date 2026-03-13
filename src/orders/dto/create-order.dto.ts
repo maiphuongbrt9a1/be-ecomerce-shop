@@ -4,7 +4,7 @@ import type {
 } from '@/helpers/types/types';
 import { CreateAddressForOrderResponseDto } from '@/address/dto/create-address-for-order-response.dto';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { DiscountType, OrderStatus, PaymentMethod } from '@prisma/client';
+import { OrderStatus, PaymentMethod } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsDate,
@@ -26,45 +26,6 @@ export class SecondCreateOrderItemsDto {
   @IsNumber()
   @Type(() => Number)
   quantity: number;
-
-  @ApiProperty({ example: 851 })
-  @IsNotEmpty()
-  @IsNumber()
-  @Type(() => Number)
-  unitPrice: number;
-
-  @ApiProperty({
-    example: 'free ship',
-    description: 'Description of the discount',
-  })
-  @IsOptional()
-  @IsString()
-  discountDescription: string;
-
-  @ApiProperty({ example: 'FIXED_AMOUNT' })
-  @IsOptional()
-  @IsEnum(DiscountType)
-  discountType: DiscountType;
-
-  @ApiProperty({ example: 465 })
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  discountValue: number;
-
-  @ApiProperty({
-    example: 851,
-    description: 'Total price calculated as unitPrice * quantity',
-  })
-  @IsNotEmpty()
-  @IsNumber()
-  @Type(() => Number)
-  totalPrice: number;
-
-  @ApiProperty({ example: 'VND' })
-  @IsNotEmpty()
-  @IsString()
-  currencyUnit: string;
 }
 
 export class CreateOrderDto {

@@ -1,13 +1,13 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
-  DiscountType,
   OrderItems,
   Orders,
   OrderStatus,
@@ -27,6 +27,8 @@ import {
   ShipmentsWithFullInformation,
 } from '@/helpers/types/types';
 import {
+  calculateDiscountAmount,
+  createPackageChecksum,
   formatMediaFieldWithLogging,
   formatMediaFieldWithLoggingForOrders,
   formatMediaFieldWithLoggingForShipments,
@@ -49,12 +51,63 @@ export class OrdersService {
     createOrderDto: CreateOrderDto,
   ): Promise<OrdersWithFullInformation> {
     try {
+      const startTime = Date.now();
+
+      // check again user address with address in database to make sure that address information is not tampered by client
+
       // check packages in createOrderDto is not empty
       if (!createOrderDto.packages) {
         this.logger.error('No packages provided in create order request');
         throw new BadRequestException(
           'No packages provided in create order request',
         );
+      }
+
+      // check checksum of package in createOrderDto with checksum in database to make sure that package information is not tampered by client
+      const secretKeyForCreateChecksum = process.env.PACKAGE_CHECKSUM_SECRET;
+      if (!secretKeyForCreateChecksum) {
+        this.logger.error(
+          'Secret key for creating package checksum is not defined in environment variables.',
+        );
+        throw new InternalServerErrorException(
+          'Server configuration error: missing secret key for creating package checksum.',
+        );
+      }
+
+      for (const ghnShopId in createOrderDto.packages) {
+        const payloadForCreateChecksum =
+          createOrderDto.packages[ghnShopId].PackageDetail;
+
+        const checksumDataAtRealtimeCreateNewOrder = createPackageChecksum(
+          payloadForCreateChecksum,
+          secretKeyForCreateChecksum,
+        );
+
+        const checksumFromDatabase =
+          await this.prismaService.packageChecksums.findUnique({
+            where: {
+              id: BigInt(
+                createOrderDto.packages[ghnShopId].checksumInformation
+                  .checksumIdInDB,
+              ),
+              checksumData:
+                createOrderDto.packages[ghnShopId].checksumInformation
+                  .checksumData,
+            },
+          });
+
+        if (
+          !checksumFromDatabase ||
+          checksumFromDatabase.checksumData !==
+            checksumDataAtRealtimeCreateNewOrder
+        ) {
+          this.logger.error(
+            `Checksum verification failed for package with GHN shop ID ${ghnShopId}. Possible data tampering detected.`,
+          );
+          throw new BadRequestException(
+            `Checksum verification failed for package with GHN shop ID ${ghnShopId}. Possible data tampering detected.`,
+          );
+        }
       }
 
       // only once package in packages for now, we will support multiple packages in one order in the future
@@ -72,7 +125,6 @@ export class OrdersService {
         );
       }
 
-      const startTime = Date.now();
       const processByStaffDefault = null;
       const orderDateDefault = new Date();
       const orderStatusDefault: OrderStatus =
@@ -87,13 +139,19 @@ export class OrdersService {
 
       let shippingFee = 0;
       let subTotal = 0;
+      // to do: this discount = user voucher discount
+      // to do: user voucher is calculated in package
       let discount = 0;
       let totalAmount = 0;
 
       // calculate shipping fee based on packages
       for (const ghnShopId in createOrderDto.packages) {
-        shippingFee += createOrderDto.packages[ghnShopId].shippingFee;
-        orderItems.push(...createOrderDto.packages[ghnShopId].packageItems);
+        shippingFee +=
+          createOrderDto.packages[ghnShopId].PackageDetail.shippingFee;
+
+        orderItems.push(
+          ...createOrderDto.packages[ghnShopId].PackageDetail.packageItems,
+        );
       }
 
       // check duplicate product variant id in packages
@@ -112,26 +170,24 @@ export class OrdersService {
         }
       }
 
-      // calculate sub total, discount and total amount
+      // calculate sub total (after item-level discounts from preview)
+      // and apply order-level voucher selected in preview on that subtotal.
       for (const ghnShopId in createOrderDto.packages) {
-        for (const item of createOrderDto.packages[ghnShopId].packageItems) {
-          subTotal += item.totalPrice;
-
-          // check discount type and calculate discount amount
-          if (
-            item.discountType === DiscountType.PERCENTAGE &&
-            item.discountValue
-          ) {
-            discount += (item.totalPrice * item.discountValue) / 100;
-          } else if (
-            item.discountType === DiscountType.FIXED_AMOUNT &&
-            item.discountValue
-          ) {
-            discount += item.discountValue ? item.discountValue : 0;
-          } else {
-            discount += 0;
-          }
+        let subTotalForOnePackage = 0;
+        for (const item of createOrderDto.packages[ghnShopId].PackageDetail
+          .packageItems) {
+          subTotalForOnePackage += item.totalPrice;
         }
+
+        if (createOrderDto.packages[ghnShopId].PackageDetail.userVoucher) {
+          discount += calculateDiscountAmount(
+            createOrderDto.packages[ghnShopId].PackageDetail.userVoucher
+              .voucher,
+            subTotalForOnePackage,
+          );
+        }
+
+        subTotal += subTotalForOnePackage;
       }
 
       totalAmount = subTotal + shippingFee - discount;
@@ -281,22 +337,6 @@ export class OrdersService {
 
           // please create order items after creating order
           for (const item of orderItems) {
-            // check discount type and calculate discount amount
-            let orderItemDiscount = 0;
-            if (
-              item.discountType === DiscountType.PERCENTAGE &&
-              item.discountValue
-            ) {
-              orderItemDiscount += (item.totalPrice * item.discountValue) / 100;
-            } else if (
-              item.discountType === DiscountType.FIXED_AMOUNT &&
-              item.discountValue
-            ) {
-              orderItemDiscount += item.discountValue ? item.discountValue : 0;
-            } else {
-              orderItemDiscount += 0;
-            }
-
             const newOrderItem = await tx.orderItems.create({
               data: {
                 orderId: newOrder.id,
@@ -304,7 +344,7 @@ export class OrdersService {
                 quantity: item.quantity,
                 unitPrice: item.unitPrice,
                 totalPrice: item.totalPrice,
-                discountValue: orderItemDiscount,
+                discountValue: item.totalDiscountAmount,
               },
             });
 
@@ -362,7 +402,7 @@ export class OrdersService {
 
             // prepare content for GHN order
             let contentForGhnOrder = '';
-            for (const item of createOrderDto.packages[ghnShopId]
+            for (const item of createOrderDto.packages[ghnShopId].PackageDetail
               .packageItems) {
               contentForGhnOrder += `${item.productVariantName} - SKU: ${item.productVariantSKU} - Size: ${item.productVariantSize} - Color: ${item.productVariantColor} - Quantity: ${item.quantity} - Unit Price: ${item.unitPrice} ${item.currencyUnit}\n`;
             }
@@ -379,28 +419,38 @@ export class OrdersService {
 
             const ghnCreateNewOrderRequest = await ghn.order.createOrder({
               from_address:
-                createOrderDto.packages[ghnShopId].ghnShopDetail.address,
-              from_name: createOrderDto.packages[ghnShopId].ghnShopDetail.name,
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+                  .address,
+              from_name:
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+                  .name,
               from_phone:
-                createOrderDto.packages[ghnShopId].ghnShopDetail.phone,
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+                  .phone,
               from_province_name:
-                createOrderDto.packages[ghnShopId].ghnProvinceName,
+                createOrderDto.packages[ghnShopId].PackageDetail
+                  .ghnProvinceName,
               from_district_name:
-                createOrderDto.packages[ghnShopId].ghnDistrictName,
-              from_ward_name: createOrderDto.packages[ghnShopId].ghnWardName,
+                createOrderDto.packages[ghnShopId].PackageDetail
+                  .ghnDistrictName,
+              from_ward_name:
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnWardName,
 
               payment_type_id: 2, // 1: seller pay, 2: buyer pay
               note: newOrder.description ? newOrder.description : undefined,
               required_note:
                 'KHONGCHOXEMHANG' /**Note shipping order.Allowed values: CHOTHUHANG, CHOXEMHANGKHONGTHU, KHONGCHOXEMHANG. CHOTHUHANG mean Buyer can request to see and trial goods. CHOXEMHANGKHONGTHU mean Buyer can see goods but not allow to trial goods. KHONGCHOXEMHANG mean Buyer not allow to see goods */,
               return_phone:
-                createOrderDto.packages[ghnShopId].ghnShopDetail.phone,
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+                  .phone,
               return_address:
-                createOrderDto.packages[ghnShopId].ghnShopDetail.address,
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+                  .address,
               return_district_id:
-                createOrderDto.packages[ghnShopId].from_district_id,
+                createOrderDto.packages[ghnShopId].PackageDetail
+                  .from_district_id,
               return_ward_code:
-                createOrderDto.packages[ghnShopId].from_ward_code,
+                createOrderDto.packages[ghnShopId].PackageDetail.from_ward_code,
               client_order_code: null,
               to_name: userFromDB.firstName + ' ' + userFromDB.lastName,
               to_phone: createOrderDto.phone,
@@ -414,26 +464,32 @@ export class OrdersService {
                 createOrderDto.shippingAddress.orderAddressInDb.province +
                 ' ' +
                 createOrderDto.shippingAddress.orderAddressInDb.country,
-              to_ward_code: createOrderDto.packages[ghnShopId].to_ward_code,
-              to_district_id: createOrderDto.packages[ghnShopId].to_district_id,
+              to_ward_code:
+                createOrderDto.packages[ghnShopId].PackageDetail.to_ward_code,
+              to_district_id:
+                createOrderDto.packages[ghnShopId].PackageDetail.to_district_id,
               cod_amount: totalAmountForGHNOrder,
               content: contentForGhnOrder,
-              weight: createOrderDto.packages[ghnShopId].totalWeight,
-              length: createOrderDto.packages[ghnShopId].maxLength,
-              width: createOrderDto.packages[ghnShopId].maxWidth,
-              height: createOrderDto.packages[ghnShopId].totalHeight,
+              weight:
+                createOrderDto.packages[ghnShopId].PackageDetail.totalWeight,
+              length:
+                createOrderDto.packages[ghnShopId].PackageDetail.maxLength,
+              width: createOrderDto.packages[ghnShopId].PackageDetail.maxWidth,
+              height:
+                createOrderDto.packages[ghnShopId].PackageDetail.totalHeight,
               pick_station_id: undefined,
               insurance_value:
                 newOrder.totalAmount < 5000000 ? newOrder.totalAmount : 5000000,
               service_id:
-                createOrderDto.packages[ghnShopId].shippingService.service_id,
+                createOrderDto.packages[ghnShopId].PackageDetail.shippingService
+                  .service_id,
               service_type_id:
-                createOrderDto.packages[ghnShopId].shippingService
+                createOrderDto.packages[ghnShopId].PackageDetail.shippingService
                   .service_type_id,
               coupon: null,
               pick_shift: undefined,
               items:
-                createOrderDto.packages[ghnShopId]
+                createOrderDto.packages[ghnShopId].PackageDetail
                   .packageItemsForGHNCreateNewOrderRequest,
             });
 
@@ -473,7 +529,7 @@ export class OrdersService {
             }
 
             // create shipment items record in database
-            for (const item of createOrderDto.packages[ghnShopId]
+            for (const item of createOrderDto.packages[ghnShopId].PackageDetail
               .packageItems) {
               const orderItemId = orderItemIdMap.get(
                 item.productVariantId.toString(),
