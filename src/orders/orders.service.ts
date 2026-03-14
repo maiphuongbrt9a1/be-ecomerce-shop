@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -17,6 +18,8 @@ import {
   Prisma,
   Requests,
   ShipmentStatus,
+  Vouchers,
+  VoucherStatus,
 } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import {
@@ -25,9 +28,9 @@ import {
   OrdersWithFullInformationInclude,
   PackageItemDetail,
   ShipmentsWithFullInformation,
+  UserVoucherDetailInformation,
 } from '@/helpers/types/types';
 import {
-  calculateDiscountAmount,
   createPackageChecksum,
   formatMediaFieldWithLogging,
   formatMediaFieldWithLoggingForOrders,
@@ -183,29 +186,52 @@ export class OrdersService {
 
       const processByStaffDefault = null;
       const orderDateDefault = new Date();
+
       const orderStatusDefault: OrderStatus =
         createOrderDto.paymentMethod === PaymentMethod.COD
           ? OrderStatus.PAYMENT_CONFIRMED
           : OrderStatus.PAYMENT_PROCESSING;
+
       const paymentStatusDefault: PaymentStatus = PaymentStatus.PENDING;
       const shipmentStatusDefault: ShipmentStatus = ShipmentStatus.PENDING;
-      const productVariantIdList: bigint[] = [];
       const orderItems: PackageItemDetail[] = [];
       const orderItemIdMap = new Map<string, OrderItems>();
 
-      let shippingFee = 0;
-      let subTotal = 0;
-      // to do: this discount = user voucher discount
-      // to do: user voucher is calculated in package
-      let discount = 0;
-      let totalAmount = 0;
+      const appliedUserVoucher: UserVoucherDetailInformation | null =
+        createOrderDto.packages[ghnShopId].PackageDetail.userVoucher;
 
-      // calculate shipping fee based on packages
-      shippingFee +=
+      const appliedVouchersOnOrderItemsList: Vouchers[] = [];
+
+      const shippingFee =
         createOrderDto.packages[ghnShopId].PackageDetail.shippingFee;
+
+      const subTotal =
+        createOrderDto.packages[ghnShopId].PackageDetail
+          .subTotalPriceForPackage;
+
+      const discount =
+        createOrderDto.packages[ghnShopId].PackageDetail
+          .specialUserDiscountAmountForPackage;
+
+      const totalAmount =
+        createOrderDto.packages[ghnShopId].PackageDetail.totalPriceForPackage;
 
       orderItems.push(
         ...createOrderDto.packages[ghnShopId].PackageDetail.packageItems,
+      );
+
+      orderItems.sort(
+        (a, b) => Number(a.productVariantId) - Number(b.productVariantId),
+      );
+
+      for (const item of orderItems) {
+        if (item.appliedVoucher) {
+          appliedVouchersOnOrderItemsList.push(item.appliedVoucher);
+        }
+      }
+
+      appliedVouchersOnOrderItemsList.sort(
+        (a, b) => Number(a.id) - Number(b.id),
       );
 
       // check duplicate product variant id in packages
@@ -222,30 +248,6 @@ export class OrdersService {
             );
           }
         }
-      }
-
-      // calculate sub total (after item-level discounts from preview)
-      // and apply order-level voucher selected in preview on that subtotal.
-      let subTotalForOnePackage = 0;
-      for (const item of createOrderDto.packages[ghnShopId].PackageDetail
-        .packageItems) {
-        subTotalForOnePackage += item.totalPrice;
-      }
-
-      if (createOrderDto.packages[ghnShopId].PackageDetail.userVoucher) {
-        discount += calculateDiscountAmount(
-          createOrderDto.packages[ghnShopId].PackageDetail.userVoucher.voucher,
-          subTotalForOnePackage,
-        );
-      }
-
-      subTotal += subTotalForOnePackage;
-
-      totalAmount = subTotal + shippingFee - discount;
-
-      // get product variant id list for checking stock quantity and updating stock quantity
-      for (const item of orderItems) {
-        productVariantIdList.push(BigInt(item.productVariantId));
       }
 
       const defaultOrderWithFullInformation: OrdersWithFullInformation =
@@ -270,7 +272,7 @@ export class OrdersService {
                 createOrderDto.packages[ghnShopId].checksumInformation
                   .checksumData,
               isUsed: false,
-              expiredAt: { gt: new Date() },
+              expiredAt: { gt: orderDateDefault },
             },
             data: {
               isUsed: true,
@@ -306,57 +308,15 @@ export class OrdersService {
             );
           }
 
-          // get product variant list for checking stock quantity
-          const productVariants = await tx.productVariants.findMany({
-            where: { id: { in: productVariantIdList } },
-            include: {
-              product: {
-                include: {
-                  category: {
-                    select: {
-                      name: true,
-                    },
-                  },
-                },
-              },
-            },
-          });
-
-          // Create a Map for O(1) lookup by ID
-          const productVariantMap = new Map(
-            productVariants.map((pv) => [pv.id.toString(), pv]),
-          );
-
           // check stock for each item in orderItems
           // and after that update product and product variant stock quantity
           for (const item of orderItems) {
-            const productVariant = productVariantMap.get(
-              item.productVariantId.toString(),
-            );
-
-            // check order item is stock or out of stock
-            // if order item are out of stock, throw error
-            if (!productVariant) {
-              this.logger.error(
-                `Product variant with ID ${item.productVariantId} not found!`,
-              );
-              throw new NotFoundException(
-                `Product variant with ID ${item.productVariantId} not found!`,
-              );
-            }
-
-            if (productVariant.stock < item.quantity) {
-              this.logger.error(
-                `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
-              );
-              throw new BadRequestException(
-                `Product variant with ID ${item.productVariantId} is out of stock! Available stock: ${productVariant.stock}, Requested quantity: ${item.quantity}`,
-              );
-            }
-
             // reduce stock quantity for product variant
             const updateProductVariant = await tx.productVariants.update({
-              where: { id: BigInt(item.productVariantId) },
+              where: {
+                id: BigInt(item.productVariantId),
+                stock: { gte: item.quantity },
+              },
               include: {
                 product: {
                   select: {
@@ -382,7 +342,10 @@ export class OrdersService {
 
             // reduce stock quantity for product
             const updateProduct = await tx.products.update({
-              where: { id: updateProductVariant.product.id },
+              where: {
+                id: updateProductVariant.product.id,
+                stock: { gte: item.quantity },
+              },
               data: {
                 stock: {
                   decrement: item.quantity,
@@ -400,10 +363,212 @@ export class OrdersService {
             }
           }
 
-          // fix here to update voucher quantity in database
+          // update voucher quantity in database
           // when creating order if order has voucher
-          // to do: update voucher in item-level
-          // to do: update user voucher in order-level / user-level
+          // to do: update voucher on item-level (appliedVouchersOnOrderItemsList)
+          for (const voucher of appliedVouchersOnOrderItemsList) {
+            const voucherFromDB: Vouchers | null = await tx.vouchers.findFirst({
+              where: {
+                id: voucher.id,
+                isActive: true,
+                isOverUsageLimit: false,
+                validFrom: { lte: orderDateDefault },
+                validTo: { gte: orderDateDefault },
+                OR: [
+                  { usageLimit: null }, // Trường hợp không giới hạn
+                  {
+                    usageLimit: {
+                      gt: tx.vouchers.fields.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
+                    },
+                  },
+                ],
+              },
+            });
+
+            if (!voucherFromDB) {
+              this.logger.error(
+                `Voucher with ID ${voucher.id} not found or expired!`,
+              );
+              throw new NotFoundException(
+                `Voucher with ID ${voucher.id} not found or expired!`,
+              );
+            }
+
+            const updateVoucher: Vouchers = await tx.vouchers.update({
+              where: {
+                id: voucher.id,
+                isActive: true,
+                isOverUsageLimit: false,
+                validFrom: { lte: orderDateDefault },
+                validTo: { gte: orderDateDefault },
+                OR: [
+                  { usageLimit: null }, // Trường hợp không giới hạn
+                  {
+                    usageLimit: {
+                      gt: tx.vouchers.fields.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
+                    },
+                  },
+                ],
+              },
+              data: {
+                timesUsed: {
+                  increment: 1,
+                },
+              },
+            });
+
+            if (!updateVoucher) {
+              this.logger.error(
+                `Failed to update voucher with ID ${voucher.id}`,
+              );
+              throw new BadRequestException(
+                `Failed to update voucher with ID ${voucher.id}`,
+              );
+            }
+
+            if (voucher.usageLimit) {
+              if (updateVoucher.timesUsed >= voucher.usageLimit) {
+                this.logger.log(
+                  `Voucher with ID ${voucher.id} has reached its usage limit`,
+                );
+
+                // update voucher to set isOverUsageLimit to true
+                // update voucher to set isActive to false when it is over usage limit
+                await tx.vouchers.update({
+                  where: {
+                    id: voucher.id,
+                  },
+                  data: {
+                    isOverUsageLimit: true,
+                    isActive: false,
+                  },
+                });
+
+                if (updateVoucher.timesUsed > voucher.usageLimit) {
+                  throw new BadRequestException(
+                    `Voucher with ID ${voucher.id} has reached its usage limit`,
+                  );
+                }
+              }
+            }
+          }
+          // to do: update user voucher on order-level (appliedUserVoucher)
+          if (appliedUserVoucher) {
+            const userVoucherFromDB: UserVoucherDetailInformation | null =
+              await tx.userVouchers.findFirst({
+                where: {
+                  id: appliedUserVoucher.id,
+                  voucherStatus: VoucherStatus.SAVED,
+                  voucher: {
+                    isActive: true,
+                    isOverUsageLimit: false,
+                    validFrom: { lte: orderDateDefault },
+                    validTo: { gte: orderDateDefault },
+                    OR: [
+                      { usageLimit: null }, // Trường hợp không giới hạn
+                      {
+                        usageLimit: {
+                          gt: tx.vouchers.fields.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
+                        },
+                      },
+                    ],
+                  },
+                },
+                include: {
+                  voucher: true,
+                },
+              });
+
+            if (!userVoucherFromDB) {
+              this.logger.error(
+                `User voucher with ID ${appliedUserVoucher.id} not found or expired!`,
+              );
+              throw new NotFoundException(
+                `User voucher with ID ${appliedUserVoucher.id} not found or expired!`,
+              );
+            }
+
+            const updateUserVoucher: UserVoucherDetailInformation =
+              await tx.userVouchers.update({
+                where: {
+                  id: appliedUserVoucher.id,
+                  voucherStatus: VoucherStatus.SAVED,
+                  voucher: {
+                    isActive: true,
+                    isOverUsageLimit: false,
+                    validFrom: { lte: orderDateDefault },
+                    validTo: { gte: orderDateDefault },
+                    OR: [
+                      { usageLimit: null }, // Trường hợp không giới hạn
+                      {
+                        usageLimit: {
+                          gt: tx.vouchers.fields.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
+                        },
+                      },
+                    ],
+                  },
+                },
+                data: {
+                  useVoucherAt: orderDateDefault,
+                  voucherStatus: VoucherStatus.USED,
+                  voucher: {
+                    update: {
+                      where: {
+                        id: appliedUserVoucher.voucherId,
+                      },
+                      data: {
+                        timesUsed: {
+                          increment: 1,
+                        },
+                      },
+                    },
+                  },
+                },
+                include: {
+                  voucher: true,
+                },
+              });
+
+            if (!updateUserVoucher) {
+              this.logger.error(
+                `Failed to update user voucher with ID ${appliedUserVoucher.id}`,
+              );
+              throw new BadRequestException(
+                `Failed to update user voucher with ID ${appliedUserVoucher.id}`,
+              );
+            }
+
+            if (appliedUserVoucher.voucher.usageLimit) {
+              if (
+                updateUserVoucher.voucher.timesUsed >=
+                appliedUserVoucher.voucher.usageLimit
+              ) {
+                this.logger.log(
+                  `Voucher with ID ${appliedUserVoucher.voucherId} has reached its usage limit`,
+                );
+                // update voucher to set isOverUsageLimit to true
+                // update voucher to set isActive to false when it is over usage limit
+                await tx.vouchers.update({
+                  where: {
+                    id: appliedUserVoucher.voucherId,
+                  },
+                  data: {
+                    isOverUsageLimit: true,
+                    isActive: false,
+                  },
+                });
+
+                if (
+                  updateUserVoucher.voucher.timesUsed >
+                  appliedUserVoucher.voucher.usageLimit
+                ) {
+                  throw new BadRequestException(
+                    `Voucher with ID ${appliedUserVoucher.voucherId} has reached its usage limit`,
+                  );
+                }
+              }
+            }
+          }
 
           // create new order
           const newOrder = await tx.orders.create({
@@ -690,6 +855,8 @@ export class OrdersService {
       return returnOrderWithFullInformation;
     } catch (error) {
       this.logger.error('Failed to create order: ', error);
+      // Re-throw known HTTP exceptions (e.g. NotFoundException) without wrapping them
+      if (error instanceof HttpException) throw error;
       throw new BadRequestException('Failed to create order');
     }
   }

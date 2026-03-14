@@ -463,6 +463,7 @@ model Vouchers {
     validTo     DateTime
     usageLimit  Int?     @db.Integer
     timesUsed   Int         @default(0) @db.Integer
+    isOverUsageLimit Boolean     @default(false) @db.Boolean
     isActive    Boolean     @default(true) @db.Boolean
     createdAt   DateTime    @default(now())
     user        User        @relation(fields: [createdBy], references: [id], onDelete: Restrict, onUpdate: Cascade)

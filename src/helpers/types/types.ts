@@ -805,7 +805,10 @@ export type PackagesForShipping = Record<
   string,
   {
     PackageDetail: PackageDetail;
-    checksumInformation: { checksumIdInDB: bigint; checksumData: string };
+    checksumInformation: {
+      checksumIdInDB: bigint;
+      checksumData: string;
+    };
   }
 >;
 
