@@ -37,7 +37,7 @@ import {
   PackageItemDetailDto,
   PackageItemDetailForGHNCreateNewOrderRequestDto,
 } from '@/orders/dto/group-order-items-package-response.dto';
-import { PreviewShippingFeeForPackagesDto } from './dto/preview-shipping-fee-for-order.dto';
+import { PreviewFeeAndDiscountAndPriceForOrderDto } from './dto/preview-shipping-fee-for-order.dto';
 import { SecondCreateOrderItemsDto } from '@/orders/dto/create-order.dto';
 import { CreateAddressForOrderResponseDto } from '@/address/dto/create-address-for-order-response.dto';
 
@@ -74,7 +74,7 @@ export class ShipmentsController {
   }
 
   @ApiExtraModels(
-    PreviewShippingFeeForPackagesDto,
+    PreviewFeeAndDiscountAndPriceForOrderDto,
     SecondCreateOrderItemsDto,
     CreateAddressForOrderResponseDto,
     PackageDetailDto,
@@ -85,49 +85,53 @@ export class ShipmentsController {
     CalculateExpectedDeliveryTimeResponseDto,
   )
   @ApiOperation({
-    summary: 'Preview shipping fees for packages before creating shipments',
+    summary:
+      'Preview package pricing, voucher discounts, GHN shipping fee, and checksum before creating an order',
     description:
-      'Calculates shipping fees and expected delivery time from GHN for order items before order confirmation. Input must include orderItems and createNewAddressForOrderResponseDto. Returns a record keyed by GHN shop ID, where each value is the computed package detail with GHN service, fee, pickup info, destination info, and ETA.',
+      'Builds package data from order items and validated address data, applies item-level vouchers (priority: variant > product > category), selects the best user voucher for package-level discount, calculates GHN shipping service/fee/ETA, and returns a package payload plus checksum information for later order creation validation.',
   })
   @ApiBody({
     description:
-      'Input payload for previewShippingFeeForOrder(orderItems, createNewAddressForOrderResponseDto).',
-    type: PreviewShippingFeeForPackagesDto,
+      'Input for checkout preview. orderItems contains productVariantId and quantity per item. createNewAddressForOrderResponseDto must be the validated response from createNewAddressForOrder and is used to determine destination district/ward for GHN fee and ETA calculation.',
+    type: PreviewFeeAndDiscountAndPriceForOrderDto,
   })
   @ApiResponse({
     status: 200,
     description:
-      'Shipping preview calculated successfully. Response is Record<string, PackageDetailDto>, where key = ghnShopId and value = package detail enriched by GHN data (shippingService, shippingFee, expectedDeliveryTime, ghnShopDetail, from/to district & ward codes).',
+      'Preview calculated successfully. Returns a map keyed by ghnShopId. Each value contains checksumInformation (checksumIdInDB, checksumData) and PackageDetail (items, applied vouchers, subtotal, package-level discount, total price, GHN service, shipping fee, origin/destination codes, and expected delivery time).',
     schema: {
       type: 'object',
       additionalProperties: {
         $ref: getSchemaPath(PackageDetailDto),
       },
       description:
-        'Map with GHN shop ID as object key and PackageDetailDto as value',
+        'Map keyed by GHN shop ID for checkout preview package payload used by create-order',
     },
   })
   @ApiResponse({
     status: 400,
     description:
-      'Bad Request - Failed to calculate shipping fees. This may occur if GHN API communication fails, invalid package dimensions provided, or shipping service unavailable for the route.',
+      'Bad Request - Invalid preview input or business validation failed, such as empty order items, invalid address payload, missing userId in address payload, out-of-stock variant, or GHN fee/ETA calculation failure.',
   })
   @ApiResponse({
     status: 404,
     description:
-      'Not Found - Shop office not found for GHN shop ID, shop office has incomplete GHN address information (missing province/district/ward IDs), GHN province/district/ward not found in GHN system, or shipping service not available for the specified route.',
+      'Not Found - User not found, product variant not found, shop origin location cannot be resolved in GHN, or no GHN shipping service is available for the selected origin/destination route.',
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR', 'USER')
   @HttpCode(200)
-  @Post('/preview-shipping-fee')
-  async previewShippingFeeForEachPackageForOrder(
-    @Body() previewShippingFeeDto: PreviewShippingFeeForPackagesDto,
+  @Post(
+    '/preview-shipping-fee-detail-and-discount-detail-and-price-detail-for-order',
+  )
+  async previewFeeAndDiscountAndPriceForOrder(
+    @Body()
+    previewFeeAndDiscountAndPriceForOrderDto: PreviewFeeAndDiscountAndPriceForOrderDto,
   ) {
-    return await this.shipmentsService.previewShippingFeeAndDiscountForEachOrderItemInOrder(
-      previewShippingFeeDto.orderItems,
-      previewShippingFeeDto.createNewAddressForOrderResponseDto,
+    return await this.shipmentsService.previewFeeAndDiscountAndPriceForOrder(
+      previewFeeAndDiscountAndPriceForOrderDto.orderItems,
+      previewFeeAndDiscountAndPriceForOrderDto.createNewAddressForOrderResponseDto,
     );
   }
 

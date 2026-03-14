@@ -771,10 +771,13 @@ export type PackageDetail = {
   shippingService: GetServiceResponse;
   shippingFee: number; // in VND
   expectedDeliveryTime: CalculateExpectedDeliveryTimeResponse;
+  from_province_id: number;
   from_district_id: number;
   from_ward_code: string;
+  to_province_id: number;
   to_district_id: number;
   to_ward_code: string;
+  to_user_id: bigint;
 };
 
 /**

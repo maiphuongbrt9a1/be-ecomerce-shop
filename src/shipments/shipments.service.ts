@@ -36,7 +36,7 @@ import {
   isVoucherWithinUsageLimit,
 } from '@/helpers/utils';
 import Ghn from 'giaohangnhanh';
-import { GhnDistrict, GhnWard } from '@/helpers/types/ghn-address';
+import { GhnDistrict, GhnProvince, GhnWard } from '@/helpers/types/ghn-address';
 import { SecondCreateOrderItemsDto } from '@/orders/dto/create-order.dto';
 import {
   CalculateExpectedDeliveryTimeResponse,
@@ -360,7 +360,7 @@ export class ShipmentsService {
     }
   }
 
-  async previewShippingFeeAndDiscountForEachOrderItemInOrder(
+  async previewFeeAndDiscountAndPriceForOrder(
     orderItems: SecondCreateOrderItemsDto[],
     createNewAddressForOrderResponseDto: createNewAddressForOrderResponseDto,
   ): Promise<PackagesForShipping> {
@@ -482,10 +482,13 @@ export class ShipmentsService {
           shippingService: {} as GetServiceResponse,
           shippingFee: 0, // in VND
           expectedDeliveryTime: {} as CalculateExpectedDeliveryTimeResponse,
+          from_province_id: 0,
           from_district_id: 0,
           from_ward_code: '',
+          to_province_id: 0,
           to_district_id: 0,
           to_ward_code: '',
+          to_user_id: BigInt(0),
         },
       };
 
@@ -724,6 +727,8 @@ export class ShipmentsService {
         packages[ghnConfig.shopId].PackageDetail.maxWidth;
 
       // define the destination address for the shipment using the provided GHN district, and ward information from the address creation response
+      const toProvince: GhnProvince =
+        createNewAddressForOrderResponseDto.orderAddressInGHN.toProvince;
       const toDistrict: GhnDistrict =
         createNewAddressForOrderResponseDto.orderAddressInGHN.toDistrict;
       const toWard: GhnWard =
@@ -859,10 +864,14 @@ export class ShipmentsService {
       packages[ghnConfig.shopId].PackageDetail.ghnWardName = fromWard.WardName;
       packages[ghnConfig.shopId].PackageDetail.shippingFee = fee.total;
       packages[ghnConfig.shopId].PackageDetail.shippingService = service;
+      packages[ghnConfig.shopId].PackageDetail.from_province_id =
+        fromProvince.ProvinceID;
       packages[ghnConfig.shopId].PackageDetail.from_district_id =
         fromDistrict.DistrictID;
       packages[ghnConfig.shopId].PackageDetail.from_ward_code =
         fromWard.WardCode;
+      packages[ghnConfig.shopId].PackageDetail.to_province_id =
+        toProvince.ProvinceID;
       packages[ghnConfig.shopId].PackageDetail.to_district_id =
         toDistrict.DistrictID;
       packages[ghnConfig.shopId].PackageDetail.to_ward_code = toWard.WardCode;
@@ -870,6 +879,9 @@ export class ShipmentsService {
         expectedDeliveryTime;
       packages[ghnConfig.shopId].PackageDetail.totalPriceForPackage =
         packageSubTotal + fee.total - bestDiscountAmount;
+      packages[ghnConfig.shopId].PackageDetail.to_user_id = BigInt(
+        createNewAddressForOrderResponseDto.orderAddressInDb.userId,
+      );
 
       // Phần 3: Tạo checksum cho package dựa trên thông tin của package và yêu cầu của GHN.
       // Checksum này sẽ được sử dụng khi tạo đơn hàng và gọi api lên GHN để đảm bảo tính toàn vẹn của dữ liệu.
@@ -901,10 +913,22 @@ export class ShipmentsService {
       packages[ghnConfig.shopId].checksumInformation.checksumData =
         checksumData;
 
+      // set checksum to expire in n minutes
+      const expiredTimeForChecksum = new Date();
+      expiredTimeForChecksum.setMinutes(
+        expiredTimeForChecksum.getMinutes() +
+          Number(process.env.TIME_EXPIRE_CHECKSUM_IN_MINUTES!),
+      );
+
       const checksumRecord = await this.prismaService.packageChecksums.create({
         data: {
+          userId: BigInt(
+            createNewAddressForOrderResponseDto.orderAddressInDb.userId,
+          ),
           checksumData: checksumData,
           ghnShopId: ghnConfig.shopId,
+          expiredAt: expiredTimeForChecksum,
+          isUsed: false,
         },
       });
 

@@ -527,9 +527,12 @@ model ReturnRequests {
 
 model PackageChecksums {
     id          BigInt      @db.BigInt @id @default(autoincrement())
+    userId      BigInt      @db.BigInt
     ghnShopId      BigInt?      @db.BigInt
     shopId      BigInt?      @db.BigInt
     checksumData String      @db.Text
+    expiredAt   DateTime    
+    isUsed      Boolean     @default(false) @db.Boolean
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
     
