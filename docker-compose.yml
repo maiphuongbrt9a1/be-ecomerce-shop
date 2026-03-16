@@ -25,6 +25,18 @@ services:
     networks:
       - da-ecommerce-shop-backend-network
 
+  redis_insight:
+    image: redis/redisinsight:3.2.0
+    container_name: da-ecommerce-shop-redis-insight-3.2.0
+    restart: always
+    user: root
+    ports:
+      - 5540:5540
+    volumes:
+      - redis_insight_volume_data:/data
+    networks:
+      - da-ecommerce-shop-backend-network
+
   dpage-pgadmin4:
     image: dpage/pgadmin4:9.13
     container_name: da-ecommerce-shop-pgadmin4-9.13
@@ -37,6 +49,8 @@ services:
       - da-ecommerce-shop-backend-network
     depends_on:
       - postgres
+    volumes:
+      - pgadmin4_data:/var/lib/pgadmin
 
 networks:
   da-ecommerce-shop-backend-network:
@@ -45,3 +59,5 @@ networks:
 volumes:
   postgres_data:
   redis_data:
+  redis_insight_volume_data:
+  pgadmin4_data:
