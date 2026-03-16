@@ -360,6 +360,37 @@ export class ShipmentsService {
     }
   }
 
+  /**
+   * Previews package-level pricing, discounts, and GHN shipping information for order creation.
+   *
+   * This method performs the following operations:
+   * 1. Validates order items and destination address input
+   * 2. Loads user, product variants, and eligible vouchers from database
+   * 3. Builds package items and computes item-level discounts
+   * 4. Applies the best user voucher at package level
+   * 5. Retrieves GHN route metadata (origin/destination, service, fee, ETA)
+   * 6. Calculates final package total and attaches GHN-related fields
+   * 7. Generates and stores a checksum record for integrity verification in create-order flow
+   *
+   * @param {SecondCreateOrderItemsDto[]} orderItems - List of order items to be grouped and priced
+   * @param {createNewAddressForOrderResponseDto} createNewAddressForOrderResponseDto - Validated address payload containing DB and GHN destination info
+   *
+   * @returns {Promise<PackagesForShipping>} Package map keyed by GHN shop ID, including:
+   *   - Package items and GHN item payload
+   *   - Subtotal, voucher discount, shipping fee, and final total
+   *   - Selected shipping service and expected delivery time
+   *   - Checksum data and checksum record ID for later order creation
+   *
+   * @throws {BadRequestException} If input is invalid, stock is insufficient, or preview generation fails
+   * @throws {NotFoundException} If user, product variants, route metadata, or shipping service cannot be resolved
+   * @throws {InternalServerErrorException} If checksum configuration is missing or checksum persistence fails
+   *
+   * @remarks
+   * - This is a preview endpoint and does not create an order or reserve stock
+   * - Item-level voucher and package-level user voucher are applied in non-stacking fashion
+   * - Checksum output must be returned unchanged by client when calling create-order
+   * - Checksum records are temporary and expected to expire by configured TTL
+   */
   async previewFeeAndDiscountAndPriceForOrder(
     orderItems: SecondCreateOrderItemsDto[],
     createNewAddressForOrderResponseDto: createNewAddressForOrderResponseDto,
@@ -407,11 +438,11 @@ export class ShipmentsService {
 
       // init ghn config
       const ghnConfig = {
-        token: process.env.GHN_TOKEN!, // Thay bằng token của bạn
-        shopId: Number(process.env.GHN_SHOP1_ID!), // Thay bằng shopId của bạn
+        token: process.env.GHN_TOKEN!,
+        shopId: Number(process.env.GHN_SHOP1_ID!),
         host: process.env.GHN_HOST!,
         trackingHost: process.env.GHN_TRACKING_HOST!,
-        testMode: process.env.GHN_TEST_MODE === 'true', // Bật chế độ test sẽ ghi đè tất cả host thành môi trường sandbox
+        testMode: process.env.GHN_TEST_MODE === 'true',
       };
       const ghn = new Ghn(ghnConfig);
       const ghnShops = new GHNShops(ghnConfig);

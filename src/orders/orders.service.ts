@@ -40,6 +40,7 @@ import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { ShipmentsService } from '@/shipments/shipments.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import Ghn from 'giaohangnhanh';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class OrdersService {
@@ -50,6 +51,30 @@ export class OrdersService {
     private readonly shipmentsService: ShipmentsService,
   ) {}
 
+  /**
+   * Creates a new order with full checkout processing and GHN shipment synchronization.
+   *
+   * This method performs the following operations:
+   * 1. Validates package checksum, address integrity, and user consistency
+   * 2. Validates stock and applies item-level and user-level voucher updates
+   * 3. Creates order, order items, payment, shipment, and shipment items in a transaction
+   * 4. Creates the shipping order on GHN after transaction commit
+   * 5. Updates shipment tracking fields from GHN response
+   * 6. Returns the created order with full related information
+   *
+   * @param {CreateOrderDto} createOrderDto - Checkout payload containing package, pricing, voucher, and shipping address data
+   *
+   * @returns {Promise<OrdersWithFullInformation>} The created order including address, items, payments, shipments, and formatted media fields
+   *
+   * @throws {BadRequestException} If validation fails, stock/voucher updates fail, GHN creation fails, or order creation flow fails
+   * @throws {NotFoundException} If user, address, or related entities required for order creation are not found
+   * @throws {InternalServerErrorException} If checksum secret configuration is missing
+   *
+   * @remarks
+   * - The flow currently supports one package per order
+   * - Package checksum is revalidated both before and during transaction for anti-tampering and concurrency safety
+   * - GHN cancellation is attempted as compensation when post-transaction GHN-linked steps fail
+   */
   async create(
     createOrderDto: CreateOrderDto,
   ): Promise<OrdersWithFullInformation> {
@@ -173,7 +198,9 @@ export class OrdersService {
 
       // only once package in packages for now, we will support multiple packages in one order in the future
       const ghnShopIdList: bigint[] = [];
-      ghnShopIdList.push(BigInt(ghnShopId));
+      for (const ghnShopId in createOrderDto.packages) {
+        ghnShopIdList.push(BigInt(ghnShopId));
+      }
 
       if (ghnShopIdList.length > 1) {
         this.logger.error(
@@ -186,6 +213,16 @@ export class OrdersService {
 
       const processByStaffDefault = null;
       const orderDateDefault = new Date();
+      let ghnOrderCode: string = '';
+      const ghnConfig = {
+        token: process.env.GHN_TOKEN!,
+        shopId: Number(ghnShopId),
+        host: process.env.GHN_HOST!,
+        trackingHost: process.env.GHN_TRACKING_HOST!,
+        testMode: process.env.GHN_TEST_MODE === 'true',
+      };
+
+      const ghn = new Ghn(ghnConfig);
 
       const orderStatusDefault: OrderStatus =
         createOrderDto.paymentMethod === PaymentMethod.COD
@@ -201,6 +238,7 @@ export class OrdersService {
         createOrderDto.packages[ghnShopId].PackageDetail.userVoucher;
 
       const appliedVouchersOnOrderItemsList: Vouchers[] = [];
+      const appliedVouchersOnOrderItemsMap = new Map<string, number>();
 
       const shippingFee =
         createOrderDto.packages[ghnShopId].PackageDetail.shippingFee;
@@ -234,6 +272,12 @@ export class OrdersService {
         (a, b) => Number(a.id) - Number(b.id),
       );
 
+      appliedVouchersOnOrderItemsList.forEach((voucher) => {
+        const count: number =
+          appliedVouchersOnOrderItemsMap.get(voucher.id.toString()) || 0;
+        appliedVouchersOnOrderItemsMap.set(voucher.id.toString(), count + 1);
+      });
+
       // check duplicate product variant id in packages
       for (let i = 0; i < orderItems.length - 1; i++) {
         for (let j = i + 1; j < orderItems.length; j++) {
@@ -250,609 +294,590 @@ export class OrdersService {
         }
       }
 
-      const defaultOrderWithFullInformation: OrdersWithFullInformation =
-        await this.prismaService.$transaction(async (tx) => {
-          // check again checksum information for this package to make sure
-          // that package information is not tampered by client during the transaction
-          // because the concurrency issue may happen
-          // when multiple create order request with the same package checksum at the same time,
-          // we need to check checksum information again in transaction
-          // to make sure that only one of the request can create order successfully,
-          // the other requests will fail
-          // because checksum record will be updated to used after first request create order successfully
+      // get user order information for creating order and creating order on GHN
+      const userFromDB = await this.prismaService.user.findUnique({
+        where: {
+          id: BigInt(createOrderDto.userId),
+        },
+      });
 
-          const checksumFromDatabase = await tx.packageChecksums.update({
-            where: {
-              id: BigInt(
-                createOrderDto.packages[ghnShopId].checksumInformation
-                  .checksumIdInDB,
-              ),
-              userId: BigInt(createOrderDto.userId),
-              checksumData:
-                createOrderDto.packages[ghnShopId].checksumInformation
-                  .checksumData,
-              isUsed: false,
-              expiredAt: { gt: orderDateDefault },
-            },
-            data: {
-              isUsed: true,
-            },
-          });
+      if (!userFromDB) {
+        this.logger.error(`User with ID ${createOrderDto.userId} not found!`);
+        throw new NotFoundException(
+          `User with ID ${createOrderDto.userId} not found!`,
+        );
+      }
 
-          if (
-            !checksumFromDatabase ||
-            checksumFromDatabase.checksumData !==
-              checksumDataAtRealtimeCreateNewOrder
-          ) {
-            this.logger.error(
-              `Checksum verification failed for package with GHN shop ID ${ghnShopId}. Possible data tampering detected.`,
-            );
-            throw new BadRequestException(
-              `Checksum verification failed for package with GHN shop ID ${ghnShopId}. Possible data tampering detected.`,
-            );
-          }
-
-          // get user order information for creating order and creating order on GHN
-          const userFromDB = await tx.user.findUnique({
-            where: {
-              id: BigInt(createOrderDto.userId),
-            },
-          });
-
-          if (!userFromDB) {
-            this.logger.error(
-              `User with ID ${createOrderDto.userId} not found!`,
-            );
-            throw new NotFoundException(
-              `User with ID ${createOrderDto.userId} not found!`,
-            );
-          }
-
-          // check stock for each item in orderItems
-          // and after that update product and product variant stock quantity
-          for (const item of orderItems) {
-            // reduce stock quantity for product variant
-            const updateProductVariant = await tx.productVariants.update({
-              where: {
-                id: BigInt(item.productVariantId),
-                stock: { gte: item.quantity },
-              },
-              include: {
-                product: {
-                  select: {
-                    id: true,
-                  },
-                },
-              },
-              data: {
-                stock: {
-                  decrement: item.quantity,
-                },
-              },
-            });
-
-            if (!updateProductVariant) {
-              this.logger.error(
-                `Failed to update product variant with ID ${item.productVariantId}`,
-              );
-              throw new BadRequestException(
-                `Failed to update product variant with ID ${item.productVariantId}`,
-              );
-            }
-
-            // reduce stock quantity for product
-            const updateProduct = await tx.products.update({
-              where: {
-                id: updateProductVariant.product.id,
-                stock: { gte: item.quantity },
-              },
-              data: {
-                stock: {
-                  decrement: item.quantity,
-                },
-              },
-            });
-
-            if (!updateProduct) {
-              this.logger.error(
-                `Failed to update product with ID ${updateProductVariant.product.id}`,
-              );
-              throw new BadRequestException(
-                `Failed to update product with ID ${updateProductVariant.product.id}`,
-              );
-            }
-          }
-
-          // update voucher quantity in database
-          // when creating order if order has voucher
-          // to do: update voucher on item-level (appliedVouchersOnOrderItemsList)
-          for (const voucher of appliedVouchersOnOrderItemsList) {
-            const voucherFromDB: Vouchers | null = await tx.vouchers.findFirst({
-              where: {
-                id: voucher.id,
-                isActive: true,
-                isOverUsageLimit: false,
-                validFrom: { lte: orderDateDefault },
-                validTo: { gte: orderDateDefault },
-                OR: [
-                  { usageLimit: null }, // Trường hợp không giới hạn
-                  {
-                    usageLimit: {
-                      gt: tx.vouchers.fields.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
-                    },
-                  },
-                ],
-              },
-            });
-
-            if (!voucherFromDB) {
-              this.logger.error(
-                `Voucher with ID ${voucher.id} not found or expired!`,
-              );
-              throw new NotFoundException(
-                `Voucher with ID ${voucher.id} not found or expired!`,
-              );
-            }
-
-            const updateVoucher: Vouchers = await tx.vouchers.update({
-              where: {
-                id: voucher.id,
-                isActive: true,
-                isOverUsageLimit: false,
-                validFrom: { lte: orderDateDefault },
-                validTo: { gte: orderDateDefault },
-                OR: [
-                  { usageLimit: null }, // Trường hợp không giới hạn
-                  {
-                    usageLimit: {
-                      gt: tx.vouchers.fields.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
-                    },
-                  },
-                ],
-              },
-              data: {
-                timesUsed: {
-                  increment: 1,
-                },
-              },
-            });
-
-            if (!updateVoucher) {
-              this.logger.error(
-                `Failed to update voucher with ID ${voucher.id}`,
-              );
-              throw new BadRequestException(
-                `Failed to update voucher with ID ${voucher.id}`,
-              );
-            }
-
-            if (voucher.usageLimit) {
-              if (updateVoucher.timesUsed >= voucher.usageLimit) {
-                this.logger.log(
-                  `Voucher with ID ${voucher.id} has reached its usage limit`,
-                );
-
-                // update voucher to set isOverUsageLimit to true
-                // update voucher to set isActive to false when it is over usage limit
-                await tx.vouchers.update({
-                  where: {
-                    id: voucher.id,
-                  },
-                  data: {
-                    isOverUsageLimit: true,
-                    isActive: false,
-                  },
-                });
-
-                if (updateVoucher.timesUsed > voucher.usageLimit) {
-                  throw new BadRequestException(
-                    `Voucher with ID ${voucher.id} has reached its usage limit`,
-                  );
-                }
-              }
-            }
-          }
-          // to do: update user voucher on order-level (appliedUserVoucher)
-          if (appliedUserVoucher) {
-            const userVoucherFromDB: UserVoucherDetailInformation | null =
-              await tx.userVouchers.findFirst({
+      try {
+        const newOrderWithFullInformation: OrdersWithFullInformation =
+          await this.prismaService.$transaction(async (tx) => {
+            // check again checksum information for this package to make sure
+            // that package information is not tampered by client during the transaction
+            // because the concurrency issue may happen
+            // when multiple create order request with the same package checksum at the same time,
+            // we need to check checksum information again in transaction
+            // to make sure that only one of the request can create order successfully,
+            // the other requests will fail
+            // because checksum record will be updated to used after first request create order successfully
+            try {
+              const checksumFromDatabase = await tx.packageChecksums.update({
                 where: {
-                  id: appliedUserVoucher.id,
-                  voucherStatus: VoucherStatus.SAVED,
-                  voucher: {
-                    isActive: true,
-                    isOverUsageLimit: false,
-                    validFrom: { lte: orderDateDefault },
-                    validTo: { gte: orderDateDefault },
-                    OR: [
-                      { usageLimit: null }, // Trường hợp không giới hạn
-                      {
-                        usageLimit: {
-                          gt: tx.vouchers.fields.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
-                        },
-                      },
-                    ],
-                  },
-                },
-                include: {
-                  voucher: true,
-                },
-              });
-
-            if (!userVoucherFromDB) {
-              this.logger.error(
-                `User voucher with ID ${appliedUserVoucher.id} not found or expired!`,
-              );
-              throw new NotFoundException(
-                `User voucher with ID ${appliedUserVoucher.id} not found or expired!`,
-              );
-            }
-
-            const updateUserVoucher: UserVoucherDetailInformation =
-              await tx.userVouchers.update({
-                where: {
-                  id: appliedUserVoucher.id,
-                  voucherStatus: VoucherStatus.SAVED,
-                  voucher: {
-                    isActive: true,
-                    isOverUsageLimit: false,
-                    validFrom: { lte: orderDateDefault },
-                    validTo: { gte: orderDateDefault },
-                    OR: [
-                      { usageLimit: null }, // Trường hợp không giới hạn
-                      {
-                        usageLimit: {
-                          gt: tx.vouchers.fields.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
-                        },
-                      },
-                    ],
-                  },
+                  id: BigInt(
+                    createOrderDto.packages[ghnShopId].checksumInformation
+                      .checksumIdInDB,
+                  ),
+                  userId: BigInt(createOrderDto.userId),
+                  checksumData:
+                    createOrderDto.packages[ghnShopId].checksumInformation
+                      .checksumData,
+                  isUsed: false,
+                  expiredAt: { gt: orderDateDefault },
                 },
                 data: {
-                  useVoucherAt: orderDateDefault,
-                  voucherStatus: VoucherStatus.USED,
-                  voucher: {
-                    update: {
-                      where: {
-                        id: appliedUserVoucher.voucherId,
+                  isUsed: true,
+                },
+              });
+
+              if (
+                !checksumFromDatabase ||
+                checksumFromDatabase.checksumData !==
+                  checksumDataAtRealtimeCreateNewOrder
+              ) {
+                this.logger.error(
+                  `Checksum verification failed for package with GHN shop ID ${ghnShopId}. Possible data tampering detected.`,
+                );
+                throw new BadRequestException(
+                  `Checksum verification failed for package with GHN shop ID ${ghnShopId}. Possible data tampering detected.`,
+                );
+              }
+            } catch (error) {
+              this.logger.error(
+                `Error occurred while verifying checksum for package with GHN shop ID ${ghnShopId}:`,
+                error,
+              );
+              // Re-throw known HTTP exceptions (e.g. NotFoundException) without wrapping them
+              if (error instanceof HttpException) throw error;
+              throw new BadRequestException(
+                `Error occurred while verifying checksum for package with GHN shop ID ${ghnShopId}: ${error}`,
+              );
+            }
+
+            // check stock for each item in orderItems
+            // and after that update product and product variant stock quantity
+            for (const item of orderItems) {
+              try {
+                // reduce stock quantity for product variant
+                const updateProductVariant = await tx.productVariants.update({
+                  where: {
+                    id: BigInt(item.productVariantId),
+                    stock: { gte: item.quantity },
+                  },
+                  include: {
+                    product: {
+                      select: {
+                        id: true,
                       },
-                      data: {
-                        timesUsed: {
-                          increment: 1,
+                    },
+                  },
+                  data: {
+                    stock: {
+                      decrement: item.quantity,
+                    },
+                  },
+                });
+
+                if (!updateProductVariant) {
+                  this.logger.error(
+                    `Failed to update product variant with ID ${item.productVariantId}`,
+                  );
+                  throw new BadRequestException(
+                    `Failed to update product variant with ID ${item.productVariantId}`,
+                  );
+                }
+
+                // reduce stock quantity for product
+                const updateProduct = await tx.products.update({
+                  where: {
+                    id: updateProductVariant.product.id,
+                    stock: { gte: item.quantity },
+                  },
+                  data: {
+                    stock: {
+                      decrement: item.quantity,
+                    },
+                  },
+                });
+
+                if (!updateProduct) {
+                  this.logger.error(
+                    `Failed to update product with ID ${updateProductVariant.product.id}`,
+                  );
+                  throw new BadRequestException(
+                    `Failed to update product with ID ${updateProductVariant.product.id}`,
+                  );
+                }
+              } catch (error) {
+                this.logger.error(
+                  `Error occurred while updating product or product variant:`,
+                  error,
+                );
+                // Re-throw known HTTP exceptions (e.g. NotFoundException) without wrapping them
+                if (error instanceof HttpException) throw error;
+                throw new BadRequestException(
+                  `Error occurred while updating product or product variant: ${error}`,
+                );
+              }
+            }
+
+            // update voucher quantity in database
+            // when creating order if order has voucher
+            // to do: update voucher on item-level (appliedVouchersOnOrderItemsList)
+            for (const [
+              voucherId,
+              decrementAmount,
+            ] of appliedVouchersOnOrderItemsMap) {
+              try {
+                const updateVoucher = await tx.vouchers.updateMany({
+                  where: {
+                    id: Number(voucherId),
+                    isActive: true,
+                    isOverUsageLimit: false,
+                    validFrom: { lte: orderDateDefault },
+                    validTo: { gte: orderDateDefault },
+                    OR: [
+                      { usageLimit: null }, // Trường hợp không giới hạn
+                      {
+                        usageLimit: {
+                          gt:
+                            Number(tx.vouchers.fields.timesUsed) +
+                            Number(decrementAmount), // Giới hạn phải lớn hơn số lần dùng cho đơn hàng sắp đặt. Nếu không đủ thì báo lỗi để tạo lại đơn hàng.
+                        },
+                      },
+                    ],
+                  },
+                  data: {
+                    timesUsed: {
+                      increment: decrementAmount,
+                    },
+                  },
+                });
+
+                if (updateVoucher.count === 0) {
+                  this.logger.error(
+                    `Failed to update voucher with ID ${voucherId}. It may be inactive, over usage limit for this order.`,
+                  );
+                  throw new BadRequestException(
+                    `Failed to update voucher with ID ${voucherId}. It may be inactive, over usage limit for this order.`,
+                  );
+                }
+              } catch (error) {
+                this.logger.error(
+                  `Error occurred while updating voucher with ID ${voucherId}: ${error}`,
+                );
+                // Re-throw known HTTP exceptions (e.g. NotFoundException) without wrapping them
+                if (error instanceof HttpException) throw error;
+                throw new BadRequestException(
+                  `Failed to update voucher with ID ${voucherId}. It may be inactive, over usage limit for this order.`,
+                );
+              }
+            }
+            // to do: update user voucher on order-level (appliedUserVoucher)
+            if (appliedUserVoucher) {
+              try {
+                await tx.userVouchers.update({
+                  where: {
+                    id: appliedUserVoucher.id,
+                    voucherStatus: VoucherStatus.SAVED,
+                    voucher: {
+                      isActive: true,
+                      isOverUsageLimit: false,
+                      validFrom: { lte: orderDateDefault },
+                      validTo: { gte: orderDateDefault },
+                      OR: [
+                        { usageLimit: null }, // Trường hợp không giới hạn
+                        {
+                          usageLimit: {
+                            gt: tx.vouchers.fields.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  data: {
+                    useVoucherAt: orderDateDefault,
+                    voucherStatus: VoucherStatus.USED,
+                    voucher: {
+                      update: {
+                        where: {
+                          id: appliedUserVoucher.voucherId,
+                        },
+                        data: {
+                          timesUsed: {
+                            increment: 1,
+                          },
                         },
                       },
                     },
                   },
-                },
-                include: {
-                  voucher: true,
+                  include: {
+                    voucher: true,
+                  },
+                });
+              } catch (error) {
+                this.logger.error(
+                  `Error occurred while updating user voucher: ${error}`,
+                );
+                // Re-throw known HTTP exceptions (e.g. NotFoundException) without wrapping them
+                if (error instanceof HttpException) throw error;
+                throw new BadRequestException(
+                  `Failed to update user voucher: ${error}`,
+                );
+              }
+            }
+
+            // create new order
+            const newOrder = await tx.orders.create({
+              data: {
+                userId: createOrderDto.userId,
+                shippingAddressId:
+                  createOrderDto.shippingAddress.orderAddressInDb.id,
+                processByStaffId: processByStaffDefault,
+                orderDate: orderDateDefault,
+                status: orderStatusDefault,
+                subTotal: subTotal,
+                shippingFee: shippingFee,
+                discount: discount,
+                totalAmount: totalAmount,
+                description: createOrderDto.description,
+              },
+            });
+
+            if (!newOrder) {
+              this.logger.error(
+                `Failed to create order for user with ID ${createOrderDto.userId}`,
+              );
+              throw new BadRequestException(
+                `Failed to create order for user with ID ${createOrderDto.userId}`,
+              );
+            }
+
+            // please create order items after creating order
+            for (const item of orderItems) {
+              const newOrderItem = await tx.orderItems.create({
+                data: {
+                  orderId: newOrder.id,
+                  productVariantId: BigInt(item.productVariantId),
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  totalPrice: item.totalPrice,
+                  discountValue: item.totalDiscountAmount,
                 },
               });
 
-            if (!updateUserVoucher) {
-              this.logger.error(
-                `Failed to update user voucher with ID ${appliedUserVoucher.id}`,
-              );
-              throw new BadRequestException(
-                `Failed to update user voucher with ID ${appliedUserVoucher.id}`,
-              );
-            }
-
-            if (appliedUserVoucher.voucher.usageLimit) {
-              if (
-                updateUserVoucher.voucher.timesUsed >=
-                appliedUserVoucher.voucher.usageLimit
-              ) {
+              if (!newOrderItem) {
                 this.logger.log(
-                  `Voucher with ID ${appliedUserVoucher.voucherId} has reached its usage limit`,
+                  `Failed to create order item for product variant with ID ${item.productVariantId}`,
                 );
-                // update voucher to set isOverUsageLimit to true
-                // update voucher to set isActive to false when it is over usage limit
-                await tx.vouchers.update({
-                  where: {
-                    id: appliedUserVoucher.voucherId,
-                  },
-                  data: {
-                    isOverUsageLimit: true,
-                    isActive: false,
-                  },
-                });
-
-                if (
-                  updateUserVoucher.voucher.timesUsed >
-                  appliedUserVoucher.voucher.usageLimit
-                ) {
-                  throw new BadRequestException(
-                    `Voucher with ID ${appliedUserVoucher.voucherId} has reached its usage limit`,
-                  );
-                }
+                throw new BadRequestException(
+                  `Failed to create order item for product variant with ID ${item.productVariantId}`,
+                );
               }
+
+              orderItemIdMap.set(
+                item.productVariantId.toString(),
+                newOrderItem,
+              );
             }
-          }
 
-          // create new order
-          const newOrder = await tx.orders.create({
-            data: {
-              userId: createOrderDto.userId,
-              shippingAddressId:
-                createOrderDto.shippingAddress.orderAddressInDb.id,
-              processByStaffId: processByStaffDefault,
-              orderDate: orderDateDefault,
-              status: orderStatusDefault,
-              subTotal: subTotal,
-              shippingFee: shippingFee,
-              discount: discount,
-              totalAmount: totalAmount,
-              description: createOrderDto.description,
-            },
-          });
-
-          if (!newOrder) {
-            this.logger.error(
-              `Failed to create order for user with ID ${createOrderDto.userId}`,
-            );
-            throw new BadRequestException(
-              `Failed to create order for user with ID ${createOrderDto.userId}`,
-            );
-          }
-
-          // please create order items after creating order
-          for (const item of orderItems) {
-            const newOrderItem = await tx.orderItems.create({
+            // this is default payment information
+            // and this is only one payment record for one order.
+            // when payment is paid by vnpay,
+            // you can update this transaction id with vnpay transaction id
+            // you can update payment status to Paid
+            // you need create new shipment and shipment items after payment is successful
+            const newPayment = await tx.payments.create({
               data: {
                 orderId: newOrder.id,
-                productVariantId: BigInt(item.productVariantId),
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                totalPrice: item.totalPrice,
-                discountValue: item.totalDiscountAmount,
+                transactionId: `${Date.now()}-${newOrder.id}-${createOrderDto.userId}-${Math.floor(
+                  Math.random() * 10000000,
+                )}`,
+                paymentMethod: createOrderDto.paymentMethod,
+                amount: newOrder.totalAmount,
+                status: paymentStatusDefault,
               },
             });
 
-            if (!newOrderItem) {
-              this.logger.log(
-                `Failed to create order item for product variant with ID ${item.productVariantId}`,
-              );
-              throw new BadRequestException(
-                `Failed to create order item for product variant with ID ${item.productVariantId}`,
-              );
-            }
-
-            orderItemIdMap.set(item.productVariantId.toString(), newOrderItem);
-          }
-
-          // this is default payment information
-          // and this is only one payment record for one order.
-          // when payment is paid by vnpay,
-          // you can update this transaction id with vnpay transaction id
-          // you can update payment status to Paid
-          // you need create new shipment and shipment items after payment is successful
-          const newPayment = await tx.payments.create({
-            data: {
-              orderId: newOrder.id,
-              transactionId: `${Date.now()}-${newOrder.id}-${createOrderDto.userId}-${Math.floor(
-                Math.random() * 10000000,
-              )}`,
-              paymentMethod: createOrderDto.paymentMethod,
-              amount: newOrder.totalAmount,
-              status: paymentStatusDefault,
-            },
-          });
-
-          if (!newPayment) {
-            this.logger.error(
-              `Failed to create payment for order with ID ${newOrder.id}`,
-            );
-            throw new BadRequestException(
-              `Failed to create payment for order with ID ${newOrder.id}`,
-            );
-          }
-
-          // create api to create shipment for order on ghn and create shipment record in database
-          // create order on GHN
-          const ghnConfig = {
-            token: process.env.GHN_TOKEN!, // Thay bằng token của bạn
-            shopId: Number(ghnShopId), // Thay bằng shopId của bạn
-            host: process.env.GHN_HOST!,
-            trackingHost: process.env.GHN_TRACKING_HOST!,
-            testMode: process.env.GHN_TEST_MODE === 'true', // Bật chế độ test sẽ ghi đè tất cả host thành môi trường sandbox
-          };
-
-          const ghn = new Ghn(ghnConfig);
-
-          // prepare content for GHN order
-          let contentForGhnOrder = '';
-          for (const item of createOrderDto.packages[ghnShopId].PackageDetail
-            .packageItems) {
-            contentForGhnOrder += `${item.productVariantName} - SKU: ${item.productVariantSKU} - Size: ${item.productVariantSize} - Color: ${item.productVariantColor} - Quantity: ${item.quantity} - Unit Price: ${item.unitPrice} ${item.currencyUnit}\n`;
-          }
-
-          let totalAmountForGHNOrder = newOrder.totalAmount;
-
-          // default (COD payment method) -> total amount for ghn shipment is the total amount of the order.
-          // if the order has any non-COD payment method, set total amount for GHN shipment to 0 to avoid collect money from customer when delivery
-          if (createOrderDto.paymentMethod === PaymentMethod.VNPAY) {
-            totalAmountForGHNOrder = 0;
-          } else if (createOrderDto.paymentMethod === PaymentMethod.COD) {
-            totalAmountForGHNOrder = newOrder.totalAmount;
-          }
-
-          const ghnCreateNewOrderRequest = await ghn.order.createOrder({
-            from_address:
-              createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
-                .address,
-            from_name:
-              createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
-                .name,
-            from_phone:
-              createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
-                .phone,
-            from_province_name:
-              createOrderDto.packages[ghnShopId].PackageDetail.ghnProvinceName,
-            from_district_name:
-              createOrderDto.packages[ghnShopId].PackageDetail.ghnDistrictName,
-            from_ward_name:
-              createOrderDto.packages[ghnShopId].PackageDetail.ghnWardName,
-
-            payment_type_id: 2, // 1: seller pay, 2: buyer pay
-            note: newOrder.description ? newOrder.description : undefined,
-            required_note:
-              'KHONGCHOXEMHANG' /**Note shipping order.Allowed values: CHOTHUHANG, CHOXEMHANGKHONGTHU, KHONGCHOXEMHANG. CHOTHUHANG mean Buyer can request to see and trial goods. CHOXEMHANGKHONGTHU mean Buyer can see goods but not allow to trial goods. KHONGCHOXEMHANG mean Buyer not allow to see goods */,
-            return_phone:
-              createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
-                .phone,
-            return_address:
-              createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
-                .address,
-            return_district_id:
-              createOrderDto.packages[ghnShopId].PackageDetail.from_district_id,
-            return_ward_code:
-              createOrderDto.packages[ghnShopId].PackageDetail.from_ward_code,
-            client_order_code: null,
-            to_name: userFromDB.firstName + ' ' + userFromDB.lastName,
-            to_phone: createOrderDto.phone,
-            to_address:
-              createOrderDto.shippingAddress.orderAddressInDb.street +
-              ' ' +
-              createOrderDto.shippingAddress.orderAddressInDb.ward +
-              ' ' +
-              createOrderDto.shippingAddress.orderAddressInDb.district +
-              ' ' +
-              createOrderDto.shippingAddress.orderAddressInDb.province +
-              ' ' +
-              createOrderDto.shippingAddress.orderAddressInDb.country,
-            to_ward_code:
-              createOrderDto.packages[ghnShopId].PackageDetail.to_ward_code,
-            to_district_id:
-              createOrderDto.packages[ghnShopId].PackageDetail.to_district_id,
-            cod_amount: totalAmountForGHNOrder,
-            content: contentForGhnOrder,
-            weight:
-              createOrderDto.packages[ghnShopId].PackageDetail.totalWeight,
-            length: createOrderDto.packages[ghnShopId].PackageDetail.maxLength,
-            width: createOrderDto.packages[ghnShopId].PackageDetail.maxWidth,
-            height:
-              createOrderDto.packages[ghnShopId].PackageDetail.totalHeight,
-            pick_station_id: undefined,
-            insurance_value:
-              newOrder.totalAmount < 5000000 ? newOrder.totalAmount : 5000000,
-            service_id:
-              createOrderDto.packages[ghnShopId].PackageDetail.shippingService
-                .service_id,
-            service_type_id:
-              createOrderDto.packages[ghnShopId].PackageDetail.shippingService
-                .service_type_id,
-            coupon: null,
-            pick_shift: undefined,
-            items:
-              createOrderDto.packages[ghnShopId].PackageDetail
-                .packageItemsForGHNCreateNewOrderRequest,
-          });
-
-          if (!ghnCreateNewOrderRequest) {
-            this.logger.error(
-              `Failed to create order on GHN for shop office with GHN shop ID ${ghnShopId}`,
-            );
-            throw new BadRequestException(
-              `Failed to create order on GHN for shop office with GHN shop ID ${ghnShopId}`,
-            );
-          }
-
-          // create shipment record in database
-          const newShipment = await tx.shipments.create({
-            data: {
-              orderId: newOrder.id,
-              processByStaffId: processByStaffDefault,
-              ghnOrderCode: ghnCreateNewOrderRequest.order_code,
-              estimatedDelivery:
-                ghnCreateNewOrderRequest.expected_delivery_time,
-              estimatedShipDate:
-                ghnCreateNewOrderRequest.expected_delivery_time,
-              carrier: createOrderDto.carrier,
-              trackingNumber: ghnCreateNewOrderRequest.order_code,
-              status: shipmentStatusDefault,
-              description: newOrder.description ? newOrder.description : '',
-            },
-          });
-
-          if (!newShipment) {
-            this.logger.log(
-              `Failed to create shipment for order with ID ${newOrder.id}`,
-            );
-            throw new BadRequestException(
-              `Failed to create shipment for order with ID ${newOrder.id}`,
-            );
-          }
-
-          // create shipment items record in database
-          for (const item of createOrderDto.packages[ghnShopId].PackageDetail
-            .packageItems) {
-            const orderItemId = orderItemIdMap.get(
-              item.productVariantId.toString(),
-            )?.id;
-
-            if (!orderItemId) {
+            if (!newPayment) {
               this.logger.error(
-                `Failed to find order item ID for product variant with ID ${item.productVariantId}`,
+                `Failed to create payment for order with ID ${newOrder.id}`,
               );
               throw new BadRequestException(
-                `Failed to find order item ID for product variant with ID ${item.productVariantId}`,
+                `Failed to create payment for order with ID ${newOrder.id}`,
               );
             }
 
-            const newShipmentItem = await tx.shipmentItems.create({
+            // create shipment record in database
+            const newShipment = await tx.shipments.create({
               data: {
-                shipmentId: newShipment.id,
-                orderItemId: orderItemId,
+                orderId: newOrder.id,
+                processByStaffId: processByStaffDefault,
+                ghnOrderCode: null, // to update after create order on GHN successfully
+                estimatedDelivery: dayjs().add(2, 'days').toDate(), // default estimated delivery time is 2 days, to update after create order on GHN successfully
+                estimatedShipDate: dayjs().add(1, 'days').toDate(), // default estimated ship date is 1 day, to update after create order on GHN successfully
+                carrier: createOrderDto.carrier,
+                trackingNumber: `${Date.now()}-${newOrder.id}-${createOrderDto.userId}-${Math.floor(
+                  Math.random() * 10000000,
+                )}`, // default tracking number, to update after create order on GHN successfully
+                status: shipmentStatusDefault,
+                description: newOrder.description ? newOrder.description : '',
               },
             });
 
-            if (!newShipmentItem) {
-              this.logger.error(
-                `Failed to create shipment item for order item with product variant ID ${item.productVariantId}`,
+            if (!newShipment) {
+              this.logger.log(
+                `Failed to create shipment for order with ID ${newOrder.id}`,
               );
               throw new BadRequestException(
-                `Failed to create shipment item for order item with product variant ID ${item.productVariantId}`,
+                `Failed to create shipment for order with ID ${newOrder.id}`,
               );
             }
-          }
 
-          this.logger.log(
-            `Successfully created order, order items, payment, shipment, shipment items and ghn shipment for order with ID ${newOrder.id}`,
+            // create shipment items record in database
+            for (const item of createOrderDto.packages[ghnShopId].PackageDetail
+              .packageItems) {
+              const orderItemId = orderItemIdMap.get(
+                item.productVariantId.toString(),
+              )?.id;
+
+              if (!orderItemId) {
+                this.logger.error(
+                  `Failed to find order item ID for product variant with ID ${item.productVariantId}`,
+                );
+                throw new BadRequestException(
+                  `Failed to find order item ID for product variant with ID ${item.productVariantId}`,
+                );
+              }
+
+              const newShipmentItem = await tx.shipmentItems.create({
+                data: {
+                  shipmentId: newShipment.id,
+                  orderItemId: orderItemId,
+                },
+              });
+
+              if (!newShipmentItem) {
+                this.logger.error(
+                  `Failed to create shipment item for order item with product variant ID ${item.productVariantId}`,
+                );
+                throw new BadRequestException(
+                  `Failed to create shipment item for order item with product variant ID ${item.productVariantId}`,
+                );
+              }
+            }
+
+            this.logger.log(
+              `Successfully created order, order items, payment, shipment, shipment items and ghn shipment for order with ID ${newOrder.id}`,
+            );
+
+            const newOrderWithFullInformation: OrdersWithFullInformation | null =
+              await tx.orders.findFirst({
+                where: { id: newOrder.id },
+                include: OrdersWithFullInformationInclude,
+              });
+
+            if (!newOrderWithFullInformation) {
+              this.logger.error(
+                `Failed to retrieve order with ID ${newOrder.id} after creation`,
+              );
+              throw new BadRequestException(
+                `Failed to retrieve order with ID ${newOrder.id} after creation`,
+              );
+            }
+
+            return newOrderWithFullInformation;
+          });
+
+        // create api to create shipment for order on ghn
+        // and update shipment record in database
+        // create order on GHN
+        // prepare content for GHN order
+        let contentForGhnOrder = '';
+        for (const item of createOrderDto.packages[ghnShopId].PackageDetail
+          .packageItems) {
+          contentForGhnOrder += `${item.productVariantName} - SKU: ${item.productVariantSKU} - Size: ${item.productVariantSize} - Color: ${item.productVariantColor} - Quantity: ${item.quantity} - Unit Price: ${item.unitPrice} ${item.currencyUnit}\n`;
+        }
+
+        let totalAmountForGHNOrder = newOrderWithFullInformation.totalAmount;
+
+        // default (COD payment method) -> total amount for ghn shipment is the total amount of the order.
+        // if the order has any non-COD payment method, set total amount for GHN shipment to 0 to avoid collect money from customer when delivery
+        if (createOrderDto.paymentMethod === PaymentMethod.VNPAY) {
+          totalAmountForGHNOrder = 0;
+        } else if (createOrderDto.paymentMethod === PaymentMethod.COD) {
+          totalAmountForGHNOrder = newOrderWithFullInformation.totalAmount;
+        }
+
+        const ghnCreateNewOrderRequest = await ghn.order.createOrder({
+          from_address:
+            createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+              .address,
+          from_name:
+            createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail.name,
+          from_phone:
+            createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+              .phone,
+          from_province_name:
+            createOrderDto.packages[ghnShopId].PackageDetail.ghnProvinceName,
+          from_district_name:
+            createOrderDto.packages[ghnShopId].PackageDetail.ghnDistrictName,
+          from_ward_name:
+            createOrderDto.packages[ghnShopId].PackageDetail.ghnWardName,
+
+          payment_type_id: 2, // 1: seller pay, 2: buyer pay
+          note: newOrderWithFullInformation.description
+            ? newOrderWithFullInformation.description
+            : undefined,
+          required_note:
+            'KHONGCHOXEMHANG' /**Note shipping order.Allowed values: CHOTHUHANG, CHOXEMHANGKHONGTHU, KHONGCHOXEMHANG. CHOTHUHANG mean Buyer can request to see and trial goods. CHOXEMHANGKHONGTHU mean Buyer can see goods but not allow to trial goods. KHONGCHOXEMHANG mean Buyer not allow to see goods */,
+          return_phone:
+            createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+              .phone,
+          return_address:
+            createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+              .address,
+          return_district_id:
+            createOrderDto.packages[ghnShopId].PackageDetail.from_district_id,
+          return_ward_code:
+            createOrderDto.packages[ghnShopId].PackageDetail.from_ward_code,
+          client_order_code: null,
+          to_name: userFromDB.firstName + ' ' + userFromDB.lastName,
+          to_phone: createOrderDto.phone,
+          to_address:
+            createOrderDto.shippingAddress.orderAddressInDb.street +
+            ' ' +
+            createOrderDto.shippingAddress.orderAddressInDb.ward +
+            ' ' +
+            createOrderDto.shippingAddress.orderAddressInDb.district +
+            ' ' +
+            createOrderDto.shippingAddress.orderAddressInDb.province +
+            ' ' +
+            createOrderDto.shippingAddress.orderAddressInDb.country,
+          to_ward_code:
+            createOrderDto.packages[ghnShopId].PackageDetail.to_ward_code,
+          to_district_id:
+            createOrderDto.packages[ghnShopId].PackageDetail.to_district_id,
+          cod_amount: totalAmountForGHNOrder,
+          content: contentForGhnOrder,
+          weight: createOrderDto.packages[ghnShopId].PackageDetail.totalWeight,
+          length: createOrderDto.packages[ghnShopId].PackageDetail.maxLength,
+          width: createOrderDto.packages[ghnShopId].PackageDetail.maxWidth,
+          height: createOrderDto.packages[ghnShopId].PackageDetail.totalHeight,
+          pick_station_id: undefined,
+          insurance_value:
+            newOrderWithFullInformation.totalAmount < 5000000
+              ? newOrderWithFullInformation.totalAmount
+              : 5000000,
+          service_id:
+            createOrderDto.packages[ghnShopId].PackageDetail.shippingService
+              .service_id,
+          service_type_id:
+            createOrderDto.packages[ghnShopId].PackageDetail.shippingService
+              .service_type_id,
+          coupon: null,
+          pick_shift: undefined,
+          items:
+            createOrderDto.packages[ghnShopId].PackageDetail
+              .packageItemsForGHNCreateNewOrderRequest,
+        });
+
+        if (!ghnCreateNewOrderRequest) {
+          this.logger.error(
+            `Failed to create order on GHN for shop office with GHN shop ID ${ghnShopId}`,
           );
+          throw new BadRequestException(
+            `Failed to create order on GHN for shop office with GHN shop ID ${ghnShopId}`,
+          );
+        }
 
-          // log and return result
-          const defaultOrderWithFullInformation = await tx.orders.findUnique({
-            where: { id: newOrder.id },
+        ghnOrderCode = ghnCreateNewOrderRequest.order_code;
+        // update ghn order code and estimated delivery date, estimated ship date for shipment record in database
+        // shipment record is must be one record for one order because we only support one package for one order now
+        const updatedShipment = await this.prismaService.shipments.update({
+          where: {
+            id: newOrderWithFullInformation.shipments[0].id, // shipment record is must be one record for one order because we only support one package for one order now
+          },
+          data: {
+            ghnOrderCode: ghnCreateNewOrderRequest.order_code,
+            estimatedDelivery: ghnCreateNewOrderRequest.expected_delivery_time,
+            estimatedShipDate: ghnCreateNewOrderRequest.expected_delivery_time,
+            trackingNumber: ghnCreateNewOrderRequest.order_code,
+          },
+        });
+
+        if (!updatedShipment) {
+          this.logger.error(
+            `Failed to update shipment with GHN order code for order with ID ${newOrderWithFullInformation.id}`,
+          );
+          throw new BadRequestException(
+            `Failed to update shipment with GHN order code for order with ID ${newOrderWithFullInformation.id}`,
+          );
+        }
+
+        // return order information with full information after creating order successfully
+        const tempOrderWithFullInformation: OrdersWithFullInformation | null =
+          await this.prismaService.orders.findFirst({
+            where: { id: newOrderWithFullInformation.id },
             include: OrdersWithFullInformationInclude,
           });
 
-          if (!defaultOrderWithFullInformation) {
+        if (!tempOrderWithFullInformation) {
+          this.logger.error(
+            `Failed to retrieve order with ID ${newOrderWithFullInformation.id} after creating order on GHN successfully`,
+          );
+          throw new BadRequestException(
+            `Failed to retrieve order with ID ${newOrderWithFullInformation.id} after creating order on GHN successfully`,
+          );
+        }
+
+        const returnOrderWithFullInformation =
+          formatMediaFieldWithLoggingForOrders(
+            [tempOrderWithFullInformation],
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+            this.logger,
+          )[0];
+
+        const endTime = Date.now();
+        this.logger.log(
+          `Order created with ID: ${returnOrderWithFullInformation.id}`,
+        );
+        this.logger.log(
+          `Time for creating order with ID ${returnOrderWithFullInformation.id}: ${endTime - startTime} ms`,
+        );
+        return returnOrderWithFullInformation;
+      } catch (error) {
+        this.logger.error(
+          'Error occurred during order creation transaction: ',
+          error,
+        );
+        if (ghnOrderCode) {
+          // please create api to cancel order on GHN
+          // when create order on GHN successfully
+          // but failed in create order transaction
+          // to avoid having orphan order on GHN without order in our database
+          const cancelOrder = await ghn.order.cancelOrder({
+            orderCodes: [ghnOrderCode],
+          });
+
+          if (!cancelOrder) {
             this.logger.error(
-              `Failed to retrieve order with ID ${newOrder.id} after creation`,
+              `Failed to cancel GHN order with order code ${ghnOrderCode} after order creation transaction failed`,
             );
-
-            throw new NotFoundException('Order not found after creation!');
           }
-
-          return defaultOrderWithFullInformation;
-        });
-
-      const returnOrderWithFullInformation =
-        formatMediaFieldWithLoggingForOrders(
-          [defaultOrderWithFullInformation],
-          (url: string) => this.awsService.buildPublicMediaUrl(url),
-          this.logger,
-        )[0];
-
-      const endTime = Date.now();
-      this.logger.log(
-        `Order created with ID: ${returnOrderWithFullInformation.id}`,
-      );
-      this.logger.log(
-        `Time for creating order with ID ${returnOrderWithFullInformation.id}: ${endTime - startTime} ms`,
-      );
-      return returnOrderWithFullInformation;
+        }
+        // Re-throw known HTTP exceptions (e.g. NotFoundException) without wrapping them
+        if (error instanceof HttpException) throw error;
+        throw new BadRequestException('Failed to create order');
+      }
     } catch (error) {
       this.logger.error('Failed to create order: ', error);
       // Re-throw known HTTP exceptions (e.g. NotFoundException) without wrapping them

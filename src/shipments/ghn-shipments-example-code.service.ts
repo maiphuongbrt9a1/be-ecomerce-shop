@@ -6,11 +6,11 @@ import { Ghn } from '../src/giaohangnhanh';
 async function main() {
     // Khởi tạo đối tượng Ghn
     const ghn = new Ghn({
-        token: 'YOUR_GHN_TOKEN', // Thay bằng token của bạn
-        shopId: 123456, // Thay bằng shopId của bạn
+        token: 'YOUR_GHN_TOKEN', 
+        shopId: 123456, 
         host: 'https://dev-online-gateway.ghn.vn',
         trackingHost: 'https://tracking.ghn.dev/',
-        testMode: true, // Bật chế độ test sẽ ghi đè tất cả host thành môi trường sandbox
+        testMode: true, 
     });
 
     // Lấy tỉnh đầu tiên trong danh sách

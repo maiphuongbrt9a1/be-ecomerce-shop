@@ -667,12 +667,50 @@ export class GHNShops extends GhnAbstract {
   }
 }
 
+/**
+ * Check whether a voucher is still within its configured usage limit.
+ *
+ * This helper determines if a voucher can still be applied based on usage counters.
+ *
+ * 1. Returns false when voucher is null or undefined
+ * 2. Returns true for vouchers without usage limit (usageLimit === null)
+ * 3. For limited vouchers, compares timesUsed with usageLimit
+ * 4. Returns true only when timesUsed is strictly less than usageLimit
+ *
+ * @param {Vouchers | null | undefined} v - Voucher record to validate
+ *
+ * @returns {boolean} True if voucher is still usable by usage-limit rule, false otherwise
+ *
+ * @remarks
+ * - This function only validates usage-limit state
+ * - Date validity, active status, and other constraints must be checked separately
+ * - Uses strict comparison: `timesUsed < usageLimit`
+ */
 export const isVoucherWithinUsageLimit = (v: Vouchers | null | undefined) => {
   if (!v) return false;
   if (v.usageLimit === null) return true;
   return v.timesUsed < v.usageLimit;
 };
 
+/**
+ * Calculate discount amount from a voucher and base price.
+ *
+ * This helper normalizes fixed and percentage voucher logic into one function.
+ *
+ * 1. If voucher type is FIXED_AMOUNT, returns voucher.discountValue directly
+ * 2. If voucher type is PERCENTAGE, returns (baseAmount * discountValue) / 100
+ * 3. Returns 0 for unsupported or unknown discount types
+ *
+ * @param {Vouchers} voucher - Voucher containing discountType and discountValue
+ * @param {number} baseAmount - Amount used as discount calculation base
+ *
+ * @returns {number} Calculated discount amount in the same currency unit as baseAmount
+ *
+ * @remarks
+ * - Caller should apply min/base guards if discount cannot exceed base amount
+ * - This function does not clamp negative values or enforce business caps
+ * - Intended for both item-level and package-level discount calculation
+ */
 export const calculateDiscountAmount = (
   voucher: Vouchers,
   baseAmount: number,

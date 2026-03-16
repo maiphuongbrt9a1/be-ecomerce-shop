@@ -232,8 +232,8 @@ export class PaymentsService {
           data: {
             orderId: result.orderId,
             processByStaffId: null,
-            estimatedDelivery: dayjs().add(1, 'days').toDate(),
-            estimatedShipDate: dayjs().add(2, 'days').toDate(),
+            estimatedDelivery: dayjs().add(2, 'days').toDate(),
+            estimatedShipDate: dayjs().add(1, 'days').toDate(),
             carrier: shipmentCarrier,
             trackingNumber: `${Date.now()}-${result.orderId}-${oldPayment.order.userId}-${Math.floor(
               Math.random() * 10000000,
