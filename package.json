@@ -22,6 +22,8 @@
     "gen-docs": "ts-node -r tsconfig-paths/register src/generate-openapi.ts"
   },
   "dependencies": {
+    "@bull-board/api": "^6.20.5",
+    "@bull-board/express": "^6.20.5",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/bullmq": "^11.0.4",
