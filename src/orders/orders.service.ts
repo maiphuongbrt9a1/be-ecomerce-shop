@@ -309,6 +309,11 @@ export class OrdersService {
       }
 
       try {
+        this.logger.log(
+          'Starting order creation transaction for user with ID ' +
+            createOrderDto.userId,
+        );
+
         const newOrderWithFullInformation: OrdersWithFullInformation =
           await this.prismaService.$transaction(async (tx) => {
             // check again checksum information for this package to make sure
@@ -697,10 +702,17 @@ export class OrdersService {
             return newOrderWithFullInformation;
           });
 
-        // create api to create shipment for order on ghn
-        // and update shipment record in database
-        // create order on GHN
-        // prepare content for GHN order
+        this.logger.log(
+          `Order creation transaction completed in ${
+            (Date.now() - startTime) / 1000
+          } seconds for user with ID ${createOrderDto.userId}`,
+        );
+
+        this.logger.log(
+          'Attempting to create order on GHN with order ID ' +
+            newOrderWithFullInformation.id,
+        );
+
         let contentForGhnOrder = '';
         for (const item of createOrderDto.packages[ghnShopId].PackageDetail
           .packageItems) {
@@ -799,9 +811,19 @@ export class OrdersService {
           );
         }
 
+        this.logger.log(
+          `Successfully created order on GHN with GHN order code ${ghnCreateNewOrderRequest.order_code} for shop office with GHN shop ID ${ghnShopId}`,
+        );
+
         ghnOrderCode = ghnCreateNewOrderRequest.order_code;
-        // update ghn order code and estimated delivery date, estimated ship date for shipment record in database
+        // update ghn order code and estimated delivery date for shipment record in database
         // shipment record is must be one record for one order because we only support one package for one order now
+
+        this.logger.log(
+          'Attempting to update shipment record in database with GHN order code and estimated delivery date for order with ID ' +
+            newOrderWithFullInformation.id,
+        );
+
         const updatedShipment = await this.prismaService.shipments.update({
           where: {
             id: newOrderWithFullInformation.shipments[0].id, // shipment record is must be one record for one order because we only support one package for one order now
@@ -809,7 +831,6 @@ export class OrdersService {
           data: {
             ghnOrderCode: ghnCreateNewOrderRequest.order_code,
             estimatedDelivery: ghnCreateNewOrderRequest.expected_delivery_time,
-            estimatedShipDate: ghnCreateNewOrderRequest.expected_delivery_time,
             trackingNumber: ghnCreateNewOrderRequest.order_code,
           },
         });
@@ -822,6 +843,11 @@ export class OrdersService {
             `Failed to update shipment with GHN order code for order with ID ${newOrderWithFullInformation.id}`,
           );
         }
+
+        this.logger.log(
+          'Successfully updated shipment record in database with GHN order code for order with ID ' +
+            newOrderWithFullInformation.id,
+        );
 
         // return order information with full information after creating order successfully
         const tempOrderWithFullInformation: OrdersWithFullInformation | null =
@@ -864,6 +890,9 @@ export class OrdersService {
           // when create order on GHN successfully
           // but failed in create order transaction
           // to avoid having orphan order on GHN without order in our database
+          this.logger.log(
+            `Attempting to cancel GHN order with order code ${ghnOrderCode} due to failure in order creation transaction`,
+          );
           const cancelOrder = await ghn.order.cancelOrder({
             orderCodes: [ghnOrderCode],
           });
@@ -873,6 +902,9 @@ export class OrdersService {
               `Failed to cancel GHN order with order code ${ghnOrderCode} after order creation transaction failed`,
             );
           }
+          this.logger.log(
+            `Successfully cancelled GHN order with order code ${ghnOrderCode} after order creation transaction failed`,
+          );
         }
         // Re-throw known HTTP exceptions (e.g. NotFoundException) without wrapping them
         if (error instanceof HttpException) throw error;

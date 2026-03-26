@@ -7,14 +7,8 @@ import {
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import {
-  Payments,
-  PaymentStatus,
-  Prisma,
-  ShipmentStatus,
-} from '@prisma/client';
+import { OrderStatus, Payments, PaymentStatus, Prisma } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
-import dayjs from 'dayjs';
 import {
   BuildPaymentUrlOptions,
   QueryDrOptions,
@@ -169,79 +163,39 @@ export class PaymentsService {
   }
 
   /**
-   * Updates a payment record and creates a shipment when payment is confirmed.
+   * Updates an existing payment record by ID.
    *
    * This method performs the following operations:
-   * 1. Retrieves the current payment with order information
-   * 2. Updates the payment with new status or information
-   * 3. If payment transitions from PENDING to PAID:
-   *    - Creates a new shipment record
-   *    - Sets initial shipment status to WAITING_FOR_PICKUP
-   *    - Assigns estimated delivery and ship dates
-   * 4. Logs the update operation
+   * 1. Receives payment ID and partial update payload
+   * 2. Applies updates directly to the payment record in database
+   * 3. Returns the updated payment entity
+   * 4. Logs update success or failure
    *
    * @param {number} id - The unique identifier of the payment to update
-   * @param {UpdatePaymentDto} updatePaymentDto - The data transfer object containing payment updates:
-   *   - status: New payment status (PENDING, PAID, FAILED, REFUNDED, etc.)
-   *   - amount: Updated amount if applicable
-   *
-   * @param {string} shipmentCarrier - The shipping carrier name (used when creating shipment)
+   * @param {UpdatePaymentDto} updatePaymentDto - Partial payment fields to update:
+   *   - status: Payment status (PENDING, PAID, FAILED, REFUNDED, etc.)
+   *   - paymentMethod: Updated payment method if needed
+   *   - transactionId: Updated transaction reference
+   *   - amount/currencyUnit: Updated payment amount information
    *
    * @returns {Promise<Payments>} The updated payment record
    *
-   * @throws {NotFoundException} If payment is not found
    * @throws {BadRequestException} If payment update fails
    *
    * @remarks
-   * - Automatically triggers shipment creation on successful payment confirmation
-   * - Generates unique tracking number for shipment
-   * - Only creates shipment if payment transitions from PENDING to PAID
+   * - This method only updates payment data
+   * - Shipment creation is not handled in this method
+   * - Input shape is based on UpdatePaymentDto (PartialType of CreatePaymentDto)
    */
   async update(
     id: number,
     updatePaymentDto: UpdatePaymentDto,
-    shipmentCarrier: string,
   ): Promise<Payments> {
     try {
-      const oldPayment = await this.prismaService.payments.findUnique({
-        where: { id: id },
-        include: {
-          order: {
-            select: {
-              userId: true,
-            },
-          },
-        },
-      });
-
-      if (!oldPayment) {
-        throw new NotFoundException('Payment not found!');
-      }
-
       const result = await this.prismaService.payments.update({
         where: { id: id },
         data: { ...updatePaymentDto },
       });
-
-      if (
-        result &&
-        result.status === PaymentStatus.PAID &&
-        oldPayment.status === PaymentStatus.PENDING
-      ) {
-        await this.prismaService.shipments.create({
-          data: {
-            orderId: result.orderId,
-            processByStaffId: null,
-            estimatedDelivery: dayjs().add(2, 'days').toDate(),
-            estimatedShipDate: dayjs().add(1, 'days').toDate(),
-            carrier: shipmentCarrier,
-            trackingNumber: `${Date.now()}-${result.orderId}-${oldPayment.order.userId}-${Math.floor(
-              Math.random() * 10000000,
-            )}`,
-            status: ShipmentStatus.PENDING,
-          },
-        });
-      }
 
       this.logger.log(`Updated payment with ID: ${id}`);
       return result;
@@ -281,6 +235,22 @@ export class PaymentsService {
     }
   }
 
+  /**
+   * Retrieves the list of banks currently supported by VNPay.
+   *
+   * This method performs the following operations:
+   * 1. Calls VNPay SDK to fetch available bank list
+   * 2. Logs request and response information
+   * 3. Returns the normalized bank list from VNPay
+   *
+   * @returns {Promise<Bank[]>} List of VNPay-supported banks
+   *
+   * @throws {BadRequestException} If VNPay bank list retrieval fails
+   *
+   * @remarks
+   * - Used by clients to render selectable payment bank options
+   * - Response is provided directly from VNPay SDK
+   */
   async getVNPayBankList(): Promise<Bank[]> {
     try {
       this.logger.log('Fetching VNPAY bank list');
@@ -293,6 +263,27 @@ export class PaymentsService {
     }
   }
 
+  /**
+   * Builds a VNPay checkout URL from payment request payload.
+   *
+   * This method performs the following operations:
+   * 1. Receives VNPay build URL DTO with request data and options
+   * 2. Casts DTO payload into VNPay SDK compatible types
+   * 3. Calls VNPay SDK to generate signed payment URL
+   * 4. Logs the generated URL and returns it
+   *
+   * @param {CreateVNPayPaymentUrlDto} createVNPayPaymentUrlDto - VNPay URL build payload:
+   *   - data: Payment request fields (amount, txnRef, order info, return URL, etc.)
+   *   - options: Build options for hashing/logger behavior
+   *
+   * @returns {string} VNPay payment URL for redirecting customer to checkout
+   *
+   * @throws {BadRequestException} If payment URL generation fails
+   *
+   * @remarks
+   * - URL is signed by VNPay SDK to ensure integrity
+   * - Caller should redirect client immediately after URL is generated
+   */
   buildVNPayPaymentUrl(
     createVNPayPaymentUrlDto: CreateVNPayPaymentUrlDto,
   ): string {
@@ -315,6 +306,27 @@ export class PaymentsService {
     }
   }
 
+  /**
+   * Verifies VNPay return URL data after customer is redirected back.
+   *
+   * This method performs the following operations:
+   * 1. Receives return query payload and verify options
+   * 2. Calls VNPay SDK to verify signature and response data
+   * 3. Logs verification input and output
+   * 4. Returns verification result for caller-side handling
+   *
+   * @param {VerifyVNPayReturnUrlDto} verifyVNPayReturnUrlDto - Return URL verification payload:
+   *   - data: Query params returned by VNPay
+   *   - options: Verify options (hash validation, logger, etc.)
+   *
+   * @returns {Promise<VerifyReturnUrl>} VNPay return verification result
+   *
+   * @throws {BadRequestException} If verification process fails
+   *
+   * @remarks
+   * - This method verifies return URL authenticity but does not persist order/payment state
+   * - Payment finalization should rely on IPN processing for authoritative updates
+   */
   async verifyVNPayReturnUrl(
     verifyVNPayReturnUrlDto: VerifyVNPayReturnUrlDto,
   ): Promise<VerifyReturnUrl> {
@@ -336,6 +348,32 @@ export class PaymentsService {
     }
   }
 
+  /**
+   * Handles VNPay IPN callback and synchronizes payment/order state.
+   *
+   * This method performs the following operations:
+   * 1. Builds internal verify DTO from incoming VNPay query params
+   * 2. Verifies IPN signature and payload via VNPay SDK
+   * 3. Validates order existence, expected amount, and payment state
+   * 4. Updates payment to PAID and stores VNPay transaction number
+   * 5. Updates order status to PAYMENT_CONFIRMED in one transaction
+   * 6. Returns VNPay-compatible IPN response code object
+   *
+   * @param {ReturnQueryFromVNPayDto} query - Raw VNPay IPN query parameters
+   *
+   * @returns {Promise<IpnResponse>} VNPay IPN handling response:
+   *   - IpnSuccess when verification and DB updates succeed
+   *   - IpnFailChecksum when signature verification fails
+   *   - IpnOrderNotFound when order does not exist
+   *   - IpnInvalidAmount when amount mismatch is detected
+   *   - InpOrderAlreadyConfirmed when payment is already confirmed
+   *   - IpnUnknownError for unexpected failures
+   *
+   * @remarks
+   * - IPN path is the authoritative source for payment confirmation
+   * - Payment and order updates are wrapped in one DB transaction
+   * - Assumes one payment record per order and reads the first payment element
+   */
   async handleVNPayIPNCall(
     query: ReturnQueryFromVNPayDto,
   ): Promise<IpnResponse> {
@@ -372,6 +410,9 @@ export class PaymentsService {
       );
 
       if (!verifyIPNCallResult.isVerified) {
+        this.logger.error(
+          'VNPAY IPN call verification failed: Is not verified',
+        );
         return IpnFailChecksum;
       }
 
@@ -385,51 +426,77 @@ export class PaymentsService {
       });
 
       if (!foundOrder) {
+        this.logger.error(
+          'VNPAY IPN call verification failed: Order not found with ID ' +
+            verifyIPNCallResult.vnp_TxnRef,
+        );
         return IpnOrderNotFound;
       }
 
       if (foundOrder.totalAmount !== Number(verifyIPNCallResult.vnp_Amount)) {
+        this.logger.error(
+          'VNPAY IPN call verification failed: Invalid amount for order with ID ' +
+            verifyIPNCallResult.vnp_TxnRef,
+        );
         return IpnInvalidAmount;
       }
 
       if (foundOrder.payment[0].status === PaymentStatus.PAID) {
+        this.logger.error(
+          'VNPAY IPN call verification failed: Order already confirmed for order with ID ' +
+            verifyIPNCallResult.vnp_TxnRef,
+        );
         return InpOrderAlreadyConfirmed;
       }
 
       // update db here
       // update payment to Paid
-      // and create shipment and shipment items in db.
-      // and need to create ghn shipment.
-      const updateDatabaseResult = await this.prismaService.$transaction(
-        async (tx) => {
-          // update payment to Paid
-          // update transaction id to vnpay transaction id
-          const updatePayment = await tx.payments.update({
-            where: {
-              // when order created, we create only one payment, so we can safely access the first element
-              id: foundOrder.payment[0].id,
-            },
-            data: {
-              status: PaymentStatus.PAID,
-              transactionId: String(verifyIPNCallResult.vnp_TransactionNo),
-            },
-          });
+      // update order status to Confirmed
+      await this.prismaService.$transaction(async (tx) => {
+        // update payment to Paid
+        // update transaction id to vnpay transaction id
+        const updatePayment = await tx.payments.update({
+          where: {
+            // when order created, we create only one payment, so we can safely access the first element
+            id: foundOrder.payment[0].id,
+          },
+          data: {
+            status: PaymentStatus.PAID,
+            transactionId: String(verifyIPNCallResult.vnp_TransactionNo),
+          },
+        });
 
-          if (!updatePayment) {
-            this.logger.log(
-              '[handleVNPayIPNCall] Failed to update payment for order ID: ',
+        if (!updatePayment) {
+          this.logger.log(
+            '[handleVNPayIPNCall] Failed to update payment for order ID: ',
+            foundOrder.id,
+          );
+          throw new Error(
+            'Failed to update payment for order ID: ' + foundOrder.id,
+          );
+        }
+
+        // update order status to Confirmed
+        const updateOrder = await tx.orders.update({
+          where: {
+            id: foundOrder.id,
+          },
+          data: {
+            status: OrderStatus.PAYMENT_CONFIRMED,
+          },
+        });
+
+        if (!updateOrder) {
+          this.logger.log(
+            '[handleVNPayIPNCall] Failed to update order status to PAYMENT_CONFIRMED for order ID: ',
+            foundOrder.id,
+          );
+          throw new Error(
+            'Failed to update order status to PAYMENT_CONFIRMED for order ID: ' +
               foundOrder.id,
-            );
-            throw new Error(
-              'Failed to update payment for order ID: ' + foundOrder.id,
-            );
-          }
-
-          // create shipment and shipment items in db.
-
-          // call ghn api to create ghn shipment here.
-        },
-      );
+          );
+        }
+      });
 
       return IpnSuccess;
     } catch (error) {
@@ -441,6 +508,27 @@ export class PaymentsService {
     }
   }
 
+  /**
+   * Queries VNPay transaction details/status using QueryDR API.
+   *
+   * This method performs the following operations:
+   * 1. Receives QueryDR payload and options
+   * 2. Calls VNPay SDK queryDr endpoint
+   * 3. Logs request and response
+   * 4. Returns VNPay transaction query result
+   *
+   * @param {VnpayQueryDrDto} vnpayQueryDrDto - VNPay QueryDR request payload:
+   *   - data: Query fields (transaction reference/time, etc.)
+   *   - options: Query options for signing/logger behavior
+   *
+   * @returns {Promise<QueryDrResponse>} VNPay QueryDR response data
+   *
+   * @throws {BadRequestException} If QueryDR request fails
+   *
+   * @remarks
+   * - Useful for manual reconciliation and troubleshooting payment disputes
+   * - Response structure is controlled by VNPay SDK
+   */
   async VNPayQueryDr(
     vnpayQueryDrDto: VnpayQueryDrDto,
   ): Promise<QueryDrResponse> {
@@ -462,6 +550,27 @@ export class PaymentsService {
     }
   }
 
+  /**
+   * Sends a refund request to VNPay for a previously processed transaction.
+   *
+   * This method performs the following operations:
+   * 1. Receives refund payload and options
+   * 2. Calls VNPay SDK refund endpoint
+   * 3. Logs request and refund result
+   * 4. Returns VNPay refund response to caller
+   *
+   * @param {VnpayRefundDto} vnpayRefundDto - VNPay refund payload:
+   *   - data: Refund details (transaction reference, amount, user, command, etc.)
+   *   - options: Refund options for signing/logger behavior
+   *
+   * @returns {Promise<unknown>} VNPay refund response payload from SDK
+   *
+   * @throws {BadRequestException} If VNPay refund request fails
+   *
+   * @remarks
+   * - This method forwards response from VNPay SDK without extra business mapping
+   * - Caller should persist refund outcome to internal payment/order state if needed
+   */
   async VNPayRefund(vnpayRefundDto: VnpayRefundDto) {
     try {
       this.logger.log(

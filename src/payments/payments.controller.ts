@@ -248,20 +248,15 @@ export class PaymentsController {
   @Roles('ADMIN', 'OPERATOR', 'USER')
   @ApiBody({
     description:
-      'Payment update data with status and optional transaction or method information. Also include shipmentCarrier for creating shipment when payment is marked as PAID',
+      'Partial payment update payload. Only payment fields are updated (status, amount, transaction/payment metadata). This endpoint does not create shipment records.',
     type: UpdatePaymentDto,
   })
   @Patch('/:id')
   async update(
     @Param('id') id: string,
     @Body() updatePaymentDto: UpdatePaymentDto,
-    @Body('shipmentCarrier') shipmentCarrier: string,
   ) {
-    return await this.paymentsService.update(
-      +id,
-      updatePaymentDto,
-      shipmentCarrier,
-    );
+    return await this.paymentsService.update(+id, updatePaymentDto);
   }
 
   @ApiOperation({ summary: 'Delete one payment' })
