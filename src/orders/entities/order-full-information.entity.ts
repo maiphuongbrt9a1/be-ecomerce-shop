@@ -16,8 +16,8 @@ export class OrderFullInformationEntity {
   @ApiProperty({ example: 1 })
   shippingAddressId: bigint;
 
-  @ApiProperty({ example: 1 })
-  processByStaffId: bigint;
+  @ApiProperty({ example: 1, required: false, nullable: true })
+  processByStaffId?: bigint | null;
 
   @ApiProperty({ example: 'This is an order description', required: false })
   description?: string;
@@ -52,8 +52,8 @@ export class OrderFullInformationEntity {
   @ApiProperty({ type: UserWithMediaEntity })
   user: UserWithMediaEntity;
 
-  @ApiProperty({ type: UserWithMediaEntity })
-  processByStaff: UserWithMediaEntity;
+  @ApiProperty({ type: UserWithMediaEntity, required: false, nullable: true })
+  processByStaff?: UserWithMediaEntity | null;
 
   @ApiProperty({ type: AddressEntity })
   shippingAddress: AddressEntity;

@@ -110,7 +110,7 @@ export class OrdersService {
       );
 
       const checksumFromDatabase =
-        await this.prismaService.packageChecksums.findUnique({
+        await this.prismaService.packageChecksums.findFirst({
           where: {
             id: BigInt(
               createOrderDto.packages[ghnShopId].checksumInformation

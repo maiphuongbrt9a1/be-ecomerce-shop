@@ -39,8 +39,21 @@ export class OrdersController {
       'Order created successfully with full information including items, payments, and shipments',
     type: OrderFullInformationEntity,
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Bad Request - validation failed, checksum verification failed, insufficient stock, or order creation failed.',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Not Found - user, shipping address, product variant, or related entity not found.',
+  })
+  @ApiResponse({
+    status: 500,
+    description:
+      'Internal Server Error - missing server configuration or unexpected error during order creation.',
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'USER', 'OPERATOR')

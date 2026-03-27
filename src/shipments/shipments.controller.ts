@@ -37,7 +37,10 @@ import {
   PackageItemDetailDto,
   PackageItemDetailForGHNCreateNewOrderRequestDto,
 } from '@/orders/dto/group-order-items-package-response.dto';
-import { PreviewFeeAndDiscountAndPriceForOrderDto } from './dto/preview-shipping-fee-for-order.dto';
+import {
+  PreviewFeeAndDiscountAndPriceForOrderDto,
+  PreviewPackageDetailWithChecksumDto,
+} from './dto/preview-shipping-fee-for-order.dto';
 import { SecondCreateOrderItemsDto } from '@/orders/dto/create-order.dto';
 import { CreateAddressForOrderResponseDto } from '@/address/dto/create-address-for-order-response.dto';
 
@@ -83,6 +86,7 @@ export class ShipmentsController {
     GHNShopDetailDto,
     GetServiceResponseDto,
     CalculateExpectedDeliveryTimeResponseDto,
+    PreviewPackageDetailWithChecksumDto,
   )
   @ApiOperation({
     summary:
@@ -102,7 +106,7 @@ export class ShipmentsController {
     schema: {
       type: 'object',
       additionalProperties: {
-        $ref: getSchemaPath(PackageDetailDto),
+        $ref: getSchemaPath(PreviewPackageDetailWithChecksumDto),
       },
       description:
         'Map keyed by GHN shop ID for checkout preview package payload used by create-order',

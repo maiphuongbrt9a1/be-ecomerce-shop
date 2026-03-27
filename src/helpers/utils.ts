@@ -737,15 +737,27 @@ export const calculateDiscountAmount = (
  * - object keys -> sorted alphabetically (deterministic output)
  */
 export const stableStringifyForChecksum = (value: unknown): string => {
-  const normalize = (input: unknown): unknown => {
+  const isIdLikeKey = (key: string): boolean => {
+    return (
+      key === 'id' ||
+      key.endsWith('Id') ||
+      key.endsWith('ID') ||
+      key.endsWith('_id')
+    );
+  };
+
+  const normalize = (input: unknown, key?: string): unknown => {
     if (typeof input === 'bigint') return input.toString();
     if (input instanceof Date) return input.toISOString();
-    if (Array.isArray(input)) return input.map(normalize);
+    if ((typeof input === 'number' || typeof input === 'string') && key) {
+      if (isIdLikeKey(key)) return String(input);
+    }
+    if (Array.isArray(input)) return input.map((item) => normalize(item));
     if (input && typeof input === 'object') {
       return Object.keys(input as Record<string, unknown>)
         .sort()
         .reduce<Record<string, unknown>>((acc, key) => {
-          acc[key] = normalize((input as Record<string, unknown>)[key]);
+          acc[key] = normalize((input as Record<string, unknown>)[key], key);
           return acc;
         }, {});
     }

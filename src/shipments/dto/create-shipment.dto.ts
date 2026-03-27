@@ -55,13 +55,7 @@ export class CreateShipmentDto {
   shippedAt: Date;
 
   @ApiProperty({
-    examples: [
-      'Giao hàng nhanh',
-      'Giao hàng tiết kiệm',
-      'GrabExpress',
-      'VNPost',
-      'J&T Express',
-    ],
+    examples: ['Giao hàng nhanh'],
     example: 'Giao hàng nhanh',
     description: 'Carrier for the shipment',
   })

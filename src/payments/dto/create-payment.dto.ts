@@ -22,14 +22,7 @@ export class CreatePaymentDto {
   @ApiProperty({
     enum: PaymentMethod,
     enumName: 'PaymentMethod',
-    examples: [
-      'COD',
-      'VNPAY',
-      'MOMO',
-      'ZALOPAY',
-      'CREDIT_CARD',
-      'BANK_TRANSFER',
-    ],
+    examples: ['COD', 'VNPAY'],
     example: 'COD',
     description: 'Payment method for the order',
   })

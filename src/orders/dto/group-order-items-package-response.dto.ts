@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DiscountType } from '@prisma/client';
+import { VoucherEntity } from '@/vouchers/entities/voucher.entity';
+import { UserSavedVoucherDetailEntity } from '@/user-vouchers/entities/user-saved-voucher-detail.entity';
 
 export class PackageItemDetailForGHNCreateNewOrderRequestDto {
   @ApiProperty({ example: 'T-Shirt Red' })
@@ -57,14 +59,28 @@ export class PackageItemDetailDto {
   @ApiProperty({ example: 1200000 })
   unitPrice: number;
 
-  @ApiProperty({ example: 'Summer Sale 10%', nullable: true, required: false })
-  discountDescription?: string | null;
+  @ApiProperty({
+    type: VoucherEntity,
+    nullable: true,
+    description:
+      'Applied voucher snapshot at item level. Null means no voucher applied for this item.',
+  })
+  appliedVoucher: VoucherEntity | null;
 
-  @ApiProperty({ enum: DiscountType, example: 'PERCENTAGE', nullable: true })
-  discountType: DiscountType | null;
+  @ApiProperty({ example: 'No discount applied' })
+  discountDescription: string;
+
+  @ApiProperty({ enum: DiscountType, example: 'PERCENTAGE' })
+  discountType: DiscountType;
 
   @ApiProperty({ example: 10 })
   discountValue: number;
+
+  @ApiProperty({ example: 120000 })
+  totalDiscountAmount: number;
+
+  @ApiProperty({ example: 1200000 })
+  subTotalPrice: number;
 
   @ApiProperty({ example: 1080000 })
   totalPrice: number;
@@ -191,6 +207,23 @@ export class PackageDetailDto {
   @ApiProperty({ type: [PackageItemDetailForGHNCreateNewOrderRequestDto] })
   packageItemsForGHNCreateNewOrderRequest: PackageItemDetailForGHNCreateNewOrderRequestDto[];
 
+  @ApiProperty({
+    type: UserSavedVoucherDetailEntity,
+    nullable: true,
+    description:
+      'Selected user voucher snapshot for package-level discount. Null means no user voucher applied.',
+  })
+  userVoucher: UserSavedVoucherDetailEntity | null;
+
+  @ApiProperty({ example: 5720000 })
+  subTotalPriceForPackage: number;
+
+  @ApiProperty({ example: 0 })
+  specialUserDiscountAmountForPackage: number;
+
+  @ApiProperty({ example: 5804700 })
+  totalPriceForPackage: number;
+
   @ApiProperty({ example: 1500, description: 'Total weight in grams' })
   totalWeight: number;
 
@@ -227,15 +260,28 @@ export class PackageDetailDto {
   @ApiProperty({ type: CalculateExpectedDeliveryTimeResponseDto })
   expectedDeliveryTime: CalculateExpectedDeliveryTimeResponseDto;
 
+  @ApiProperty({ example: 202 })
+  from_province_id: number;
+
   @ApiProperty({ example: 1 })
   from_district_id: number;
 
   @ApiProperty({ example: '100320' })
   from_ward_code: string;
 
+  @ApiProperty({ example: 205 })
+  to_province_id: number;
+
   @ApiProperty({ example: 3 })
   to_district_id: number;
 
   @ApiProperty({ example: '100010' })
   to_ward_code: string;
+
+  @ApiProperty({
+    example: '1033',
+    description:
+      'User ID associated with destination address. Runtime type can be bigint and may be serialized as string/number in JSON.',
+  })
+  to_user_id: string;
 }

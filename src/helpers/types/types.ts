@@ -798,7 +798,7 @@ export type PackageDetail = {
  * @example
  * {
  *   "1001": { PackageDetail: { packageItems: [...], shippingFee: 35000 }, checksumInformation: { checksumIdInDB: 1n, checksumData: "abc123" } },
- *   "1002": { packageItems: [...], shippingFee: 28000 }
+ *   "1002": { PackageDetail: { packageItems: [...], shippingFee: 35000 }, checksumInformation: { checksumIdInDB: 1n, checksumData: "abc123" } }
  * }
  */
 export type PackagesForShipping = Record<

@@ -1,7 +1,3 @@
-import type {
-  createNewAddressForOrderResponseDto,
-  PackagesForShipping,
-} from '@/helpers/types/types';
 import { CreateAddressForOrderResponseDto } from '@/address/dto/create-address-for-order-response.dto';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { OrderStatus, PaymentMethod } from '@prisma/client';
@@ -13,8 +9,10 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
-import { PackageDetailDto } from './group-order-items-package-response.dto';
+import type { PackagesForShipping } from '@/helpers/types/types';
+import { PreviewPackageDetailWithChecksumDto } from '@/shipments/dto/preview-shipping-fee-for-order.dto';
 
 export class SecondCreateOrderItemsDto {
   @ApiProperty({ example: 851 })
@@ -35,14 +33,7 @@ export class CreateOrderDto {
 
   @ApiProperty({
     enumName: 'PaymentMethod',
-    examples: [
-      'COD',
-      'VNPAY',
-      'MOMO',
-      'ZALOPAY',
-      'CREDIT_CARD',
-      'BANK_TRANSFER',
-    ],
+    examples: ['COD', 'VNPAY'],
     example: 'COD',
     description: 'Payment method for the order',
   })
@@ -51,13 +42,7 @@ export class CreateOrderDto {
   paymentMethod: PaymentMethod;
 
   @ApiProperty({
-    examples: [
-      'Giao hàng nhanh',
-      'Giao hàng tiết kiệm',
-      'GrabExpress',
-      'VNPost',
-      'J&T Express',
-    ],
+    examples: ['Giao hàng nhanh'],
     description: 'Carrier for the shipment',
     example: 'Giao hàng nhanh',
   })
@@ -85,14 +70,16 @@ export class CreateOrderDto {
     type: CreateAddressForOrderResponseDto,
   })
   @IsNotEmpty()
-  shippingAddress: createNewAddressForOrderResponseDto;
+  @ValidateNested()
+  @Type(() => CreateAddressForOrderResponseDto)
+  shippingAddress: CreateAddressForOrderResponseDto;
 
   @ApiProperty({
     description:
       'Packages grouped by GHN shop ID. Each key is a shop ID string and each value is a PackageDetail object.',
     type: 'object',
     additionalProperties: {
-      $ref: getSchemaPath(PackageDetailDto),
+      $ref: getSchemaPath(PreviewPackageDetailWithChecksumDto),
     },
   })
   @IsNotEmpty()
