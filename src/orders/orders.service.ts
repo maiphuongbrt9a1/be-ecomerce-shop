@@ -680,6 +680,162 @@ export class OrdersService {
               }
             }
 
+            // Phần này là gọi ra ghn order api để tạo đơn vận chuyển trên GHN
+            // sau khi đã tạo xong đơn hàng và các bản ghi liên quan trong database
+            // tạo ghn order api ở trong transaction để đảm bảo tính toàn vẹn dữ liệu,
+            // nếu tạo đơn trên GHN thất bại thì transaction sẽ bị rollback
+            // và đơn hàng sẽ không được tạo trong database
+
+            // về trường hợp nếu đã có đơn hàng được tạo trên GHN
+            // nhưng cập nhật mã đơn GHN vào bản ghi shipment trong database thất bại,
+            // thì sẽ có việc hủy đơn hàng trên ghn ở phần catch
+            // của cụm try catch bao quanh transaction
+            // để đảm bảo không có đơn hàng nào bị tạo trên GHN mà không có mã đơn GHN trong database cả
+
+            this.logger.log(
+              'Attempting to create order on GHN with order ID ' + newOrder.id,
+            );
+
+            let contentForGhnOrder = '';
+            for (const item of createOrderDto.packages[ghnShopId].PackageDetail
+              .packageItems) {
+              contentForGhnOrder += `${item.productVariantName} - SKU: ${item.productVariantSKU} - Size: ${item.productVariantSize} - Color: ${item.productVariantColor} - Quantity: ${item.quantity} - Unit Price: ${item.unitPrice} ${item.currencyUnit}\n`;
+            }
+
+            let totalAmountForGHNOrder = newOrder.totalAmount;
+
+            // default (COD payment method) -> total amount for ghn shipment is the total amount of the order.
+            // if the order has any non-COD payment method, set total amount for GHN shipment to 0 to avoid collect money from customer when delivery
+            if (createOrderDto.paymentMethod === PaymentMethod.VNPAY) {
+              totalAmountForGHNOrder = 0;
+            } else if (createOrderDto.paymentMethod === PaymentMethod.COD) {
+              totalAmountForGHNOrder = newOrder.totalAmount;
+            }
+
+            const ghnCreateNewOrderRequest = await ghn.order.createOrder({
+              from_address:
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+                  .address,
+              from_name:
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+                  .name,
+              from_phone:
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+                  .phone,
+              from_province_name:
+                createOrderDto.packages[ghnShopId].PackageDetail
+                  .ghnProvinceName,
+              from_district_name:
+                createOrderDto.packages[ghnShopId].PackageDetail
+                  .ghnDistrictName,
+              from_ward_name:
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnWardName,
+
+              payment_type_id: 2, // 1: seller pay, 2: buyer pay
+              note: newOrder.description ? newOrder.description : undefined,
+              required_note:
+                'KHONGCHOXEMHANG' /**Note shipping order.Allowed values: CHOTHUHANG, CHOXEMHANGKHONGTHU, KHONGCHOXEMHANG. CHOTHUHANG mean Buyer can request to see and trial goods. CHOXEMHANGKHONGTHU mean Buyer can see goods but not allow to trial goods. KHONGCHOXEMHANG mean Buyer not allow to see goods */,
+              return_phone:
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+                  .phone,
+              return_address:
+                createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
+                  .address,
+              return_district_id:
+                createOrderDto.packages[ghnShopId].PackageDetail
+                  .from_district_id,
+              return_ward_code:
+                createOrderDto.packages[ghnShopId].PackageDetail.from_ward_code,
+              client_order_code: null,
+              to_name: userFromDB.firstName + ' ' + userFromDB.lastName,
+              to_phone: createOrderDto.phone,
+              to_address:
+                createOrderDto.shippingAddress.orderAddressInDb.street +
+                ' ' +
+                createOrderDto.shippingAddress.orderAddressInDb.ward +
+                ' ' +
+                createOrderDto.shippingAddress.orderAddressInDb.district +
+                ' ' +
+                createOrderDto.shippingAddress.orderAddressInDb.province +
+                ' ' +
+                createOrderDto.shippingAddress.orderAddressInDb.country,
+              to_ward_code:
+                createOrderDto.packages[ghnShopId].PackageDetail.to_ward_code,
+              to_district_id:
+                createOrderDto.packages[ghnShopId].PackageDetail.to_district_id,
+              cod_amount: totalAmountForGHNOrder,
+              content: contentForGhnOrder,
+              weight:
+                createOrderDto.packages[ghnShopId].PackageDetail.totalWeight,
+              length:
+                createOrderDto.packages[ghnShopId].PackageDetail.maxLength,
+              width: createOrderDto.packages[ghnShopId].PackageDetail.maxWidth,
+              height:
+                createOrderDto.packages[ghnShopId].PackageDetail.totalHeight,
+              pick_station_id: undefined,
+              insurance_value:
+                newOrder.totalAmount < 5000000 ? newOrder.totalAmount : 5000000,
+              service_id:
+                createOrderDto.packages[ghnShopId].PackageDetail.shippingService
+                  .service_id,
+              service_type_id:
+                createOrderDto.packages[ghnShopId].PackageDetail.shippingService
+                  .service_type_id,
+              coupon: null,
+              pick_shift: undefined,
+              items:
+                createOrderDto.packages[ghnShopId].PackageDetail
+                  .packageItemsForGHNCreateNewOrderRequest,
+            });
+
+            if (!ghnCreateNewOrderRequest) {
+              this.logger.error(
+                `Failed to create order on GHN for shop office with GHN shop ID ${ghnShopId}`,
+              );
+              throw new BadRequestException(
+                `Failed to create order on GHN for shop office with GHN shop ID ${ghnShopId}`,
+              );
+            }
+
+            this.logger.log(
+              `Successfully created order on GHN with GHN order code ${ghnCreateNewOrderRequest.order_code} for shop office with GHN shop ID ${ghnShopId}`,
+            );
+
+            ghnOrderCode = ghnCreateNewOrderRequest.order_code;
+            // update ghn order code and estimated delivery date for shipment record in database
+            // shipment record is must be one record for one order because we only support one package for one order now
+
+            this.logger.log(
+              'Attempting to update shipment record in database with GHN order code and estimated delivery date for order with ID ' +
+                newOrder.id,
+            );
+
+            const updatedShipment = await tx.shipments.update({
+              where: {
+                id: newShipment.id, // shipment record is must be one record for one order because we only support one package for one order now
+              },
+              data: {
+                ghnOrderCode: ghnCreateNewOrderRequest.order_code,
+                estimatedDelivery:
+                  ghnCreateNewOrderRequest.expected_delivery_time,
+                trackingNumber: ghnCreateNewOrderRequest.order_code,
+              },
+            });
+
+            if (!updatedShipment) {
+              this.logger.error(
+                `Failed to update shipment with GHN order code for order with ID ${newOrder.id}`,
+              );
+              throw new BadRequestException(
+                `Failed to update shipment with GHN order code for order with ID ${newOrder.id}`,
+              );
+            }
+
+            this.logger.log(
+              'Successfully updated shipment record in database with GHN order code for order with ID ' +
+                newOrder.id,
+            );
+
             this.logger.log(
               `Successfully created order, order items, payment, shipment, shipment items and ghn shipment for order with ID ${newOrder.id}`,
             );
@@ -708,166 +864,11 @@ export class OrdersService {
           } seconds for user with ID ${createOrderDto.userId}`,
         );
 
-        this.logger.log(
-          'Attempting to create order on GHN with order ID ' +
-            newOrderWithFullInformation.id,
-        );
-
-        let contentForGhnOrder = '';
-        for (const item of createOrderDto.packages[ghnShopId].PackageDetail
-          .packageItems) {
-          contentForGhnOrder += `${item.productVariantName} - SKU: ${item.productVariantSKU} - Size: ${item.productVariantSize} - Color: ${item.productVariantColor} - Quantity: ${item.quantity} - Unit Price: ${item.unitPrice} ${item.currencyUnit}\n`;
-        }
-
-        let totalAmountForGHNOrder = newOrderWithFullInformation.totalAmount;
-
-        // default (COD payment method) -> total amount for ghn shipment is the total amount of the order.
-        // if the order has any non-COD payment method, set total amount for GHN shipment to 0 to avoid collect money from customer when delivery
-        if (createOrderDto.paymentMethod === PaymentMethod.VNPAY) {
-          totalAmountForGHNOrder = 0;
-        } else if (createOrderDto.paymentMethod === PaymentMethod.COD) {
-          totalAmountForGHNOrder = newOrderWithFullInformation.totalAmount;
-        }
-
-        const ghnCreateNewOrderRequest = await ghn.order.createOrder({
-          from_address:
-            createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
-              .address,
-          from_name:
-            createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail.name,
-          from_phone:
-            createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
-              .phone,
-          from_province_name:
-            createOrderDto.packages[ghnShopId].PackageDetail.ghnProvinceName,
-          from_district_name:
-            createOrderDto.packages[ghnShopId].PackageDetail.ghnDistrictName,
-          from_ward_name:
-            createOrderDto.packages[ghnShopId].PackageDetail.ghnWardName,
-
-          payment_type_id: 2, // 1: seller pay, 2: buyer pay
-          note: newOrderWithFullInformation.description
-            ? newOrderWithFullInformation.description
-            : undefined,
-          required_note:
-            'KHONGCHOXEMHANG' /**Note shipping order.Allowed values: CHOTHUHANG, CHOXEMHANGKHONGTHU, KHONGCHOXEMHANG. CHOTHUHANG mean Buyer can request to see and trial goods. CHOXEMHANGKHONGTHU mean Buyer can see goods but not allow to trial goods. KHONGCHOXEMHANG mean Buyer not allow to see goods */,
-          return_phone:
-            createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
-              .phone,
-          return_address:
-            createOrderDto.packages[ghnShopId].PackageDetail.ghnShopDetail
-              .address,
-          return_district_id:
-            createOrderDto.packages[ghnShopId].PackageDetail.from_district_id,
-          return_ward_code:
-            createOrderDto.packages[ghnShopId].PackageDetail.from_ward_code,
-          client_order_code: null,
-          to_name: userFromDB.firstName + ' ' + userFromDB.lastName,
-          to_phone: createOrderDto.phone,
-          to_address:
-            createOrderDto.shippingAddress.orderAddressInDb.street +
-            ' ' +
-            createOrderDto.shippingAddress.orderAddressInDb.ward +
-            ' ' +
-            createOrderDto.shippingAddress.orderAddressInDb.district +
-            ' ' +
-            createOrderDto.shippingAddress.orderAddressInDb.province +
-            ' ' +
-            createOrderDto.shippingAddress.orderAddressInDb.country,
-          to_ward_code:
-            createOrderDto.packages[ghnShopId].PackageDetail.to_ward_code,
-          to_district_id:
-            createOrderDto.packages[ghnShopId].PackageDetail.to_district_id,
-          cod_amount: totalAmountForGHNOrder,
-          content: contentForGhnOrder,
-          weight: createOrderDto.packages[ghnShopId].PackageDetail.totalWeight,
-          length: createOrderDto.packages[ghnShopId].PackageDetail.maxLength,
-          width: createOrderDto.packages[ghnShopId].PackageDetail.maxWidth,
-          height: createOrderDto.packages[ghnShopId].PackageDetail.totalHeight,
-          pick_station_id: undefined,
-          insurance_value:
-            newOrderWithFullInformation.totalAmount < 5000000
-              ? newOrderWithFullInformation.totalAmount
-              : 5000000,
-          service_id:
-            createOrderDto.packages[ghnShopId].PackageDetail.shippingService
-              .service_id,
-          service_type_id:
-            createOrderDto.packages[ghnShopId].PackageDetail.shippingService
-              .service_type_id,
-          coupon: null,
-          pick_shift: undefined,
-          items:
-            createOrderDto.packages[ghnShopId].PackageDetail
-              .packageItemsForGHNCreateNewOrderRequest,
-        });
-
-        if (!ghnCreateNewOrderRequest) {
-          this.logger.error(
-            `Failed to create order on GHN for shop office with GHN shop ID ${ghnShopId}`,
-          );
-          throw new BadRequestException(
-            `Failed to create order on GHN for shop office with GHN shop ID ${ghnShopId}`,
-          );
-        }
-
-        this.logger.log(
-          `Successfully created order on GHN with GHN order code ${ghnCreateNewOrderRequest.order_code} for shop office with GHN shop ID ${ghnShopId}`,
-        );
-
-        ghnOrderCode = ghnCreateNewOrderRequest.order_code;
-        // update ghn order code and estimated delivery date for shipment record in database
-        // shipment record is must be one record for one order because we only support one package for one order now
-
-        this.logger.log(
-          'Attempting to update shipment record in database with GHN order code and estimated delivery date for order with ID ' +
-            newOrderWithFullInformation.id,
-        );
-
-        const updatedShipment = await this.prismaService.shipments.update({
-          where: {
-            id: newOrderWithFullInformation.shipments[0].id, // shipment record is must be one record for one order because we only support one package for one order now
-          },
-          data: {
-            ghnOrderCode: ghnCreateNewOrderRequest.order_code,
-            estimatedDelivery: ghnCreateNewOrderRequest.expected_delivery_time,
-            trackingNumber: ghnCreateNewOrderRequest.order_code,
-          },
-        });
-
-        if (!updatedShipment) {
-          this.logger.error(
-            `Failed to update shipment with GHN order code for order with ID ${newOrderWithFullInformation.id}`,
-          );
-          throw new BadRequestException(
-            `Failed to update shipment with GHN order code for order with ID ${newOrderWithFullInformation.id}`,
-          );
-        }
-
-        this.logger.log(
-          'Successfully updated shipment record in database with GHN order code for order with ID ' +
-            newOrderWithFullInformation.id,
-        );
-
         // return order information with full information after creating order successfully
-        const tempOrderWithFullInformation: OrdersWithFullInformation | null =
-          await this.prismaService.orders.findFirst({
-            where: { id: newOrderWithFullInformation.id },
-            include: OrdersWithFullInformationInclude,
-          });
-
-        if (!tempOrderWithFullInformation) {
-          this.logger.error(
-            `Failed to retrieve order with ID ${newOrderWithFullInformation.id} after creating order on GHN successfully`,
-          );
-          throw new BadRequestException(
-            `Failed to retrieve order with ID ${newOrderWithFullInformation.id} after creating order on GHN successfully`,
-          );
-        }
 
         const returnOrderWithFullInformation =
           formatMediaFieldWithLoggingForOrders(
-            [tempOrderWithFullInformation],
+            [newOrderWithFullInformation],
             (url: string) => this.awsService.buildPublicMediaUrl(url),
             this.logger,
           )[0];

@@ -498,6 +498,11 @@ export class PaymentsService {
         }
       });
 
+      this.logger.log(
+        'Successfully processed VNPAY IPN call for order ID: ',
+        foundOrder.id,
+      );
+
       return IpnSuccess;
     } catch (error) {
       this.logger.error(
