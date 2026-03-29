@@ -163,6 +163,7 @@ model Address {
     country     String      @db.VarChar(100)
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+    isOrderAddress Boolean     @default(false) @db.Boolean
     order       Orders[]
     @@index([userId], name: "idx_address_user_id")
     

@@ -398,7 +398,10 @@ export class AddressService {
 
       // Create new address record in database
       const address = await this.prismaService.address.create({
-        data: { ...createAddressDto },
+        data: {
+          isOrderAddress: true, // Mark this address as an order address for filtering purposes
+          ...createAddressDto,
+        },
       });
 
       this.logger.log(`Address created in database with ID: ${address.id}`);

@@ -377,6 +377,14 @@ export class DatabaseAddressDto {
   country: string;
 
   @ApiProperty({
+    example: true,
+    description:
+      'Indicates whether this address is specifically created for an order (true) or is a general user address (false). This field is used to differentiate between addresses that are meant for order fulfillment and those that are general user addresses. Order addresses may have different handling in the system, such as being excluded from user address lists and being associated directly with orders.',
+  })
+  @IsBoolean()
+  isOrderAddress: boolean;
+
+  @ApiProperty({
     example: '2024-01-15T10:30:00.000Z',
     description: 'Address creation timestamp',
   })

@@ -1197,7 +1197,13 @@ export class UserService {
       const paginate = createPaginator({ perPage: perPage });
       const result = await paginate<Address, Prisma.AddressFindManyArgs>(
         this.prismaService.address,
-        { where: { userId: userId }, orderBy: { id: 'asc' } },
+        {
+          where: {
+            userId: userId,
+            isOrderAddress: false,
+          },
+          orderBy: { id: 'asc' },
+        },
         { page: page },
       );
 
