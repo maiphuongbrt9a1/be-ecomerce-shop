@@ -351,6 +351,9 @@ model Orders {
     shipments   Shipments[]
     payment     Payments[]
     requests Requests[]
+    appliedUserVouchers UserVouchers[]
+    packageChecksums PackageChecksums @relation(fields: [packageChecksumsId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    packageChecksumsId BigInt @db.BigInt
     
     @@index([userId], name: "idx_order_user_id")
     @@index([shippingAddressId], name: "idx_order_shipping_address_id")
@@ -373,6 +376,8 @@ model OrderItems {
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
     shipmentItems ShipmentItems[]
+    appliedVoucher Vouchers? @relation(fields: [appliedVoucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    appliedVoucherId BigInt? @db.BigInt
 
     @@index([orderId], name: "idx_orderItem_order_id")
     @@index([productVariantId], name: "idx_orderItem_product_variant_id")
@@ -474,6 +479,7 @@ model Vouchers {
     voucherForProduct Products[]
     voucherForCategory Category[]
     voucherForSpecialProductVariant ProductVariants[]
+    appliedVoucherOnOrderItems OrderItems[]
 
     @@index([createdBy], name: "idx_voucher_created_by_user_id")
 }
@@ -484,6 +490,8 @@ model UserVouchers {
     userId      BigInt      @db.BigInt
     voucher     Vouchers    @relation(fields: [voucherId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     voucherId   BigInt      @db.BigInt
+    order       Orders?       @relation(fields: [orderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    orderId     BigInt?     @db.BigInt
     useVoucherAt  DateTime?
     saveVoucherAt   DateTime    @default(now())
     voucherStatus VoucherStatus      @default(SAVED)
@@ -530,6 +538,7 @@ model ReturnRequests {
 model PackageChecksums {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     userId      BigInt      @db.BigInt
+    order       Orders[]
     ghnShopId      BigInt?      @db.BigInt
     shopId      BigInt?      @db.BigInt
     checksumData String      @db.Text

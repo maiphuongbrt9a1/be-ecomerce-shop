@@ -325,7 +325,7 @@ export class OrdersService {
             // the other requests will fail
             // because checksum record will be updated to used after first request create order successfully
             try {
-              const checksumFromDatabase = await tx.packageChecksums.update({
+              await tx.packageChecksums.update({
                 where: {
                   id: BigInt(
                     createOrderDto.packages[ghnShopId].checksumInformation
@@ -342,28 +342,15 @@ export class OrdersService {
                   isUsed: true,
                 },
               });
-
-              if (
-                !checksumFromDatabase ||
-                checksumFromDatabase.checksumData !==
-                  checksumDataAtRealtimeCreateNewOrder
-              ) {
-                this.logger.error(
-                  `Checksum verification failed for package with GHN shop ID ${ghnShopId}. Possible data tampering detected.`,
-                );
-                throw new BadRequestException(
-                  `Checksum verification failed for package with GHN shop ID ${ghnShopId}. Possible data tampering detected.`,
-                );
-              }
             } catch (error) {
               this.logger.error(
-                `Error occurred while verifying checksum for package with GHN shop ID ${ghnShopId}:`,
+                `Error occurred while updating checksum for package with GHN shop ID ${ghnShopId}:`,
                 error,
               );
               // Re-throw known HTTP exceptions (e.g. NotFoundException) without wrapping them
               if (error instanceof HttpException) throw error;
               throw new BadRequestException(
-                `Error occurred while verifying checksum for package with GHN shop ID ${ghnShopId}: ${error}`,
+                `Error occurred while updating checksum for package with GHN shop ID ${ghnShopId}: ${error}`,
               );
             }
 
@@ -554,6 +541,14 @@ export class OrdersService {
                 discount: discount,
                 totalAmount: totalAmount,
                 description: createOrderDto.description,
+                packageChecksumsId: checksumFromDatabase.id,
+                appliedUserVouchers: appliedUserVoucher
+                  ? {
+                      connect: {
+                        id: appliedUserVoucher.id,
+                      },
+                    }
+                  : undefined,
               },
             });
 
@@ -576,6 +571,9 @@ export class OrdersService {
                   unitPrice: item.unitPrice,
                   totalPrice: item.totalPrice,
                   discountValue: item.totalDiscountAmount,
+                  appliedVoucherId: item.appliedVoucher
+                    ? BigInt(item.appliedVoucher.id)
+                    : null,
                 },
               });
 
