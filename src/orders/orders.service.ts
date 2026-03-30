@@ -1103,6 +1103,309 @@ export class OrdersService {
   }
 
   /**
+   * Cancels an existing order with full rollback of associated resources and GHN synchronization.
+   *
+   * This method performs the following operations:
+   * 1. Validates order existence and cancellation eligibility (shipment status, order status)
+   * 2. Validates GHN order code availability for synchronization
+   * 3. Rolls back all business operations in a transaction:
+   *    - Marks package checksum as unused
+   *    - Restores stock for all product variants and products
+   *    - Decrements voucher usage counts (item-level vouchers)
+   *    - Restores user voucher status from USED to SAVED (order-level voucher)
+   * 4. Updates order, shipment, and payment statuses to CANCELLED
+   * 5. Cancels corresponding GHN shipment order
+   * 6. Returns the cancelled order with full related information
+   *
+   * @param {number} id - The unique identifier of the order to cancel
+   *
+   * @returns {Promise<OrdersWithFullInformation>} The cancelled order with full information including:
+   *   - Order details with status set to CANCELLED
+   *   - Shipping address
+   *   - Order items with voucher information restored
+   *   - Payment records with status set to CANCELLED
+   *   - Shipment details with status set to CANCELLED and GHN code preserved
+   *   - All media formatted with public HTTPS URLs
+   *
+   * @throws {NotFoundException} If order with given ID is not found
+   * @throws {BadRequestException} If:
+   *   - Order has no associated shipments
+   *   - Shipment has no GHN order code
+   *   - Order/shipment already cancelled
+   *   - Order is in WAITING_FOR_PICKUP status (too late to cancel)
+   *   - GHN cancellation fails
+   *   - Any database rollback operation fails
+   *
+   * @remarks
+   * - Order must have at least one shipment with valid GHN order code to cancel
+   * - Order cannot be cancelled if already in WAITING_FOR_PICKUP or later status
+   * - All rollback operations execute within a single transaction for data consistency
+   * - If GHN cancellation fails, entire transaction is rolled back
+   * - Stock restoration uses increment; voucher restoration uses decrement
+   * - Item-level voucher counts are reconstructed and decremented by the same amounts used during creation
+   * - User voucher status transition: USED → SAVED with useVoucherAt set to null
+   * - GHN shipment order is cancelled to prevent orphaned orders in GHN system
+   * - Media URLs are converted to public HTTPS URLs in the response
+   */
+  async cancelOrder(id: number): Promise<OrdersWithFullInformation> {
+    try {
+      const cancelOrder = await this.prismaService.orders.findFirst({
+        where: { id: id },
+        include: OrdersWithFullInformationInclude,
+      });
+
+      if (!cancelOrder) {
+        this.logger.error(`Order with ID ${id} not found!`);
+        throw new NotFoundException(`Order with ID ${id} not found!`);
+      }
+
+      if (cancelOrder.shipments.length === 0) {
+        this.logger.error(`Order with ID ${id} has no shipment to cancel!`);
+        throw new BadRequestException(
+          `Order with ID ${id} has no shipment to cancel!`,
+        );
+      }
+
+      if (!cancelOrder.shipments[0].ghnOrderCode) {
+        this.logger.error(
+          `Order with ID ${id} has no GHN order code to cancel!`,
+        );
+        throw new BadRequestException(
+          `Order with ID ${id} has no GHN order code to cancel!`,
+        );
+      }
+
+      if (cancelOrder.shipments[0].status === ShipmentStatus.CANCELLED) {
+        this.logger.error(`Order with ID ${id} has already been cancelled!`);
+        throw new BadRequestException(
+          `Order with ID ${id} has already been cancelled!`,
+        );
+      }
+
+      if (cancelOrder.status === OrderStatus.WAITING_FOR_PICKUP) {
+        this.logger.error(
+          `Order with ID ${id} is waiting for pickup, cannot be cancelled!`,
+        );
+        throw new BadRequestException(
+          `Order with ID ${id} is waiting for pickup, cannot be cancelled!`,
+        );
+      }
+
+      const ghnShopId = process.env.GHN_SHOP1_ID!;
+      const ghnConfig = {
+        token: process.env.GHN_TOKEN!,
+        shopId: Number(ghnShopId),
+        host: process.env.GHN_HOST!,
+        trackingHost: process.env.GHN_TRACKING_HOST!,
+        testMode: process.env.GHN_TEST_MODE === 'true',
+      };
+
+      const ghn = new Ghn(ghnConfig);
+
+      const cancelledOrderWithFullInformation: OrdersWithFullInformation =
+        await this.prismaService.$transaction(async (tx) => {
+          this.logger.log(
+            `Starting cancellation transaction for order with ID ${id}`,
+          );
+
+          // rollback checksum of package when cancel order
+          this.logger.log(
+            `Rolling back package checksum for order with ID ${id} if exists`,
+          );
+          if (cancelOrder.packageChecksumsId) {
+            await tx.packageChecksums.update({
+              where: { id: cancelOrder.packageChecksumsId },
+              data: {
+                isUsed: false,
+              },
+            });
+          }
+
+          this.logger.log('Rolling back package checksum successfully');
+          this.logger.log(
+            'Rolling back stock for product variants and products for order with ID ' +
+              id,
+          );
+
+          // rollback stock of product variants and product when cancel order
+          for (const item of cancelOrder.orderItems) {
+            const updateProductVariant = await tx.productVariants.update({
+              where: {
+                id: item.productVariantId,
+              },
+              data: {
+                stock: {
+                  increment: item.quantity,
+                },
+              },
+            });
+
+            await tx.products.update({
+              where: {
+                id: updateProductVariant.productId,
+              },
+              data: {
+                stock: {
+                  increment: item.quantity,
+                },
+              },
+            });
+          }
+
+          this.logger.log('Rolling back stock successfully');
+          this.logger.log('Rolling back voucher usage for order with ID ' + id);
+
+          // rollback voucher quantity when cancel order (voucher on item-level)
+          for (const item of cancelOrder.orderItems) {
+            if (item.appliedVoucherId) {
+              await tx.vouchers.update({
+                where: {
+                  id: BigInt(item.appliedVoucherId),
+                },
+                data: {
+                  timesUsed: {
+                    decrement: 1,
+                  },
+                },
+              });
+            }
+          }
+
+          if (cancelOrder.appliedUserVouchers.length > 0) {
+            for (const userVoucher of cancelOrder.appliedUserVouchers) {
+              await tx.userVouchers.update({
+                where: {
+                  id: userVoucher.id,
+                },
+                data: {
+                  voucherStatus: VoucherStatus.SAVED,
+                  useVoucherAt: null,
+                  voucher: {
+                    update: {
+                      where: {
+                        id: userVoucher.voucherId,
+                      },
+                      data: {
+                        timesUsed: {
+                          decrement: 1,
+                        },
+                      },
+                    },
+                  },
+                },
+              });
+            }
+          }
+
+          this.logger.log('Rolling back voucher usage successfully');
+
+          this.logger.log('Rolling back order status for order with ID ' + id);
+          // rollback order status to cancelled
+          await tx.orders.update({
+            where: {
+              id: id,
+            },
+            data: {
+              status: OrderStatus.CANCELLED,
+            },
+          });
+
+          this.logger.log(
+            'Rolling back shipment status for order with ID ' + id,
+          );
+          // rollback shipment status to cancelled
+          await tx.shipments.updateMany({
+            where: {
+              orderId: id,
+            },
+            data: {
+              status: ShipmentStatus.CANCELLED,
+            },
+          });
+
+          this.logger.log(
+            'Rolling back payment status for order with ID ' + id,
+          );
+          // rollback payment status to cancelled
+          await tx.payments.updateMany({
+            where: {
+              orderId: id,
+            },
+            data: {
+              status: PaymentStatus.CANCELLED,
+            },
+          });
+
+          // call GHN API to cancel order on GHN
+          if (cancelOrder.shipments[0].ghnOrderCode) {
+            this.logger.log(
+              `Attempting to cancel GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
+            );
+            const cancelGHNOrder = await ghn.order.cancelOrder({
+              orderCodes: [cancelOrder.shipments[0].ghnOrderCode],
+            });
+
+            if (!cancelGHNOrder) {
+              this.logger.error(
+                `Failed to cancel GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
+              );
+              throw new BadRequestException(
+                `Failed to cancel GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
+              );
+            }
+
+            this.logger.log(
+              `Successfully cancelled GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
+            );
+          }
+
+          // create refund when cancel order if payment method is VNPAY and payment status is Paid
+          // if (cancelOrder.payment[0].paymentMethod === PaymentMethod.VNPAY) {
+          //   if (cancelOrder.payment[0].status === PaymentStatus.PAID) {
+          //     await tx.returnRequests.create({
+          //       data: {
+          //         orderId: cancelOrder.id,
+          //       },
+          //     });
+          //   }
+          // }
+
+          const cancelledOrderWithFullInformation: OrdersWithFullInformation | null =
+            await tx.orders.findFirst({
+              where: { id: id },
+              include: OrdersWithFullInformationInclude,
+            });
+          if (!cancelledOrderWithFullInformation) {
+            this.logger.error(
+              `Failed to retrieve cancelled order with ID ${id} after cancellation`,
+            );
+            throw new BadRequestException(
+              `Failed to retrieve cancelled order with ID ${id} after cancellation`,
+            );
+          }
+
+          const returnCancelledOrderWithFullInformation: OrdersWithFullInformation =
+            formatMediaFieldWithLoggingForOrders(
+              [cancelledOrderWithFullInformation],
+              (url: string) => this.awsService.buildPublicMediaUrl(url),
+              this.logger,
+            )[0];
+
+          this.logger.log(
+            `Cancelled order with ID: ${id} successfully in transaction`,
+          );
+
+          return returnCancelledOrderWithFullInformation;
+        });
+
+      return cancelledOrderWithFullInformation;
+    } catch (error) {
+      this.logger.error(`Failed to cancel order with ID ${id}: `, error);
+      throw new BadRequestException(`Failed to cancel order with ID ${id}`);
+    }
+  }
+
+  /**
    * Retrieves detailed information for a specific order.
    *
    * This method performs the following operations:

@@ -63,14 +63,16 @@ enum ShipmentStatus {
     DELIVERED            // Successfully delivered to customer
     DELIVERED_FAILED     // Delivery attempt failed
     RETURNED             // Returned to shop
+    CANCELLED            // Shipment cancelled (order cancelled)
 }
 
 // Payment status: PENDING → PAID (success) or FAILED (error)
 enum PaymentStatus {
     PENDING    // Payment initiated but not confirmed
     PAID       // Payment confirmed (COD at delivery, or VNPay IPN success)
-    FAILED     // Payment failed or cancelled
+    FAILED     // Payment failed
     REFUNDED   // Payment refunded to customer
+    CANCELLED  // Payment cancelled by user or system (e.g. order timeout)
 }
 
 enum PaymentMethod {

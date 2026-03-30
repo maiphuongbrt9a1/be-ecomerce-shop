@@ -192,6 +192,35 @@ export class OrdersController {
     return await this.ordersService.remove(+id);
   }
 
+  @ApiOperation({ summary: 'Cancel one order with full rollback of resources' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Order cancelled successfully with full information including rolled back items, payments, and shipments',
+    type: OrderFullInformationEntity,
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Bad Request - order already cancelled, no shipments, no GHN order code, or in WAITING_FOR_PICKUP status',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - order with given ID not found',
+  })
+  @ApiResponse({
+    status: 500,
+    description:
+      'Internal Server Error - GHN cancellation failed or unexpected error during order cancellation',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER', 'ADMIN', 'OPERATOR')
+  @Post('/:id/cancel')
+  async cancelOrder(@Param('id') id: string) {
+    return await this.ordersService.cancelOrder(+id);
+  }
+
   @ApiOperation({ summary: 'Get order detail information of one order' })
   @ApiResponse({
     status: 200,

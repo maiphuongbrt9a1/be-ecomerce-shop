@@ -247,8 +247,15 @@ export const OrdersWithFullInformationInclude =
             media: true,
           },
         },
+        appliedVoucher: true,
       },
     },
+    appliedUserVouchers: {
+      include: {
+        voucher: true,
+      },
+    },
+    packageChecksums: true,
   });
 
 // Tạo Type từ validator trên để dùng làm kiểu trả về
