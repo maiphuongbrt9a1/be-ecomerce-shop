@@ -44,6 +44,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import Ghn from 'giaohangnhanh';
 import dayjs from 'dayjs';
 import { PaymentsService } from '@/payments/payments.service';
+import { VnpayRefundDto } from '@/payments/dto/vnpay-refund.dto';
 
 @Injectable()
 export class OrdersService {
@@ -1151,7 +1152,10 @@ export class OrdersService {
    * - GHN shipment order is cancelled to prevent orphaned orders in GHN system
    * - Media URLs are converted to public HTTPS URLs in the response
    */
-  async cancelOrder(id: number): Promise<OrdersWithFullInformation> {
+  async cancelOrder(
+    id: number,
+    clientIp: string,
+  ): Promise<OrdersWithFullInformation> {
     try {
       const cancelOrder = await this.prismaService.orders.findFirst({
         where: { id: id },
@@ -1340,32 +1344,13 @@ export class OrdersService {
             },
           });
 
-          // call GHN API to cancel order on GHN
-          if (cancelOrder.shipments[0].ghnOrderCode) {
-            this.logger.log(
-              `Attempting to cancel GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
-            );
-            const cancelGHNOrder = await ghn.order.cancelOrder({
-              orderCodes: [cancelOrder.shipments[0].ghnOrderCode],
-            });
-
-            if (!cancelGHNOrder) {
-              this.logger.error(
-                `Failed to cancel GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
-              );
-              throw new BadRequestException(
-                `Failed to cancel GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
-              );
-            }
-
-            this.logger.log(
-              `Successfully cancelled GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
-            );
-          }
-
           // create refund when cancel order if payment method is VNPAY and payment status is Paid
           if (cancelOrder.payment[0].paymentMethod === PaymentMethod.VNPAY) {
             if (cancelOrder.payment[0].status === PaymentStatus.PAID) {
+              this.logger.log(
+                `Creating refund request for order with ID ${cancelOrder.id} after cancellation since payment method is VNPAY and payment status is Paid`,
+              );
+
               const newRequest = await tx.requests.create({
                 data: {
                   userId: cancelOrder.userId,
@@ -1401,10 +1386,97 @@ export class OrdersService {
                 );
               }
 
+              this.logger.log(
+                `Successfully created return request with ID ${newReturnRequest.id} for order with ID ${cancelOrder.id} after cancellation`,
+              );
+
+              this.logger.log(
+                `Calling VNPAY API to refund money to customer for order with ID ${cancelOrder.id} after cancellation`,
+              );
+
               // call vnpay to refund money to customer
               // when customer cancel order that order create before
               // by VNPAY payment method and payment status is Paid
+              const vnpayRefundInputData: VnpayRefundDto = {
+                data: {
+                  vnp_TmnCode: process.env.VNPAY_TMN_CODE!,
+                  vnp_RequestId: String(newReturnRequest.id),
+                  vnp_TxnRef: String(cancelOrder.id),
+                  vnp_Amount: Number(cancelOrder.totalAmount),
+                  vnp_TransactionDate: Number(
+                    dayjs(cancelOrder.payment[0].paymentDate).format(
+                      'YYYYMMDDHHmmss',
+                    ),
+                  ),
+                  vnp_IpAddr: clientIp,
+                  vnp_TransactionType: 'refund',
+                  vnp_CreateDate: Number(dayjs().format('YYYYMMDDHHmmss')),
+                  vnp_CreateBy:
+                    cancelOrder.user.firstName +
+                    ' ' +
+                    cancelOrder.user.lastName,
+                  vnp_RefundAmount: Number(cancelOrder.totalAmount),
+                  vnp_OrderInfo: `Customer create new return request because customer cancel order with order id: ${cancelOrder.id}`,
+                },
+                options: {
+                  withHash: true,
+                  logger: {
+                    type: 'all' as const,
+                  },
+                },
+              };
+
+              const vnpayRefundResponse =
+                await this.paymentsService.VNPayRefund(vnpayRefundInputData);
+
+              if (!vnpayRefundResponse) {
+                this.logger.error(
+                  `Failed to refund money to customer for order with ID ${cancelOrder.id} after cancellation`,
+                );
+                throw new BadRequestException(
+                  `Failed to refund money to customer for order with ID ${cancelOrder.id} after cancellation`,
+                );
+              }
+
+              if (
+                vnpayRefundResponse.isSuccess &&
+                vnpayRefundResponse.isVerified
+              ) {
+                this.logger.log(
+                  `Successfully refunded money to customer for order with ID ${cancelOrder.id} after cancellation`,
+                );
+              } else {
+                this.logger.error(
+                  `Failed to refund money to customer for order with ID ${cancelOrder.id} after cancellation`,
+                );
+                throw new BadRequestException(
+                  `Failed to refund money to customer for order with ID ${cancelOrder.id} after cancellation`,
+                );
+              }
             }
+          }
+
+          // call GHN API to cancel order on GHN
+          if (cancelOrder.shipments[0].ghnOrderCode) {
+            this.logger.log(
+              `Attempting to cancel GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
+            );
+            const cancelGHNOrder = await ghn.order.cancelOrder({
+              orderCodes: [cancelOrder.shipments[0].ghnOrderCode],
+            });
+
+            if (!cancelGHNOrder) {
+              this.logger.error(
+                `Failed to cancel GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
+              );
+              throw new BadRequestException(
+                `Failed to cancel GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
+              );
+            }
+
+            this.logger.log(
+              `Successfully cancelled GHN order with order code ${cancelOrder.shipments[0].ghnOrderCode}`,
+            );
           }
 
           const cancelledOrderWithFullInformation: OrdersWithFullInformation | null =

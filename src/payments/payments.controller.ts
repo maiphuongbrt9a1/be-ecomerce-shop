@@ -36,6 +36,7 @@ import {
   VNPayVerifyIpnCallResponseDto,
   VNPayVerifyReturnUrlResponseDto,
 } from './dto/vnpay-response.dto';
+import { ClientIp } from '@/decorator/client-ip.decorator';
 
 @Controller('payments')
 export class PaymentsController {
@@ -85,8 +86,12 @@ export class PaymentsController {
   @Post('/vnpay-payment-url')
   buildVNPayPaymentUrl(
     @Body() createVNPayPaymentUrlDto: CreateVNPayPaymentUrlDto,
+    @ClientIp() clientIp: string,
   ) {
-    return this.paymentsService.buildVNPayPaymentUrl(createVNPayPaymentUrlDto);
+    return this.paymentsService.buildVNPayPaymentUrl(
+      createVNPayPaymentUrlDto,
+      clientIp,
+    );
   }
 
   @ApiOperation({ summary: 'Verify VNPay return URL after payment' })

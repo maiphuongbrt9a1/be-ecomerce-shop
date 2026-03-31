@@ -36,36 +36,11 @@ export class BuildPaymentUrlDto {
   vnp_TxnRef: string;
 
   @ApiProperty({
-    description: 'Customer IP address',
-    example: '13.160.92.202',
-  })
-  @IsString()
-  vnp_IpAddr: string;
-
-  @ApiProperty({
     description: 'Return callback URL after payment',
     example: 'https://your-domain.com/payments/vnpay-return',
   })
   @IsUrl()
   vnp_ReturnUrl: string;
-
-  @ApiPropertyOptional({
-    description: 'Optional create time format yyyyMMddHHmmss (GMT+7)',
-    example: 20260303153000,
-    type: Number,
-  })
-  @IsOptional()
-  @IsNumber()
-  vnp_CreateDate?: number;
-
-  @ApiPropertyOptional({
-    description: 'Optional expire time format yyyyMMddHHmmss (GMT+7)',
-    example: 20260304153000,
-    type: Number,
-  })
-  @IsOptional()
-  @IsNumber()
-  vnp_ExpireDate?: number;
 
   @ApiPropertyOptional({
     description: 'Currency code (currently only VND)',
@@ -134,13 +109,4 @@ export class CreateVNPayPaymentUrlDto {
   @ValidateNested()
   @Type(() => BuildPaymentUrlDto)
   data: BuildPaymentUrlDto;
-
-  @ApiPropertyOptional({
-    description: 'Optional BuildPaymentUrlOptions for VNPay',
-    type: BuildPaymentUrlOptionsDto,
-  })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => BuildPaymentUrlOptionsDto)
-  options?: BuildPaymentUrlOptionsDto;
 }

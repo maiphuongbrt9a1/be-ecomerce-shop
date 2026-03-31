@@ -42,6 +42,7 @@ import {
 import { VerifyVNPayIPNCallDto } from './dto/verify-vnpay-ipn-call.dto';
 import { VnpayQueryDrDto } from './dto/vnpay-query-dr.dto';
 import { VnpayRefundDto } from './dto/vnpay-refund.dto';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class PaymentsService {
@@ -286,13 +287,45 @@ export class PaymentsService {
    */
   buildVNPayPaymentUrl(
     createVNPayPaymentUrlDto: CreateVNPayPaymentUrlDto,
+    clientIp: string,
   ): string {
     try {
       this.logger.log(
         'Building VNPAY payment URL with data: ',
         JSON.stringify(createVNPayPaymentUrlDto),
       );
-      const { data, options } = createVNPayPaymentUrlDto;
+
+      const options = {
+        withHash: true,
+        logger: {
+          type: 'all',
+        },
+      };
+
+      this.logger.log(
+        'Using BuildPaymentUrlOptions: ',
+        JSON.stringify(options),
+      );
+
+      const { data } = createVNPayPaymentUrlDto;
+
+      // config add new fields required by vnpay library and pre-process data
+      data['vnp_CreateDate'] = dayjs().format('YYYYMMDDHHmmss');
+
+      data['vnp_ExpireDate'] = dayjs()
+        .add(
+          Number(process.env.TIME_EXPIRE_VNPAY_PAYMENT_IN_MINUTES!) || 15,
+          'minute',
+        )
+        .format('YYYYMMDDHHmmss');
+
+      data['vnp_IpAddr'] = clientIp;
+
+      this.logger.log(
+        'Final data for VNPAY payment URL: ',
+        JSON.stringify(data),
+      );
+
       // Cast to compatible types for vnpay library
       const result = this.vnpayService.buildPaymentUrl(
         data as BuildPaymentUrl,
@@ -463,6 +496,10 @@ export class PaymentsService {
           data: {
             status: PaymentStatus.PAID,
             transactionId: String(verifyIPNCallResult.vnp_TransactionNo),
+            paymentDate: dayjs(
+              verifyIPNCallResult.vnp_PayDate,
+              'YYYYMMDDHHmmss',
+            ).toDate(),
           },
         });
 
