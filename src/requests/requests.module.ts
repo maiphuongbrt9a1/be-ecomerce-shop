@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { RequestsController } from './requests.controller';
-import { PrismaService } from '@/prisma/prisma.service';
-import { AwsS3Service } from '@/aws-s3/aws-s3.service';
+import { AwsS3Module } from '@/aws-s3/aws-s3.module';
 
 @Module({
+  imports: [AwsS3Module],
   controllers: [RequestsController],
-  providers: [RequestsService, PrismaService, AwsS3Service],
+  providers: [RequestsService],
 })
 export class RequestsModule {}

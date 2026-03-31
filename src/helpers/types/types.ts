@@ -190,7 +190,11 @@ export const OrdersWithFullInformationInclude =
         phone: true,
         points: true,
         gender: true,
-        userMedia: true,
+        userMedia: {
+          where: {
+            isAvatarFile: true,
+          },
+        },
       },
     },
     processByStaff: {
@@ -202,7 +206,11 @@ export const OrdersWithFullInformationInclude =
         phone: true,
         points: true,
         gender: true,
-        userMedia: true,
+        userMedia: {
+          where: {
+            isAvatarFile: true,
+          },
+        },
       },
     },
     shippingAddress: true,
@@ -217,7 +225,11 @@ export const OrdersWithFullInformationInclude =
             phone: true,
             points: true,
             gender: true,
-            userMedia: true,
+            userMedia: {
+              where: {
+                isAvatarFile: true,
+              },
+            },
           },
         },
       },
@@ -234,7 +246,11 @@ export const OrdersWithFullInformationInclude =
             phone: true,
             points: true,
             gender: true,
-            userMedia: true,
+            userMedia: {
+              where: {
+                isAvatarFile: true,
+              },
+            },
           },
         },
         media: true,
@@ -311,16 +327,27 @@ export type OrdersWithFullInformation = Prisma.OrdersGetPayload<{
  * const shipment = await prisma.shipments.findUnique({
  *   where: { id: shipmentId },
  *   include: {
- *     processByStaff: { include: { userMedia: true } },
+ *     processByStaff: {
+ *      include: {
+ *        userMedia: {
+ *          where: {
+ *            isAvatarFile: true,
+ *         },
+ *      },
+ *   },
  *     order: { include: OrdersWithFullInformationInclude }
- *   }
+ *   },
  * });
  */
 export type ShipmentsWithFullInformation = Prisma.ShipmentsGetPayload<{
   include: {
     processByStaff: {
       include: {
-        userMedia: true;
+        userMedia: {
+          where: {
+            isAvatarFile: true;
+          };
+        };
       };
     };
     order: {
@@ -547,7 +574,13 @@ export type VoucherWithAllAppliedProductVariantsDetailInformation =
  *   include: {
  *     media: true,
  *     processByStaff: {
- *       include: { userMedia: true }
+ *       include: {
+ *          userMedia: {
+ *            where: {
+ *              isAvatarFile: true,
+ *             },
+ *           },
+ *        },
  *     }
  *   }
  * });
@@ -556,7 +589,13 @@ export type RequestsWithMedia = Prisma.RequestsGetPayload<{
   include: {
     media: true;
     processByStaff: {
-      include: { userMedia: true };
+      include: {
+        userMedia: {
+          where: {
+            isAvatarFile: true;
+          };
+        };
+      };
     };
   };
 }>;

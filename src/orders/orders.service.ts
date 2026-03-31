@@ -17,6 +17,8 @@ import {
   PaymentStatus,
   Prisma,
   Requests,
+  RequestStatus,
+  RequestType,
   ShipmentStatus,
   Vouchers,
   VoucherStatus,
@@ -41,6 +43,7 @@ import { ShipmentsService } from '@/shipments/shipments.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import Ghn from 'giaohangnhanh';
 import dayjs from 'dayjs';
+import { PaymentsService } from '@/payments/payments.service';
 
 @Injectable()
 export class OrdersService {
@@ -49,6 +52,7 @@ export class OrdersService {
     private readonly prismaService: PrismaService,
     private readonly awsService: AwsS3Service,
     private readonly shipmentsService: ShipmentsService,
+    private readonly paymentsService: PaymentsService,
   ) {}
 
   /**
@@ -1360,15 +1364,48 @@ export class OrdersService {
           }
 
           // create refund when cancel order if payment method is VNPAY and payment status is Paid
-          // if (cancelOrder.payment[0].paymentMethod === PaymentMethod.VNPAY) {
-          //   if (cancelOrder.payment[0].status === PaymentStatus.PAID) {
-          //     await tx.returnRequests.create({
-          //       data: {
-          //         orderId: cancelOrder.id,
-          //       },
-          //     });
-          //   }
-          // }
+          if (cancelOrder.payment[0].paymentMethod === PaymentMethod.VNPAY) {
+            if (cancelOrder.payment[0].status === PaymentStatus.PAID) {
+              const newRequest = await tx.requests.create({
+                data: {
+                  userId: cancelOrder.userId,
+                  processByStaffId: null,
+                  orderId: cancelOrder.id,
+                  subject: RequestType.RETURN_REQUEST,
+                  description: `Refund request for order ID ${cancelOrder.id} after cancellation`,
+                  status: RequestStatus.APPROVED,
+                },
+              });
+
+              if (!newRequest) {
+                this.logger.error(
+                  `Failed to create request for order with ID ${cancelOrder.id} after cancellation`,
+                );
+                throw new BadRequestException(
+                  `Failed to create request for order with ID ${cancelOrder.id} after cancellation`,
+                );
+              }
+
+              const newReturnRequest = await tx.returnRequests.create({
+                data: {
+                  requestId: newRequest.id,
+                },
+              });
+
+              if (!newReturnRequest) {
+                this.logger.error(
+                  `Failed to create return request for order with ID ${cancelOrder.id} after cancellation`,
+                );
+                throw new BadRequestException(
+                  `Failed to create return request for order with ID ${cancelOrder.id} after cancellation`,
+                );
+              }
+
+              // call vnpay to refund money to customer
+              // when customer cancel order that order create before
+              // by VNPAY payment method and payment status is Paid
+            }
+          }
 
           const cancelledOrderWithFullInformation: OrdersWithFullInformation | null =
             await tx.orders.findFirst({
@@ -1639,7 +1676,11 @@ export class OrdersService {
         include: {
           processByStaff: {
             include: {
-              userMedia: true,
+              userMedia: {
+                where: {
+                  isAvatarFile: true,
+                },
+              },
             },
           },
           order: {
@@ -1756,7 +1797,11 @@ export class OrdersService {
           returnRequest: true,
           processByStaff: {
             include: {
-              userMedia: true,
+              userMedia: {
+                where: {
+                  isAvatarFile: true,
+                },
+              },
             },
           },
           media: true,

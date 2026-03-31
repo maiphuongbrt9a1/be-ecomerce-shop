@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CartItemsService } from './cart-items.service';
 import { CartItemsController } from './cart-items.controller';
-import { PrismaService } from '@/prisma/prisma.service';
-import { AwsS3Service } from '@/aws-s3/aws-s3.service';
+import { AwsS3Module } from '@/aws-s3/aws-s3.module';
 
 @Module({
+  imports: [AwsS3Module],
   controllers: [CartItemsController],
-  providers: [CartItemsService, PrismaService, AwsS3Service],
+  providers: [CartItemsService],
 })
 export class CartItemsModule {}

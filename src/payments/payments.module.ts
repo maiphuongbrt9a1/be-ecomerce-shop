@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { PaymentsController } from './payments.controller';
-import { PrismaService } from '@/prisma/prisma.service';
 import { VnpayModule } from 'nestjs-vnpay';
 import { consoleLogger } from 'vnpay';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -19,6 +18,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [PaymentsController],
-  providers: [PaymentsService, PrismaService],
+  providers: [PaymentsService],
+  exports: [PaymentsService],
 })
 export class PaymentsModule {}

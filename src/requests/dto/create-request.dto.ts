@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RequestStatus } from '@prisma/client';
+import { RequestStatus, RequestType } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsDate,
@@ -22,10 +22,12 @@ export class CreateRequestDto {
   @IsNotEmpty()
   orderId: bigint;
 
-  @ApiProperty({ example: 'return request' })
+  @ApiProperty({
+    example: 'RETURN_REQUEST | CANCEL_REQUEST | CUSTOMER_SUPPORT',
+  })
   @IsNotEmpty()
-  @IsString()
-  subject: string;
+  @IsEnum(RequestType)
+  subject: RequestType;
 
   @ApiProperty({
     example: 'I want to return this product in order. Because it"s wide',

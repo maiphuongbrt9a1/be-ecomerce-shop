@@ -7,14 +7,6 @@ export class CreateReturnRequestDto {
   @IsNotEmpty()
   requestId: bigint;
 
-  @ApiProperty({ example: 'Vietcombank' })
-  @IsNotEmpty()
-  bankName: string;
-
-  @ApiProperty({ example: '1234567890' })
-  @IsNotEmpty()
-  bankAccountNumber: string;
-
   @ApiProperty({ example: new Date() })
   @IsOptional()
   @IsDate()

@@ -704,7 +704,9 @@ export class ProductsService {
       this.logger.log(`Reviews fetched for product ID: ${id}`);
       return result.data;
     } catch (error) {
-      this.logger.error(`Error fetching reviews for product ID ${id}: ${error}`);
+      this.logger.error(
+        `Error fetching reviews for product ID ${id}: ${error}`,
+      );
       throw new BadRequestException('Failed to fetch product reviews');
     }
   }

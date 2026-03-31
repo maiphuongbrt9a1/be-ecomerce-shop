@@ -36,6 +36,12 @@ enum MediaType {
     DOCUMENT
 }
 
+enum RequestType {
+    RETURN_REQUEST // customer request to return an order
+    CANCEL_REQUEST // customer request to cancel an order before shipping
+    CUSTOMER_SUPPORT // general customer support request, It can anything that is not return or cancel request, such as inquiry about product, order, shipment, payment, etc.
+}
+
 // Order lifecycle: PENDING → PAYMENT_PROCESSING (VNPay) → PAYMENT_CONFIRMED (payment success) 
 // → WAITING_FOR_PICKUP (shipment created) → SHIPPED → DELIVERED → COMPLETED
 enum OrderStatus {
@@ -78,12 +84,9 @@ enum PaymentStatus {
 enum PaymentMethod {
     COD
     VNPAY
-    MOMO
-    ZALOPAY
-    CREDIT_CARD
-    BANK_TRANSFER
 }
 
+// Voucher status for UserVouchers: AVAILABLE (can be applied), SAVED (saved for later, not applied yet), USED (already used in an order), EXPIRED (past validTo date or manually expired)
 enum VoucherStatus {
     AVAILABLE
     SAVED
@@ -96,6 +99,7 @@ enum DiscountType {
     FIXED_AMOUNT
 }
 
+// Request lifecycle: PENDING → IN_PROGRESS → APPROVED or REJECTED
 enum RequestStatus {
     PENDING
     IN_PROGRESS
@@ -512,7 +516,7 @@ model Requests {
     processByStaffId      BigInt?      @db.BigInt
     order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     orderId     BigInt      @db.BigInt
-    subject     String      @db.VarChar(255)
+    subject     RequestType      @default(CUSTOMER_SUPPORT)
     description String      @db.Text
     status      RequestStatus      @default(PENDING)
     createdAt   DateTime    @default(now())
@@ -528,9 +532,7 @@ model Requests {
 model ReturnRequests {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     request     Requests    @relation(fields: [requestId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-    requestId   BigInt      @db.BigInt @unique
-    bankName    String      @db.VarChar(100)
-    bankAccountNumber String @db.VarChar(50) 
+    requestId   BigInt      @db.BigInt @unique 
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 

@@ -96,7 +96,11 @@ export class ShipmentsService {
         include: {
           processByStaff: {
             include: {
-              userMedia: true,
+              userMedia: {
+                where: {
+                  isAvatarFile: true,
+                },
+              },
             },
           },
           order: {
@@ -169,7 +173,11 @@ export class ShipmentsService {
           include: {
             processByStaff: {
               include: {
-                userMedia: true,
+                userMedia: {
+                  where: {
+                    isAvatarFile: true,
+                  },
+                },
               },
             },
             order: {
@@ -228,7 +236,11 @@ export class ShipmentsService {
         include: {
           processByStaff: {
             include: {
-              userMedia: true,
+              userMedia: {
+                where: {
+                  isAvatarFile: true,
+                },
+              },
             },
           },
           order: {
@@ -302,7 +314,11 @@ export class ShipmentsService {
         include: {
           processByStaff: {
             include: {
-              userMedia: true,
+              userMedia: {
+                where: {
+                  isAvatarFile: true,
+                },
+              },
             },
           },
           order: {

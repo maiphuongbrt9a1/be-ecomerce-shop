@@ -84,7 +84,11 @@ export class RequestsService {
           media: true,
           processByStaff: {
             include: {
-              userMedia: true,
+              userMedia: {
+                where: {
+                  isAvatarFile: true,
+                },
+              },
             },
           },
         },
@@ -174,7 +178,11 @@ export class RequestsService {
             media: true,
             processByStaff: {
               include: {
-                userMedia: true,
+                userMedia: {
+                  where: {
+                    isAvatarFile: true,
+                  },
+                },
               },
             },
           },
@@ -259,7 +267,11 @@ export class RequestsService {
           media: true,
           processByStaff: {
             include: {
-              userMedia: true,
+              userMedia: {
+                where: {
+                  isAvatarFile: true,
+                },
+              },
             },
           },
         },
@@ -402,7 +414,11 @@ export class RequestsService {
           media: true,
           processByStaff: {
             include: {
-              userMedia: true,
+              userMedia: {
+                where: {
+                  isAvatarFile: true,
+                },
+              },
             },
           },
         },
