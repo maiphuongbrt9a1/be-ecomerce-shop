@@ -5,6 +5,16 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Respect upstream proxy headers (x-forwarded-for, x-real-ip) for client IP extraction.
+  const httpAdapter = app.getHttpAdapter();
+  if (httpAdapter.getType() === 'express') {
+    const expressApp = httpAdapter.getInstance() as {
+      set: (setting: string, value: unknown) => void;
+    };
+    expressApp.set('trust proxy', true);
+  }
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

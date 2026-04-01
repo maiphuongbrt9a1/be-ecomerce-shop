@@ -1407,7 +1407,9 @@ export class OrdersService {
                     cancelOrder.payment[0].transactionId,
                   ),
                   vnp_TransactionDate: Number(
-                    cancelOrder.payment[0].vnp_CreateDate,
+                    dayjs(cancelOrder.payment[0].paymentDate).format(
+                      'YYYYMMDDHHmmss',
+                    ),
                   ),
                   vnp_IpAddr: clientIp,
                   // VNPay expects refund transaction type: 02 (full) or 03 (partial)
@@ -1425,30 +1427,9 @@ export class OrdersService {
                 },
               };
 
-              // Debug checksum input fields in the exact order VNPay document defines.
-              const refundSigningString = [
-                vnpayRefundInputData.data.vnp_RequestId,
-                '2.1.0',
-                'refund',
-                vnpayRefundInputData.data.vnp_TmnCode,
-                vnpayRefundInputData.data.vnp_TransactionType,
-                vnpayRefundInputData.data.vnp_TxnRef,
-                String(vnpayRefundInputData.data.vnp_Amount * 100),
-                String(vnpayRefundInputData.data.vnp_TransactionNo ?? '0'),
-                String(vnpayRefundInputData.data.vnp_TransactionDate),
-                vnpayRefundInputData.data.vnp_CreateBy,
-                String(vnpayRefundInputData.data.vnp_CreateDate),
-                vnpayRefundInputData.data.vnp_IpAddr,
-                vnpayRefundInputData.data.vnp_OrderInfo,
-              ].join('|');
-
               this.logger.log(
-                '[cancelOrder][VNPayRefund] Refund request payload (pre-sign): ' +
+                '[cancelOrder][VNPayRefund] Refund request payload (pre-sign). It input when i send to refund function in @nestjs/vnpay - lehuygiang: ' +
                   JSON.stringify(vnpayRefundInputData.data),
-              );
-              this.logger.log(
-                '[cancelOrder][VNPayRefund] Signing string (without secret): ' +
-                  refundSigningString,
               );
 
               const vnpayRefundResponse =
@@ -1462,6 +1443,9 @@ export class OrdersService {
                   `Failed to refund money to customer for order with ID ${cancelOrder.id} after cancellation`,
                 );
               }
+
+              // fix here for limit function on vnpay (now vnpay is limit refund function)
+              // this is primary reason for vnp_ResponseCode = 99 at dev environment
 
               if (
                 vnpayRefundResponse.isSuccess &&
