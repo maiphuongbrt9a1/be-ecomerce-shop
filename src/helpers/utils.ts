@@ -10,6 +10,8 @@ import {
   ShipmentsWithFullInformation,
 } from './types/types';
 import { GhnAbstract } from 'giaohangnhanh/lib/ghn.abstract';
+import * as os from 'os';
+
 const saltOrRounds = 10;
 
 /**
@@ -797,3 +799,43 @@ export const verifyPackageChecksum = (
 ): boolean => {
   return createPackageChecksum(payload, secret) === checksum;
 };
+
+/**
+ * Resolve the current server internal IPv4 address.
+ *
+ * Scans all network interfaces and returns the first non-loopback IPv4 address.
+ * This helper is useful for audit fields in background jobs (for example cron tasks)
+ * where there is no HTTP request context to extract client IP.
+ *
+ * 1. Reads all available OS network interfaces
+ * 2. Iterates through interface groups and their address entries
+ * 3. Picks the first IPv4 address that is not marked as internal
+ * 4. Returns localhost fallback when no external IPv4 is available
+ *
+ * @returns {string} Internal IPv4 address of the running server, or `127.0.0.1` as fallback
+ *
+ * @remarks
+ * - Prioritizes IPv4 addresses only (`iface.family === 'IPv4'`)
+ * - Excludes loopback/internal addresses (`iface.internal === false`)
+ * - Returned address can vary between environments (local machine, Docker, VM)
+ * - If multiple adapters are active, the first matching address is returned
+ */
+export function getServerInternalIp(): string {
+  const networkInterfaces = os.networkInterfaces();
+
+  for (const interfaceName in networkInterfaces) {
+    const interfaces = networkInterfaces[interfaceName];
+
+    if (interfaces) {
+      for (const iface of interfaces) {
+        // Keep only non-loopback IPv4 addresses.
+        if (iface.family === 'IPv4' && !iface.internal) {
+          return iface.address;
+        }
+      }
+    }
+  }
+
+  // Fallback to localhost when no matching internal IPv4 address is found.
+  return '127.0.0.1';
+}

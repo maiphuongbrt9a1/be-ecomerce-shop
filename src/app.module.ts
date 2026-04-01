@@ -32,6 +32,7 @@ import { ColorModule } from './color/color.module';
 import { BullModule } from '@nestjs/bullmq';
 import { bullQueueConfig } from './config/bull.config';
 import { mailerConfig } from './config/mailer.config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { mailerConfig } from './config/mailer.config';
     UserModule,
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     BullModule.forRootAsync(bullQueueConfig),
     MailerModule.forRootAsync(mailerConfig),
     MailModule,

@@ -375,7 +375,7 @@ model OrderItems {
     productVariant ProductVariants @relation(fields: [productVariantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     productVariantId BigInt  @db.BigInt 
     quantity    Int     @db.Integer
-    unitPrice   Float   @db.DoublePrecision 
+    unitPrice   Float   @db.DoublePrecision
     totalPrice  Float  @db.DoublePrecision // totalPrice = unitPrice * quantity
     discountValue Float   @db.DoublePrecision @default(0)// discount amount applied to this item
     currencyUnit String      @db.VarChar(10) @default("VND")
@@ -435,7 +435,8 @@ model Payments {
     amount      Float   @db.DoublePrecision 
     currencyUnit String      @db.VarChar(10) @default("VND")
     status      PaymentStatus      @default(PENDING)
-    vnp_CreateDate String?  // thời điểm mà buildVNPayURL được tạo, khách hàng được chuyển sang trang thanh toán của vnpay, định dạng String dạng YYYYMMDDHHmmss
+    vnp_CreateDate BigInt?  // thời điểm mà buildVNPayURL được tạo, khách hàng được chuyển sang trang thanh toán của vnpay, định dạng lưu là Bigint đại diện cho String trả về từ vnpay dạng YYYYMMDDHHmmss
+    vnp_ExpireDate BigInt?  // thời điểm mà link thanh toán vnpay hết hạn, định dạng lưu là Bigint đại diện cho String trả về từ vnpay dạng YYYYMMDDHHmmss
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
     @@index([orderId], name: "idx_payment_order_id")

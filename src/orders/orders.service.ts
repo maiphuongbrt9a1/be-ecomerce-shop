@@ -37,6 +37,7 @@ import {
   formatMediaFieldWithLogging,
   formatMediaFieldWithLoggingForOrders,
   formatMediaFieldWithLoggingForShipments,
+  getServerInternalIp,
 } from '@/helpers/utils';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { ShipmentsService } from '@/shipments/shipments.service';
@@ -45,6 +46,7 @@ import Ghn from 'giaohangnhanh';
 import dayjs from 'dayjs';
 import { PaymentsService } from '@/payments/payments.service';
 import { VnpayRefundDto } from '@/payments/dto/vnpay-refund.dto';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class OrdersService {
@@ -1520,6 +1522,90 @@ export class OrdersService {
     } catch (error) {
       this.logger.error(`Failed to cancel order with ID ${id}: `, error);
       throw new BadRequestException(`Failed to cancel order with ID ${id}`);
+    }
+  }
+
+  /**
+   * Scan and cancel expired VNPay orders on a 5-minute cron schedule.
+   *
+   * Cron expression: '0 *\5 * * * *'.
+   *
+   * This method performs the following operations:
+   * 1. Searches payment records where method is VNPay, status is PENDING,
+   *    and `vnp_ExpireDate` is earlier than current time (formatted `YYYYMMDDHHmmss`).
+   * 2. Restricts candidates to orders in `PENDING` or `PAYMENT_PROCESSING` state.
+   * 3. Collects matching order IDs and resolves the current server internal IP.
+   * 4. Iterates through each order and calls `cancelOrder(...)`.
+   * 5. Logs per-order cancellation failures while continuing remaining orders.
+   *
+   * @returns {Promise<void>} Resolves after one cron scan/cancel cycle finishes
+   *
+   * @remarks
+   * - Per-order errors are handled inside the loop so one failure does not stop the batch.
+   * - Outer try/catch handles unexpected failures for the whole cron execution.
+   * - Server IP is passed into cancellation flow for VNPay-related auditing fields.
+   */
+  @Cron('0 */5 * * * *')
+  async handleCancelExpiredOrders() {
+    this.logger.log('Scanning for expired orders...');
+
+    try {
+      await this.prismaService.$transaction(async (tx) => {
+        // get all orders that orderStatus is Payment_Processing and PaymentStatus is Pending and Payment.vnp_expireDate < now()
+        const expiredPayments = await tx.payments.findMany({
+          where: {
+            status: PaymentStatus.PENDING,
+            paymentMethod: PaymentMethod.VNPAY,
+            vnp_ExpireDate: {
+              lt: BigInt(dayjs().format('YYYYMMDDHHmmss')), // compare with current date time in format YYYYMMDDHHmmss and convert to bigint
+            },
+            order: {
+              status: {
+                in: [OrderStatus.PENDING, OrderStatus.PAYMENT_PROCESSING],
+              },
+            },
+          },
+        });
+
+        if (expiredPayments.length === 0) {
+          this.logger.log('No expired orders found.');
+          return;
+        }
+
+        this.logger.log(
+          `Found ${expiredPayments.length} expired orders. Cancelling these orders...`,
+        );
+
+        const expiredOrderIds = expiredPayments.map(
+          (payment) => payment.orderId,
+        );
+
+        const serverIp = getServerInternalIp();
+
+        // loop for order list and cancel order by call cancelOrder function for each order
+        // await this.orderService.cancelExpiredOrders();
+        for (const orderId of expiredOrderIds) {
+          try {
+            this.logger.log('Cancelling order with ID: ' + orderId);
+            await this.cancelOrder(Number(orderId), serverIp);
+            this.logger.log('Successfully cancelled order with ID: ' + orderId);
+          } catch (error) {
+            this.logger.error(
+              'Error occurred while cancelling order with ID: ' + orderId,
+              error,
+            );
+          }
+        }
+      });
+
+      this.logger.log(
+        'Successfully completed scanning and cancelling expired orders.',
+      );
+    } catch (error) {
+      this.logger.error(
+        'Error occurred while running cron job to cancel expired orders:',
+        error,
+      );
     }
   }
 

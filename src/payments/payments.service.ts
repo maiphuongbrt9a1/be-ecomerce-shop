@@ -313,13 +313,14 @@ export class PaymentsService {
       const vnp_CreateDate = dayjs().format('YYYYMMDDHHmmss');
       data['vnp_CreateDate'] = vnp_CreateDate;
 
-      data['vnp_ExpireDate'] = dayjs()
+      const vnp_ExpireDate = dayjs()
         .add(
           Number(process.env.TIME_EXPIRE_VNPAY_PAYMENT_IN_MINUTES!) || 15,
           'minute',
         )
         .format('YYYYMMDDHHmmss');
 
+      data['vnp_ExpireDate'] = vnp_ExpireDate;
       data['vnp_IpAddr'] = clientIp;
 
       this.logger.log(
@@ -340,7 +341,8 @@ export class PaymentsService {
           paymentMethod: 'VNPAY',
         },
         data: {
-          vnp_CreateDate: vnp_CreateDate,
+          vnp_CreateDate: BigInt(vnp_CreateDate),
+          vnp_ExpireDate: BigInt(vnp_ExpireDate),
         },
       });
 
