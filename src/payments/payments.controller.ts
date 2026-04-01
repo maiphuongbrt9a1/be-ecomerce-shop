@@ -84,11 +84,11 @@ export class PaymentsController {
     type: CreateVNPayPaymentUrlDto,
   })
   @Post('/vnpay-payment-url')
-  buildVNPayPaymentUrl(
+  async buildVNPayPaymentUrl(
     @Body() createVNPayPaymentUrlDto: CreateVNPayPaymentUrlDto,
     @ClientIp() clientIp: string,
   ) {
-    return this.paymentsService.buildVNPayPaymentUrl(
+    return await this.paymentsService.buildVNPayPaymentUrl(
       createVNPayPaymentUrlDto,
       clientIp,
     );

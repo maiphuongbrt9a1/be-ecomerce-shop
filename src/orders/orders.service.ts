@@ -1403,19 +1403,18 @@ export class OrdersService {
                   vnp_RequestId: String(newReturnRequest.id),
                   vnp_TxnRef: String(cancelOrder.id),
                   vnp_Amount: Number(cancelOrder.totalAmount),
+                  vnp_TransactionNo: String(
+                    cancelOrder.payment[0].transactionId,
+                  ),
                   vnp_TransactionDate: Number(
-                    dayjs(cancelOrder.payment[0].paymentDate).format(
-                      'YYYYMMDDHHmmss',
-                    ),
+                    cancelOrder.payment[0].vnp_CreateDate,
                   ),
                   vnp_IpAddr: clientIp,
-                  vnp_TransactionType: 'refund',
+                  // VNPay expects refund transaction type: 02 (full) or 03 (partial)
+                  vnp_TransactionType: '02',
                   vnp_CreateDate: Number(dayjs().format('YYYYMMDDHHmmss')),
-                  vnp_CreateBy:
-                    cancelOrder.user.firstName +
-                    ' ' +
-                    cancelOrder.user.lastName,
-                  vnp_RefundAmount: Number(cancelOrder.totalAmount),
+                  // Keep ASCII-only creator name to avoid encoding inconsistencies in signature string.
+                  vnp_CreateBy: 'SYSTEM',
                   vnp_OrderInfo: `Customer create new return request because customer cancel order with order id: ${cancelOrder.id}`,
                 },
                 options: {
@@ -1425,6 +1424,32 @@ export class OrdersService {
                   },
                 },
               };
+
+              // Debug checksum input fields in the exact order VNPay document defines.
+              const refundSigningString = [
+                vnpayRefundInputData.data.vnp_RequestId,
+                '2.1.0',
+                'refund',
+                vnpayRefundInputData.data.vnp_TmnCode,
+                vnpayRefundInputData.data.vnp_TransactionType,
+                vnpayRefundInputData.data.vnp_TxnRef,
+                String(vnpayRefundInputData.data.vnp_Amount * 100),
+                String(vnpayRefundInputData.data.vnp_TransactionNo ?? '0'),
+                String(vnpayRefundInputData.data.vnp_TransactionDate),
+                vnpayRefundInputData.data.vnp_CreateBy,
+                String(vnpayRefundInputData.data.vnp_CreateDate),
+                vnpayRefundInputData.data.vnp_IpAddr,
+                vnpayRefundInputData.data.vnp_OrderInfo,
+              ].join('|');
+
+              this.logger.log(
+                '[cancelOrder][VNPayRefund] Refund request payload (pre-sign): ' +
+                  JSON.stringify(vnpayRefundInputData.data),
+              );
+              this.logger.log(
+                '[cancelOrder][VNPayRefund] Signing string (without secret): ' +
+                  refundSigningString,
+              );
 
               const vnpayRefundResponse =
                 await this.paymentsService.VNPayRefund(vnpayRefundInputData);

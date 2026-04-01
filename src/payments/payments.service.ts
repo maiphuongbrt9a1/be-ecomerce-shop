@@ -285,10 +285,10 @@ export class PaymentsService {
    * - URL is signed by VNPay SDK to ensure integrity
    * - Caller should redirect client immediately after URL is generated
    */
-  buildVNPayPaymentUrl(
+  async buildVNPayPaymentUrl(
     createVNPayPaymentUrlDto: CreateVNPayPaymentUrlDto,
     clientIp: string,
-  ): string {
+  ): Promise<string> {
     try {
       this.logger.log(
         'Building VNPAY payment URL with data: ',
@@ -310,7 +310,8 @@ export class PaymentsService {
       const { data } = createVNPayPaymentUrlDto;
 
       // config add new fields required by vnpay library and pre-process data
-      data['vnp_CreateDate'] = dayjs().format('YYYYMMDDHHmmss');
+      const vnp_CreateDate = dayjs().format('YYYYMMDDHHmmss');
+      data['vnp_CreateDate'] = vnp_CreateDate;
 
       data['vnp_ExpireDate'] = dayjs()
         .add(
@@ -332,6 +333,23 @@ export class PaymentsService {
         options as BuildPaymentUrlOptions,
       );
       this.logger.log('Generated VNPAY payment URL: ', JSON.stringify(result));
+
+      const updatedPayments = await this.prismaService.payments.updateMany({
+        where: {
+          orderId: BigInt(data.vnp_TxnRef),
+          paymentMethod: 'VNPAY',
+        },
+        data: {
+          vnp_CreateDate: vnp_CreateDate,
+        },
+      });
+
+      if (updatedPayments.count === 0) {
+        this.logger.warn(
+          `No VNPay payment row found to persist vnp_CreateDate for order ${data.vnp_TxnRef}`,
+        );
+      }
+
       return result;
     } catch (error) {
       this.logger.error('Failed to build VNPAY payment URL: ', error);

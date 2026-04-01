@@ -431,10 +431,11 @@ model Payments {
     orderId     BigInt      @db.BigInt
     transactionId String    @unique @db.VarChar(100)
     paymentMethod PaymentMethod    @default(COD)
-    paymentDate DateTime    @default(now())
+    paymentDate DateTime    @default(now())  // thời điểm mà ipn callback từ vnpay xử lý và xác nhận thanh toán thành công
     amount      Float   @db.DoublePrecision 
     currencyUnit String      @db.VarChar(10) @default("VND")
     status      PaymentStatus      @default(PENDING)
+    vnp_CreateDate String?  // thời điểm mà buildVNPayURL được tạo, khách hàng được chuyển sang trang thanh toán của vnpay, định dạng String dạng YYYYMMDDHHmmss
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
     @@index([orderId], name: "idx_payment_order_id")

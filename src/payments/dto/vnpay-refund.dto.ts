@@ -6,6 +6,7 @@ import {
   IsBoolean,
   IsObject,
   ValidateNested,
+  IsIn,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -54,11 +55,20 @@ export class RefundDataDto {
   @IsString()
   vnp_IpAddr: string;
 
+  @ApiPropertyOptional({
+    description: 'Original VNPay transaction number (recommended for refund)',
+    example: '15476679',
+  })
+  @IsOptional()
+  @IsString()
+  vnp_TransactionNo?: string;
+
   @ApiProperty({
-    description: 'Transaction type (typically "refund")',
-    example: 'refund',
+    description: 'Refund type: 02 = full refund, 03 = partial refund',
+    example: '02',
   })
   @IsString()
+  @IsIn(['02', '03'])
   vnp_TransactionType: string;
 
   @ApiProperty({
@@ -76,23 +86,12 @@ export class RefundDataDto {
   @IsString()
   vnp_CreateBy: string;
 
-  @ApiPropertyOptional({
-    description:
-      'Refund amount (in VND, optional - if not set, refunds full amount)',
-    example: 150000,
-    type: Number,
-  })
-  @IsOptional()
-  @IsNumber()
-  vnp_RefundAmount?: number;
-
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'Reason for refund',
     example: 'Customer request',
   })
-  @IsOptional()
   @IsString()
-  vnp_OrderInfo?: string;
+  vnp_OrderInfo: string;
 }
 
 export class RefundOptionsDto {
