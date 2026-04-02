@@ -10,7 +10,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import {
+  UpdateOrderDto,
+  UpdateOrderFromWaitingForPickupToShippedDto,
+} from './dto/update-order.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -500,6 +503,44 @@ export class OrdersController {
     return await this.ordersService.updateOrderToWaitingPickup(
       +id,
       updateOrderDto,
+    );
+  }
+
+  @ApiOperation({
+    summary: 'Update one order from waiting for pickup to shipped',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Order updated from WAITING_FOR_PICKUP to SHIPPED successfully',
+    type: OrderFullInformationEntity,
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Bad Request - invalid order status, update flow failed, or transition not allowed',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - order or eligible shipment not found',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @ApiBody({
+    description:
+      'Order update payload containing processByStaffId for transition to SHIPPED',
+    type: UpdateOrderFromWaitingForPickupToShippedDto,
+  })
+  @Patch('/:id/shipped')
+  async updateOrderFromWaitingPickupToShipped(
+    @Param('id') id: string,
+    @Body()
+    updateOrderFromWaitingForPickupToShippedDto: UpdateOrderFromWaitingForPickupToShippedDto,
+  ) {
+    return await this.ordersService.updateOrderFromWaitingPickupToShipped(
+      +id,
+      updateOrderFromWaitingForPickupToShippedDto,
     );
   }
 

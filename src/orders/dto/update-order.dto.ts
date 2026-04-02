@@ -37,3 +37,9 @@ export class UpdateOrderDto {
   @IsNotEmpty()
   ghnToTime: bigint;
 }
+
+export class UpdateOrderFromWaitingForPickupToShippedDto {
+  @ApiProperty({ example: 851 })
+  @IsNotEmpty()
+  processByStaffId: bigint;
+}

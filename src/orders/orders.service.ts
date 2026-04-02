@@ -6,7 +6,10 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import {
+  UpdateOrderDto,
+  UpdateOrderFromWaitingForPickupToShippedDto,
+} from './dto/update-order.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
   OrderItems,
@@ -1254,6 +1257,126 @@ export class OrdersService {
     } catch (error) {
       this.logger.error(`Failed to update order with ID ${id}: `, error);
       throw new BadRequestException('Failed to update order');
+    }
+  }
+
+  /**
+   * Updates an order from `WAITING_FOR_PICKUP` to `SHIPPED` after pickup confirmation.
+   *
+   * This method performs the following operations:
+   * 1. Validates that the target order exists
+   * 2. Validates current order status is `WAITING_FOR_PICKUP`
+   * 3. Starts a database transaction to keep shipment/order updates consistent
+   * 4. Finds shipment of the order with status `WAITING_FOR_PICKUP` and non-null GHN order code
+   * 5. Updates shipment status to `SHIPPED`, sets `shippedAt`, and updates processing staff
+   * 6. Updates order status to `SHIPPED` and updates processing staff
+   * 7. Formats media URLs in nested order relations before returning response
+   *
+   * @param {number} orderId - The unique identifier of the order to transition
+   * @param {UpdateOrderFromWaitingForPickupToShippedDto} updateOrderFromWaitingForPickupToShippedDto -
+   * Payload containing `processByStaffId` used for audit and ownership tracking
+   *
+   * @returns {Promise<OrdersWithFullInformation>} Updated order with full related information and formatted media
+   *
+   * @throws {NotFoundException} If order or eligible shipment is not found, or media formatting yields empty result
+   * @throws {BadRequestException} If order has invalid status for this transition or update flow fails
+   *
+   * @remarks
+   * - Transition rule enforced: `WAITING_FOR_PICKUP` -> `SHIPPED`
+   * - Shipment selection requires both `ShipmentStatus.WAITING_FOR_PICKUP` and non-null `ghnOrderCode`
+   * - Shipment and order are updated in one transaction for database consistency
+   */
+
+  async updateOrderFromWaitingPickupToShipped(
+    orderId: number,
+    updateOrderFromWaitingForPickupToShippedDto: UpdateOrderFromWaitingForPickupToShippedDto,
+  ): Promise<OrdersWithFullInformation> {
+    try {
+      const orderFromDB = await this.prismaService.orders.findFirst({
+        where: {
+          id: orderId,
+        },
+      });
+
+      if (!orderFromDB) {
+        this.logger.error(`Order with ID ${orderId} not found for update`);
+        throw new NotFoundException(`Order with ID ${orderId} not found`);
+      }
+
+      if (orderFromDB.status !== OrderStatus.WAITING_FOR_PICKUP) {
+        this.logger.error(
+          `Order with ID ${orderId} has invalid status ${orderFromDB.status} for update to SHIPPED. Only orders with status WAITING_FOR_PICKUP can be updated to SHIPPED.`,
+        );
+        throw new BadRequestException(
+          `Order with ID ${orderId} has invalid status ${orderFromDB.status} for update to SHIPPED. Only orders with status WAITING_FOR_PICKUP can be updated to SHIPPED.`,
+        );
+      }
+
+      const result = await this.prismaService.$transaction(async (tx) => {
+        // update shipment status to SHIPPED when order is picked up by shipper successfully
+        const shipmentInformation = await tx.shipments.findFirst({
+          where: {
+            orderId: orderId,
+            status: ShipmentStatus.WAITING_FOR_PICKUP,
+            ghnOrderCode: {
+              not: null,
+            },
+          },
+        });
+
+        if (!shipmentInformation) {
+          this.logger.error(
+            `Shipment not found for order with ID ${orderId} when updating order status to SHIPPED`,
+          );
+          throw new NotFoundException(
+            `Shipment not found for order with ID ${orderId} when updating order status to SHIPPED`,
+          );
+        }
+
+        await tx.shipments.update({
+          where: {
+            id: shipmentInformation.id,
+          },
+          data: {
+            status: ShipmentStatus.SHIPPED,
+            shippedAt: new Date(),
+            processByStaffId:
+              updateOrderFromWaitingForPickupToShippedDto.processByStaffId,
+          },
+        });
+
+        // update order status to SHIPPED
+        const result = await tx.orders.update({
+          where: { id: orderId },
+          data: {
+            status: OrderStatus.SHIPPED,
+            processByStaffId:
+              updateOrderFromWaitingForPickupToShippedDto.processByStaffId,
+          },
+          include: OrdersWithFullInformationInclude,
+        });
+        return result;
+      });
+
+      const returnResult = formatMediaFieldWithLoggingForOrders(
+        [result],
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      )[0];
+
+      if (!returnResult) {
+        throw new NotFoundException('Order error after formatting media!');
+      }
+
+      return returnResult;
+    } catch (error) {
+      this.logger.error(
+        `Failed to update order from WAITING_FOR_PICKUP to SHIPPED: `,
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to update order from WAITING_FOR_PICKUP to SHIPPED',
+      );
     }
   }
 

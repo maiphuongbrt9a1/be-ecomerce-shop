@@ -19,6 +19,9 @@ export class OrderFullInformationEntity {
   @ApiProperty({ example: 1, required: false, nullable: true })
   processByStaffId?: bigint | null;
 
+  @ApiProperty({ example: 1, required: false, nullable: true })
+  ghnPickShiftId?: bigint | null;
+
   @ApiProperty({ example: 'This is an order description', required: false })
   description?: string;
 
