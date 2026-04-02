@@ -137,6 +137,58 @@ export class OrdersController {
     );
   }
 
+  @ApiOperation({ summary: 'Get GHN pickup shifts' })
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieved GHN pickup shifts successfully',
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', example: 2 },
+          title: {
+            type: 'string',
+            example: 'Ca lấy 02-04-2026 (12h00 - 18h00)',
+          },
+          from_time: { type: 'number', example: 43200 },
+          to_time: { type: 'number', example: 64800 },
+        },
+      },
+      example: [
+        {
+          id: 2,
+          title: 'Ca lấy 02-04-2026 (12h00 - 18h00)',
+          from_time: 43200,
+          to_time: 64800,
+        },
+        {
+          id: 3,
+          title: 'Ca lấy 03-04-2026 (7h00 - 12h00)',
+          from_time: 111600,
+          to_time: 129600,
+        },
+        {
+          id: 4,
+          title: 'Ca lấy 03-04-2026 (12h00 - 18h00)',
+          from_time: 129600,
+          to_time: 151200,
+        },
+      ],
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Unable to retrieve GHN pickup shifts',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/ghn/pick-shift-list')
+  async pickShiftOnGHNSystem() {
+    return await this.ordersService.pickShiftOnGHNSystem();
+  }
+
   @ApiOperation({ summary: 'Get all confirmed orders of shop' })
   @ApiResponse({
     status: 200,
@@ -408,30 +460,6 @@ export class OrdersController {
     return await this.ordersService.findOne(+id);
   }
 
-  @ApiOperation({ summary: 'Update one order' })
-  @ApiResponse({
-    status: 200,
-    description: 'Order updated successfully',
-    type: OrderEntity,
-  })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @ApiResponse({ status: 404, description: 'Not Found.' })
-  @ApiBearerAuth()
-  @UseGuards(RolesGuard)
-  @Roles('ADMIN', 'USER', 'OPERATOR')
-  @ApiBody({
-    description:
-      'Order update data with optional status, shipping address, pricing information',
-    type: UpdateOrderDto,
-  })
-  @Patch('/:id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateOrderDto: UpdateOrderDto,
-  ) {
-    return await this.ordersService.update(+id, updateOrderDto);
-  }
-
   @ApiOperation({ summary: 'Delete one order' })
   @ApiResponse({
     status: 200,
@@ -446,6 +474,33 @@ export class OrdersController {
   @Delete('/:id')
   async remove(@Param('id') id: string) {
     return await this.ordersService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'Update one order to waiting for pickup status' })
+  @ApiResponse({
+    status: 200,
+    description: 'Order updated successfully',
+    type: OrderFullInformationEntity,
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @ApiBody({
+    description:
+      'Order update data with processByStaffId and GHN pick shift information',
+    type: UpdateOrderDto,
+  })
+  @Patch('/:id/waiting-pickup')
+  async updateOrderToWaitingPickup(
+    @Param('id') id: string,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
+    return await this.ordersService.updateOrderToWaitingPickup(
+      +id,
+      updateOrderDto,
+    );
   }
 
   @ApiOperation({ summary: 'Cancel one order with full rollback of resources' })

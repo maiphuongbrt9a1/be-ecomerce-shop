@@ -38,6 +38,7 @@ import {
   formatMediaFieldWithLoggingForOrders,
   formatMediaFieldWithLoggingForShipments,
   getServerInternalIp,
+  GHNShops,
 } from '@/helpers/utils';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { ShipmentsService } from '@/shipments/shipments.service';
@@ -47,6 +48,7 @@ import dayjs from 'dayjs';
 import { PaymentsService } from '@/payments/payments.service';
 import { VnpayRefundDto } from '@/payments/dto/vnpay-refund.dto';
 import { Cron } from '@nestjs/schedule';
+import { MyPickShiftResponse } from '@/helpers/types/ghn-pick-shift-response';
 
 @Injectable()
 export class OrdersService {
@@ -1043,35 +1045,212 @@ export class OrdersService {
   }
 
   /**
-   * Updates an existing order with new information.
+   * Retrieves available GHN pickup shifts for the configured GHN shop.
    *
    * This method performs the following operations:
-   * 1. Validates the order ID exists
-   * 2. Updates order fields based on the provided DTO
-   * 3. Logs the update operation
+   * 1. Loads GHN configuration from environment variables
+   * 2. Initializes the GHN client
+   * 3. Calls GHN `pickShift` API to fetch available pickup shifts
+   * 4. Validates that GHN returns a shift payload
+   * 5. Logs the returned shift data for tracing
    *
-   * @param {number} id - The unique identifier of the order to update
-   * @param {UpdateOrderDto} updateOrderDto - The data transfer object containing fields to update:
-   *   - May include status, amounts, addresses, or other order properties
+   * @returns {Promise<MyPickShiftResponse[]>} GHN pickup shift response returned by the SDK
    *
-   * @returns {Promise<Orders>} The updated order record with new values
-   *
-   * @throws {BadRequestException} If order update fails or validation fails
+   * @throws {BadRequestException} If GHN returns no shift or the request fails
    *
    * @remarks
-   * - Uses shallow merge spread operator to update fields
-   * - Does not update related entities (items, payments, shipments)
-   * - Only updates direct order properties
+   * - Used by the order pickup flow before assigning a shipment to WAITING_FOR_PICKUP
+   * - The returned payload is passed back to callers for user selection or further processing
    */
-  async update(id: number, updateOrderDto: UpdateOrderDto): Promise<Orders> {
+  async pickShiftOnGHNSystem(): Promise<MyPickShiftResponse[]> {
     try {
-      const result = await this.prismaService.orders.update({
-        where: { id: id },
-        data: { ...updateOrderDto },
+      const ghnShopId = process.env.GHN_SHOP1_ID!;
+      const ghnConfig = {
+        token: process.env.GHN_TOKEN!,
+        shopId: Number(ghnShopId),
+        host: process.env.GHN_HOST!,
+        trackingHost: process.env.GHN_TRACKING_HOST!,
+        testMode: process.env.GHN_TEST_MODE === 'true',
+      };
+
+      const ghn = new Ghn(ghnConfig);
+      const shift = await ghn.order.pickShift({});
+
+      if (!shift) {
+        this.logger.error(
+          `Failed to pick shift on GHN system: No shift returned`,
+        );
+        throw new BadRequestException('Failed to pick shift on GHN system');
+      }
+
+      this.logger.log(
+        `Successfully picked shift on GHN system: ${JSON.stringify(shift)}`,
+      );
+      return shift;
+    } catch (error) {
+      this.logger.error(`Failed to pick shift on GHN system: `, error);
+      throw new BadRequestException('Failed to pick shift on GHN system');
+    }
+  }
+
+  /**
+   * Updates an order from `PAYMENT_CONFIRMED` to `WAITING_FOR_PICKUP` and synchronizes GHN pickup shift.
+   *
+   * This method performs the following operations:
+   * 1. Initializes GHN shop client from environment configuration
+   * 2. Validates that the order exists
+   * 3. Validates current order status is `PAYMENT_CONFIRMED`
+   * 4. Finds the pending shipment of the order that already has a GHN order code
+   * 5. Calls GHN update-order API to assign selected pickup shift
+   * 6. In a database transaction:
+   *    - Creates a `GhnPickShift` tracking record
+   *    - Updates shipment to `WAITING_FOR_PICKUP` and links created pick-shift record
+   *    - Updates order to `WAITING_FOR_PICKUP`
+   * 7. Formats media URLs for nested response entities
+   * 8. Logs successful update result
+   *
+   * @param {number} id - The unique identifier of the order to update
+   * @param {UpdateOrderDto} updateOrderDto - Update payload containing staff and GHN pick-shift fields:
+   *   - `processByStaffId`: staff who processes this transition
+   *   - `ghnPickShiftId`: GHN shift ID selected for pickup
+   *   - `ghnTitle`, `ghnFromTime`, `ghnToTime`: GHN shift metadata stored for auditing
+   *
+   * @returns {Promise<OrdersWithFullInformation>} Updated order with full relationships and formatted media URLs
+   *
+   * @throws {NotFoundException} If order is not found or formatted result is unexpectedly empty
+   * @throws {BadRequestException} If:
+   *   - Order status is not eligible for transition
+   *   - Pending shipment with GHN order code is not found
+   *   - GHN update-order call fails
+   *   - Database transaction fails
+   *
+   * @remarks
+   * - Current flow assumes one shipment per order (uses `findFirst` shipment lookup)
+   * - Shipment transition is restricted to `PENDING` -> `WAITING_FOR_PICKUP`
+   * - Order transition is restricted to `PAYMENT_CONFIRMED` -> `WAITING_FOR_PICKUP`
+   */
+  async updateOrderToWaitingPickup(
+    id: number,
+    updateOrderDto: UpdateOrderDto,
+  ): Promise<OrdersWithFullInformation> {
+    try {
+      // call ghn to update pick shift for ghn shipment when update order status to WAITING_FOR_PICKUP
+      const ghnShopId = process.env.GHN_SHOP1_ID!;
+      const ghnConfig = {
+        token: process.env.GHN_TOKEN!,
+        shopId: Number(ghnShopId),
+        host: process.env.GHN_HOST!,
+        trackingHost: process.env.GHN_TRACKING_HOST!,
+        testMode: process.env.GHN_TEST_MODE === 'true',
+      };
+
+      const ghnShop = new GHNShops(ghnConfig);
+      // find first because we only support one shipment for one order now,
+      // and shipment record must be created when create order
+      // only update shipment when shipment status is Pending if not the behavior is forbiden
+
+      const orderFromDB = await this.prismaService.orders.findFirst({
+        where: {
+          id: id,
+        },
       });
 
+      if (!orderFromDB) {
+        this.logger.error(`Order with ID ${id} not found for update`);
+        throw new NotFoundException(`Order with ID ${id} not found`);
+      }
+
+      if (orderFromDB.status !== OrderStatus.PAYMENT_CONFIRMED) {
+        this.logger.error(
+          `Order with ID ${id} has invalid status ${orderFromDB.status} for update to WAITING_FOR_PICKUP. Only orders with status PAYMENT_CONFIRMED can be updated to WAITING_FOR_PICKUP.`,
+        );
+        throw new BadRequestException(
+          `Order with ID ${id} has invalid status ${orderFromDB.status} for update to WAITING_FOR_PICKUP. Only orders with status PAYMENT_CONFIRMED can be updated to WAITING_FOR_PICKUP.`,
+        );
+      }
+
+      const shipmentInformation = await this.prismaService.shipments.findFirst({
+        where: {
+          orderId: id,
+          ghnOrderCode: {
+            not: null,
+          },
+          status: ShipmentStatus.PENDING,
+        },
+      });
+
+      if (!shipmentInformation || !shipmentInformation.ghnOrderCode) {
+        this.logger.error(
+          `No shipment with GHN order code found for order with ID ${id}`,
+        );
+        throw new BadRequestException(
+          `No shipment with GHN order code found for order with ID ${id}`,
+        );
+      }
+
+      const updateOrderOnGHNSystem = await ghnShop.updateOrder(
+        shipmentInformation.ghnOrderCode,
+        [Number(updateOrderDto.ghnPickShiftId)],
+      );
+
+      if (!updateOrderOnGHNSystem) {
+        this.logger.error(
+          `Failed to update order on GHN system for order with ID ${id}`,
+        );
+        throw new BadRequestException(
+          `Failed to update order on GHN system for order with ID ${id}`,
+        );
+      }
+
+      const result: OrdersWithFullInformation =
+        await this.prismaService.$transaction(async (tx) => {
+          // create new ghnPickShift record in database for tracking pick shift information on GHN system
+          const newGHNPickShift = await tx.ghnPickShift.create({
+            data: {
+              ghnShiftId: updateOrderDto.ghnPickShiftId,
+              ghnTitle: updateOrderDto.ghnTitle,
+              ghnFromTime: updateOrderDto.ghnFromTime,
+              ghnToTime: updateOrderDto.ghnToTime,
+            },
+          });
+
+          // update ghnPickShiftId for shipment record in database
+          await tx.shipments.update({
+            where: {
+              id: shipmentInformation.id,
+            },
+            data: {
+              ghnPickShiftId: newGHNPickShift.id,
+              status: ShipmentStatus.WAITING_FOR_PICKUP,
+              processByStaffId: updateOrderDto.processByStaffId,
+            },
+          });
+
+          // update order status to WAITING_FOR_PICKUP when update pick shift successfully on GHN system
+          const result: OrdersWithFullInformation = await tx.orders.update({
+            where: { id: id },
+            data: {
+              status: OrderStatus.WAITING_FOR_PICKUP,
+              processByStaffId: updateOrderDto.processByStaffId,
+            },
+            include: OrdersWithFullInformationInclude,
+          });
+
+          return result;
+        });
+
+      const returnResult = formatMediaFieldWithLoggingForOrders(
+        [result],
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      )[0];
+
+      if (!returnResult) {
+        throw new NotFoundException('Order error after formatting media!');
+      }
+
       this.logger.log(`Updated order with ID: ${id}`);
-      return result;
+      return returnResult;
     } catch (error) {
       this.logger.error(`Failed to update order with ID ${id}: `, error);
       throw new BadRequestException('Failed to update order');

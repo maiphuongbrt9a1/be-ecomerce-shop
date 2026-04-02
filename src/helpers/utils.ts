@@ -6,6 +6,7 @@ import {
   GHNShopDetail,
   MyGHNShopList,
   MyGHNShopRegisterResponse,
+  MyGHNUpdateOrderResponse,
   OrdersWithFullInformation,
   ShipmentsWithFullInformation,
 } from './types/types';
@@ -665,6 +666,58 @@ export class GHNShops extends GhnAbstract {
     } catch (error) {
       this.logger.error(`Error registering GHN shop: ${error}`);
       throw new BadRequestException(`Failed to register GHN shop: ${error}`);
+    }
+  }
+
+  /**
+   * Update an existing GHN shipping order with selected pickup shift.
+   *
+   * This method performs the following operations:
+   * 1. Builds GHN update-order endpoint URL
+   * 2. Sends request payload containing `order_code` and `pick_shift`
+   * 3. Parses response body as `MyGHNUpdateOrderResponse`
+   * 4. Validates HTTP response status (`response.ok`)
+   * 5. Returns parsed GHN response payload when successful
+   *
+   * @param {string} order_code - GHN order code to update
+   * @param {number[]} pick_shift - Array of GHN pickup shift IDs to assign
+   *
+   * @returns {Promise<MyGHNUpdateOrderResponse>} GHN response containing status code, message, code_message, and data
+   *
+   * @throws {BadRequestException} If GHN request fails or returns non-2xx status
+   *
+   * @remarks
+   * - Calls GHN endpoint: `shiip/public-api/v2/shipping-order/update`
+   * - Uses shared `fetch()` from `GhnAbstract` (POST + token + ShopId headers)
+   * - Current validation is based on HTTP status; caller may add domain-level checks on response fields
+   */
+  public async updateOrder(
+    order_code: string,
+    pick_shift: number[],
+  ): Promise<MyGHNUpdateOrderResponse> {
+    try {
+      const updateOrderPath = 'shiip/public-api/v2/shipping-order/update';
+      const response = await this.fetch(
+        resolveUrl(this.globalConfig.host, updateOrderPath),
+        {
+          order_code: order_code,
+          pick_shift: pick_shift,
+        },
+      );
+      const result = (await response.json()) as MyGHNUpdateOrderResponse;
+      if (!response.ok) {
+        throw new Error(
+          `Failed to update ghn order with order_code ${order_code}: ${result.message}`,
+        );
+      }
+      return result;
+    } catch (error) {
+      this.logger.error(
+        `Error updating GHN order with order_code ${order_code}: ${error}`,
+      );
+      throw new BadRequestException(
+        `Failed to update GHN order with order_code ${order_code}: ${error}`,
+      );
     }
   }
 }

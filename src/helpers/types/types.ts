@@ -987,6 +987,13 @@ export type MyGHNShopRegisterResponse = {
   };
 };
 
+export type MyGHNUpdateOrderResponse = {
+  code: number;
+  message: string;
+  data: null;
+  code_message: string;
+};
+
 /**
  * Combined order delivery address information from database and GHN.
  *
