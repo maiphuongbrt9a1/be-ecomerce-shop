@@ -137,6 +137,260 @@ export class OrdersController {
     );
   }
 
+  @ApiOperation({ summary: 'Get all confirmed orders of shop' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Retrieved confirmed shop orders with full information including shipments, payments, and requests',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/shop/confirmed-order-list')
+  async getAllConfirmedOrdersOfShop(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.ordersService.getAllConfirmedOrdersOfShop(
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all shop orders waiting for GHN pickup' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Retrieved shop orders waiting for GHN pickup with full information',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/shop/waiting-for-ghn-pickup-order-list')
+  async getAllShopOrdersWaitingForGHNPickup(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.ordersService.getAllShopOrdersWaitingForGHNPickup(
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all shipped orders of shop' })
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieved shipped shop orders with full information',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/shop/shipped-order-list')
+  async getAllShippedOrdersOfShop(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.ordersService.getAllShippedOrdersOfShop(
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all delivered orders of shop' })
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieved delivered shop orders with full information',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/shop/delivered-order-list')
+  async getAllDeliveredOrdersOfShop(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.ordersService.getAllDeliveredOrdersOfShop(
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all completed orders of shop' })
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieved completed shop orders with full information',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/shop/completed-order-list')
+  async getAllCompletedOrdersOfShop(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.ordersService.getAllCompletedOrdersOfShop(
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all cancelled orders of shop' })
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieved cancelled shop orders with full information',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/shop/cancelled-order-list')
+  async getAllCancelledOrdersOfShop(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.ordersService.getAllCancelledOrdersOfShop(
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all returned orders of shop' })
+  @ApiResponse({
+    status: 200,
+    description: 'Retrieved returned shop orders with full information',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 404, description: 'Not Found.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/shop/returned-order-list')
+  async getAllReturnedOrdersOfShop(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.ordersService.getAllReturnedOrdersOfShop(
+      Number(page),
+      Number(perPage),
+    );
+  }
+
   @ApiOperation({ summary: 'Get one order' })
   @ApiResponse({
     status: 200,

@@ -591,6 +591,324 @@ export class UserController {
     );
   }
 
+  @ApiOperation({ summary: 'Get all confirmed orders of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Confirmed orders of user retrieved successfully',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid pagination parameters',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - No valid JWT token provided',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Can only view own orders',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - User not found',
+  })
+  @ApiParam({ name: 'id', type: Number, example: 1, description: 'User ID' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Items per page (default 10)',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
+  @Get('/:id/confirmed-order-list')
+  async getAllConfirmedOrdersOfUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllConfirmedOrdersOfUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all shipped orders of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Shipped orders of user retrieved successfully',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid pagination parameters',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - No valid JWT token provided',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Can only view own orders',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - User not found',
+  })
+  @ApiParam({ name: 'id', type: Number, example: 1, description: 'User ID' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Items per page (default 10)',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
+  @Get('/:id/shipped-order-list')
+  async getAllShippedOrdersOfUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllShippedOrdersOfUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all delivered orders of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Delivered orders of user retrieved successfully',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid pagination parameters',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - No valid JWT token provided',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Can only view own orders',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - User not found',
+  })
+  @ApiParam({ name: 'id', type: Number, example: 1, description: 'User ID' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Items per page (default 10)',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
+  @Get('/:id/delivered-order-list')
+  async getAllDeliveredOrdersOfUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllDeliveredOrdersOfUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all completed orders of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Completed orders of user retrieved successfully',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid pagination parameters',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - No valid JWT token provided',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Can only view own orders',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - User not found',
+  })
+  @ApiParam({ name: 'id', type: Number, example: 1, description: 'User ID' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Items per page (default 10)',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
+  @Get('/:id/completed-order-list')
+  async getAllCompletedOrdersOfUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllCompletedOrdersOfUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all cancelled orders of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cancelled orders of user retrieved successfully',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid pagination parameters',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - No valid JWT token provided',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Can only view own orders',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - User not found',
+  })
+  @ApiParam({ name: 'id', type: Number, example: 1, description: 'User ID' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Items per page (default 10)',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
+  @Get('/:id/cancelled-order-list')
+  async getAllCancelledOrdersOfUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllCancelledOrdersOfUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all returned orders of user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returned orders of user retrieved successfully',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid pagination parameters',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - No valid JWT token provided',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Can only view own orders',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - User not found',
+  })
+  @ApiParam({ name: 'id', type: Number, example: 1, description: 'User ID' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (default 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Items per page (default 10)',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'USER', 'OPERATOR')
+  @Get('/:id/returned-order-list')
+  async getAllReturnedOrdersOfUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.userService.getAllReturnedOrdersOfUser(
+      id,
+      Number(page),
+      Number(perPage),
+    );
+  }
+
   @ApiOperation({ summary: 'Get all orders processed by user' })
   @ApiResponse({
     status: 200,

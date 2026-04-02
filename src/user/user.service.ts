@@ -14,6 +14,9 @@ import {
   Shipments,
   SizeProfiles,
   Cart,
+  OrderStatus,
+  ShipmentStatus,
+  PaymentStatus,
 } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
@@ -24,6 +27,7 @@ import { UpdateUserWithFileDto } from '@/user/dtos/update.user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import {
   formatMediaFieldWithLogging,
+  formatMediaFieldWithLoggingForOrders,
   hashPasswordHelper,
 } from '@/helpers/utils';
 import { createPaginator } from 'prisma-pagination';
@@ -1684,6 +1688,439 @@ export class UserService {
       this.logger.error('Error retrieving orders created by user', error);
       throw new BadRequestException(
         'Failed to retrieve orders created by user',
+      );
+    }
+  }
+
+  /**
+   * Retrieves paginated "confirmed but not ready for pickup" orders of a user.
+   *
+   * Business rule for "orders waiting for confirmation":
+   * 1. Order status must be `PAYMENT_CONFIRMED`
+   * 2. Related shipment must still be `PENDING` (not `WAITING_FOR_PICKUP` yet)
+   *
+   * Excluded statuses:
+   * - `PENDING`: order has not been paid
+   * - `PAYMENT_PROCESSING`: payment is still in progress and not guaranteed successful
+   *
+   * @param {number} userId - The unique identifier of the user
+   * @param {number} page - The page number for pagination (1-indexed)
+   * @param {number} perPage - The number of records per page
+   *
+   * @returns {Promise<OrdersWithFullInformation[] | []>} Paginated list of matching orders
+   *
+   * @throws {BadRequestException} If fetching confirmed orders fails
+   *
+   * @remarks
+   * - Current schema does not persist GHN `pick_shift` directly; shipment `PENDING` is used
+   *   as the server-side proxy for "not yet moved to pickup scheduling".
+   */
+
+  async getAllConfirmedOrdersOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<OrdersWithFullInformation[] | []> {
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        OrdersWithFullInformation,
+        Prisma.OrdersFindManyArgs
+      >(
+        this.prismaService.orders,
+        {
+          include: OrdersWithFullInformationInclude,
+          orderBy: { id: 'asc' },
+          where: {
+            userId: userId,
+            status: OrderStatus.PAYMENT_CONFIRMED,
+            shipments: {
+              some: {
+                status: ShipmentStatus.PENDING,
+              },
+            },
+          },
+        },
+        { page: page },
+      );
+
+      result.data = formatMediaFieldWithLoggingForOrders(
+        result.data,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      );
+
+      this.logger.log(
+        `Fetched all orders with detail information - Page: ${page}, Per Page: ${perPage}`,
+      );
+      return result.data;
+    } catch (error) {
+      this.logger.error(
+        'Failed to fetch all orders with detail information: ',
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to fetch all orders with detail information',
+      );
+    }
+  }
+
+  /**
+   * Retrieves paginated shipped orders of a specific user.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries orders belonging to the user
+   * 3. Filters only orders with `OrderStatus.SHIPPED`
+   * 4. Ensures at least one related shipment is `ShipmentStatus.SHIPPED`
+   * 5. Includes full order relationships (items, shipments, payment, requests)
+   * 6. Sorts results by order ID ascending
+   * 7. Formats media URLs in the returned nested entities
+   *
+   * @param {number} userId - The user ID to retrieve shipped orders for
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of orders per page
+   *
+   * @returns {Promise<OrdersWithFullInformation[] | []>} Paginated shipped orders with full details
+   *
+   * @throws {BadRequestException} If retrieval or media formatting fails
+   *
+   * @remarks
+   * - Uses relation filter `shipments.some` to match orders that have at least one shipped shipment
+   * - Returns empty array when no matching orders are found
+   */
+  async getAllShippedOrdersOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<OrdersWithFullInformation[] | []> {
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        OrdersWithFullInformation,
+        Prisma.OrdersFindManyArgs
+      >(
+        this.prismaService.orders,
+        {
+          include: OrdersWithFullInformationInclude,
+          orderBy: { id: 'asc' },
+          where: {
+            userId: userId,
+            status: OrderStatus.SHIPPED,
+            shipments: {
+              some: {
+                status: ShipmentStatus.SHIPPED,
+              },
+            },
+          },
+        },
+        { page: page },
+      );
+
+      result.data = formatMediaFieldWithLoggingForOrders(
+        result.data,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      );
+
+      this.logger.log(
+        `Fetched all orders with detail information - Page: ${page}, Per Page: ${perPage}`,
+      );
+      return result.data;
+    } catch (error) {
+      this.logger.error(
+        'Failed to fetch all orders with detail information: ',
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to fetch all orders with detail information',
+      );
+    }
+  }
+
+  /**
+   * Retrieves paginated delivered orders of a specific user.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries orders belonging to the user
+   * 3. Filters only orders with `OrderStatus.DELIVERED`
+   * 4. Ensures at least one related shipment is `ShipmentStatus.DELIVERED`
+   * 5. Includes full order relationships (items, shipments, payment, requests)
+   * 6. Sorts results by order ID ascending
+   * 7. Formats media URLs in the returned nested entities
+   *
+   * @param {number} userId - The user ID to retrieve delivered orders for
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of orders per page
+   *
+   * @returns {Promise<OrdersWithFullInformation[] | []>} Paginated delivered orders with full details
+   *
+   * @throws {BadRequestException} If retrieval or media formatting fails
+   *
+   * @remarks
+   * - Uses relation filter `shipments.some` to match orders that have at least one delivered shipment
+   * - Returns empty array when no matching orders are found
+   */
+  async getAllDeliveredOrdersOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<OrdersWithFullInformation[] | []> {
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        OrdersWithFullInformation,
+        Prisma.OrdersFindManyArgs
+      >(
+        this.prismaService.orders,
+        {
+          include: OrdersWithFullInformationInclude,
+          orderBy: { id: 'asc' },
+          where: {
+            userId: userId,
+            status: OrderStatus.DELIVERED,
+            shipments: {
+              some: {
+                status: ShipmentStatus.DELIVERED,
+              },
+            },
+          },
+        },
+        { page: page },
+      );
+
+      result.data = formatMediaFieldWithLoggingForOrders(
+        result.data,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      );
+
+      this.logger.log(
+        `Fetched all orders with detail information - Page: ${page}, Per Page: ${perPage}`,
+      );
+      return result.data;
+    } catch (error) {
+      this.logger.error(
+        'Failed to fetch all orders with detail information: ',
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to fetch all orders with detail information',
+      );
+    }
+  }
+
+  /**
+   * Retrieves paginated completed orders of a specific user.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries orders belonging to the user
+   * 3. Filters only orders with `OrderStatus.COMPLETED`
+   * 4. Includes full order relationships (items, shipments, payment, requests)
+   * 5. Sorts results by order ID ascending
+   * 6. Formats media URLs in the returned nested entities
+   *
+   * @param {number} userId - The user ID to retrieve completed orders for
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of orders per page
+   *
+   * @returns {Promise<OrdersWithFullInformation[] | []>} Paginated completed orders with full details
+   *
+   * @throws {BadRequestException} If retrieval or media formatting fails
+   *
+   * @remarks
+   * - Completion is determined by order-level status in current implementation
+   * - Returns empty array when no matching orders are found
+   */
+  async getAllCompletedOrdersOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<OrdersWithFullInformation[] | []> {
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        OrdersWithFullInformation,
+        Prisma.OrdersFindManyArgs
+      >(
+        this.prismaService.orders,
+        {
+          include: OrdersWithFullInformationInclude,
+          orderBy: { id: 'asc' },
+          where: {
+            userId: userId,
+            status: OrderStatus.COMPLETED,
+          },
+        },
+        { page: page },
+      );
+
+      result.data = formatMediaFieldWithLoggingForOrders(
+        result.data,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      );
+
+      this.logger.log(
+        `Fetched all orders with detail information - Page: ${page}, Per Page: ${perPage}`,
+      );
+      return result.data;
+    } catch (error) {
+      this.logger.error(
+        'Failed to fetch all orders with detail information: ',
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to fetch all orders with detail information',
+      );
+    }
+  }
+
+  /**
+   * Retrieves paginated cancelled orders of a specific user.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries orders belonging to the user
+   * 3. Filters only orders with `OrderStatus.CANCELLED`
+   * 4. Includes full order relationships (items, shipments, payment, requests)
+   * 5. Sorts results by order ID ascending
+   * 6. Formats media URLs in the returned nested entities
+   *
+   * @param {number} userId - The user ID to retrieve cancelled orders for
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of orders per page
+   *
+   * @returns {Promise<OrdersWithFullInformation[] | []>} Paginated cancelled orders with full details
+   *
+   * @throws {BadRequestException} If retrieval or media formatting fails
+   *
+   * @remarks
+   * - Cancellation is determined by order-level status in current implementation
+   * - Returns empty array when no matching orders are found
+   */
+  async getAllCancelledOrdersOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<OrdersWithFullInformation[] | []> {
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        OrdersWithFullInformation,
+        Prisma.OrdersFindManyArgs
+      >(
+        this.prismaService.orders,
+        {
+          include: OrdersWithFullInformationInclude,
+          orderBy: { id: 'asc' },
+          where: {
+            userId: userId,
+            status: OrderStatus.CANCELLED,
+          },
+        },
+        { page: page },
+      );
+
+      result.data = formatMediaFieldWithLoggingForOrders(
+        result.data,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      );
+
+      this.logger.log(
+        `Fetched all orders with detail information - Page: ${page}, Per Page: ${perPage}`,
+      );
+      return result.data;
+    } catch (error) {
+      this.logger.error(
+        'Failed to fetch all orders with detail information: ',
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to fetch all orders with detail information',
+      );
+    }
+  }
+
+  /**
+   * Retrieves paginated returned orders of a specific user.
+   *
+   * This method performs the following operations:
+   * 1. Creates paginator with specified page size
+   * 2. Queries orders belonging to the user
+   * 3. Filters only orders with `OrderStatus.RETURNED`
+   * 4. Ensures all related shipments are `ShipmentStatus.RETURNED`
+   * 5. Ensures all related payments are `PaymentStatus.REFUNDED`
+   * 6. Includes full order relationships (items, shipments, payment, requests)
+   * 7. Sorts results by order ID ascending
+   * 8. Formats media URLs in the returned nested entities
+   *
+   * @param {number} userId - The user ID to retrieve returned orders for
+   * @param {number} page - The page number (1-indexed)
+   * @param {number} perPage - Number of orders per page
+   *
+   * @returns {Promise<OrdersWithFullInformation[] | []>} Paginated returned orders with full details
+   *
+   * @throws {BadRequestException} If retrieval or media formatting fails
+   *
+   * @remarks
+   * - Uses relation filter `shipments.every` to require all shipments are returned
+   * - Uses relation filter `payment.every` to require all payment records are refunded
+   * - Returns empty array when no matching orders are found
+   */
+  async getAllReturnedOrdersOfUser(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<OrdersWithFullInformation[] | []> {
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        OrdersWithFullInformation,
+        Prisma.OrdersFindManyArgs
+      >(
+        this.prismaService.orders,
+        {
+          include: OrdersWithFullInformationInclude,
+          orderBy: { id: 'asc' },
+          where: {
+            userId: userId,
+            status: OrderStatus.RETURNED,
+            shipments: {
+              every: {
+                status: ShipmentStatus.RETURNED,
+              },
+            },
+            payment: {
+              every: {
+                status: PaymentStatus.REFUNDED,
+              },
+            },
+          },
+        },
+        { page: page },
+      );
+
+      result.data = formatMediaFieldWithLoggingForOrders(
+        result.data,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      );
+
+      this.logger.log(
+        `Fetched all orders with detail information - Page: ${page}, Per Page: ${perPage}`,
+      );
+      return result.data;
+    } catch (error) {
+      this.logger.error(
+        'Failed to fetch all orders with detail information: ',
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to fetch all orders with detail information',
       );
     }
   }

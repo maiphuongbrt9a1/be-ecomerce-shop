@@ -389,6 +389,17 @@ model OrderItems {
     @@index([productVariantId], name: "idx_orderItem_product_variant_id")
 }
 
+model GhnPickShift {
+    id         BigInt      @db.BigInt @id @default(autoincrement())
+    ghnShiftId      BigInt     @db.BigInt
+    ghnTitle      String    @db.VarChar(255)
+    ghnFromTime  BigInt     @db.BigInt
+    ghnToTime    BigInt     @db.BigInt
+    shipments   Shipments[]
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+}
+
 model Shipments {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     order       Orders      @relation(fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -396,6 +407,8 @@ model Shipments {
     processByStaff        User?        @relation("OrderShippedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     processByStaffId      BigInt?      @db.BigInt
     ghnOrderCode String? @db.VarChar(100) @unique
+    ghnPickShift GhnPickShift? @relation(fields: [ghnPickShiftId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    ghnPickShiftId BigInt? @db.BigInt
     shipmentItems ShipmentItems[]    
     estimatedDelivery DateTime // at customer, estimated delivery date by GHN
     deliveredAt DateTime?  // at customer, actual delivery date by GHN
