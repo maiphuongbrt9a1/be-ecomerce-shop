@@ -84,8 +84,6 @@ export class ProductVariantsController {
         stock: { type: 'number', example: 851 },
         stockKeepingUnit: { type: 'string', example: 'EWDGDSED715545D' },
         voucherId: { type: 'number', example: 1325 },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
       },
       required: [
         'files',
@@ -98,7 +96,6 @@ export class ProductVariantsController {
         'stock',
         'stockKeepingUnit',
         'colorId',
-        'createdAt',
       ],
     },
   })
@@ -203,7 +200,6 @@ export class ProductVariantsController {
           description:
             'Array of media IDs to delete. Big integers should be sent as strings.',
         },
-        updatedAt: { type: 'string', format: 'date-time' },
       },
       required: [],
     },

@@ -30,8 +30,8 @@ import { ShipmentWithFullInformationEntity } from '@/shipments/entities/shipment
 import { PaymentEntity } from '@/payments/entities/payment.entity';
 import { RequestWithMediaEntity } from '@/requests/entities/request-with-media.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { Request } from 'express';
-import { ClientIp } from '@/decorator/client-ip.decorator';
+// import { Request } from 'express';
+// import { ClientIp } from '@/decorator/client-ip.decorator';
 
 @Controller('orders')
 export class OrdersController {
@@ -569,8 +569,11 @@ export class OrdersController {
   @UseGuards(RolesGuard)
   @Roles('USER', 'ADMIN', 'OPERATOR')
   @Post('/:id/cancel')
-  async cancelOrder(@Param('id') id: string, @ClientIp() clientIp: string) {
+  /* async cancelOrder(@Param('id') id: string, @ClientIp() clientIp: string) {
     return await this.ordersService.cancelOrder(+id, clientIp);
+  } */
+  async cancelOrder(@Param('id') id: string) {
+    return await this.ordersService.cancelOrder(+id);
   }
 
   @ApiOperation({ summary: 'Get order detail information of one order' })

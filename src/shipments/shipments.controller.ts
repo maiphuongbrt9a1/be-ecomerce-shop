@@ -17,6 +17,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiExtraModels,
+  ApiParam,
   ApiOperation,
   ApiQuery,
   ApiResponse,
@@ -193,6 +194,43 @@ export class ShipmentsController {
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     return await this.shipmentsService.findOne(+id);
+  }
+
+  @ApiOperation({
+    summary: 'Get GHN order tracking URL',
+    description:
+      'Returns the GHN tracking URL for the shipment linked to the given order ID. The shipment must already have a GHN order code.',
+  })
+  @ApiParam({
+    name: 'orderId',
+    type: Number,
+    example: 1001,
+    description: 'Order ID used to look up the shipment tracking URL',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'GHN tracking URL retrieved successfully',
+    schema: {
+      type: 'string',
+      format: 'uri',
+      example: 'https://tracking.ghn.vn/?order_code=GHN123456789',
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Failed to retrieve GHN tracking URL',
+  })
+  @ApiResponse({
+    status: 404,
+    description:
+      'Not Found - Shipment with GHN order code not found for this order',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR', 'USER')
+  @Get('/:orderId/ghn-tracking-url')
+  async getGHNOrderTrackingUrl(@Param('orderId') orderId: string) {
+    return await this.shipmentsService.getGHNOrderTrackingUrl(+orderId);
   }
 
   @ApiOperation({ summary: 'Update one shipment' })

@@ -33,7 +33,7 @@ export class ReturnRequestsController {
   constructor(private readonly returnRequestsService: ReturnRequestsService) {}
 
   @ApiOperation({
-    summary: 'Create a new return request',
+    summary: 'Create a new return request (user or admin only)',
     description:
       'Creates a return request for a delivered order that belongs to the authenticated user. The request is stored in the database only and does not call VNPay refund APIs.',
   })
@@ -54,7 +54,7 @@ export class ReturnRequestsController {
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
-  @Roles('USER')
+  @Roles('USER', 'ADMIN')
   @ApiBody({
     description:
       'Return request payload containing orderId, userId, description, and bank account information',

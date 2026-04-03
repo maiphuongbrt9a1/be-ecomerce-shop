@@ -40,8 +40,8 @@ import {
   formatMediaFieldWithLogging,
   formatMediaFieldWithLoggingForOrders,
   formatMediaFieldWithLoggingForShipments,
-  getServerInternalIp,
   GHNShops,
+  /* getServerInternalIp,*/
 } from '@/helpers/utils';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { ShipmentsService } from '@/shipments/shipments.service';
@@ -49,9 +49,9 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import Ghn from 'giaohangnhanh';
 import dayjs from 'dayjs';
 import { PaymentsService } from '@/payments/payments.service';
-import { VnpayRefundDto } from '@/payments/dto/vnpay-refund.dto';
 import { Cron } from '@nestjs/schedule';
 import { MyPickShiftResponse } from '@/helpers/types/ghn-pick-shift-response';
+/* import { VnpayRefundDto } from '@/payments/dto/vnpay-refund.dto';*/
 
 @Injectable()
 export class OrdersService {
@@ -1458,7 +1458,7 @@ export class OrdersService {
    */
   async cancelOrder(
     id: number,
-    clientIp: string,
+    /* clientIp: string,*/
   ): Promise<OrdersWithFullInformation> {
     try {
       const cancelOrder = await this.prismaService.orders.findFirst({
@@ -1694,6 +1694,7 @@ export class OrdersService {
                 `Successfully created return request with ID ${newReturnRequest.id} for order with ID ${cancelOrder.id} after cancellation`,
               );
 
+              /*
               this.logger.log(
                 `Calling VNPAY API to refund money to customer for order with ID ${cancelOrder.id} after cancellation`,
               );
@@ -1765,7 +1766,8 @@ export class OrdersService {
                 throw new BadRequestException(
                   `Failed to refund money to customer for order with ID ${cancelOrder.id} after cancellation`,
                 );
-              }
+              } 
+              */
             }
           }
 
@@ -1882,14 +1884,15 @@ export class OrdersService {
           (payment) => payment.orderId,
         );
 
-        const serverIp = getServerInternalIp();
+        // const serverIp = getServerInternalIp();
 
         // loop for order list and cancel order by call cancelOrder function for each order
         // await this.orderService.cancelExpiredOrders();
         for (const orderId of expiredOrderIds) {
           try {
             this.logger.log('Cancelling order with ID: ' + orderId);
-            await this.cancelOrder(Number(orderId), serverIp);
+            // await this.cancelOrder(Number(orderId), serverIp);
+            await this.cancelOrder(Number(orderId));
             this.logger.log('Successfully cancelled order with ID: ' + orderId);
           } catch (error) {
             this.logger.error(

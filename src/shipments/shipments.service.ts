@@ -1003,4 +1003,71 @@ export class ShipmentsService {
       );
     }
   }
+
+  /**
+   * Retrieves the GHN tracking URL for the shipment associated with the given order ID.
+   *
+   * This method performs the following operations:
+   * 1. Initializes the GHN client from environment configuration
+   * 2. Finds the shipment by order ID with a non-null GHN order code
+   * 3. Requests the tracking URL from GHN using the shipment's GHN code
+   * 4. Logs the lookup result and returns the tracking URL
+   *
+   * @param {number} orderId - The order ID used to locate the shipment
+   *
+   * @returns {Promise<URL>} The GHN tracking URL for the shipment
+   *
+   * @throws {NotFoundException} If no shipment exists for the order or it has no GHN order code
+   * @throws {BadRequestException} If the GHN tracking URL cannot be fetched
+   *
+   * @remarks
+   * - Requires GHN environment variables to be configured
+   * - Only works for shipments that already have a GHN order code
+   */
+  async getGHNOrderTrackingUrl(orderId: number): Promise<URL> {
+    try {
+      // init ghn config
+      const ghnConfig = {
+        token: process.env.GHN_TOKEN!,
+        shopId: Number(process.env.GHN_SHOP1_ID!),
+        host: process.env.GHN_HOST!,
+        trackingHost: process.env.GHN_TRACKING_HOST!,
+        testMode: process.env.GHN_TEST_MODE === 'true',
+      };
+      const ghn = new Ghn(ghnConfig);
+      const shipment = await this.prismaService.shipments.findFirst({
+        where: {
+          orderId: orderId,
+          ghnOrderCode: {
+            not: null,
+          },
+        },
+      });
+
+      if (!shipment || !shipment.ghnOrderCode) {
+        this.logger.error(
+          `Shipment with order ID ${orderId} and non-null GHN order code not found.`,
+        );
+        throw new NotFoundException(
+          `Shipment with order ID ${orderId} and non-null GHN order code not found.`,
+        );
+      }
+
+      const trackingUrl = await ghn.order.getTrackingUrl(shipment.ghnOrderCode);
+
+      this.logger.log(
+        `Fetched GHN tracking URL for order ID ${orderId} successfully: ${JSON.stringify(trackingUrl)}`,
+      );
+
+      return trackingUrl;
+    } catch (error) {
+      this.logger.error(
+        'Error handling get GHN order tracking URL request',
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to handle get GHN order tracking URL request',
+      );
+    }
+  }
 }

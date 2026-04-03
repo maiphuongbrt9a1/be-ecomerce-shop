@@ -81,8 +81,6 @@ export class ProductsController {
         stockKeepingUnit: { type: 'string', example: 'ADSFDSAF1463218FA' },
         stock: { type: 'number', example: 25 },
         createByUserId: { type: 'number', example: 1231 },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
         categoryId: { type: 'number', example: 1325 },
         voucherId: { type: 'number', example: 1325 },
       },
@@ -194,8 +192,6 @@ export class ProductsController {
         stockKeepingUnit: { type: 'string', example: 'ADSFDSAF1463218FA' },
         stock: { type: 'number', example: 25 },
         createByUserId: { type: 'number', example: 1231 },
-        createdAt: { type: 'string', format: 'date-time' },
-        updatedAt: { type: 'string', format: 'date-time' },
         categoryId: { type: 'number', example: 1325 },
         voucherId: { type: 'number', example: 1325 },
         mediaIdsToDelete: {
