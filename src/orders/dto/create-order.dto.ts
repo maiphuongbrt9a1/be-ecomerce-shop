@@ -133,16 +133,4 @@ export class SecondCreateOrderDto {
   @IsNumber()
   @Type(() => Number)
   totalAmount: number;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  createdAt: Date;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  updatedAt: Date;
 }

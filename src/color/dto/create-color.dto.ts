@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Matches,
-} from 'class-validator';
+import { IsNotEmpty, IsString, Matches } from 'class-validator';
 
 export class CreateColorDto {
   @ApiProperty({ example: 'Red' })
@@ -21,16 +14,4 @@ export class CreateColorDto {
     message: 'hexCode must be a valid hex color code (e.g., #FF0000)',
   })
   hexCode: string;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  createdAt: Date;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  updatedAt: Date;
 }

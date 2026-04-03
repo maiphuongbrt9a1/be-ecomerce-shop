@@ -1912,6 +1912,89 @@ export class OrdersService {
   }
 
   /**
+   * Auto-confirms delivered orders to completed status on a daily schedule.
+   *
+   * Cron expression: '0 0 7 * * *' (runs at 07:00:00 every day).
+   *
+   * This method performs the following operations:
+   * 1. Computes the cutoff timestamp (`now - 7 days`)
+   * 2. Finds orders with `OrderStatus.DELIVERED`
+   * 3. Filters orders where every related shipment:
+   *    - has status `ShipmentStatus.DELIVERED`
+   *    - has non-null `ghnOrderCode`
+   *    - has `deliveredAt` older than 7 days
+   * 4. Iterates through matched orders and updates order status to `OrderStatus.COMPLETED`
+   * 5. Logs per-order update failures while continuing the remaining batch
+   *
+   * @returns {Promise<void>} Resolves after one daily auto-confirm cycle finishes
+   *
+   * @remarks
+   * - The method is best-effort per order: one failed update does not stop the full batch.
+   * - Current query uses relation filter `shipments.every` to enforce shipment-level completion criteria.
+   * - Execution timezone follows the runtime/server timezone unless application-level timezone handling is configured.
+   */
+  @Cron('0 0 7 * * *')
+  async handleAutoConfirmCompletedOrders() {
+    try {
+      this.logger.log('Scanning for completed orders to auto-confirm...');
+
+      const sevenDaysAgo = dayjs().subtract(7, 'day').toDate();
+
+      const ordersToConfirm = await this.prismaService.orders.findMany({
+        where: {
+          status: OrderStatus.DELIVERED,
+          shipments: {
+            every: {
+              status: ShipmentStatus.DELIVERED,
+              ghnOrderCode: {
+                not: null,
+              },
+              deliveredAt: {
+                lt: sevenDaysAgo,
+              },
+            },
+          },
+        },
+      });
+
+      if (ordersToConfirm.length === 0) {
+        this.logger.log('No completed orders found for auto-confirmation.');
+        return;
+      }
+
+      this.logger.log(
+        `Found ${ordersToConfirm.length} completed orders. Auto-confirming these orders...`,
+      );
+
+      for (const order of ordersToConfirm) {
+        try {
+          await this.prismaService.orders.update({
+            where: { id: order.id },
+            data: {
+              status: OrderStatus.COMPLETED,
+            },
+          });
+          this.logger.log(`Auto-confirmed order with ID: ${order.id}`);
+        } catch (error) {
+          this.logger.error(
+            `Error occurred while auto-confirming order with ID: ${order.id}`,
+            error,
+          );
+        }
+      }
+
+      this.logger.log(
+        'Successfully completed auto-confirmation of completed orders.',
+      );
+    } catch (error) {
+      this.logger.error(
+        'Error occurred while running cron job to auto-confirm completed orders:',
+        error,
+      );
+    }
+  }
+
+  /**
    * Retrieves detailed information for a specific order.
    *
    * This method performs the following operations:

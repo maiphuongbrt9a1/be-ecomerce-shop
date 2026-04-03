@@ -86,6 +86,34 @@ enum PaymentMethod {
     VNPAY
 }
 
+enum VietnamBankName {
+    AGRIBANK        // Vietnam Bank for Agriculture and Rural Development
+    BIDV            // Bank for Investment and Development of Vietnam
+    VIETCOMBANK     // Joint Stock Commercial Bank for Foreign Trade of Vietnam
+    VIETINBANK      // Vietnam Joint Stock Commercial Bank for Industry and Trade
+    MBBANK          // Military Commercial Joint Stock Bank
+    ACB             // Asia Commercial Joint Stock Bank
+    TECHCOMBANK     // Vietnam Technological and Commercial Joint Stock Bank
+    VPBANK          // Vietnam Prosperity Joint Stock Commercial Bank
+    TPBANK          // Tien Phong Commercial Joint Stock Bank
+    SACOMBANK       // Saigon Thuong Tin Commercial Joint Stock Bank
+    HDBANK          // Ho Chi Minh City Development Joint Stock Commercial Bank
+    VIB             // Vietnam International Commercial Joint Stock Bank
+    OCB             // Orient Commercial Joint Stock Bank
+    SHB             // Saigon Hanoi Commercial Joint Stock Bank
+    SEABANK         // Southeast Asia Commercial Joint Stock Bank
+    EXIMBANK        // Vietnam Export Import Commercial Joint Stock Bank
+    MSB             // Vietnam Maritime Commercial Joint Stock Bank
+    NAMABANK        // Nam A Commercial Joint Stock Bank
+    BACABANK        // Bac A Commercial Joint Stock Bank
+    PVCOMBANK       // Vietnam Public Joint Stock Commercial Bank
+    ABBANK          // An Binh Commercial Joint Stock Bank
+    LIENVIETPOSTBANK // Lien Viet Post Commercial Joint Stock Bank
+    KIENLONGBANK    // Kien Long Commercial Joint Stock Bank
+    VIETABANK       // Viet A Commercial Joint Stock Bank
+    SAIGONBANK      // Saigon Bank for Industry and Trade
+}
+
 // Voucher status for UserVouchers: AVAILABLE (can be applied), SAVED (saved for later, not applied yet), USED (already used in an order), EXPIRED (past validTo date or manually expired)
 enum VoucherStatus {
     AVAILABLE
@@ -548,6 +576,9 @@ model ReturnRequests {
     id          BigInt      @db.BigInt @id @default(autoincrement())
     request     Requests    @relation(fields: [requestId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     requestId   BigInt      @db.BigInt @unique 
+    bankName    VietnamBankName?
+    bankAccountNumber String? @db.VarChar(50)
+    bankAccountName String?   @db.VarChar(100) 
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 

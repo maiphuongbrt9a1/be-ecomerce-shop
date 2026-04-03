@@ -72,16 +72,4 @@ export class CreateShipmentDto {
   @IsNotEmpty()
   @IsEnum(ShipmentStatus)
   status: ShipmentStatus;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  createdAt: Date;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  updatedAt: Date;
 }

@@ -48,11 +48,6 @@ export class CreateAuthDto {
   @IsEnum(Role)
   role: Role;
 
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @Type(() => Date)
-  createdAt: Date;
-
   @ApiProperty({ example: false })
   @IsBoolean()
   @IsOptional()

@@ -63,18 +63,6 @@ export class CreateVoucherDto {
   @Type(() => Boolean)
   isActive: boolean;
 
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  createdAt: Date;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  updatedAt: Date;
-
   @ApiProperty({ example: 4567 })
   @IsNotEmpty()
   createdBy: bigint;

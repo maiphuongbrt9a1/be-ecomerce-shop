@@ -1,13 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaType } from '@prisma/client';
 import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateMediaDto {
   @ApiProperty({
@@ -49,16 +43,4 @@ export class CreateMediaDto {
   @IsOptional()
   @Type(() => Boolean)
   isCategoryFile: boolean;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  createdAt: Date;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  updatedAt: Date;
 }

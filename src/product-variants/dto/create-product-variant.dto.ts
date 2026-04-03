@@ -1,13 +1,7 @@
 import { TransformStringToBigint } from '@/decorator/customize';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateProductVariantDto {
   @ApiProperty({ example: 1315 })
@@ -87,16 +81,4 @@ export class CreateProductVariantDto {
   @IsNotEmpty()
   @TransformStringToBigint()
   colorId: bigint;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  createdAt: Date;
-
-  @ApiProperty({ example: new Date() })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  updatedAt: Date;
 }

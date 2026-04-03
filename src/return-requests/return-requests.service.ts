@@ -5,9 +5,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateReturnRequestDto } from './dto/create-return-request.dto';
-import { UpdateReturnRequestDto } from './dto/update-return-request.dto';
+import {
+  UpdateReturnRequestDto,
+  UserUpdateReturnRequestDto,
+} from './dto/update-return-request.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma, ReturnRequests } from '@prisma/client';
+import {
+  OrderStatus,
+  Prisma,
+  RequestStatus,
+  RequestType,
+  ReturnRequests,
+  ShipmentStatus,
+} from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 
 @Injectable()
@@ -18,37 +28,98 @@ export class ReturnRequestsService {
   /**
    * Creates a new return request for an order.
    *
-   * This method performs the following operations:
-   * 1. Creates return request record in database
-   * 2. Logs successful creation
-   * 3. Returns created return request
+   * Validates that the order belongs to the user, is delivered, has delivered shipments,
+   * and does not already have a return request before writing the base request record and
+   * the return-request record in one transaction.
    *
-   * @param {CreateReturnRequestDto} createReturnRequestDto - The return request data containing:
-   *   - orderId, orderItemId, userId
-   *   - returnReason, description
-   *   - requestedRefundAmount
-   *   - status (PENDING, APPROVED, REJECTED)
-   *
-   * @returns {Promise<ReturnRequests>} The created return request with details:
-   *   - Return request ID, order/item IDs
-   *   - Return reason and description
-   *   - Refund amount, status
-   *   - Created timestamp
-   *
-   * @throws {BadRequestException} If return request creation fails
-   *
-   * @remarks
-   * - Used for product return processing
-   * - Status typically starts as PENDING
-   * - Links to specific order items
-   * - Tracks refund amounts
+   * @param {CreateReturnRequestDto} createReturnRequestDto - The return request payload containing orderId, userId, description, and bank account information
+   * @returns {Promise<ReturnRequests>} The created return request record linked to the base request record
+   * @throws {NotFoundException} If the order does not exist, does not belong to the user, or is not eligible for return
+   * @throws {BadRequestException} If a duplicate return request exists, bank information is incomplete, or creation fails
+   * @remarks This flow is DB-only and does not call VNPay refund APIs.
    */
   async create(
     createReturnRequestDto: CreateReturnRequestDto,
   ): Promise<ReturnRequests> {
     try {
-      const result = await this.prismaService.returnRequests.create({
-        data: { ...createReturnRequestDto },
+      const result = await this.prismaService.$transaction(async (tx) => {
+        const { orderId, userId } = createReturnRequestDto;
+
+        const orderNeedsReturn = await tx.orders.findFirst({
+          where: {
+            id: orderId,
+            userId: userId,
+            status: OrderStatus.DELIVERED,
+            shipments: {
+              every: {
+                status: ShipmentStatus.DELIVERED,
+              },
+            },
+          },
+          include: {
+            requests: {
+              where: {
+                subject: RequestType.RETURN_REQUEST,
+              },
+            },
+          },
+        });
+
+        if (!orderNeedsReturn) {
+          this.logger.error(
+            `User attempted to create return request for order that does not exist or does not belong to them: orderId=${orderId}, userId=${userId}`,
+          );
+          throw new NotFoundException(
+            'User attempted to create return request for order that does not exist or does not belong to them',
+          );
+        }
+
+        if (orderNeedsReturn.requests.length > 0) {
+          this.logger.error(
+            `User attempted to create duplicate return request for order: orderId=${orderId}, userId=${userId}`,
+          );
+          throw new BadRequestException(
+            'A return request for this order already exists',
+          );
+        }
+
+        if (
+          !createReturnRequestDto.bankAccountName ||
+          !createReturnRequestDto.bankAccountNumber ||
+          !createReturnRequestDto.bankName
+        ) {
+          this.logger.error(
+            `User attempted to create return request without providing complete bank information: orderId=${orderId}, userId=${userId}`,
+          );
+          throw new BadRequestException(
+            'Bank account name, number, and bank name are required for return request',
+          );
+        }
+
+        this.logger.log(
+          'Creating return request',
+          JSON.stringify(createReturnRequestDto),
+        );
+
+        const newRequest = await tx.requests.create({
+          data: {
+            orderId: createReturnRequestDto.orderId,
+            userId: createReturnRequestDto.userId,
+            subject: RequestType.RETURN_REQUEST,
+            description: createReturnRequestDto.description,
+          },
+        });
+
+        const result = await tx.returnRequests.create({
+          data: {
+            requestId: newRequest.id,
+            bankName: createReturnRequestDto.bankName,
+            bankAccountNumber: createReturnRequestDto.bankAccountNumber,
+            bankAccountName: createReturnRequestDto.bankAccountName,
+          },
+        });
+
+        return result;
       });
 
       this.logger.log('Return request created successfully', result.id);
@@ -150,42 +221,325 @@ export class ReturnRequestsService {
   }
 
   /**
-   * Updates an existing return request (typically status changes).
+   * Allows a user to update their own PENDING return request details.
    *
-   * This method performs the following operations:
-   * 1. Updates return request in database
-   * 2. Logs successful update
-   * 3. Returns updated return request
+   * Users can only update bank account information and description for return requests
+   * that are in PENDING status (not yet reviewed by staff). Once staff marks the request
+   * as IN_PROGRESS or makes a final decision, users cannot modify it.
+   *
+   * Bank field update is all-or-nothing: either provide all three (bankName, bankAccountNumber,
+   * bankAccountName), or provide none (no partial updates).
+   *
+   * Validates that:
+   * - Return request exists by ID
+   * - Return request belongs to the authenticated user (via order.userId)
+   * - Associated request type is RETURN_REQUEST
+   * - Current request status is PENDING (not yet processed by staff)
+   * - If bank fields are provided, all three must be provided (not partial)
+   *
+   * Executes within a Prisma transaction to ensure atomicity: fetches, validates all rules,
+   * then updates both ReturnRequests and Requests records.
    *
    * @param {number} id - The return request ID to update
-   * @param {UpdateReturnRequestDto} updateReturnRequestDto - The update data containing:
-   *   - status (PENDING → APPROVED/REJECTED)
-   *   - returnReason, description (optional)
-   *   - requestedRefundAmount, actualRefundAmount
-   *   - processedByStaffId
+   * @param {UserUpdateReturnRequestDto} userUpdateReturnRequestDto - Update payload:
+   *   - bankName?: VietnamBankName (optional)
+   *   - bankAccountNumber?: string (optional)
+   *   - bankAccountName?: string (optional)
+   *   - description?: string (optional)
+   *   Note: All bank fields are optional, but if any is provided, all three are required
    *
-   * @returns {Promise<ReturnRequests>} The updated return request with all details
+   * @returns {Promise<ReturnRequests>} Updated return request with nested request relation
    *
-   * @throws {BadRequestException} If return request update fails
-   * @throws {NotFoundException} If return request not found
+   * @throws {NotFoundException} If:
+   *   - Return request not found by ID
+   *   - Order not found or return request does not belong to user
+   *
+   * @throws {BadRequestException} If:
+   *   - Associated request is not a RETURN_REQUEST type
+   *   - Request status is not PENDING (already processing or finalized)
+   *   - Bank fields are partially provided (all or none required)
+   *   - Update operation fails
    *
    * @remarks
-   * - Primarily used to change return request status
-   * - Updates refund amounts when processing
-   * - Tracks staff who processed the request
-   * - Used during return request approval/rejection workflow
+   * - Users can only edit PENDING requests (immutable once staff reviews)
+   * - Bank field update enforces all-or-nothing consistency
+   * - DB-only operation; does not call external refund APIs
+   * - Requires user ownership verification via order relationship
+   */
+  async userUpdateReturnRequest(
+    id: number,
+    userId: bigint,
+    userUpdateReturnRequestDto: UserUpdateReturnRequestDto,
+  ): Promise<ReturnRequests> {
+    try {
+      const result = await this.prismaService.$transaction(async (tx) => {
+        // Step 1: Fetch return request with all necessary relations for validation
+        const returnRequest = await tx.returnRequests.findFirst({
+          where: { id: id },
+          include: {
+            request: true,
+          },
+        });
+
+        // Step 2: Validate return request exists
+        if (!returnRequest) {
+          this.logger.error(`Return request not found for ID: ${id}`);
+          throw new NotFoundException('Return request not found');
+        }
+
+        // Step 3: Fetch associated order to verify user ownership
+        const order = await tx.orders.findFirst({
+          where: {
+            id: returnRequest.request.orderId,
+          },
+        });
+
+        if (!order) {
+          this.logger.error(`Order not found for return request ID: ${id}`);
+          throw new NotFoundException('Associated order not found');
+        }
+
+        // Step 4: Validate user ownership
+        if (order.userId !== userId) {
+          this.logger.error(
+            `User ${userId} attempted to update return request ${id} that does not belong to them`,
+          );
+          throw new BadRequestException(
+            'Return request does not belong to this user',
+          );
+        }
+
+        // Step 5: Validate request type is RETURN_REQUEST
+        if (
+          !returnRequest.request.subject ||
+          returnRequest.request.subject !== RequestType.RETURN_REQUEST
+        ) {
+          this.logger.error(
+            `Associated request is not a RETURN_REQUEST type for return request ID: ${id}`,
+          );
+          throw new BadRequestException(
+            'Associated request is not a return request type',
+          );
+        }
+
+        // Step 6: Validate request status is PENDING (user can only edit PENDING requests)
+        if (returnRequest.request.status !== RequestStatus.PENDING) {
+          this.logger.error(
+            `User attempted to update non-PENDING return request. Current status: ${returnRequest.request.status} for return request ID: ${id}`,
+          );
+          throw new BadRequestException(
+            'Can only update return requests in PENDING status',
+          );
+        }
+
+        // Step 7: Validate bank fields: all-or-nothing consistency
+        const providedBankFields = [
+          userUpdateReturnRequestDto.bankName,
+          userUpdateReturnRequestDto.bankAccountNumber,
+          userUpdateReturnRequestDto.bankAccountName,
+        ].filter((field) => field !== undefined && field !== null);
+
+        const hasSomeBankFields = providedBankFields.length > 0;
+        const hasAllBankFields = providedBankFields.length === 3;
+
+        if (hasSomeBankFields && !hasAllBankFields) {
+          this.logger.error(
+            `User provided incomplete bank information for return request ID: ${id}. Provided ${providedBankFields.length} of 3 fields`,
+          );
+          throw new BadRequestException(
+            'Bank account information must be provided completely (all three fields) or not at all',
+          );
+        }
+
+        this.logger.log(
+          'User updating return request',
+          JSON.stringify({ id, userId, ...userUpdateReturnRequestDto }),
+        );
+
+        // Step 8: Update ReturnRequests and optionally update description in Requests
+        const updatedReturnRequest = await tx.returnRequests.update({
+          where: { id: id },
+          include: { request: true },
+          data: {
+            bankName: userUpdateReturnRequestDto.bankName,
+            bankAccountNumber: userUpdateReturnRequestDto.bankAccountNumber,
+            bankAccountName: userUpdateReturnRequestDto.bankAccountName,
+          },
+        });
+
+        // Step 9: Update description in associated Requests record if provided
+        if (userUpdateReturnRequestDto.description) {
+          await tx.requests.update({
+            where: { id: returnRequest.request.id },
+            data: {
+              description: userUpdateReturnRequestDto.description,
+            },
+          });
+        }
+
+        this.logger.log('Return request updated successfully by user', id);
+        return updatedReturnRequest;
+      });
+
+      return result;
+    } catch (error) {
+      this.logger.error('Error updating return request by user', error);
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      throw new BadRequestException('Failed to update return request');
+    }
+  }
+
+  /**
+   * Updates an existing return request status within a strict two-step workflow.
+   *
+   * Enforces a mandatory two-step approval process:
+   * 1. PENDING state: Initial submission from customer
+   * 2. IN_PROGRESS state: Staff begins review (mandatory intermediate step)
+   * 3. Final state: APPROVED or REJECTED (staff decision)
+   *
+   * Validates that:
+   * - Return request exists and belongs to a valid return request type
+   * - Current status is PENDING or IN_PROGRESS only
+   * - Target status is APPROVED, REJECTED, or IN_PROGRESS
+   * - PENDING requests must transition to IN_PROGRESS first (cannot skip to final state)
+   * - IN_PROGRESS requests must transition to APPROVED or REJECTED (cannot stay IN_PROGRESS)
+   * - Cannot update request to its current status
+   *
+   * Executes within a Prisma transaction to ensure atomicity: fetches request,
+   * validates all rules, then updates nested Requests relation with staff ID and new status.
+   *
+   * @param {number} id - The return request ID to update
+   * @param {UpdateReturnRequestDto} updateReturnRequestDto - Update payload:
+   *   - processByStaffId: Staff member ID processing the request
+   *   - status: Target status (APPROVED, REJECTED, or IN_PROGRESS)
+   *
+   * @returns {Promise<ReturnRequests>} Updated return request with nested request relation
+   *
+   * @throws {NotFoundException} If return request not found by ID
+   * @throws {BadRequestException} If:
+   *   - Associated request is not a RETURN_REQUEST type
+   *   - Current status is not PENDING or IN_PROGRESS
+   *   - Target status is PENDING or not one of APPROVED/REJECTED/IN_PROGRESS
+   *   - Cannot transition from PENDING to APPROVED/REJECTED (must go PENDING → IN_PROGRESS first)
+   *   - Cannot update IN_PROGRESS request to IN_PROGRESS (same status)
+   *   - Request update fails or transaction aborts
+   *
+   * @remarks
+   * - Two-step workflow is mandatory: PENDING→IN_PROGRESS→(APPROVED|REJECTED)
+   * - DB-only operation; does not call external refund APIs
+   * - Requires staff ID for audit trail
+   * - Logs all validation failures and state transitions
    */
   async update(
     id: number,
     updateReturnRequestDto: UpdateReturnRequestDto,
   ): Promise<ReturnRequests> {
     try {
-      const result = await this.prismaService.returnRequests.update({
-        where: { id: id },
-        data: { ...updateReturnRequestDto },
+      const result = await this.prismaService.$transaction(async (tx) => {
+        const existingReturnRequest = await tx.returnRequests.findFirst({
+          where: { id: id },
+          include: {
+            request: true,
+          },
+        });
+
+        if (!existingReturnRequest) {
+          this.logger.error(`Return request not found for ID: ${id}`);
+          throw new NotFoundException('Return request not found!');
+        }
+
+        if (
+          !existingReturnRequest.request.subject ||
+          existingReturnRequest.request.subject !== RequestType.RETURN_REQUEST
+        ) {
+          this.logger.error(
+            `Associated request is not a return request for return request ID: ${id}`,
+          );
+          throw new BadRequestException(
+            'Associated request is not a return request',
+          );
+        }
+
+        if (
+          existingReturnRequest.request.status !== RequestStatus.PENDING &&
+          existingReturnRequest.request.status !== RequestStatus.IN_PROGRESS
+        ) {
+          this.logger.error(
+            `Only pending or in-progress return requests can be updated. Current status: ${existingReturnRequest.request.status} for return request ID: ${id}`,
+          );
+          throw new BadRequestException(
+            'Only pending or in-progress return requests can be updated',
+          );
+        }
+
+        if (
+          updateReturnRequestDto.status === RequestStatus.PENDING ||
+          ![
+            RequestStatus.APPROVED,
+            RequestStatus.REJECTED,
+            RequestStatus.IN_PROGRESS,
+          ].includes(updateReturnRequestDto.status)
+        ) {
+          this.logger.error(
+            `Invalid status update. Status must be APPROVED, REJECTED, or IN_PROGRESS for return request ID: ${id}`,
+          );
+          throw new BadRequestException(
+            'Invalid status update. Status must be APPROVED or REJECTED or IN_PROGRESS.',
+          );
+        }
+
+        if (
+          existingReturnRequest.request.status === RequestStatus.IN_PROGRESS &&
+          updateReturnRequestDto.status === RequestStatus.IN_PROGRESS
+        ) {
+          this.logger.error(
+            `Return request is already in progress and cannot be updated to the same status for return request ID: ${id}`,
+          );
+          throw new BadRequestException(
+            'Return request is already in progress and cannot be updated to the same status.',
+          );
+        }
+
+        if (
+          existingReturnRequest.request.status === RequestStatus.PENDING &&
+          updateReturnRequestDto.status !== RequestStatus.IN_PROGRESS
+        ) {
+          this.logger.error(
+            `Invalid status update. Status must be IN_PROGRESS for updated return request ID: ${id}`,
+          );
+          throw new BadRequestException(
+            `Invalid status update. Status must be IN_PROGRESS for updated return request ID: ${id}.`,
+          );
+        }
+
+        this.logger.log(
+          'Updating return request',
+          JSON.stringify({ id, ...updateReturnRequestDto }),
+        );
+
+        const result = await tx.returnRequests.update({
+          where: {
+            id: id,
+          },
+          data: {
+            request: {
+              update: {
+                processByStaffId: updateReturnRequestDto.processByStaffId,
+                status: updateReturnRequestDto.status,
+              },
+            },
+          },
+        });
+
+        this.logger.log('Return request updated successfully', id);
+        return result;
       });
 
-      this.logger.log('Return request updated successfully', id);
       return result;
     } catch (error) {
       this.logger.error('Error updating return request', error);
