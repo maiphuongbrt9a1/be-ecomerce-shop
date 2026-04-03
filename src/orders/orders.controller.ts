@@ -13,6 +13,8 @@ import { OrdersService } from './orders.service';
 import {
   UpdateOrderDto,
   UpdateOrderFromWaitingForPickupToShippedDto,
+  UpdateOrderFromShippedToDeliveredDto,
+  UpdateOrderFromShippedToDeliveryFailedDto,
 } from './dto/update-order.dto';
 import {
   ApiBearerAuth,
@@ -541,6 +543,76 @@ export class OrdersController {
     return await this.ordersService.updateOrderFromWaitingPickupToShipped(
       +id,
       updateOrderFromWaitingForPickupToShippedDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Update one order from shipped to delivered' })
+  @ApiResponse({
+    status: 200,
+    description: 'Order updated from SHIPPED to DELIVERED successfully',
+    type: OrderFullInformationEntity,
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Bad Request - invalid order status, payment data missing, or update flow failed',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - order not found',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @ApiBody({
+    description:
+      'Order update payload containing processByStaffId for transition to DELIVERED',
+    type: UpdateOrderFromShippedToDeliveredDto,
+  })
+  @Patch('/:id/delivered')
+  async updateOrderFromShippedToDelivered(
+    @Param('id') id: string,
+    @Body()
+    updateOrderFromShippedToDeliveredDto: UpdateOrderFromShippedToDeliveredDto,
+  ) {
+    return await this.ordersService.updateOrderFromShippedToDelivered(
+      +id,
+      updateOrderFromShippedToDeliveredDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'Update one order from shipped to delivery failed' })
+  @ApiResponse({
+    status: 200,
+    description: 'Order updated from SHIPPED to DELIVERY_FAILED successfully',
+    type: OrderFullInformationEntity,
+  })
+  @ApiResponse({
+    status: 400,
+    description:
+      'Bad Request - invalid order status, refund request creation failed, or update flow failed',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found - order not found',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @ApiBody({
+    description:
+      'Order update payload containing processByStaffId for transition to DELIVERY_FAILED',
+    type: UpdateOrderFromShippedToDeliveryFailedDto,
+  })
+  @Patch('/:id/delivery-failed')
+  async updateOrderFromShippedToDeliveryFailed(
+    @Param('id') id: string,
+    @Body()
+    updateOrderFromShippedToDeliveryFailedDto: UpdateOrderFromShippedToDeliveryFailedDto,
+  ) {
+    return await this.ordersService.updateOrderFromShippedToDeliveryFailed(
+      +id,
+      updateOrderFromShippedToDeliveryFailedDto,
     );
   }
 

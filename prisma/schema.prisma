@@ -51,6 +51,7 @@ enum OrderStatus {
     WAITING_FOR_PICKUP   // Shipment created, waiting for carrier pickup
     SHIPPED              // In transit to customer
     DELIVERED            // Delivered to customer
+    DELIVERED_FAILED     // Delivery attempt failed (e.g. customer not available, wrong address, etc.)
     COMPLETED            // Customer confirmed receipt, order complete
     CANCELLED            // Order cancelled (timeout, user cancel, or payment failed)
     RETURNED             // Order returned by customer
@@ -61,7 +62,9 @@ enum OrderStatus {
 // OrderStatus.WAITING_FOR_PICKUP → ShipmentStatus.WAITING_FOR_PICKUP
 // OrderStatus.SHIPPED → ShipmentStatus.SHIPPED
 // OrderStatus.DELIVERED → ShipmentStatus.DELIVERED
+// OrderStatus.DELIVERED_FAILED → ShipmentStatus.DELIVERED_FAILED
 // OrderStatus.RETURNED → ShipmentStatus.RETURNED
+// OrderStatus.CANCELLED → ShipmentStatus.CANCELLED
 enum ShipmentStatus {
     PENDING              // Shipment NOT PACKAGED YET, waiting for staff to create shipment
     WAITING_FOR_PICKUP   // Ready at shop, waiting for GHN pickup

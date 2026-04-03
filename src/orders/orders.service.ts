@@ -8,6 +8,8 @@ import {
 } from '@nestjs/common';
 import {
   UpdateOrderDto,
+  UpdateOrderFromShippedToDeliveredDto,
+  UpdateOrderFromShippedToDeliveryFailedDto,
   UpdateOrderFromWaitingForPickupToShippedDto,
 } from './dto/update-order.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -1292,27 +1294,27 @@ export class OrdersService {
     updateOrderFromWaitingForPickupToShippedDto: UpdateOrderFromWaitingForPickupToShippedDto,
   ): Promise<OrdersWithFullInformation> {
     try {
-      const orderFromDB = await this.prismaService.orders.findFirst({
-        where: {
-          id: orderId,
-        },
-      });
-
-      if (!orderFromDB) {
-        this.logger.error(`Order with ID ${orderId} not found for update`);
-        throw new NotFoundException(`Order with ID ${orderId} not found`);
-      }
-
-      if (orderFromDB.status !== OrderStatus.WAITING_FOR_PICKUP) {
-        this.logger.error(
-          `Order with ID ${orderId} has invalid status ${orderFromDB.status} for update to SHIPPED. Only orders with status WAITING_FOR_PICKUP can be updated to SHIPPED.`,
-        );
-        throw new BadRequestException(
-          `Order with ID ${orderId} has invalid status ${orderFromDB.status} for update to SHIPPED. Only orders with status WAITING_FOR_PICKUP can be updated to SHIPPED.`,
-        );
-      }
-
       const result = await this.prismaService.$transaction(async (tx) => {
+        const orderFromDB = await tx.orders.findFirst({
+          where: {
+            id: orderId,
+          },
+        });
+
+        if (!orderFromDB) {
+          this.logger.error(`Order with ID ${orderId} not found for update`);
+          throw new NotFoundException(`Order with ID ${orderId} not found`);
+        }
+
+        if (orderFromDB.status !== OrderStatus.WAITING_FOR_PICKUP) {
+          this.logger.error(
+            `Order with ID ${orderId} has invalid status ${orderFromDB.status} for update to SHIPPED. Only orders with status WAITING_FOR_PICKUP can be updated to SHIPPED.`,
+          );
+          throw new BadRequestException(
+            `Order with ID ${orderId} has invalid status ${orderFromDB.status} for update to SHIPPED. Only orders with status WAITING_FOR_PICKUP can be updated to SHIPPED.`,
+          );
+        }
+
         // update shipment status to SHIPPED when order is picked up by shipper successfully
         const shipmentInformation = await tx.shipments.findFirst({
           where: {
@@ -1376,6 +1378,281 @@ export class OrdersService {
       );
       throw new BadRequestException(
         'Failed to update order from WAITING_FOR_PICKUP to SHIPPED',
+      );
+    }
+  }
+
+  /**
+   * Updates an order from SHIPPED to DELIVERED and synchronizes related records.
+   *
+   * This method performs the following operations:
+   * 1. Loads the order with payment and shipment relations
+   * 2. Validates the order exists
+   * 3. Validates the current order status is SHIPPED
+   * 4. Marks all shipments of the order as DELIVERED with staff processing information
+   * 5. Marks COD payments as PAID when the delivery is successful
+   * 6. Updates the order status to DELIVERED
+   * 7. Formats media URLs before returning the final response
+   *
+   * @param {number} orderId - The order ID to update
+   * @param {UpdateOrderFromShippedToDeliveredDto} updateOrderFromShippedToDeliveredDto - The update payload containing staff processing information
+   *
+   * @returns {Promise<OrdersWithFullInformation>} The updated order with full related information
+   *
+   * @throws {NotFoundException} If the order does not exist or the formatted result cannot be returned
+   * @throws {BadRequestException} If the order status is not SHIPPED or the update transaction fails
+   *
+   * @remarks
+   * - Only SHIPPED orders can be moved to DELIVERED
+   * - Shipment records are updated before the order status change to keep state consistent
+   * - COD payments are marked PAID only after successful delivery
+   * - DB-only operation; does not call external payment or shipment APIs
+   */
+  async updateOrderFromShippedToDelivered(
+    orderId: number,
+    updateOrderFromShippedToDeliveredDto: UpdateOrderFromShippedToDeliveredDto,
+  ): Promise<OrdersWithFullInformation> {
+    try {
+      const result = await this.prismaService.$transaction(async (tx) => {
+        const orderFromDB = await tx.orders.findFirst({
+          where: {
+            id: orderId,
+          },
+          include: {
+            payment: true,
+            shipments: true,
+          },
+        });
+
+        if (!orderFromDB) {
+          this.logger.error(`Order with ID ${orderId} not found for update`);
+          throw new NotFoundException(`Order with ID ${orderId} not found`);
+        }
+
+        if (orderFromDB.status !== OrderStatus.SHIPPED) {
+          this.logger.error(
+            `Order with ID ${orderId} has invalid status ${orderFromDB.status} for update to DELIVERED. Only orders with status SHIPPED can be updated to DELIVERED.`,
+          );
+          throw new BadRequestException(
+            `Order with ID ${orderId} has invalid status ${orderFromDB.status} for update to DELIVERED. Only orders with status SHIPPED can be updated to DELIVERED.`,
+          );
+        }
+
+        await tx.shipments.updateMany({
+          where: {
+            orderId: orderId,
+          },
+          data: {
+            status: ShipmentStatus.DELIVERED,
+            processByStaffId:
+              updateOrderFromShippedToDeliveredDto.processByStaffId,
+            deliveredAt: new Date(),
+          },
+        });
+
+        if (orderFromDB.payment[0].paymentMethod === PaymentMethod.COD) {
+          // update payment status to PAID for COD order when order is delivered successfully
+          await tx.payments.updateMany({
+            where: {
+              orderId: orderId,
+            },
+            data: {
+              status: PaymentStatus.PAID,
+              paymentDate: new Date(),
+            },
+          });
+        }
+
+        const result = await tx.orders.update({
+          where: { id: orderId },
+          data: {
+            status: OrderStatus.DELIVERED,
+            processByStaffId:
+              updateOrderFromShippedToDeliveredDto.processByStaffId,
+          },
+          include: OrdersWithFullInformationInclude,
+        });
+
+        return result;
+      });
+
+      const returnResult = formatMediaFieldWithLoggingForOrders(
+        [result],
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      )[0];
+
+      if (!returnResult) {
+        throw new NotFoundException('Order error after formatting media!');
+      }
+
+      return returnResult;
+    } catch (error) {
+      this.logger.error(
+        `Failed to update order from SHIPPED to DELIVERED: `,
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to update order from SHIPPED to DELIVERED',
+      );
+    }
+  }
+
+  /**
+   * Updates an order from SHIPPED to DELIVERY_FAILED and synchronizes related records.
+   *
+   * This method performs the following operations:
+   * 1. Loads the order with payment and shipment relations
+   * 2. Validates the order exists
+   * 3. Validates the current order status is SHIPPED
+   * 4. Marks all shipments of the order as DELIVERY_FAILED with staff processing information
+   * 5. Marks COD payments as FAILED when delivery fails
+   * 6. Creates a return request for VNPAY orders when delivery fails
+   * 7. Updates the order status to DELIVERY_FAILED
+   * 8. Formats media URLs before returning the final response
+   *
+   * @param {number} orderId - The order ID to update
+   * @param {UpdateOrderFromShippedToDeliveryFailedDto} updateOrderFromShippedToDeliveryFailedDto - The update payload containing staff processing information
+   *
+   * @returns {Promise<OrdersWithFullInformation>} The updated order with full related information
+   *
+   * @throws {NotFoundException} If the order does not exist or the formatted result cannot be returned
+   * @throws {BadRequestException} If the order status is not SHIPPED, a related record cannot be created, or the update transaction fails
+   *
+   * @remarks
+   * - Only SHIPPED orders can be moved to DELIVERY_FAILED
+   * - COD orders are marked FAILED when delivery fails
+   * - VNPAY orders automatically create a return request for refund processing
+   * - DB-only operation; does not call external refund APIs
+   */
+  async updateOrderFromShippedToDeliveryFailed(
+    orderId: number,
+    updateOrderFromShippedToDeliveryFailedDto: UpdateOrderFromShippedToDeliveryFailedDto,
+  ): Promise<OrdersWithFullInformation> {
+    try {
+      const result = await this.prismaService.$transaction(async (tx) => {
+        const orderFromDB = await tx.orders.findFirst({
+          where: {
+            id: orderId,
+          },
+          include: {
+            payment: true,
+            shipments: true,
+          },
+        });
+
+        if (!orderFromDB) {
+          this.logger.error(`Order with ID ${orderId} not found for update`);
+          throw new NotFoundException(`Order with ID ${orderId} not found`);
+        }
+
+        if (orderFromDB.status !== OrderStatus.SHIPPED) {
+          this.logger.error(
+            `Order with ID ${orderId} has invalid status ${orderFromDB.status} for update to DELIVERY_FAILED. Only orders with status SHIPPED can be updated to DELIVERY_FAILED.`,
+          );
+          throw new BadRequestException(
+            `Order with ID ${orderId} has invalid status ${orderFromDB.status} for update to DELIVERY_FAILED. Only orders with status SHIPPED can be updated to DELIVERY_FAILED.`,
+          );
+        }
+
+        await tx.shipments.updateMany({
+          where: {
+            orderId: orderId,
+          },
+          data: {
+            status: ShipmentStatus.DELIVERED_FAILED,
+            processByStaffId:
+              updateOrderFromShippedToDeliveryFailedDto.processByStaffId,
+            deliveredAt: new Date(),
+          },
+        });
+
+        if (orderFromDB.payment[0].paymentMethod === PaymentMethod.COD) {
+          // update payment status to FAILED for COD order when order delivery failed
+          await tx.payments.updateMany({
+            where: {
+              orderId: orderId,
+            },
+            data: {
+              status: PaymentStatus.FAILED,
+              paymentDate: new Date(),
+            },
+          });
+        } else if (
+          orderFromDB.payment[0].paymentMethod === PaymentMethod.VNPAY
+        ) {
+          // create refund request for VNPAY order when order delivery failed
+          const newRequest = await tx.requests.create({
+            data: {
+              userId: orderFromDB.userId,
+              processByStaffId: null,
+              orderId: orderFromDB.id,
+              subject: RequestType.RETURN_REQUEST,
+              description: `Refund request for order ID ${orderFromDB.id} after delivery failed`,
+              status: RequestStatus.PENDING,
+            },
+          });
+
+          if (!newRequest) {
+            this.logger.error(
+              `Failed to create request for order with ID ${orderFromDB.id} after delivery failed`,
+            );
+            throw new BadRequestException(
+              `Failed to create request for order with ID ${orderFromDB.id} after delivery failed`,
+            );
+          }
+
+          const newReturnRequest = await tx.returnRequests.create({
+            data: {
+              requestId: newRequest.id,
+            },
+          });
+
+          if (!newReturnRequest) {
+            this.logger.error(
+              `Failed to create return request for order with ID ${orderFromDB.id} after delivery failed`,
+            );
+            throw new BadRequestException(
+              `Failed to create return request for order with ID ${orderFromDB.id} after delivery failed`,
+            );
+          }
+
+          this.logger.log(
+            `Successfully created return request with ID ${newReturnRequest.id} for order with ID ${orderFromDB.id} after delivery failed`,
+          );
+        }
+
+        const result = await tx.orders.update({
+          where: { id: orderId },
+          data: {
+            status: OrderStatus.DELIVERED_FAILED,
+            processByStaffId:
+              updateOrderFromShippedToDeliveryFailedDto.processByStaffId,
+          },
+          include: OrdersWithFullInformationInclude,
+        });
+
+        return result;
+      });
+
+      const returnResult = formatMediaFieldWithLoggingForOrders(
+        [result],
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      )[0];
+
+      if (!returnResult) {
+        throw new NotFoundException('Order error after formatting media!');
+      }
+
+      return returnResult;
+    } catch (error) {
+      this.logger.error(
+        `Failed to update order from SHIPPED to DELIVERY_FAILED: `,
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to update order from SHIPPED to DELIVERY_FAILED',
       );
     }
   }
@@ -1768,6 +2045,19 @@ export class OrdersService {
                 );
               } 
               */
+
+              await tx.payments.updateMany({
+                where: {
+                  orderId: cancelOrder.id,
+                },
+                data: {
+                  status: PaymentStatus.REFUNDED,
+                },
+              });
+
+              this.logger.log(
+                `Updated payment status to REFUNDED for order with ID ${cancelOrder.id} after cancellation`,
+              );
             }
           }
 

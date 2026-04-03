@@ -12,6 +12,7 @@ import {
 import { PrismaService } from '@/prisma/prisma.service';
 import {
   OrderStatus,
+  PaymentStatus,
   Prisma,
   RequestStatus,
   RequestType,
@@ -106,6 +107,7 @@ export class ReturnRequestsService {
             orderId: createReturnRequestDto.orderId,
             userId: createReturnRequestDto.userId,
             subject: RequestType.RETURN_REQUEST,
+            status: RequestStatus.PENDING,
             description: createReturnRequestDto.description,
           },
         });
@@ -395,45 +397,45 @@ export class ReturnRequestsService {
   }
 
   /**
-   * Updates an existing return request status within a strict two-step workflow.
+   * Updates a return request during staff processing workflow.
    *
-   * Enforces a mandatory two-step approval process:
-   * 1. PENDING state: Initial submission from customer
-   * 2. IN_PROGRESS state: Staff begins review (mandatory intermediate step)
-   * 3. Final state: APPROVED or REJECTED (staff decision)
-   *
-   * Validates that:
-   * - Return request exists and belongs to a valid return request type
-   * - Current status is PENDING or IN_PROGRESS only
-   * - Target status is APPROVED, REJECTED, or IN_PROGRESS
-   * - PENDING requests must transition to IN_PROGRESS first (cannot skip to final state)
-   * - IN_PROGRESS requests must transition to APPROVED or REJECTED (cannot stay IN_PROGRESS)
-   * - Cannot update request to its current status
-   *
-   * Executes within a Prisma transaction to ensure atomicity: fetches request,
-   * validates all rules, then updates nested Requests relation with staff ID and new status.
+   * This method performs the following operations:
+   * 1. Finds return request with related base request record
+   * 2. Validates request exists and subject is RETURN_REQUEST
+   * 3. Validates current status is PENDING or IN_PROGRESS
+   * 4. Validates target status is IN_PROGRESS, APPROVED, or REJECTED (PENDING is not allowed)
+   * 5. Enforces transition rules:
+   *    - PENDING can only move to IN_PROGRESS
+   *    - IN_PROGRESS can move to APPROVED or REJECTED
+   *    - IN_PROGRESS to IN_PROGRESS is blocked (same-status update)
+   * 6. Updates request processor (`processByStaffId`) and status in one transaction
+   * 7. If transition is IN_PROGRESS -> APPROVED, applies return side effects:
+   *    - Updates order status to RETURNED
+   *    - Updates all shipments of the order to RETURNED
+   *    - Updates all payments of the order to REFUNDED
+   * 8. Logs all important transition events and side effects
    *
    * @param {number} id - The return request ID to update
-   * @param {UpdateReturnRequestDto} updateReturnRequestDto - Update payload:
-   *   - processByStaffId: Staff member ID processing the request
-   *   - status: Target status (APPROVED, REJECTED, or IN_PROGRESS)
+   * @param {UpdateReturnRequestDto} updateReturnRequestDto - The update payload containing:
+   *   - processByStaffId: Staff ID that handles the request
+   *   - status: New status (IN_PROGRESS, APPROVED, or REJECTED)
    *
-   * @returns {Promise<ReturnRequests>} Updated return request with nested request relation
+   * @returns {Promise<ReturnRequests>} The updated return request record
    *
-   * @throws {NotFoundException} If return request not found by ID
+   * @throws {NotFoundException} If return request is not found by ID
    * @throws {BadRequestException} If:
-   *   - Associated request is not a RETURN_REQUEST type
+   *   - Associated base request is not RETURN_REQUEST type
    *   - Current status is not PENDING or IN_PROGRESS
-   *   - Target status is PENDING or not one of APPROVED/REJECTED/IN_PROGRESS
-   *   - Cannot transition from PENDING to APPROVED/REJECTED (must go PENDING → IN_PROGRESS first)
-   *   - Cannot update IN_PROGRESS request to IN_PROGRESS (same status)
-   *   - Request update fails or transaction aborts
+   *   - Target status is invalid or set to PENDING
+   *   - PENDING is updated directly to APPROVED/REJECTED
+   *   - IN_PROGRESS is updated to IN_PROGRESS (same status)
+   *   - Transaction fails while updating request/order/shipment/payment state
    *
    * @remarks
-   * - Two-step workflow is mandatory: PENDING→IN_PROGRESS→(APPROVED|REJECTED)
+   * - Staff workflow is enforced: PENDING -> IN_PROGRESS -> (APPROVED|REJECTED)
+   * - Approval triggers order/shipments/payments state synchronization for return flow
+   * - All writes run inside a single Prisma transaction for consistency
    * - DB-only operation; does not call external refund APIs
-   * - Requires staff ID for audit trail
-   * - Logs all validation failures and state transitions
    */
   async update(
     id: number,
@@ -535,6 +537,46 @@ export class ReturnRequestsService {
             },
           },
         });
+
+        if (
+          existingReturnRequest.request.status === RequestStatus.IN_PROGRESS &&
+          updateReturnRequestDto.status === RequestStatus.APPROVED
+        ) {
+          this.logger.log(
+            'Return request approved',
+            `Return request ID: ${id} has been approved by staff ID: ${updateReturnRequestDto.processByStaffId}`,
+          );
+
+          // update order status to RETURNED if approved
+          // update shipment status to RETURNED if approved
+          // update payment status to REFUNDED if approved
+          await tx.orders.update({
+            where: { id: existingReturnRequest.request.orderId },
+            data: { status: OrderStatus.RETURNED },
+          });
+          this.logger.log(
+            'Order status updated to RETURNED',
+            `Order ID: ${existingReturnRequest.request.orderId} status updated to RETURNED due to approved return request ID: ${id}`,
+          );
+
+          await tx.shipments.updateMany({
+            where: { orderId: existingReturnRequest.request.orderId },
+            data: { status: ShipmentStatus.RETURNED },
+          });
+          this.logger.log(
+            'Shipment status updated to RETURNED',
+            `Shipments for order ID: ${existingReturnRequest.request.orderId} status updated to RETURNED due to approved return request ID: ${id}`,
+          );
+
+          await tx.payments.updateMany({
+            where: { orderId: existingReturnRequest.request.orderId },
+            data: { status: PaymentStatus.REFUNDED },
+          });
+          this.logger.log(
+            'Payment status updated to REFUNDED',
+            `Payments for order ID: ${existingReturnRequest.request.orderId} status updated to REFUNDED due to approved return request ID: ${id}`,
+          );
+        }
 
         this.logger.log('Return request updated successfully', id);
         return result;

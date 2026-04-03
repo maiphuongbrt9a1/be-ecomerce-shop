@@ -43,3 +43,15 @@ export class UpdateOrderFromWaitingForPickupToShippedDto {
   @IsNotEmpty()
   processByStaffId: bigint;
 }
+
+export class UpdateOrderFromShippedToDeliveredDto {
+  @ApiProperty({ example: 851 })
+  @IsNotEmpty()
+  processByStaffId: bigint;
+}
+
+export class UpdateOrderFromShippedToDeliveryFailedDto {
+  @ApiProperty({ example: 851 })
+  @IsNotEmpty()
+  processByStaffId: bigint;
+}
