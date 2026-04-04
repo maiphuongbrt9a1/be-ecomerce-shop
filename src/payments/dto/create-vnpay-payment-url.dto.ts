@@ -39,7 +39,7 @@ export class BuildPaymentUrlDto {
     description: 'Return callback URL after payment',
     example: 'https://your-domain.com/payments/vnpay-return',
   })
-  @IsUrl()
+  @IsUrl({ require_tld: false })
   vnp_ReturnUrl: string;
 
   @ApiPropertyOptional({
