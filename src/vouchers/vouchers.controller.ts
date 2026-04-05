@@ -81,9 +81,17 @@ export class VouchersController {
   }
 
   @ApiOperation({ summary: 'Search and filter vouchers' })
-  @ApiResponse({ status: 200, description: 'Filtered list of vouchers', type: [VoucherEntity] })
+  @ApiResponse({
+    status: 200,
+    description: 'Filtered list of vouchers',
+    type: [VoucherEntity],
+  })
   @ApiQuery({ name: 'code', required: false, type: String })
-  @ApiQuery({ name: 'discountType', required: false, enum: ['PERCENTAGE', 'FIXED_AMOUNT'] })
+  @ApiQuery({
+    name: 'discountType',
+    required: false,
+    enum: ['PERCENTAGE', 'FIXED_AMOUNT'],
+  })
   @ApiQuery({ name: 'isActive', required: false, type: Boolean })
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'perPage', required: false, type: Number, example: 50 })
@@ -104,7 +112,11 @@ export class VouchersController {
           : undefined,
       isActive: isActive !== undefined ? isActive === 'true' : undefined,
     };
-    return await this.vouchersService.search(dto, Number(page), Number(perPage));
+    return await this.vouchersService.search(
+      dto,
+      Number(page),
+      Number(perPage),
+    );
   }
 
   @ApiOperation({ summary: 'Get a voucher' })

@@ -886,7 +886,7 @@ export class ProductsService {
                 : {},
             ],
           },
-          orderBy: { soldQuantity: 'desc', id: 'asc' },
+          orderBy: [{ soldQuantity: 'desc' }, { id: 'asc' }],
         },
         { page: page },
       );

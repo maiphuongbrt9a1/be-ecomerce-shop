@@ -95,7 +95,11 @@ export class VouchersService {
   /**
    * Search and filter vouchers with optional criteria.
    */
-  async search(dto: SearchVoucherDto, page: number, perPage: number): Promise<Vouchers[] | []> {
+  async search(
+    dto: SearchVoucherDto,
+    page: number,
+    perPage: number,
+  ): Promise<Vouchers[] | []> {
     try {
       const where: Prisma.VouchersWhereInput = {};
 
