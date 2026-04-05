@@ -389,6 +389,9 @@ export class OrdersService {
                     stock: {
                       decrement: item.quantity,
                     },
+                    soldQuantity: {
+                      increment: item.quantity,
+                    },
                   },
                 });
 
@@ -1825,6 +1828,9 @@ export class OrdersService {
               data: {
                 stock: {
                   increment: item.quantity,
+                },
+                soldQuantity: {
+                  decrement: item.quantity,
                 },
               },
             });

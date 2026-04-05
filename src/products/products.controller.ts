@@ -23,6 +23,7 @@ import {
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
+import { CreateFilterQueryDto } from './dto/filter-query.dto';
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Public, Roles } from '@/decorator/customize';
 import { ProductEntity } from './entities/product.entity';
@@ -137,6 +138,99 @@ export class ProductsController {
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.productsService.findAll(Number(page), Number(perPage));
+  }
+
+  @ApiOperation({ summary: 'Filter product variants' })
+  @ApiResponse({
+    status: 200,
+    description: 'Product variants filtered successfully',
+    type: [ProductVariantWithMediaEntity],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid filter query parameters',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
+  @ApiQuery({
+    name: 'searchText',
+    required: false,
+    type: String,
+    example: 'iPhone',
+    description: 'Search product variant name by text',
+  })
+  @ApiQuery({
+    name: 'categories',
+    required: false,
+    type: String,
+    isArray: true,
+    example: ['electronics', 'clothing'],
+    description: 'Category name keywords to match with contains logic',
+  })
+  @ApiQuery({
+    name: 'priceRange',
+    required: false,
+    type: Number,
+    isArray: true,
+    example: [10, 100],
+    description: 'Minimum and maximum price range',
+  })
+  @ApiQuery({
+    name: 'colors',
+    required: false,
+    type: String,
+    isArray: true,
+    example: ['red', 'blue'],
+    description: 'Color names to match with contains logic',
+  })
+  @ApiQuery({
+    name: 'sizes',
+    required: false,
+    type: String,
+    isArray: true,
+    example: ['S', 'M', 'L'],
+    description: 'Variant sizes to filter by',
+  })
+  @ApiQuery({
+    name: 'conditions',
+    required: false,
+    type: String,
+    isArray: true,
+    example: ['new', 'used', 'best_selling'],
+    description: 'Variant conditions to filter by',
+  })
+  @ApiQuery({
+    name: 'features',
+    required: false,
+    type: String,
+    isArray: true,
+    example: ['free_shipping', 'on_sale'],
+    description: 'Product features to filter by',
+  })
+  @Public()
+  @Get('/filter')
+  async filterProducts(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query() createFilterQueryDto: CreateFilterQueryDto,
+  ) {
+    return await this.productsService.filterProducts(
+      Number(page),
+      Number(perPage),
+      createFilterQueryDto,
+    );
   }
 
   @ApiOperation({ summary: 'Get one product' })

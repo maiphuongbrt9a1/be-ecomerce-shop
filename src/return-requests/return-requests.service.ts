@@ -576,6 +576,21 @@ export class ReturnRequestsService {
             'Payment status updated to REFUNDED',
             `Payments for order ID: ${existingReturnRequest.request.orderId} status updated to REFUNDED due to approved return request ID: ${id}`,
           );
+
+          // Restore inventory when return is approved
+          const orderItems = await tx.orderItems.findMany({
+            where: { orderId: existingReturnRequest.request.orderId },
+          });
+
+          for (const item of orderItems) {
+            await tx.productVariants.update({
+              where: { id: item.productVariantId },
+              data: {
+                stock: { increment: item.quantity },
+                soldQuantity: { decrement: item.quantity },
+              },
+            });
+          }
         }
 
         this.logger.log('Return request updated successfully', id);

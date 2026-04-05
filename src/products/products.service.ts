@@ -17,6 +17,7 @@ import {
   ProductVariantsWithMediaInformation,
   ReviewsWithMedia,
 } from '@/helpers/types/types';
+import { CreateFilterQueryDto } from './dto/filter-query.dto';
 
 @Injectable()
 export class ProductsService {
@@ -640,6 +641,275 @@ export class ProductsService {
         `Error fetching product variants for product ID ${id}: ${error}`,
       );
       throw new BadRequestException('Failed to fetch product variants');
+    }
+  }
+
+  /**
+   * Retrieves paginated product variants using a combination of text, category, price, color, size,
+   * condition, and feature filters.
+   *
+   * This method performs the following operations:
+   * 1. Builds a Prisma query from the provided filter payload
+   * 2. Applies search text, category, price range, color, size, condition, and feature filters
+   * 3. Orders the result by sold quantity descending and ID ascending
+   * 4. Formats media URLs for each returned product variant
+   * 5. Logs the request and returns the paginated variants
+   *
+   * @param {number} page - The page number for pagination (1-indexed)
+   * @param {number} perPage - The number of items per page
+   * @param {CreateFilterQueryDto} createFilterQueryDto - Filter payload containing search text, categories,
+   *   price range, colors, sizes, conditions, and features
+   *
+   * @returns {Promise<ProductVariantsWithMediaInformation[] | []>} The filtered product variants with media:
+   *   - Variants matching the provided filters
+   *   - Media URLs converted to public HTTPS URLs
+   *   - Empty array if no variants match
+   *
+   * @throws {BadRequestException} If filtering or pagination fails
+   *
+   * @remarks
+   * - Category, color, size, condition, and feature filters are case-insensitive where applicable
+   * - Multiple values inside the same filter group are combined with OR logic
+   * - Different filter groups are combined with AND logic
+   * - Results are sorted by best sellers first via soldQuantity descending
+   */
+  async filterProducts(
+    page: number,
+    perPage: number,
+    createFilterQueryDto: CreateFilterQueryDto,
+  ): Promise<ProductVariantsWithMediaInformation[] | []> {
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        ProductVariantsWithMediaInformation,
+        Prisma.ProductVariantsFindManyArgs
+      >(
+        this.prismaService.productVariants,
+        {
+          include: {
+            media: true,
+            productVariantColor: true,
+            voucher: true,
+            product: {
+              include: {
+                category: {
+                  include: {
+                    voucher: true,
+                  },
+                },
+                voucher: true,
+              },
+            },
+          },
+          where: {
+            AND: [
+              /** Search text filter */
+              createFilterQueryDto.searchText
+                ? {
+                    variantName: {
+                      contains: createFilterQueryDto.searchText,
+                      mode: 'insensitive',
+                    },
+                  }
+                : {},
+              /** Category filter */
+              createFilterQueryDto.categories?.length
+                ? {
+                    OR: createFilterQueryDto.categories
+                      .filter((c) => c?.trim())
+                      .map((c) => ({
+                        product: {
+                          category: {
+                            name: {
+                              contains: c.trim(),
+                              mode: 'insensitive',
+                            },
+                          },
+                        },
+                      })),
+                  }
+                : {},
+              /** Price range filter */
+              createFilterQueryDto.priceRange?.length === 2
+                ? {
+                    price: {
+                      gte: createFilterQueryDto.priceRange[0],
+                      lte: createFilterQueryDto.priceRange[1],
+                    },
+                  }
+                : {},
+              /** Colors filter */
+              createFilterQueryDto.colors?.length
+                ? {
+                    OR: createFilterQueryDto.colors
+                      .filter((color) => color?.trim())
+                      .map((color) => ({
+                        productVariantColor: {
+                          name: {
+                            contains: color.trim(),
+                            mode: 'insensitive',
+                          },
+                        },
+                      })),
+                  }
+                : {},
+              /** Sizes filter */
+              createFilterQueryDto.sizes?.length
+                ? {
+                    OR: createFilterQueryDto.sizes
+                      .filter((size) => size?.trim())
+                      .map((size) => ({
+                        variantSize: {
+                          contains: size.trim(),
+                          mode: 'insensitive',
+                        },
+                      })),
+                  }
+                : {},
+              /** Conditions filter */
+              createFilterQueryDto.conditions?.length
+                ? {
+                    OR: createFilterQueryDto.conditions
+                      .filter((condition) => condition?.trim())
+                      .reduce<Prisma.ProductVariantsWhereInput[]>(
+                        (filters, condition) => {
+                          const conditionTrimmed = condition
+                            .trim()
+                            .toLowerCase();
+
+                          if (conditionTrimmed === 'new') {
+                            filters.push({
+                              isNewProductVariant: true,
+                            });
+                          } else if (conditionTrimmed === 'used') {
+                            filters.push({
+                              isNewProductVariant: false,
+                            });
+                          } else if (conditionTrimmed === 'best_selling') {
+                            filters.push({
+                              soldQuantity: {
+                                gt: 0,
+                              },
+                            });
+                          }
+
+                          return filters;
+                        },
+                        [],
+                      ),
+                  }
+                : {},
+              /** feature filter */
+              createFilterQueryDto.features?.length
+                ? {
+                    OR: createFilterQueryDto.features
+                      .filter((condition) => condition?.trim())
+                      .reduce<Prisma.ProductVariantsWhereInput[]>(
+                        (filters, condition) => {
+                          const conditionTrimmed = condition
+                            .trim()
+                            .toLowerCase();
+
+                          if (conditionTrimmed === 'free_shipping') {
+                            filters.push({
+                              OR: [
+                                {
+                                  voucher: {
+                                    description: {
+                                      contains: 'free shipping',
+                                      mode: 'insensitive',
+                                    },
+                                  },
+                                },
+                                {
+                                  product: {
+                                    voucher: {
+                                      description: {
+                                        contains: 'free shipping',
+                                        mode: 'insensitive',
+                                      },
+                                    },
+                                  },
+                                },
+                                {
+                                  product: {
+                                    category: {
+                                      voucher: {
+                                        description: {
+                                          contains: 'free shipping',
+                                          mode: 'insensitive',
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              ],
+                            });
+                          } else if (conditionTrimmed === 'on_sale') {
+                            filters.push({
+                              OR: [
+                                {
+                                  voucher: {
+                                    discountValue: {
+                                      gt: 0,
+                                    },
+                                  },
+                                },
+                                {
+                                  product: {
+                                    voucher: {
+                                      discountValue: {
+                                        gt: 0,
+                                      },
+                                    },
+                                  },
+                                },
+                                {
+                                  product: {
+                                    category: {
+                                      voucher: {
+                                        discountValue: {
+                                          gt: 0,
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              ],
+                            });
+                          }
+                          return filters;
+                        },
+                        [],
+                      ),
+                  }
+                : {},
+            ],
+          },
+          orderBy: { soldQuantity: 'desc', id: 'asc' },
+        },
+        { page: page },
+      );
+
+      // generate full http url for media files of each product variant
+      for (let i = 0; i < result.data.length; i++) {
+        const productVariant = result.data[i];
+        productVariant.media = formatMediaFieldWithLogging(
+          productVariant.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'ProductVariant',
+          productVariant.id,
+          this.logger,
+        );
+      }
+
+      this.logger.log(
+        `Filtered products fetched - Page: ${page}, PerPage: ${perPage}, Filters: ${JSON.stringify(createFilterQueryDto)}`,
+      );
+      return result.data;
+    } catch (error) {
+      this.logger.error(`Error filtering products: ${error}`);
+      throw new BadRequestException('Failed to filter products');
     }
   }
 
