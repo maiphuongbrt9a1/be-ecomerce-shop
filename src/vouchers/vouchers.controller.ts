@@ -25,6 +25,7 @@ import { VoucherEntity } from './entities/voucher.entity';
 import { VoucherWithCategoriesEntity } from './entities/voucher-with-categories.entity';
 import { VoucherWithProductsEntity } from './entities/voucher-with-products.entity';
 import { VoucherWithProductVariantsEntity } from './entities/voucher-with-product-variants.entity';
+import { SearchVoucherDto } from './dto/search-voucher.dto';
 
 @Controller('vouchers')
 export class VouchersController {
@@ -77,6 +78,33 @@ export class VouchersController {
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.vouchersService.findAll(Number(page), Number(perPage));
+  }
+
+  @ApiOperation({ summary: 'Search and filter vouchers' })
+  @ApiResponse({ status: 200, description: 'Filtered list of vouchers', type: [VoucherEntity] })
+  @ApiQuery({ name: 'code', required: false, type: String })
+  @ApiQuery({ name: 'discountType', required: false, enum: ['PERCENTAGE', 'FIXED_AMOUNT'] })
+  @ApiQuery({ name: 'isActive', required: false, type: Boolean })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'perPage', required: false, type: Number, example: 50 })
+  @Public()
+  @Get('/search')
+  async search(
+    @Query('code') code?: string,
+    @Query('discountType') discountType?: string,
+    @Query('isActive') isActive?: string,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 50,
+  ) {
+    const dto: SearchVoucherDto = {
+      code: code || undefined,
+      discountType:
+        discountType === 'PERCENTAGE' || discountType === 'FIXED_AMOUNT'
+          ? (discountType as SearchVoucherDto['discountType'])
+          : undefined,
+      isActive: isActive !== undefined ? isActive === 'true' : undefined,
+    };
+    return await this.vouchersService.search(dto, Number(page), Number(perPage));
   }
 
   @ApiOperation({ summary: 'Get a voucher' })

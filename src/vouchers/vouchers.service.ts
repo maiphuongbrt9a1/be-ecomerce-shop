@@ -6,8 +6,9 @@ import {
 } from '@nestjs/common';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
+import { SearchVoucherDto } from './dto/search-voucher.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma, Vouchers } from '@prisma/client';
+import { Prisma, Vouchers, DiscountType } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import {
   VoucherWithAllAppliedCategoriesDetailInformation,
@@ -88,6 +89,38 @@ export class VouchersService {
     } catch (error) {
       this.logger.error('Error retrieving vouchers', error);
       throw new BadRequestException('Failed to retrieve vouchers');
+    }
+  }
+
+  /**
+   * Search and filter vouchers with optional criteria.
+   */
+  async search(dto: SearchVoucherDto, page: number, perPage: number): Promise<Vouchers[] | []> {
+    try {
+      const where: Prisma.VouchersWhereInput = {};
+
+      if (dto.code) {
+        where.code = { contains: dto.code, mode: 'insensitive' };
+      }
+      if (dto.discountType) {
+        where.discountType = dto.discountType as DiscountType;
+      }
+      if (dto.isActive !== undefined && dto.isActive !== null) {
+        where.isActive = dto.isActive;
+      }
+
+      const paginate = createPaginator({ perPage });
+      const result = await paginate<Vouchers, Prisma.VouchersFindManyArgs>(
+        this.prismaService.vouchers,
+        { where, orderBy: { id: 'asc' } },
+        { page },
+      );
+
+      this.logger.log(`Voucher search returned ${result.data.length} results`);
+      return result.data;
+    } catch (error) {
+      this.logger.error('Error searching vouchers', error);
+      throw new BadRequestException('Failed to search vouchers');
     }
   }
 
