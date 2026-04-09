@@ -8,9 +8,21 @@ import { ChatGateway } from './chat.gateway';
 import { UserModule } from '@/user/user.module';
 import { AuthModule } from '@/auth/auth.module';
 import { RedisService } from '@/helpers/redis.service';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [PrismaModule, UserModule, AuthModule],
+  imports: [
+    PrismaModule,
+    UserModule,
+    AuthModule,
+    JwtModule.registerAsync({
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+      }),
+      inject: [ConfigService],
+    }),
+  ],
   controllers: [ChatController],
   providers: [
     ChatService,

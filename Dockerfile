@@ -1,4 +1,4 @@
-FROM node:22-alpine AS base
+FROM node:22.18.0 AS base
 WORKDIR /app
 RUN corepack enable
 
@@ -20,4 +20,5 @@ COPY --from=builder /app/prisma ./prisma
 COPY package.json yarn.lock ./
 EXPOSE 4000
 EXPOSE 80
-CMD ["sh", "-c", "yarn prisma migrate deploy && yarn start:prod"]
+RUN yarn prisma generate
+CMD ["sh", "-c", "until yarn prisma migrate deploy; do echo 'Database not ready, retrying in 3s...'; sleep 3; done; yarn start:prod"]

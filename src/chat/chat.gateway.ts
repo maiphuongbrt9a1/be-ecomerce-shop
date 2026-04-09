@@ -1,6 +1,7 @@
 import { UserService } from '@/user/user.service';
 import { Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import {
   WebSocketGateway,
   OnGatewayInit,
@@ -12,7 +13,6 @@ import {
   MessageBody,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import * as socketioJwt from 'socketio-jwt';
 import { ChatService } from './chat.service';
 import { AuthService } from '@/auth/auth.service';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -43,6 +43,7 @@ export class ChatGateway
     private readonly roomService: RoomService,
     private chatService: ChatService,
     private authService: AuthService,
+    private jwtService: JwtService,
   ) {}
   private readonly logger: Logger = new Logger(ChatGateway.name);
 
@@ -50,17 +51,25 @@ export class ChatGateway
   server: Server;
 
   onModuleInit() {
-    const serverWithSet = this.server as unknown as {
-      set: (key: string, value: unknown) => void;
-    };
+    this.server.use((socket, next) => {
+      // Extract token from handshake
+      const token =
+        socket.handshake.auth.token ||
+        socket.handshake.headers.authorization?.split(' ')[1];
 
-    serverWithSet.set(
-      'authorization',
-      socketioJwt.authorize({
-        secret: this.configService.get('JWT_SECRET')!,
-        handshake: true,
-      }),
-    );
+      if (!token) {
+        return next(new Error('Authentication error: No token provided'));
+      }
+
+      try {
+        // Verify and decode JWT token
+        const decoded = this.jwtService.verify(token);
+        socket.request.decoded_token = decoded;
+        next();
+      } catch (error) {
+        return next(new Error('Authentication error: Invalid token'));
+      }
+    });
   }
 
   @SubscribeMessage('createNewPublicRoom')
