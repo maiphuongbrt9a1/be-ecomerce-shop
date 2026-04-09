@@ -13,7 +13,14 @@ import { Gender, Role, User } from '@prisma/client';
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import { Socket } from 'socket.io';
-import { UserEntity } from '@/user/entities/user.entity';
+import { PrismaService } from '@/prisma/prisma.service';
+
+type GoogleOAuthUser = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+};
 
 @Injectable()
 export class AuthService {
@@ -21,6 +28,7 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   /**
@@ -213,7 +221,7 @@ export class AuthService {
    * - Sets 5-minute activation code expiry
    * - Google accounts are immediately active
    */
-  async googleLogin(req: any) {
+  async googleLogin(req: { user?: GoogleOAuthUser }) {
     try {
       if (!req.user) {
         throw new UnauthorizedException('No user from google!');
@@ -426,21 +434,55 @@ export class AuthService {
   /*
    * login user on socket, set user on client request
    * */
-  async loginSocket(client: Socket): Promise<UserEntity> {
-    const { iat, exp, id: userId } = client.request.decoded_token;
+  async loginSocket(client: Socket): Promise<User> {
+    const decoded = client.request.decoded_token as {
+      iat: number;
+      exp: number;
+      sub?: string | number | bigint;
+      id?: string | number | bigint;
+    };
+
+    if (!decoded) {
+      throw new UnauthorizedException('Missing socket token');
+    }
+
+    const { iat, exp } = decoded;
+    const userId = decoded.sub ?? decoded.id;
+
+    if (userId === undefined || userId === null) {
+      throw new UnauthorizedException('Invalid socket token payload');
+    }
 
     const timeDiff = exp - iat;
+
     if (timeDiff <= 0) {
+      this.logger.error('(loginSocket function) Token expired: ', {
+        iat,
+        exp,
+        userId,
+      });
+
       throw new UnauthorizedException();
-      // return false;
     }
-    const user = await this.userRepository.findOne(userId, {
-      relations: ['rooms'],
+
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        id: Number(userId),
+      },
+      include: {
+        roomChats: {
+          include: {
+            roomChat: true,
+          },
+        },
+      },
     });
 
     if (!user) {
+      this.logger.error(
+        '(loginSocket function) User not found for ID: ' + userId,
+      );
       throw new UnauthorizedException();
-      // return false;
     }
 
     // set user on client request for another handlers to get authenticated user.

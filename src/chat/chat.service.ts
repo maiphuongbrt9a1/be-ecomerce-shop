@@ -40,16 +40,27 @@ export class ChatService {
     sender: User,
     room: RoomChat,
     msg: string,
-  ): Promise<Message> {
-    let alreadyInRoom = room.members.some((ele) => ele.id === sender.id);
+  ): Promise<Message | null> {
+    const alreadyInRoom = await this.prismaService.userRoomChat.findFirst({
+      where: {
+        userId: sender.id,
+        roomChatId: room.id,
+      },
+    });
 
     if (!alreadyInRoom) {
-      return;
+      return null;
     }
-    return this.messageRepository.save({
-      text: msg,
-      room: room,
-      sender: sender,
+
+    return this.prismaService.message.create({
+      data: {
+        content: msg,
+        senderId: sender.id,
+        roomChatId: room.id,
+      },
+      include: {
+        roomChat: true,
+      },
     });
   }
 }

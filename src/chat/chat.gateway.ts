@@ -11,13 +11,21 @@ import {
   ConnectedSocket,
   MessageBody,
 } from '@nestjs/websockets';
-import { RedisService } from 'nestjs-redis';
 import { Server, Socket } from 'socket.io';
 import * as socketioJwt from 'socketio-jwt';
 import { ChatService } from './chat.service';
 import { AuthService } from '@/auth/auth.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateRoomDto } from './dto/create-room.dto';
+import { UtilsService } from '@/helpers/utils.service';
+import { RoomService } from './room.service';
+import { JoinRoomDto } from './dto/join-room.dto';
+import { RoomChat } from '@prisma/client';
+import {
+  CreateMessageDto,
+  CreatePrivateMessageDto,
+} from './dto/create-message.dto';
+import { RedisService } from '@/helpers/redis.service';
 
 @WebSocketGateway(80, { cors: { origin: '*' } })
 export class ChatGateway
@@ -32,6 +40,7 @@ export class ChatGateway
     public readonly userService: UserService,
     private readonly prismaService: PrismaService,
     private readonly redisService: RedisService,
+    private readonly roomService: RoomService,
     private chatService: ChatService,
     private authService: AuthService,
   ) {}
@@ -41,7 +50,11 @@ export class ChatGateway
   server: Server;
 
   onModuleInit() {
-    (<any>this.server).set(
+    const serverWithSet = this.server as unknown as {
+      set: (key: string, value: unknown) => void;
+    };
+
+    serverWithSet.set(
       'authorization',
       socketioJwt.authorize({
         secret: this.configService.get('JWT_SECRET')!,
@@ -75,9 +88,9 @@ export class ChatGateway
         },
       });
 
-      const userRoomChat = await tx.userRoomChat.create({
+      await tx.userRoomChat.create({
         data: {
-          userId: client.request.,
+          userId: client.request.user.id,
           roomChatId: room.id,
         },
       });
@@ -97,20 +110,26 @@ export class ChatGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: JoinRoomDto,
   ) {
-    const room: RoomEntity = await this.roomRepository.findOne(
-      { name: payload.name },
-      { relations: ['members'] },
-    );
+    const room: RoomChat | null = await this.prismaService.roomChat.findFirst({
+      where: {
+        name: payload.name,
+      },
+      include: {
+        members: true,
+      },
+    });
+
     if (!room) {
       console.log('room not found');
       return;
     }
 
-    let isJoined = await this.roomRepository.join(room, client.request.user);
+    const isJoined = await this.roomService.join(room, client.request.user);
+
     if (!isJoined) {
       client.emit('not joined');
     }
-    client.join(room.name);
+    await client.join(room.name);
 
     const answerPayload = {
       name: client.request.user.email,
@@ -121,88 +140,117 @@ export class ChatGateway
   }
 
   @SubscribeMessage('getRooms')
-  async handleGetRooms(@ConnectedSocket() client: Socket, payload) {
-    const pvrooms: RoomEntity[] = await this.roomRepository.find({
+  async handleGetRooms(@ConnectedSocket() client: Socket) {
+    const pvrooms: RoomChat[] = await this.prismaService.roomChat.findMany({
       where: { isPrivate: true },
-      relations: ['members'],
+      include: {
+        members: true,
+      },
     });
-    const pubrooms: RoomEntity[] = await this.roomRepository.find({
+    const pubrooms: RoomChat[] = await this.prismaService.roomChat.findMany({
       where: { isPrivate: false },
+      include: {
+        members: true,
+      },
     });
-    pvrooms.forEach((value) => {
-      if (value.isPrivate) {
-        value.name = value.members[0].email;
-      }
-    });
+
     // console.log(rooms);
     client.emit('getRooms', [...pvrooms, ...pubrooms]);
   }
 
   @SubscribeMessage('msgToRoomServer')
   async handleRoomMessage(client: Socket, payload: CreateMessageDto) {
-    const room = await this.roomRepository.findOne({
-      where: { name: payload.room_name, isPrivate: false },
-      relations: ['members'],
+    const room = await this.prismaService.roomChat.findFirst({
+      where: {
+        name: payload.room_name,
+        isPrivate: false,
+      },
+      include: {
+        members: true,
+      },
     });
 
     if (!room) {
       this.logger.log('room not found');
       return;
     }
-    const createdMessage = await this._chatService.createPublicRoomMessage(
+
+    const createdMessage = await this.chatService.createPublicRoomMessage(
       client.request.user,
       room,
       payload.text,
     );
+
+    if (!createdMessage) {
+      this.logger.error('message not created');
+      return;
+    }
+
     const answerPayload = {
       name: client.request.user.email,
       text: payload.text,
     };
-    this.server
-      .to(createdMessage.room.name)
-      .emit('msgToRoomClient', answerPayload);
+    this.server.to(room.name).emit('msgToRoomClient', answerPayload);
   }
 
   @SubscribeMessage('msgPrivateToServer')
   async handlePrivateMessage(client: Socket, payload: CreatePrivateMessageDto) {
-    const receiver = await this.userService.findOne({
-      id: payload.receiver,
+    const receiver = await this.prismaService.user.findUnique({
+      where: {
+        id: Number(payload.receiver),
+      },
     });
-    //
+
     if (!receiver) {
       console.log('receiver not found');
       return;
     }
-    const createdMessage = await this._chatService.createPrivateMessage(
+
+    await this.chatService.createPrivateMessage(
       client.request.user,
       receiver,
       payload.text,
     );
 
+    const roomName = this.roomService.generatePrivateRoomName(
+      client.request.user,
+      receiver,
+    );
+
     const answerPayload = {
       name: client.request.user.email,
       text: payload.text,
     };
-    const receiverSocketId: string = await this.redisService
+
+    const receiverSocketId: string | null = await this.redisService
       .getClient()
       .get(`users:${payload.receiver}`);
 
+    if (!receiverSocketId) {
+      console.log('receiver is offline');
+      return;
+    }
+
     // join two clients to room
     const receiverSocketObject =
-      this.server.clients().sockets[receiverSocketId];
-    receiverSocketObject.join(createdMessage.room.name);
-    client.join(createdMessage.room.name);
+      this.server.sockets.sockets.get(receiverSocketId);
+
+    if (!receiverSocketObject) {
+      return;
+    }
+
+    await receiverSocketObject.join(roomName);
+
+    await client.join(roomName);
 
     // if receiver is online
     if (receiverSocketId) {
-      this.server
-        .to(createdMessage.room.name)
-        .emit('msgPrivateToClient', answerPayload);
+      this.server.to(roomName).emit('msgPrivateToClient', answerPayload);
     }
   }
 
-  afterInit(server: Server) {
-    this.logger.log(`Init chat gateway ${JSON.stringify(server)}`);
+  afterInit() {
+    this.logger.log(`Init chat gateway`);
   }
 
   async handleDisconnect(client: Socket) {
@@ -210,17 +258,17 @@ export class ChatGateway
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  async handleConnection(client: Socket, ...args: any[]) {
+  async handleConnection(client: Socket) {
     const user = await this.authService.loginSocket(client);
 
     // set on redis=> key: user.id,  value: socketId
     await UtilsService.setUserIdAndSocketIdOnRedis(
       this.redisService,
-      client.request.user.id,
+      user.id.toString(),
       client.id,
     );
     // join to all user's room, so can get sent messages immediately
-    this.roomRepository.initJoin(user, client);
+    await this.roomService.initJoin(user, client);
 
     this.logger.log(`Client connected: ${client.id}`);
   }

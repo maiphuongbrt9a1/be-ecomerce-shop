@@ -39,7 +39,7 @@ import { Request } from 'express';
  *   };
  * }
  */
-export interface RequestWithUser extends Request {
+export type RequestWithUser = Omit<Request, 'user'> & {
   user: {
     id: bigint;
     firstName: string | null;
@@ -49,7 +49,7 @@ export interface RequestWithUser extends Request {
     role: string;
     isActive: boolean;
   };
-}
+};
 
 /**
  * Utility type extracting user object from RequestWithUser.
@@ -111,7 +111,7 @@ export type UserInRequestWithUser = RequestWithUser['user'];
  *   name: payload.name
  * };
  */
-export interface RequestWithUserInJWTStrategy extends Request {
+export type RequestWithUserInJWTStrategy = Omit<Request, 'user'> & {
   user: {
     userId: bigint;
     username: string;
@@ -120,7 +120,7 @@ export interface RequestWithUserInJWTStrategy extends Request {
     lastName: string | null;
     name: string | null;
   };
-}
+};
 
 /**
  * Utility type extracting user object from RequestWithUserInJWTStrategy.
