@@ -12,6 +12,8 @@ import { CreateUserByGoogleAccountDto } from '@/user/dtos/create.user.dto';
 import { Gender, Role, User } from '@prisma/client';
 import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
+import { Socket } from 'socket.io';
+import { UserEntity } from '@/user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -420,4 +422,29 @@ export class AuthService {
       throw error;
     }
   };
+
+  /*
+   * login user on socket, set user on client request
+   * */
+  async loginSocket(client: Socket): Promise<UserEntity> {
+    const { iat, exp, id: userId } = client.request.decoded_token;
+
+    const timeDiff = exp - iat;
+    if (timeDiff <= 0) {
+      throw new UnauthorizedException();
+      // return false;
+    }
+    const user = await this.userRepository.findOne(userId, {
+      relations: ['rooms'],
+    });
+
+    if (!user) {
+      throw new UnauthorizedException();
+      // return false;
+    }
+
+    // set user on client request for another handlers to get authenticated user.
+    client.request.user = user;
+    return user;
+  }
 }
