@@ -32,5 +32,7 @@ export class CreatePrivateMessageDto {
     description: 'Receiver user ID (as string) for private message delivery',
     example: '1034',
   })
+  @IsString()
+  @IsNotEmpty()
   receiver: string;
 }
