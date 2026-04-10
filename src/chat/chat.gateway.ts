@@ -35,6 +35,22 @@ export class ChatGateway
     OnGatewayDisconnect,
     OnModuleInit
 {
+  /**
+   * Creates chat gateway instance.
+   *
+   * This constructor performs the following operations:
+   * 1. Injects infrastructure and domain services used by websocket handlers
+   * 2. Prepares gateway dependencies for room and message flows
+   *
+   * @param {ConfigService} configService - Application config service
+   * @param {UserService} userService - User domain service
+   * @param {PrismaService} prismaService - Prisma database service
+   * @param {RedisService} redisService - Redis helper service
+   * @param {RoomService} roomService - Room business logic service
+   * @param {ChatService} chatService - Chat business logic service
+   * @param {AuthService} authService - Authentication service
+   * @param {JwtService} jwtService - JWT verification service
+   */
   constructor(
     public readonly configService: ConfigService,
     public readonly userService: UserService,
@@ -50,6 +66,18 @@ export class ChatGateway
   @WebSocketServer()
   server: Server;
 
+  /**
+   * Registers JWT authentication middleware for all websocket connections.
+   *
+   * This method performs the following operations:
+   * 1. Extracts token from handshake auth data or Authorization header
+   * 2. Verifies token signature and payload
+   * 3. Stores decoded token on socket request object
+   * 4. Rejects connection when token is missing or invalid
+   *
+   * @remarks
+   * - Decoded payload is required by loginSocket in connection handler
+   */
   onModuleInit() {
     this.server.use((socket, next) => {
       // Extract token from handshake
@@ -67,10 +95,25 @@ export class ChatGateway
         socket.request.decoded_token = decoded;
         next();
       } catch (error) {
-        return next(new Error('Authentication error: Invalid token'));
+        return next(new Error(`Authentication error: Invalid token ${error}`));
       }
     });
   }
+
+  /**
+   * Handles event to create a new public chat room.
+   *
+   * This method performs the following operations:
+   * 1. Validates room name uniqueness
+   * 2. Creates room and creator membership in a transaction
+   * 3. Joins creator socket to the new room
+   * 4. Broadcasts room creation event to room members
+   *
+   * @param {Socket} client - Socket client creating the room
+   * @param {CreateRoomDto} payload - Public room creation payload
+   *
+   * @returns {Promise<{ name: string; text: string } | void>} Result payload or void when room exists
+   */
 
   @SubscribeMessage('createNewPublicRoom')
   async handleCreatePublicRoom(
@@ -84,7 +127,7 @@ export class ChatGateway
     });
 
     if (exists) {
-      console.log('room exists already with this name');
+      this.logger.log('room exists already with this name');
       return;
     }
 
@@ -114,6 +157,20 @@ export class ChatGateway
     this.server.to(room.name).emit('createdNewPublicRoom', answerPayload);
   }
 
+  /**
+   * Handles event to join a public room.
+   *
+   * This method performs the following operations:
+   * 1. Finds room by name
+   * 2. Validates join constraints via room service
+   * 3. Joins client socket to room channel
+   * 4. Broadcasts user joined event to room members
+   *
+   * @param {Socket} client - Socket client joining the room
+   * @param {JoinRoomDto} payload - Join room payload
+   *
+   * @returns {Promise<void>} Completes when join flow is handled
+   */
   @SubscribeMessage('joinPublicRoom')
   async handleJoinRoom(
     @ConnectedSocket() client: Socket,
@@ -129,7 +186,7 @@ export class ChatGateway
     });
 
     if (!room) {
-      console.log('room not found');
+      this.logger.log('room not found');
       return;
     }
 
@@ -148,25 +205,55 @@ export class ChatGateway
     this.server.to(room.name).emit('userJoined', answerPayload);
   }
 
+  /**
+   * Handles event to fetch all rooms joined by current user.
+   *
+   * This method performs the following operations:
+   * 1. Fetches private rooms where current user is a member
+   * 2. Fetches public rooms where current user is a member
+   * 3. Merges both room sets and emits result to requester
+   *
+   * @param {Socket} client - Authenticated socket client requesting joined rooms
+   *
+   * @returns {Promise<void>} Completes when joined room list is emitted
+   */
   @SubscribeMessage('getRooms')
   async handleGetRooms(@ConnectedSocket() client: Socket) {
     const pvrooms: RoomChat[] = await this.prismaService.roomChat.findMany({
-      where: { isPrivate: true },
+      where: {
+        isPrivate: true,
+        members: { some: { userId: client.request.user.id } },
+      },
       include: {
         members: true,
       },
     });
     const pubrooms: RoomChat[] = await this.prismaService.roomChat.findMany({
-      where: { isPrivate: false },
+      where: {
+        isPrivate: false,
+        members: { some: { userId: client.request.user.id } },
+      },
       include: {
         members: true,
       },
     });
 
-    // console.log(rooms);
     client.emit('getRooms', [...pvrooms, ...pubrooms]);
   }
 
+  /**
+   * Handles event to send message to a public room.
+   *
+   * This method performs the following operations:
+   * 1. Resolves target public room by name
+   * 2. Persists message via chat service
+   * 3. Broadcasts message event to room sockets
+   *
+   * @param {Socket} client - Socket client sending message
+   * @param {CreateMessageDto} payload - Public room message payload
+   *
+   * @returns {Promise<void>} Completes when message flow is handled
+   */
   @SubscribeMessage('msgToRoomServer')
   async handleRoomMessage(client: Socket, payload: CreateMessageDto) {
     const room = await this.prismaService.roomChat.findFirst({
@@ -202,6 +289,22 @@ export class ChatGateway
     this.server.to(room.name).emit('msgToRoomClient', answerPayload);
   }
 
+  /**
+   * Handles event to send private message to a specific user.
+   *
+   * This method performs the following operations:
+   * 1. Resolves receiver user by id
+   * 2. Persists private message via chat service
+   * 3. Resolves deterministic private room name
+   * 4. Finds receiver socket id from Redis
+   * 5. Joins sender and receiver sockets to private room
+   * 6. Emits private message event when receiver is online
+   *
+   * @param {Socket} client - Socket client sending private message
+   * @param {CreatePrivateMessageDto} payload - Private message payload
+   *
+   * @returns {Promise<void>} Completes when private message flow is handled
+   */
   @SubscribeMessage('msgPrivateToServer')
   async handlePrivateMessage(client: Socket, payload: CreatePrivateMessageDto) {
     const receiver = await this.prismaService.user.findUnique({
@@ -211,7 +314,7 @@ export class ChatGateway
     });
 
     if (!receiver) {
-      console.log('receiver not found');
+      this.logger.log(`Receiver with id ${payload.receiver} not found`);
       return;
     }
 
@@ -236,7 +339,9 @@ export class ChatGateway
       .get(`users:${payload.receiver}`);
 
     if (!receiverSocketId) {
-      console.log('receiver is offline');
+      this.logger.log(
+        `Receiver with id ${payload.receiver} is offline, cannot deliver private message in real-time`,
+      );
       return;
     }
 
@@ -258,15 +363,45 @@ export class ChatGateway
     }
   }
 
+  /**
+   * Lifecycle hook called after websocket gateway initialization.
+   *
+   * This method performs the following operations:
+   * 1. Logs gateway startup event
+   */
   afterInit() {
     this.logger.log(`Init chat gateway`);
   }
 
+  /**
+   * Handles client socket disconnection.
+   *
+   * This method performs the following operations:
+   * 1. Removes user-to-socket mapping from Redis
+   * 2. Logs disconnected socket id
+   *
+   * @param {Socket} client - Socket client that disconnected
+   *
+   * @returns {Promise<void>} Completes when cleanup is finished
+   */
   async handleDisconnect(client: Socket) {
     await this.redisService.getClient().del(`users:${client.request.user.id}`);
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
+  /**
+   * Handles new client socket connection.
+   *
+   * This method performs the following operations:
+   * 1. Authenticates socket and resolves current user
+   * 2. Stores user-to-socket mapping in Redis
+   * 3. Joins user to all existing rooms
+   * 4. Logs connected socket id
+   *
+   * @param {Socket} client - Newly connected socket client
+   *
+   * @returns {Promise<void>} Completes when connection setup is finished
+   */
   async handleConnection(client: Socket) {
     const user = await this.authService.loginSocket(client);
 

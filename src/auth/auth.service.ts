@@ -443,6 +443,9 @@ export class AuthService {
     };
 
     if (!decoded) {
+      this.logger.error(
+        '(loginSocket function) Missing decoded token on socket',
+      );
       throw new UnauthorizedException('Missing socket token');
     }
 
@@ -450,6 +453,10 @@ export class AuthService {
     const userId = decoded.sub ?? decoded.id;
 
     if (userId === undefined || userId === null) {
+      this.logger.error(
+        '(loginSocket function) Invalid token payload, missing user ID: ',
+        decoded,
+      );
       throw new UnauthorizedException('Invalid socket token payload');
     }
 

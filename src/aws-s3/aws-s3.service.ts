@@ -231,7 +231,7 @@ export class AwsS3Service {
       this.logger.log('Uploaded file successfully to s3 bucket!! ');
       return s3Response;
     } catch (e) {
-      console.log(e);
+      this.logger.error('Error uploading file to S3 bucket: ' + e);
       throw new BadRequestException(`Failed to upload file to S3 bucket: ${e}`);
     }
   }
