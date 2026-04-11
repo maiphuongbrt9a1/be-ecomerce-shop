@@ -35,22 +35,6 @@ export class ChatGateway
     OnGatewayDisconnect,
     OnModuleInit
 {
-  /**
-   * Creates chat gateway instance.
-   *
-   * This constructor performs the following operations:
-   * 1. Injects infrastructure and domain services used by websocket handlers
-   * 2. Prepares gateway dependencies for room and message flows
-   *
-   * @param {ConfigService} configService - Application config service
-   * @param {UserService} userService - User domain service
-   * @param {PrismaService} prismaService - Prisma database service
-   * @param {RedisService} redisService - Redis helper service
-   * @param {RoomService} roomService - Room business logic service
-   * @param {ChatService} chatService - Chat business logic service
-   * @param {AuthService} authService - Authentication service
-   * @param {JwtService} jwtService - JWT verification service
-   */
   constructor(
     public readonly configService: ConfigService,
     public readonly userService: UserService,
@@ -67,19 +51,18 @@ export class ChatGateway
   server: Server;
 
   /**
-   * Registers JWT authentication middleware for all websocket connections.
+   * Registers JWT authentication middleware after the WebSocket server is ready.
    *
-   * This method performs the following operations:
-   * 1. Extracts token from handshake auth data or Authorization header
-   * 2. Verifies token signature and payload
-   * 3. Stores decoded token on socket request object
-   * 4. Rejects connection when token is missing or invalid
+   * Moved from onModuleInit to afterInit so that this.server is fully
+   * initialized before middleware is registered. In NestJS v11, onModuleInit
+   * runs before the Socket.IO server is ready, so server.use() had no effect.
    *
-   * @remarks
-   * - Decoded payload is required by loginSocket in connection handler
+   * @param {Server} server - The initialized Socket.IO server instance
    */
-  onModuleInit() {
-    this.server.use((socket, next) => {
+  onModuleInit() {}
+
+  afterInit(server: Server) {
+    server.use((socket, next) => {
       // Extract token from handshake
       const token =
         socket.handshake.auth.token ||
@@ -98,6 +81,8 @@ export class ChatGateway
         return next(new Error(`Authentication error: Invalid token ${error}`));
       }
     });
+
+    this.logger.log(`Init chat gateway`);
   }
 
   /**
@@ -363,15 +348,6 @@ export class ChatGateway
     }
   }
 
-  /**
-   * Lifecycle hook called after websocket gateway initialization.
-   *
-   * This method performs the following operations:
-   * 1. Logs gateway startup event
-   */
-  afterInit() {
-    this.logger.log(`Init chat gateway`);
-  }
 
   /**
    * Handles client socket disconnection.
@@ -403,17 +379,24 @@ export class ChatGateway
    * @returns {Promise<void>} Completes when connection setup is finished
    */
   async handleConnection(client: Socket) {
-    const user = await this.authService.loginSocket(client);
+    try {
+      const user = await this.authService.loginSocket(client);
 
-    // set on redis=> key: user.id,  value: socketId
-    await UtilsService.setUserIdAndSocketIdOnRedis(
-      this.redisService,
-      user.id.toString(),
-      client.id,
-    );
-    // join to all user's room, so can get sent messages immediately
-    await this.roomService.initJoin(user, client);
+      // set on redis=> key: user.id,  value: socketId
+      await UtilsService.setUserIdAndSocketIdOnRedis(
+        this.redisService,
+        user.id.toString(),
+        client.id,
+      );
+      // join to all user's room, so can get sent messages immediately
+      await this.roomService.initJoin(user, client);
 
-    this.logger.log(`Client connected: ${client.id}`);
+      this.logger.log(`Client connected: ${client.id}`);
+    } catch (error) {
+      this.logger.error(
+        `Connection rejected for socket ${client.id}: ${error instanceof Error ? error.message : error}`,
+      );
+      client.disconnect();
+    }
   }
 }
