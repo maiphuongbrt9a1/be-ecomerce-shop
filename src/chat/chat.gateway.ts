@@ -348,7 +348,6 @@ export class ChatGateway
     }
   }
 
-
   /**
    * Handles client socket disconnection.
    *

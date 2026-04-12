@@ -34,6 +34,7 @@ import { bullQueueConfig } from './config/bull.config';
 import { mailerConfig } from './config/mailer.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ChatModule } from './chat/chat.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { ChatModule } from './chat/chat.module';
     AwsS3Module,
     ColorModule,
     ChatModule,
+    NotificationModule,
   ],
 
   controllers: [AppController],
