@@ -22,7 +22,7 @@ import {
 import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles, Public } from '@/decorator/customize';
 import { CategoryEntity } from './entities/category.entity';
-import { ProductEntity } from '@/products/entities/product.entity';
+import { ProductWithVariantsAndMediaEntity } from '@/products/entities/product-with-variants-and-media.entity';
 
 @Controller('category')
 export class CategoryController {
@@ -147,7 +147,7 @@ export class CategoryController {
   @ApiResponse({
     status: 200,
     description: 'Get all products of category',
-    type: [ProductEntity],
+    type: [ProductWithVariantsAndMediaEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })

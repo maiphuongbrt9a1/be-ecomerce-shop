@@ -10,6 +10,8 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Category, Prisma, Products } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
+import { formatMediaField, formatMediaFieldWithLogging } from '@/helpers/utils';
+import { Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia } from '@/helpers/types/types';
 
 @Injectable()
 export class CategoryService {
@@ -265,17 +267,44 @@ export class CategoryService {
     id: number,
     page: number,
     perPage: number,
-  ): Promise<Products[] | []> {
+  ): Promise<Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Products, Prisma.ProductsFindManyArgs>(
+      const result = await paginate<
+        Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia,
+        Prisma.ProductsFindManyArgs
+      >(
         this.prismaService.products,
-        { where: { categoryId: id }, orderBy: { id: 'asc' } },
+        {
+          where: { categoryId: id },
+          orderBy: { id: 'asc' },
+          include: {
+            productVariants: { include: { media: true } },
+            media: true,
+          },
+        },
         { page: page },
       );
 
       if (!result) {
         throw new NotFoundException('Products not found!');
+      }
+
+      // Format S3 URLs — same pattern as ProductsService.findAll
+      for (const product of result.data) {
+        for (const variant of product.productVariants) {
+          variant.media = formatMediaField(
+            variant.media,
+            (url: string) => this.awsService.buildPublicMediaUrl(url),
+          );
+        }
+        product.media = formatMediaFieldWithLogging(
+          product.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'product',
+          product.id,
+          this.logger,
+        );
       }
 
       this.logger.log(`Fetched products for category ID: ${id}`);
