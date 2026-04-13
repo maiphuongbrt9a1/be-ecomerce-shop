@@ -139,6 +139,11 @@ enum RequestStatus {
     REJECTED
 }
 
+enum NotificationType {
+    SHOP_NOTIFICATION
+    PERSONAL_NOTIFICATION
+}
+
 model User {
     // Base user fields
     id          BigInt      @db.BigInt @id @default(autoincrement())
@@ -186,20 +191,29 @@ model User {
     requests    Requests[]
     roomChats UserRoomChat[]
     messages Message[]
-
-    
+    notifications Notification[] @relation("NotificationRecipient")
+    createdNotifications Notification[] @relation("NotificationCreator")
 }
 
-model RoomChat {
+// shopNotification have creatorId reference to User who created the notification, 
+// shopNotification, recipientId is null because shopNotification is sent to all users, not specific user.
+// when personalNotification, creatorId can null because it can be system generated, 
+// when personalNotification, recipientId reference to User who receive the notification
+model Notification {
     id          BigInt      @db.BigInt @id @default(autoincrement())
-    name        String      @db.VarChar(255)
-    description String?     @db.Text
-    isPrivate     Boolean     @default(true) @db.Boolean
-    members      UserRoomChat[]      
-    messages     Message[]
+    title       String      @db.VarChar(255)
+    content     String      @db.Text
+    type        NotificationType @default(SHOP_NOTIFICATION)
+    creator     User?        @relation("NotificationCreator" ,fields: [creatorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+    creatorId   BigInt?      @db.BigInt
+    recipient   User?        @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    recipientId BigInt?      @db.BigInt
+    isRead      Boolean     @default(false) @db.Boolean
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
 
+    @@index([creatorId], name: "idx_notification_creator_id")
+    @@index([recipientId], name: "idx_notification_recipient_id")
 }
 
 model UserRoomChat {
@@ -214,6 +228,18 @@ model UserRoomChat {
     @@id([userId, roomChatId])
     @@index([userId], name: "idx_userRoomChat_user_id")
     @@index([roomChatId], name: "idx_userRoomChat_room_chat_id")
+}
+
+model RoomChat {
+    id          BigInt      @db.BigInt @id @default(autoincrement())
+    name        String      @db.VarChar(255)
+    description String?     @db.Text
+    isPrivate     Boolean     @default(true) @db.Boolean
+    members      UserRoomChat[]      
+    messages     Message[]
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+
 }
 
 model Message {

@@ -46,6 +46,7 @@ export class ChatGateway
     private jwtService: JwtService,
   ) {}
   private readonly logger: Logger = new Logger(ChatGateway.name);
+  private readonly namespace = 'chat';
 
   @WebSocketServer()
   server: Server;
@@ -69,7 +70,11 @@ export class ChatGateway
         socket.handshake.headers.authorization?.split(' ')[1];
 
       if (!token) {
-        return next(new Error('Authentication error: No token provided'));
+        return next(
+          new Error(
+            `${this.namespace} Authentication error: No token provided`,
+          ),
+        );
       }
 
       try {
@@ -78,11 +83,15 @@ export class ChatGateway
         socket.request.decoded_token = decoded;
         next();
       } catch (error) {
-        return next(new Error(`Authentication error: Invalid token ${error}`));
+        return next(
+          new Error(
+            `${this.namespace} Authentication error: Invalid token ${error}`,
+          ),
+        );
       }
     });
 
-    this.logger.log(`Init chat gateway`);
+    this.logger.log(`${this.namespace} Init chat gateway`);
   }
 
   /**
@@ -112,7 +121,7 @@ export class ChatGateway
     });
 
     if (exists) {
-      this.logger.log('room exists already with this name');
+      this.logger.log(`${this.namespace} room exists already with this name`);
       return;
     }
 
@@ -171,7 +180,7 @@ export class ChatGateway
     });
 
     if (!room) {
-      this.logger.log('room not found');
+      this.logger.log(`${this.namespace} room not found`);
       return;
     }
 
@@ -252,7 +261,7 @@ export class ChatGateway
     });
 
     if (!room) {
-      this.logger.log('room not found');
+      this.logger.log(`${this.namespace} room not found`);
       return;
     }
 
@@ -263,7 +272,7 @@ export class ChatGateway
     );
 
     if (!createdMessage) {
-      this.logger.error('message not created');
+      this.logger.error(`${this.namespace} message not created`);
       return;
     }
 
@@ -299,7 +308,9 @@ export class ChatGateway
     });
 
     if (!receiver) {
-      this.logger.log(`Receiver with id ${payload.receiver} not found`);
+      this.logger.log(
+        `${this.namespace} Receiver with id ${payload.receiver} not found`,
+      );
       return;
     }
 
@@ -325,7 +336,7 @@ export class ChatGateway
 
     if (!receiverSocketId) {
       this.logger.log(
-        `Receiver with id ${payload.receiver} is offline, cannot deliver private message in real-time`,
+        `${this.namespace} Receiver with id ${payload.receiver} is offline, cannot deliver private message in real-time`,
       );
       return;
     }
@@ -360,8 +371,10 @@ export class ChatGateway
    * @returns {Promise<void>} Completes when cleanup is finished
    */
   async handleDisconnect(client: Socket) {
-    await this.redisService.getClient().del(`users:${client.request.user.id}`);
-    this.logger.log(`Client disconnected: ${client.id}`);
+    await this.redisService
+      .getClient()
+      .del(`${this.namespace}:users:${client.request.user.id}`);
+    this.logger.log(`${this.namespace} Client disconnected: ${client.id}`);
   }
 
   /**
@@ -384,16 +397,17 @@ export class ChatGateway
       // set on redis=> key: user.id,  value: socketId
       await UtilsService.setUserIdAndSocketIdOnRedis(
         this.redisService,
+        this.namespace,
         user.id.toString(),
         client.id,
       );
       // join to all user's room, so can get sent messages immediately
       await this.roomService.initJoin(user, client);
 
-      this.logger.log(`Client connected: ${client.id}`);
+      this.logger.log(`${this.namespace} Client connected: ${client.id}`);
     } catch (error) {
       this.logger.error(
-        `Connection rejected for socket ${client.id}: ${error instanceof Error ? error.message : error}`,
+        `${this.namespace} Connection rejected for socket ${client.id}: ${error instanceof Error ? error.message : error}`,
       );
       client.disconnect();
     }
