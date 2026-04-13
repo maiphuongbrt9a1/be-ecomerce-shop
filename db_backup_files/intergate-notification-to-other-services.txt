@@ -1,0 +1,259 @@
+Mình sẽ quét toàn bộ codebase để tìm các điểm nghiệp vụ phát sinh sự kiện cho user (order, payment, shipment, request, voucher, account...) rồi lập danh sách hàm service cần bắn notification kèm loại notification đề xuất. Bước đầu mình tìm nhanh các chỗ đang gọi notification và các service có hành vi đổi trạng thái quan trọng.
+
+Searched for regex `sendNotificationToUser|sendNotificationToAllUsers|NotificationService|notification` (`**/src/**/*.ts`), 200 results
+
+Searched for files matching `**/src/**/*.service.ts`, 31 matches
+
+Mình đã có danh sách toàn bộ service; giờ mình tập trung quét các service nghiệp vụ chính (orders, payments, shipments, requests, return-requests, user-vouchers, vouchers, auth) để xác định chính xác từng hàm nên bắn notification loại nào. Kết quả sẽ là một bảng hàm + loại notification + lý do.
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/payments/payments.service.ts#1-1), lines 1 to 420
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/orders/orders.service.ts#1-1), lines 1 to 420
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/shipments/shipments.service.ts#1-1), lines 1 to 460
+
+Searched for regex `async\s+\w+\(|OrderStatus\.|PaymentStatus\.|ShipmentStatus\.|RequestStatus\.|VoucherStatus\.|update\(|cancel|refund|approve|reject|delivered|failed|return` (`**/src/orders/orders.service.ts`), 200 results
+
+Searched for regex `async\s+\w+\(|PaymentStatus\.|OrderStatus\.|ipn|refund|update\(|create\(|verify` (`**/src/payments/payments.service.ts`), 150 results
+
+Searched for regex `async\s+\w+\(|update\(|ShipmentStatus\.|cancel|delivery|failed|returned|status` (`**/src/shipments/shipments.service.ts`), 39 results
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/return-requests/return-requests.service.ts#1-1), lines 1 to 460
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/requests/requests.service.ts#1-1), lines 1 to 460
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/user-vouchers/user-vouchers.service.ts)
+
+Searched for regex `async\s+([A-Za-z0-9_]+)\s*\(` (`**/src/orders/orders.service.ts`), 25 results
+
+Searched for regex `async\s+([A-Za-z0-9_]+)\s*\(` (`**/src/payments/payments.service.ts`), 11 results
+
+Searched for regex `async\s+([A-Za-z0-9_]+)\s*\(` (`**/src/requests/requests.service.ts`), 5 results
+
+Searched for regex `async\s+([A-Za-z0-9_]+)\s*\(` (`**/src/return-requests/return-requests.service.ts`), 6 results
+
+Searched for regex `async\s+([A-Za-z0-9_]+)\s*\(` (`**/src/user-vouchers/user-vouchers.service.ts`), 5 results
+
+Searched for regex `async\s+\w+\(|register|login|forgot|reset|change|active|block|ban|deactivate|role|password|google|verify|otp` (`**/src/auth/auth.service.ts`), 181 results
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/auth/auth.service.ts#1-1), lines 1 to 420
+
+Searched for regex `async\s+\w+\(|handleRegister|handleActive|retryActive|retryPassword|changePassword|update|delete|remove|role|isActive|staff|loyalty|points` (`**/src/user/user.service.ts`), 200 results
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/user/user.service.ts#1-1), lines 1 to 520
+
+Mình đã bóc tách được các service trọng tâm có nghiệp vụ đổi trạng thái. Tiếp theo mình quét thêm vouchers và các service còn lại để không sót hàm nào có tính chất “event” cần bắn notification, rồi mình tổng hợp thành plan theo mức ưu tiên.
+
+Searched for regex `async\s+\w+\(|status|update|create|expire|active|deactive|voucher|promotion` (`**/src/vouchers/vouchers.service.ts`), 190 results
+
+Searched for regex `NotificationService|sendNotificationToUser|sendNotificationToAllUsers` (`**/src/**/*.service.ts`), 4 results
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/vouchers/vouchers.service.ts)
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/orders/orders.service.ts#1120-1120), lines 1120 to 1785
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/orders/orders.service.ts#2120-2120), lines 2120 to 2365
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/payments/payments.service.ts#420-420), lines 420 to 575
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/return-requests/return-requests.service.ts#420-420), lines 420 to 620
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/orders/orders.service.ts#1730-1730), lines 1730 to 2135
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/requests/dto/update-request.dto.ts)
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/orders/dto/update-order.dto.ts)
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/return-requests/dto/update-return-request.dto.ts)
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/requests/dto/create-request.dto.ts)
+
+Searched for regex `enum OrderStatus|enum ShipmentStatus|enum PaymentStatus|enum RequestStatus|enum VoucherStatus` (`**/prisma/schema.prisma`), 5 results
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/prisma/schema.prisma#40-40), lines 40 to 155
+
+Searched for regex `@Roles|@Post|@Patch|@Put|updateOrder|cancelOrder|handleAutoConfirmCompletedOrders|handleCancelExpiredOrders` (`**/src/orders/orders.controller.ts`), 61 results
+
+Searched for regex `@Roles|@Post|@Patch|update\(|create\(|userUpdateReturnRequest` (`**/src/return-requests/return-requests.controller.ts`), 20 results
+
+Searched for regex `@Roles|@Post|@Patch|update\(|create\(` (`**/src/requests/requests.controller.ts`), 11 results
+
+Searched for regex `@Roles|handleVNPayIPNCall|VNPayRefund|@Post|@Get` (`**/src/payments/payments.controller.ts`), 30 results
+
+Mình đã gom được phần lớn điểm đổi trạng thái, nhưng để đảm bảo không sót service nghiệp vụ nào khác (ví dụ product/voucher/user/admin workflow), mình chạy thêm một lượt quét sâu bằng subagent chỉ để trả về danh sách hàm event cần notification. Sau đó mình sẽ hợp nhất và chốt plan cuối cùng cho bạn.
+
+Find notification-worthy service methods
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/notification/notification.service.ts#1-1), lines 1 to 100
+
+Searched for files matching `**/src/**/*.service.ts`, 20 matches
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/notification/notification.service.ts#100-100), lines 100 to 200
+
+Searched for regex `async\s+\w+\s*\(` (`**/src/**/*.service.ts`), 100 results
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/payments/payments.service.ts#1-1), lines 1 to 150
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/user/user.service.ts#1-1), lines 1 to 100
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/orders/orders.service.ts#1-1), lines 1 to 150
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/shipments/shipments.service.ts#1-1), lines 1 to 100
+
+Searched for regex `cancelOrder|updateOrderToWaitingPickup|updateOrderFromWaitingPickupToShipped|updateOrderFromShippedToDelivered|updateOrderFromShippedToDeliveryFailed|remove\(` (`**/src/orders/**/*.service.ts`), 20 results
+
+Searched for regex `async\s+\w+\s*\(` (`**/src/return-requests/**/*.service.ts`), 6 results
+
+Searched for regex `handleVNPayIPNCall|verifyVNPayReturnUrl|VNPayRefund|update\(` (`**/src/payments/**/*.service.ts`), 20 results
+
+Searched for regex `create\(|updateUser|changePassword|deactivateUser|remove\(` (`**/src/user/**/*.service.ts`), 14 results
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/orders/orders.service.ts#300-300), lines 300 to 1139
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/payments/payments.service.ts#350-350), lines 350 to 383
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/vouchers/vouchers.service.ts#1-1), lines 1 to 100
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/return-requests/return-requests.service.ts#1-1), lines 1 to 150
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/user/user.service.ts#200-200), lines 200 to 380
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/return-requests/return-requests.service.ts#270-270), lines 270 to 300
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/payments/payments.service.ts#200-200), lines 200 to 430
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/auth/auth.service.ts#100-100), lines 100 to 180
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/orders/orders.service.ts#200-200), lines 200 to 1739
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/user/user.service.ts#250-250), lines 250 to 600
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/user/user.service.ts#200-200), lines 200 to 1100
+
+Read [](file:///d%3A/BkEduDocs/Self_Study/Code/be-ecomerce-shop/src/user-vouchers/user-vouchers.service.ts#1-1), lines 1 to 100
+
+Created memory file [](file:///c%3A/Users/ADMIN/AppData/Roaming/Code/User/workspaceStorage/ec7994789dd3c0daaebe77e2abb40fda/GitHub.copilot-chat/memory-tool/memories/ODRjMDBhYTgtOGE0Yi00YjFlLTkxZjMtODBmNmVjYjM3MTFm/notification-analysis.md)
+
+Optimizing tool selection...
+
+Read [](file:///c%3A/Users/ADMIN/AppData/Roaming/Code/User/workspaceStorage/ec7994789dd3c0daaebe77e2abb40fda/GitHub.copilot-chat/chat-session-resources/84c00aa8-8a4b-4b1e-91f3-80f6ecb3711f/call_3nWYdFBaJHkWCmwMIKDs9GHZ__vscode-1776066834151/content.txt)
+
+Searched for regex `OrderStatus\.|PaymentStatus\.|ShipmentStatus\.|RequestStatus\.|VoucherStatus\.|status:\s*(OrderStatus|PaymentStatus|ShipmentStatus|RequestStatus|VoucherStatus)` (`**/src/**/*.service.ts`), 114 results
+
+Searched for regex `async\s+(getAllUser|getUserDetail|getUserByEmail|getUserByPhone|getUserByUserName|createAnUser|createAnUserByGoogleAccount|deleteAnUser|updateAnUser|handleRegister|handleActive|retryActive|retryPassword|changePassword)` (`**/src/user/user.service.ts`), 14 results
+
+Đã quét toàn bộ các service trong src và mình chốt được danh sách hàm cần tạo notification cho người dùng như sau.
+
+Hiện trạng quan trọng:
+- Ngoài module notification, chưa có service nào đang gọi NotificationService để bắn notification nghiệp vụ.
+- Tức là các điểm event bên dưới đều là ứng viên cần bổ sung.
+
+**Danh sách hàm cần notification (ưu tiên cao)**
+
+1. orders.service.ts - create  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: user đặt đơn thành công, tạo payment và shipment.
+
+2. orders.service.ts - updateOrderToWaitingPickup  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: đơn chuyển sang chờ lấy hàng.
+
+3. orders.service.ts - updateOrderFromWaitingPickupToShipped  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: đơn đã được lấy và đang giao.
+
+4. orders.service.ts - updateOrderFromShippedToDelivered  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: đơn giao thành công.
+
+5. orders.service.ts - updateOrderFromShippedToDeliveryFailed  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: giao thất bại, phát sinh luồng xử lý hoàn/đổi.
+
+6. orders.service.ts - cancelOrder  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: đơn bị hủy (user hủy hoặc hệ thống/staff hủy).
+
+7. orders.service.ts - handleCancelExpiredOrders  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: cron tự động hủy đơn quá hạn thanh toán.
+
+8. orders.service.ts - handleAutoConfirmCompletedOrders  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: cron tự xác nhận hoàn tất sau thời gian chờ.
+
+9. payments.service.ts - handleVNPayIPNCall  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: VNPay IPN xác nhận thanh toán thành công.
+
+10. payments.service.ts - VNPayRefund  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: hoàn tiền cho đơn.
+
+11. return-requests.service.ts - create  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: user tạo yêu cầu hoàn trả (nên báo user + staff liên quan, đều là personal tới từng account).
+
+12. return-requests.service.ts - update  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: staff duyệt/từ chối/in-progress yêu cầu hoàn trả.
+
+13. requests.service.ts - create  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: user tạo request hỗ trợ/đổi/trả, cần báo cho staff xử lý và phản hồi cho user.
+
+14. requests.service.ts - update  
+Loại: PERSONAL_NOTIFICATION  
+Lý do: trạng thái/request content thay đổi.
+
+15. vouchers.service.ts - create  
+Loại: SHOP_NOTIFICATION  
+Lý do: voucher/chương trình mới toàn shop.
+
+16. vouchers.service.ts - update  
+Loại: SHOP_NOTIFICATION  
+Lý do: thay đổi điều kiện ưu đãi có ảnh hưởng rộng.
+
+17. vouchers.service.ts - remove  
+Loại: SHOP_NOTIFICATION  
+Lý do: chương trình kết thúc/hủy.
+
+**Nhóm có thể cân nhắc thêm (ưu tiên trung bình)**
+
+1. user.service.ts - handleRegister  
+Loại: PERSONAL_NOTIFICATION  
+Ghi chú: hiện đang có email; in-app notification là bổ sung UX.
+
+2. user.service.ts - handleActive  
+Loại: PERSONAL_NOTIFICATION
+
+3. user.service.ts - retryPassword  
+Loại: PERSONAL_NOTIFICATION
+
+4. user.service.ts - changePassword  
+Loại: PERSONAL_NOTIFICATION
+
+**Plan triển khai đề xuất**
+
+1. Chuẩn hóa rule map event -> notification type  
+Order/payment/request/return => personal. Voucher campaign => shop.
+
+2. Thêm NotificationService vào các module nghiệp vụ  
+OrdersModule, PaymentsModule, RequestsModule, ReturnRequestsModule, VouchersModule.
+
+3. Mỗi service tạo helper nội bộ để bắn notification  
+Ví dụ notifyOrderStatusChanged, notifyPaymentConfirmed, notifyReturnRequestUpdated để tránh lặp title/content.
+
+4. Chèn call notification ngay sau khi transaction thành công  
+Không bắn trước commit để tránh gửi sai khi rollback.
+
+5. Với cron jobs, thêm cơ chế chống gửi trùng  
+Dựa theo orderId + trạng thái mới + mốc thời gian hoặc bảng log notification event.
+
+6. Chuẩn hóa message template  
+Tiêu đề ngắn + nội dung có orderId/requestId, trạng thái cũ -> mới, actor (system/staff).
+
+7. Viết test cho các trigger chính  
+Ít nhất cho 8 điểm high-priority đầu (orders + payments + return-requests).
+
+Nếu bạn muốn, mình có thể làm luôn bước tiếp theo: tạo ma trận template cụ thể cho từng hàm (title/content tiếng Việt) và patch code theo đúng thứ tự ưu tiên ở trên.

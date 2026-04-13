@@ -184,7 +184,7 @@ export class NotificationGateway
         return;
       }
 
-      await this.prismaService.notification.create({
+      const newNotification = await this.prismaService.notification.create({
         data: {
           title: payload.title,
           content: payload.content,
@@ -192,6 +192,10 @@ export class NotificationGateway
           type: NotificationType.SHOP_NOTIFICATION,
         },
       });
+
+      this.logger.log(
+        `${this.namespace}: Shop notification id ${newNotification.id} created by user id ${client.request.user.id}`,
+      );
 
       const answerPayload = {
         creatorId: Number(client.request.user.id),
@@ -201,6 +205,11 @@ export class NotificationGateway
       };
 
       this.emitShopNotificationToAllUsers(answerPayload);
+      this.logger.log(
+        `${this.namespace} Shop notification emitted to all users: ${JSON.stringify(
+          answerPayload,
+        )}`,
+      );
     } catch (error) {
       this.logger.error(
         `${this.namespace} Failed to send notification to all users: ${error instanceof Error ? error.message : error}`,
@@ -239,7 +248,7 @@ export class NotificationGateway
       return;
     }
 
-    await this.prismaService.notification.create({
+    const newNotification = await this.prismaService.notification.create({
       data: {
         title: payload.title,
         content: payload.content,
@@ -249,6 +258,10 @@ export class NotificationGateway
       },
     });
 
+    this.logger.log(
+      `${this.namespace}: Personal notification id ${newNotification.id} created by user id ${client.request.user.id} for recipient id ${payload.recipientId}`,
+    );
+
     const answerPayload = {
       receiverId: payload.recipientId,
       receiverEmail: receiver.email,
@@ -257,6 +270,9 @@ export class NotificationGateway
     };
 
     this.emitPersonalNotificationToUserRoom(payload.recipientId, answerPayload);
+    this.logger.log(
+      `${this.namespace} Personal notification emitted to user ${payload.recipientId}: ${JSON.stringify(answerPayload)}`,
+    );
   }
 
   /**
