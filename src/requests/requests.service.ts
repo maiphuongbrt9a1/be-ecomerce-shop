@@ -12,6 +12,7 @@ import { createPaginator } from 'prisma-pagination';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { RequestsWithMedia } from '@/helpers/types/types';
 import { formatMediaFieldWithLogging } from '@/helpers/utils';
+import { NotificationService } from '@/notification/notification.service';
 
 @Injectable()
 export class RequestsService {
@@ -19,7 +20,27 @@ export class RequestsService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly awsService: AwsS3Service,
+    private readonly notificationService: NotificationService,
   ) {}
+
+  private async sendPersonalNotificationSafely(
+    receiverId: bigint | number,
+    title: string,
+    content: string,
+  ): Promise<void> {
+    try {
+      await this.notificationService.sendNotificationToUser(
+        Number(receiverId),
+        title,
+        content,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send request notification to user ${receiverId}`,
+        error,
+      );
+    }
+  }
 
   /**
    * Creates a new customer request with media files (returns, exchanges, complaints).
@@ -125,6 +146,21 @@ export class RequestsService {
       }
 
       this.logger.log('Request created successfully', returnResult.id);
+
+      await this.sendPersonalNotificationSafely(
+        returnResult.userId,
+        'Request created successfully',
+        `Your support request #${returnResult.id.toString()} has been created and is waiting for processing.`,
+      );
+
+      if (returnResult.processByStaffId) {
+        await this.sendPersonalNotificationSafely(
+          returnResult.processByStaffId,
+          'New support request assigned',
+          `Request #${returnResult.id.toString()} has been assigned to you for handling.`,
+        );
+      }
+
       return returnResult;
     } catch (error) {
       this.logger.error('Error creating request', error);
@@ -438,6 +474,21 @@ export class RequestsService {
       );
 
       this.logger.log('Request updated successfully', id);
+
+      await this.sendPersonalNotificationSafely(
+        resultRequest.userId,
+        'Request updated',
+        `Your support request #${resultRequest.id.toString()} has new updates.`,
+      );
+
+      if (resultRequest.processByStaffId) {
+        await this.sendPersonalNotificationSafely(
+          resultRequest.processByStaffId,
+          'Assigned request updated',
+          `Request #${resultRequest.id.toString()} has been updated. Please review the latest details.`,
+        );
+      }
+
       return resultRequest;
     } catch (error) {
       this.logger.error('Error updating request', error);

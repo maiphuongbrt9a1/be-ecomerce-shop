@@ -20,11 +20,34 @@ import {
   ShipmentStatus,
 } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
+import { NotificationService } from '@/notification/notification.service';
 
 @Injectable()
 export class ReturnRequestsService {
   private readonly logger = new Logger(ReturnRequestsService.name);
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
+
+  private async sendPersonalNotificationSafely(
+    receiverId: bigint | number,
+    title: string,
+    content: string,
+  ): Promise<void> {
+    try {
+      await this.notificationService.sendNotificationToUser(
+        Number(receiverId),
+        title,
+        content,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send return-request notification to user ${receiverId}`,
+        error,
+      );
+    }
+  }
 
   /**
    * Creates a new return request for an order.
@@ -125,6 +148,13 @@ export class ReturnRequestsService {
       });
 
       this.logger.log('Return request created successfully', result.id);
+
+      await this.sendPersonalNotificationSafely(
+        createReturnRequestDto.userId,
+        'Return request created',
+        `Your return request #${result.id.toString()} has been created and is pending review.`,
+      );
+
       return result;
     } catch (error) {
       this.logger.error('Error creating return request', error);
@@ -383,6 +413,12 @@ export class ReturnRequestsService {
         return updatedReturnRequest;
       });
 
+      await this.sendPersonalNotificationSafely(
+        userId,
+        'Return request updated',
+        `Your return request #${result.id.toString()} has been updated.`,
+      );
+
       return result;
     } catch (error) {
       this.logger.error('Error updating return request by user', error);
@@ -596,6 +632,21 @@ export class ReturnRequestsService {
         this.logger.log('Return request updated successfully', id);
         return result;
       });
+
+      const updatedRequest = await this.prismaService.returnRequests.findUnique(
+        {
+          where: { id: result.id },
+          include: { request: true },
+        },
+      );
+
+      if (updatedRequest) {
+        await this.sendPersonalNotificationSafely(
+          updatedRequest.request.userId,
+          'Return request status updated',
+          `Your return request #${updatedRequest.id.toString()} is now ${updatedRequest.request.status}.`,
+        );
+      }
 
       return result;
     } catch (error) {

@@ -43,6 +43,7 @@ import { VerifyVNPayIPNCallDto } from './dto/verify-vnpay-ipn-call.dto';
 import { VnpayQueryDrDto } from './dto/vnpay-query-dr.dto';
 import { VnpayRefundDto } from './dto/vnpay-refund.dto';
 import dayjs from 'dayjs';
+import { NotificationService } from '@/notification/notification.service';
 
 @Injectable()
 export class PaymentsService {
@@ -50,7 +51,39 @@ export class PaymentsService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly vnpayService: VnpayService,
+    private readonly notificationService: NotificationService,
   ) {}
+
+  private async sendPaymentNotificationSafely(
+    orderId: number,
+    title: string,
+    content: string,
+  ): Promise<void> {
+    try {
+      const order = await this.prismaService.orders.findUnique({
+        where: { id: orderId },
+        select: { userId: true },
+      });
+
+      if (!order) {
+        this.logger.warn(
+          `Cannot send payment notification because order ${orderId} was not found`,
+        );
+        return;
+      }
+
+      await this.notificationService.sendNotificationToUser(
+        Number(order.userId),
+        title,
+        content,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send payment notification for order ${orderId}`,
+        error,
+      );
+    }
+  }
 
   /**
    * Creates a new payment record for an order.
@@ -560,6 +593,12 @@ export class PaymentsService {
         foundOrder.id,
       );
 
+      await this.sendPaymentNotificationSafely(
+        Number(foundOrder.id),
+        'Payment confirmed',
+        `Your payment for order #${foundOrder.id.toString()} has been confirmed successfully.`,
+      );
+
       return IpnSuccess;
     } catch (error) {
       this.logger.error(
@@ -645,6 +684,16 @@ export class PaymentsService {
         options as RefundOptions,
       );
       this.logger.log('Processed VNPAY refund: ', JSON.stringify(result));
+
+      const orderId = Number(data.vnp_TxnRef);
+      if (!Number.isNaN(orderId)) {
+        await this.sendPaymentNotificationSafely(
+          orderId,
+          'Refund processed',
+          `A refund request for order #${orderId.toString()} has been processed. Please check your payment status.`,
+        );
+      }
+
       return result;
     } catch (error) {
       this.logger.error('Failed to process VNPAY refund: ', error);

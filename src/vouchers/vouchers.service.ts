@@ -15,11 +15,34 @@ import {
   VoucherWithAllAppliedProductsDetailInformation,
   VoucherWithAllAppliedProductVariantsDetailInformation,
 } from '@/helpers/types/types';
+import { NotificationService } from '@/notification/notification.service';
 
 @Injectable()
 export class VouchersService {
   private readonly logger = new Logger(VouchersService.name);
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
+
+  private async sendShopNotificationSafely(
+    senderId: bigint | number,
+    title: string,
+    content: string,
+  ): Promise<void> {
+    try {
+      await this.notificationService.sendNotificationToAllUsers(
+        Number(senderId),
+        title,
+        content,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send shop notification from sender ${senderId}`,
+        error,
+      );
+    }
+  }
 
   /**
    * Creates a new voucher with discount and application settings.
@@ -46,6 +69,12 @@ export class VouchersService {
       const result = await this.prismaService.vouchers.create({
         data: { ...createVoucherDto },
       });
+
+      await this.sendShopNotificationSafely(
+        createVoucherDto.createdBy,
+        'New voucher is available',
+        `A new voucher ${result.code} is now available. Check details and validity in the voucher section.`,
+      );
 
       this.logger.log('Voucher created successfully', result.id);
       return result;
@@ -187,10 +216,24 @@ export class VouchersService {
     updateVoucherDto: UpdateVoucherDto,
   ): Promise<Vouchers> {
     try {
+      const existingVoucher = await this.prismaService.vouchers.findUnique({
+        where: { id: id },
+      });
+
+      if (!existingVoucher) {
+        throw new NotFoundException('Voucher not found!');
+      }
+
       const result = await this.prismaService.vouchers.update({
         where: { id: id },
         data: { ...updateVoucherDto },
       });
+
+      await this.sendShopNotificationSafely(
+        existingVoucher.createdBy,
+        'Voucher has been updated',
+        `Voucher ${result.code} has updated settings. Please review its current discount and validity period.`,
+      );
 
       this.logger.log('Voucher updated successfully', id);
       return result;
@@ -219,10 +262,26 @@ export class VouchersService {
    */
   async remove(id: number): Promise<Vouchers> {
     try {
-      this.logger.log('Voucher deleted successfully', id);
-      return await this.prismaService.vouchers.delete({
+      const voucher = await this.prismaService.vouchers.findUnique({
         where: { id: id },
       });
+
+      if (!voucher) {
+        throw new NotFoundException('Voucher not found!');
+      }
+
+      this.logger.log('Voucher deleted successfully', id);
+      const deletedVoucher = await this.prismaService.vouchers.delete({
+        where: { id: id },
+      });
+
+      await this.sendShopNotificationSafely(
+        voucher.createdBy,
+        'Voucher has ended',
+        `Voucher ${deletedVoucher.code} is no longer available.`,
+      );
+
+      return deletedVoucher;
     } catch (error) {
       this.logger.error('Error deleting voucher', error);
       throw new BadRequestException('Failed to delete voucher');

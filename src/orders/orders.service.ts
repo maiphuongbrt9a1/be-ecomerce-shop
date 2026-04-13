@@ -53,6 +53,7 @@ import dayjs from 'dayjs';
 import { PaymentsService } from '@/payments/payments.service';
 import { Cron } from '@nestjs/schedule';
 import { MyPickShiftResponse } from '@/helpers/types/ghn-pick-shift-response';
+import { NotificationService } from '@/notification/notification.service';
 /* import { VnpayRefundDto } from '@/payments/dto/vnpay-refund.dto';*/
 
 @Injectable()
@@ -63,7 +64,27 @@ export class OrdersService {
     private readonly awsService: AwsS3Service,
     private readonly shipmentsService: ShipmentsService,
     private readonly paymentsService: PaymentsService,
+    private readonly notificationService: NotificationService,
   ) {}
+
+  private async sendPersonalNotificationSafely(
+    receiverId: bigint | number,
+    title: string,
+    content: string,
+  ): Promise<void> {
+    try {
+      await this.notificationService.sendNotificationToUser(
+        Number(receiverId),
+        title,
+        content,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to send personal notification to user ${receiverId}`,
+        error,
+      );
+    }
+  }
 
   /**
    * Creates a new order with full checkout processing and GHN shipment synchronization.
@@ -895,6 +916,13 @@ export class OrdersService {
         this.logger.log(
           `Time for creating order with ID ${returnOrderWithFullInformation.id}: ${endTime - startTime} ms`,
         );
+
+        await this.sendPersonalNotificationSafely(
+          returnOrderWithFullInformation.userId,
+          'Order placed successfully',
+          `Your order #${returnOrderWithFullInformation.id.toString()} has been created and is waiting for processing.`,
+        );
+
         return returnOrderWithFullInformation;
       } catch (error) {
         this.logger.error(
@@ -1257,6 +1285,12 @@ export class OrdersService {
         throw new NotFoundException('Order error after formatting media!');
       }
 
+      await this.sendPersonalNotificationSafely(
+        returnResult.userId,
+        'Order is waiting for pickup',
+        `Your order #${returnResult.id.toString()} is now prepared and waiting for carrier pickup.`,
+      );
+
       this.logger.log(`Updated order with ID: ${id}`);
       return returnResult;
     } catch (error) {
@@ -1373,6 +1407,12 @@ export class OrdersService {
         throw new NotFoundException('Order error after formatting media!');
       }
 
+      await this.sendPersonalNotificationSafely(
+        returnResult.userId,
+        'Order has been shipped',
+        `Your order #${returnResult.id.toString()} is on the way.`,
+      );
+
       return returnResult;
     } catch (error) {
       this.logger.error(
@@ -1488,6 +1528,12 @@ export class OrdersService {
       if (!returnResult) {
         throw new NotFoundException('Order error after formatting media!');
       }
+
+      await this.sendPersonalNotificationSafely(
+        returnResult.userId,
+        'Order delivered successfully',
+        `Your order #${returnResult.id.toString()} has been delivered successfully.`,
+      );
 
       return returnResult;
     } catch (error) {
@@ -1647,6 +1693,12 @@ export class OrdersService {
       if (!returnResult) {
         throw new NotFoundException('Order error after formatting media!');
       }
+
+      await this.sendPersonalNotificationSafely(
+        returnResult.userId,
+        'Order delivery failed',
+        `Delivery for order #${returnResult.id.toString()} failed. Our team will support you with next steps.`,
+      );
 
       return returnResult;
     } catch (error) {
@@ -2118,6 +2170,12 @@ export class OrdersService {
           return returnCancelledOrderWithFullInformation;
         });
 
+      await this.sendPersonalNotificationSafely(
+        cancelledOrderWithFullInformation.userId,
+        'Order cancelled',
+        `Your order #${cancelledOrderWithFullInformation.id.toString()} has been cancelled.`,
+      );
+
       return cancelledOrderWithFullInformation;
     } catch (error) {
       this.logger.error(`Failed to cancel order with ID ${id}: `, error);
@@ -2273,6 +2331,13 @@ export class OrdersService {
               status: OrderStatus.COMPLETED,
             },
           });
+
+          await this.sendPersonalNotificationSafely(
+            order.userId,
+            'Order completed',
+            `Your order #${order.id.toString()} has been auto-confirmed as completed.`,
+          );
+
           this.logger.log(`Auto-confirmed order with ID: ${order.id}`);
         } catch (error) {
           this.logger.error(

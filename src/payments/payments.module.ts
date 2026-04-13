@@ -4,9 +4,11 @@ import { PaymentsController } from './payments.controller';
 import { VnpayModule } from 'nestjs-vnpay';
 import { consoleLogger } from 'vnpay';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { NotificationModule } from '@/notification/notification.module';
 
 @Module({
   imports: [
+    NotificationModule,
     VnpayModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
