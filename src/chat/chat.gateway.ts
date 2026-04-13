@@ -332,7 +332,7 @@ export class ChatGateway
 
     const receiverSocketId: string | null = await this.redisService
       .getClient()
-      .get(`users:${payload.receiver}`);
+      .get(`${this.namespace}:users:${payload.receiver}`);
 
     if (!receiverSocketId) {
       this.logger.log(
