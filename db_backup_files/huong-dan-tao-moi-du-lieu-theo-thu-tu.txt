@@ -1,0 +1,39 @@
+Nhóm 1: Các bảng danh mục và độc lập (Bắt đầu tại đây)Đây là những bảng không chứa khóa ngoại tham chiếu đến bảng khác 
+(hoặc tham chiếu rất ít).
+User: Cần tạo đầu tiên vì hầu hết các bảng khác như Products, Orders, Vouchers đều cần userId hoặc createByUserId.
+Category: Để lát nữa gán sản phẩm vào đúng loại (Áo, Quần, Giày).
+Color: Các thuộc tính màu sắc cho thời trang.
+GhnPickShift: Ca lấy hàng của đơn vị vận chuyển (nếu bạn dùng tính năng giao hàng).
+
+Nhóm 2: Dữ liệu Sản phẩm cốt lõiSau khi có User (người tạo) và Category (loại hàng), bạn mới tạo được sản phẩm.
+5.  Vouchers: Tạo trước để có thể gán mã giảm giá trực tiếp cho sản phẩm hoặc đơn hàng.
+6.  Products: Phụ thuộc vào User (người tạo), Category và có thể là Vouchers.
+7.  ProductVariants: Phụ thuộc vào Products và Color. Đây là nơi lưu Size/Màu cụ thể.
+
+Nhóm 3: Thông tin hỗ trợ và Tương tác người dùng
+Address: Phụ thuộc vào User. Cần thiết để tạo đơn hàng sau này.
+Cart: Giỏ hàng của từng User.
+CartItems: Các món đồ trong giỏ (phụ thuộc Cart và ProductVariants).
+UserVouchers: Lưu danh sách voucher mà người dùng đã thu thập.
+
+
+Nhóm 4: Giao dịch và Đơn hàngChỉ tạo khi đã có đầy đủ sản phẩm, người dùng và địa chỉ.
+12. PackageChecksums: Cần thiết trước khi tạo Orders theo schema của bạn.
+13. Orders: Bảng trung tâm, phụ thuộc User, Address, và PackageChecksums.
+14. OrderItems: Chi tiết từng món trong đơn hàng.
+15. Payments: Thông tin thanh toán cho đơn hàng.
+16. Shipments: Thông tin vận chuyển (phụ thuộc Orders và GhnPickShift).
+17. ShipmentItems: Chi tiết đóng gói.
+
+Nhóm 5: Phản hồi và Chăm sóc khách hàng
+Reviews: Khách hàng đánh giá sản phẩm sau khi mua.
+Requests: Yêu cầu hỗ trợ hoặc hoàn trả (Return).
+ReturnRequests: Chi tiết hoàn tiền (phụ thuộc Requests).
+Media: Hình ảnh cho sản phẩm, review, 
+hoặc avatar (có thể tạo rải rác nhưng tốt nhất là sau khi có ID của sản phẩm/review để liên kết).
+Notification: Thông báo hệ thống.
+
+Lời khuyên: * Bạn nên bắt đầu bằng việc Insert khoảng 10 Users (gồm cả ADMIN và USER) và 5 Categories trước.
+Sau đó mới tiến hành tạo hàng loạt 100 Products.
+Bạn muốn tôi viết câu lệnh SQL chi tiết cho Nhóm 1 và Nhóm 2 (
+những bảng quan trọng nhất để shop có hàng hóa) trước không?
