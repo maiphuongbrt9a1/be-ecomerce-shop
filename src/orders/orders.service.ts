@@ -467,6 +467,19 @@ export class OrdersService {
               decrementAmount,
             ] of appliedVouchersOnOrderItemsMap) {
               try {
+                const oldVoucher = await tx.vouchers.findUnique({
+                  where: {
+                    id: Number(voucherId),
+                  },
+                });
+
+                if (!oldVoucher) {
+                  this.logger.error(`Voucher with ID ${voucherId} not found.`);
+                  throw new BadRequestException(
+                    `Voucher with ID ${voucherId} not found.`,
+                  );
+                }
+
                 const updateVoucher = await tx.vouchers.updateMany({
                   where: {
                     id: Number(voucherId),
@@ -479,7 +492,7 @@ export class OrdersService {
                       {
                         usageLimit: {
                           gt:
-                            Number(tx.vouchers.fields.timesUsed) +
+                            Number(oldVoucher.timesUsed) +
                             Number(decrementAmount), // Giới hạn phải lớn hơn số lần dùng cho đơn hàng sắp đặt. Nếu không đủ thì báo lỗi để tạo lại đơn hàng.
                         },
                       },
@@ -527,7 +540,7 @@ export class OrdersService {
                         { usageLimit: null }, // Trường hợp không giới hạn
                         {
                           usageLimit: {
-                            gt: tx.vouchers.fields.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
+                            gt: appliedUserVoucher.voucher.timesUsed, // Giới hạn phải lớn hơn số lần đã dùng
                           },
                         },
                       ],

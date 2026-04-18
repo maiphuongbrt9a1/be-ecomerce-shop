@@ -16,6 +16,7 @@ import {
   VoucherWithAllAppliedProductVariantsDetailInformation,
 } from '@/helpers/types/types';
 import { NotificationService } from '@/notification/notification.service';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class VouchersService {
@@ -39,6 +40,95 @@ export class VouchersService {
     } catch (error) {
       this.logger.error(
         `Failed to send shop notification from sender ${senderId}`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * Scans and disables vouchers that are no longer valid.
+   *
+   * Runs every 6 minutes and disables vouchers that are either past validTo
+   * or have timesUsed greater than or equal to usageLimit.
+   *
+   * @remarks
+   * - The cron schedule runs every 6 minutes at second 0.
+   * - The job only touches vouchers that are currently active.
+   * - isOverUsageLimit is set to true only when the usage limit is exceeded.
+   * - Date-expired vouchers are still disabled, but they do not get marked as over-usage.
+   */
+  @Cron('0 */6 * * * *')
+  async handleCancelExpiredVouchers() {
+    this.logger.log('Scanning for expired vouchers...');
+
+    try {
+      await this.prismaService.$transaction(async (tx) => {
+        // get all voucher is active
+        // and check if they are expired by validTo date or usage limit
+        const currentDate = new Date();
+        const activeVouchers = await tx.vouchers.findMany({
+          where: { isActive: true },
+        });
+
+        // get all vouchers that are expired
+        const expiredVouchers = activeVouchers.filter((voucher) => {
+          // Case 1: Voucher has a validTo date and it's in the past
+          const isDateExpired = voucher.validTo < currentDate;
+
+          // case 2: Voucher has a usage limit and it has been exceeded
+          const isUsageLimitExceeded =
+            voucher.usageLimit !== null &&
+            voucher.timesUsed >= voucher.usageLimit; // trường hợp đã dùng quá lượt dùng cho phép.
+
+          return isDateExpired || isUsageLimitExceeded;
+        });
+
+        if (expiredVouchers.length === 0) {
+          this.logger.log('No expired vouchers found.');
+          return;
+        }
+
+        this.logger.log(
+          `Found ${expiredVouchers.length} expired vouchers. Cancelling these vouchers...`,
+        );
+
+        const expiredVoucherIds = expiredVouchers.map((voucher) => voucher.id);
+
+        // Disable each expired voucher. Only usage-limit expiration should set isOverUsageLimit.
+        for (const voucherId of expiredVoucherIds) {
+          try {
+            this.logger.log('Disabling voucher with ID: ' + voucherId);
+            const expiredVoucher = expiredVouchers.find(
+              (voucher) => voucher.id === voucherId,
+            );
+            await tx.vouchers.update({
+              where: { id: voucherId },
+              data: {
+                isActive: false,
+                isOverUsageLimit:
+                  expiredVoucher !== undefined &&
+                  expiredVoucher.usageLimit !== null &&
+                  expiredVoucher.timesUsed >= expiredVoucher.usageLimit,
+              },
+            });
+            this.logger.log(
+              'Successfully disabled voucher with ID: ' + voucherId,
+            );
+          } catch (error) {
+            this.logger.error(
+              'Error occurred while disabling voucher with ID: ' + voucherId,
+              error,
+            );
+          }
+        }
+      });
+
+      this.logger.log(
+        'Successfully completed scanning and cancelling expired vouchers.',
+      );
+    } catch (error) {
+      this.logger.error(
+        'Error occurred while running cron job to cancel expired vouchers:',
         error,
       );
     }
