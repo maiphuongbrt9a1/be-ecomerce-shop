@@ -1017,7 +1017,7 @@ export class OrdersService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
         },
         { page: page },
       );
@@ -2475,7 +2475,7 @@ export class OrdersService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
         },
         { page: page },
       );
@@ -2536,7 +2536,7 @@ export class OrdersService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             status: OrderStatus.PAYMENT_CONFIRMED,
             shipments: {
@@ -2605,7 +2605,7 @@ export class OrdersService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             status: OrderStatus.WAITING_FOR_PICKUP,
             shipments: {
@@ -2673,7 +2673,7 @@ export class OrdersService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             status: OrderStatus.SHIPPED,
             shipments: {
@@ -2741,7 +2741,7 @@ export class OrdersService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             status: OrderStatus.DELIVERED,
             shipments: {
@@ -2808,7 +2808,7 @@ export class OrdersService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             status: OrderStatus.COMPLETED,
           },
@@ -2870,7 +2870,7 @@ export class OrdersService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             status: OrderStatus.CANCELLED,
           },
@@ -2935,7 +2935,7 @@ export class OrdersService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             status: OrderStatus.RETURNED,
             shipments: {

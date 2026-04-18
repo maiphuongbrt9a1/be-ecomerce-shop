@@ -1602,7 +1602,7 @@ export class UserService {
         {
           include: OrdersWithFullInformationInclude,
           where: { userId: userId },
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
         },
         { page: page },
       );
@@ -1730,7 +1730,7 @@ export class UserService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             userId: userId,
             status: OrderStatus.PAYMENT_CONFIRMED,
@@ -1803,7 +1803,7 @@ export class UserService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             userId: userId,
             status: OrderStatus.SHIPPED,
@@ -1876,7 +1876,7 @@ export class UserService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             userId: userId,
             status: OrderStatus.DELIVERED,
@@ -1948,7 +1948,7 @@ export class UserService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             userId: userId,
             status: OrderStatus.COMPLETED,
@@ -2015,7 +2015,7 @@ export class UserService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             userId: userId,
             status: OrderStatus.CANCELLED,
@@ -2085,7 +2085,7 @@ export class UserService {
         this.prismaService.orders,
         {
           include: OrdersWithFullInformationInclude,
-          orderBy: { id: 'asc' },
+          orderBy: { createdAt: 'desc' },
           where: {
             userId: userId,
             status: OrderStatus.RETURNED,
