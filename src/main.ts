@@ -50,6 +50,6 @@ async function bootstrap() {
     credentials: true, // Allow cookies/auth headers
   });
 
-  await app.listen(4000);
+  await app.listen(process.env.HOST_PORT! || 4000);
 }
 bootstrap();

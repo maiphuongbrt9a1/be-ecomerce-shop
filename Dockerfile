@@ -20,5 +20,5 @@ COPY --from=builder /app/prisma ./prisma
 COPY package.json yarn.lock ./
 EXPOSE 4000
 EXPOSE 80
-RUN yarn prisma generate
+EXPOSE 81
 CMD ["sh", "-c", "until yarn prisma migrate deploy; do echo 'Database not ready, retrying in 3s...'; sleep 3; done; yarn start:prod"]
