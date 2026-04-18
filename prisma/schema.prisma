@@ -445,6 +445,7 @@ model Orders {
     processByStaff        User?        @relation("OrderProcessedByStaff", fields: [processByStaffId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     processByStaffId      BigInt?      @db.BigInt 
     description String? @db.VarChar(255)
+    customerPhone String? @db.VarChar(10)
     orderDate   DateTime    @default(now())
     status      OrderStatus      @default(PENDING)
     subTotal    Float   @db.DoublePrecision  // total before shipping and discount

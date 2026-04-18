@@ -585,6 +585,7 @@ export class OrdersService {
                 shippingAddressId:
                   createOrderDto.shippingAddress.orderAddressInDb.id,
                 processByStaffId: processByStaffDefault,
+                customerPhone: createOrderDto.phone,
                 orderDate: orderDateDefault,
                 status: orderStatusDefault,
                 subTotal: subTotal,
