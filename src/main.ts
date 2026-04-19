@@ -27,6 +27,7 @@ async function bootstrap() {
     .setTitle('BE Ecomerce Shop')
     .setVersion('1.0')
     .addServer('http://localhost:4000', 'Development server')
+    .addServer(process.env.BACKEND_PUBLIC_URL_PRODUCTION!, 'Production server')
     .addBearerAuth()
     .build();
 
@@ -36,6 +37,7 @@ async function bootstrap() {
     swaggerOptions: {
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',
+      persistAuthorization: true,
     },
   });
 
@@ -45,11 +47,14 @@ async function bootstrap() {
   };
 
   app.enableCors({
-    origin: 'http://localhost:3000', // Allow your Next.js frontend
+    origin: [
+      'http://localhost:3000',
+      process.env.FRONTEND_PUBLIC_URL_PRODUCTION!,
+    ], // Allow your Next.js frontend
     methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
     credentials: true, // Allow cookies/auth headers
   });
 
-  await app.listen(process.env.PORT! || 4000);
+  await app.listen(process.env.PORT! || 4000, '0.0.0.0');
 }
 bootstrap();
