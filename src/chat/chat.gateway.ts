@@ -279,6 +279,7 @@ export class ChatGateway
     const answerPayload = {
       name: client.request.user.email,
       text: payload.text,
+      room_name: room.name,
     };
     this.server.to(room.name).emit('msgToRoomClient', answerPayload);
   }
@@ -357,6 +358,30 @@ export class ChatGateway
     if (receiverSocketId) {
       this.server.to(roomName).emit('msgPrivateToClient', answerPayload);
     }
+  }
+
+  /**
+   * Notifies a user's active socket that they were added to a room by an admin.
+   * Makes their socket join the WS room so they receive real-time messages immediately.
+   */
+  async notifyUserAddedToRoom(userId: number, roomName: string): Promise<void> {
+    const socketId: string | null = await this.redisService
+      .getClient()
+      .get(`${this.namespace}:users:${userId}`);
+
+    if (!socketId) {
+      this.logger.log(
+        `${this.namespace} User ${userId} is offline — will join room on next connect`,
+      );
+      return;
+    }
+
+    const socket = this.server.sockets.sockets.get(socketId);
+    if (!socket) return;
+
+    await socket.join(roomName);
+    socket.emit('addedToRoom', { roomName });
+    this.logger.log(`Notified user ${userId} of new room ${roomName}`);
   }
 
   /**

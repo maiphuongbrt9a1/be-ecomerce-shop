@@ -20,6 +20,8 @@ import { RolesGuard } from '@/auth/passport/permission.guard';
 import { Roles } from '@/decorator/customize';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { JoinRoomDto } from './dto/join-room.dto';
+import { AddUserToRoomDto } from './dto/add-user-to-room.dto';
+import { ChatGateway } from './chat.gateway';
 import {
   CreateMessageDto,
   CreatePrivateMessageDto,
@@ -46,7 +48,10 @@ export class ChatController {
    * - Controller currently exposes websocket-focused chat domain setup
    * - HTTP endpoints can be added here when needed
    */
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly chatGateway: ChatGateway,
+  ) {}
 
   @ApiOperation({ summary: 'Create a new public chat room' })
   @ApiResponse({
@@ -92,6 +97,37 @@ export class ChatController {
       Number(req.user.userId),
       joinRoomDto,
     );
+  }
+
+  @ApiOperation({ summary: 'Add a specific user to a public room (admin only)' })
+  @ApiResponse({ status: 200, description: 'User added to room.' })
+  @ApiBody({ type: AddUserToRoomDto })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  @Post('/public-rooms/add-user')
+  async addUserToRoom(
+    @Body() dto: AddUserToRoomDto,
+  ): Promise<{ joined: boolean; roomName: string }> {
+    const result = await this.chatService.addUserToPublicRoom(dto);
+    // Notify the user's active WS socket so they join the room in real-time
+    await this.chatGateway.notifyUserAddedToRoom(dto.userId, dto.roomName);
+    return result;
+  }
+
+  @ApiOperation({
+    summary: 'Get all customer support rooms (admin only)',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Return all public rooms whose name starts with "support-", ordered by creation date descending. Used by admins to discover incoming customer support requests.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @Roles('ADMIN')
+  @Get('/admin/rooms')
+  async getAdminRooms(): Promise<RoomChat[]> {
+    return await this.chatService.getAdminRooms();
   }
 
   @ApiOperation({

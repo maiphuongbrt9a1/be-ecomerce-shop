@@ -117,6 +117,37 @@ export class ChatService {
   }
 
   /**
+   * Retrieves all customer support rooms for admin queue view.
+   *
+   * This method performs the following operations:
+   * 1. Queries all public rooms whose name starts with "support-"
+   * 2. Orders results by creation date descending (newest first)
+   * 3. Includes member list for each room
+   *
+   * @returns {Promise<RoomChat[]>} All support rooms, joined or not by the calling admin
+   *
+   * @remarks
+   * - Used exclusively by admin role to populate the support ticket queue
+   * - Returns rooms regardless of admin membership so they can discover and join new ones
+   */
+  async getAdminRooms(): Promise<RoomChat[]> {
+    try {
+      const rooms = await this.prismaService.roomChat.findMany({
+        where: {
+          name: { startsWith: 'support-' },
+        },
+        include: { members: true },
+        orderBy: { createdAt: 'desc' },
+      });
+      this.logger.log(`Fetched ${rooms.length} admin support rooms`);
+      return rooms;
+    } catch (error) {
+      this.logger.error('Failed to fetch admin support rooms: ', error);
+      throw new BadRequestException('Failed to fetch admin support rooms');
+    }
+  }
+
+  /**
    * Retrieves all chat rooms that a specific user has joined.
    *
    * This method performs the following operations:
@@ -269,6 +300,28 @@ export class ChatService {
       this.logger.error('Failed to join room: ', error);
       throw new BadRequestException('Failed to join room');
     }
+  }
+
+  /**
+   * Adds a specific user to an existing public room (admin action).
+   */
+  async addUserToPublicRoom(payload: { roomName: string; userId: number }): Promise<{ joined: boolean; roomName: string }> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: payload.userId },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const room = await this.prismaService.roomChat.findFirst({
+      where: { name: payload.roomName },
+    });
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+
+    const joined = await this.roomService.join(room, user);
+    return { joined: !!joined, roomName: room.name };
   }
 
   /**
