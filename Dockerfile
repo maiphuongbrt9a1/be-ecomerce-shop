@@ -1,4 +1,5 @@
 FROM node:22.18.0 AS base
+RUN apt-get update && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 RUN corepack enable
 
@@ -13,8 +14,9 @@ RUN yarn prisma generate
 RUN yarn build
 
 FROM base AS runner
+ENV NODE_OPTIONS="--max-old-space-size=1024"
 ENV NODE_ENV=production
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY package.json yarn.lock ./
