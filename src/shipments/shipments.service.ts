@@ -951,7 +951,12 @@ export class ShipmentsService {
         );
       }
 
-      const payloadForCreateChecksum = packages[ghnConfig.shopId].PackageDetail;
+      // Normalize through JSON round-trip so all BigInt/Date values become
+      // plain JS primitives — guaranteeing the same hash as the re-computation
+      // in orders.service.ts which receives JSON-deserialized data from the client.
+      const payloadForCreateChecksum = JSON.parse(
+        JSON.stringify(packages[ghnConfig.shopId].PackageDetail),
+      );
       const checksumData = createPackageChecksum(
         payloadForCreateChecksum,
         secretKeyForCreateChecksum,
