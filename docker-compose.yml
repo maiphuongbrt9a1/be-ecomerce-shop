@@ -32,8 +32,6 @@ services:
       - REDIS_HOST=redis
     ports:
       - '${PORT}:${PORT}'
-      - '${CHAT_GATEWAY_PORT}:${CHAT_GATEWAY_PORT}'
-      - '${NOTIFICATION_GATEWAY_PORT}:${NOTIFICATION_GATEWAY_PORT}'
     depends_on:
       - postgres
       - redis

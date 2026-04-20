@@ -27,7 +27,10 @@ import {
 } from './dto/create-message.dto';
 import { RedisService } from '@/helpers/redis.service';
 
-@WebSocketGateway(80, { cors: { origin: '*' } })
+@WebSocketGateway({
+  namespace: 'chat',
+  cors: { origin: '*' },
+})
 export class ChatGateway
   implements
     OnGatewayInit,

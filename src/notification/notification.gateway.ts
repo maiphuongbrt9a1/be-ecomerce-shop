@@ -19,7 +19,10 @@ import { CreateShopNotificationDto } from './dto/create-shop-notification.dto';
 import { CreatePersonalNotificationDto } from './dto/create-personal-notification.dto';
 import { NotificationType, Role } from '@prisma/client';
 
-@WebSocketGateway(81, { cors: { origin: '*' } })
+@WebSocketGateway({
+  namespace: 'notification',
+  cors: { origin: '*' },
+})
 export class NotificationGateway
   implements
     OnGatewayInit,
