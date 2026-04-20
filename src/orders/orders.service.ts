@@ -136,8 +136,9 @@ export class OrdersService {
         );
       }
 
-      const payloadForCreateChecksum =
-        createOrderDto.packages[ghnShopId].PackageDetail;
+      const payloadForCreateChecksum = JSON.parse(
+        JSON.stringify(createOrderDto.packages[ghnShopId].PackageDetail),
+      );
 
       const checksumDataAtRealtimeCreateNewOrder = createPackageChecksum(
         payloadForCreateChecksum,
