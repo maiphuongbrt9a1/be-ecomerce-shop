@@ -25,6 +25,7 @@ import { VoucherEntity } from './entities/voucher.entity';
 import { VoucherWithCategoriesEntity } from './entities/voucher-with-categories.entity';
 import { VoucherWithProductsEntity } from './entities/voucher-with-products.entity';
 import { VoucherWithProductVariantsEntity } from './entities/voucher-with-product-variants.entity';
+import { VoucherWithAllTargetsEntity } from './entities/voucher-with-all-targets.entity';
 import { SearchVoucherDto } from './dto/search-voucher.dto';
 
 @Controller('vouchers')
@@ -52,11 +53,11 @@ export class VouchersController {
     return await this.vouchersService.create(createVoucherDto);
   }
 
-  @ApiOperation({ summary: 'Get all vouchers' })
+  @ApiOperation({ summary: 'Get all vouchers with their assigned targets (products, categories, variants, users)' })
   @ApiResponse({
     status: 200,
-    description: 'List of all vouchers',
-    type: [VoucherEntity],
+    description: 'List of all vouchers including assignment targets',
+    type: [VoucherWithAllTargetsEntity],
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 404, description: 'Not Found.' })
@@ -80,11 +81,11 @@ export class VouchersController {
     return await this.vouchersService.findAll(Number(page), Number(perPage));
   }
 
-  @ApiOperation({ summary: 'Search and filter vouchers' })
+  @ApiOperation({ summary: 'Search and filter vouchers with their assigned targets' })
   @ApiResponse({
     status: 200,
-    description: 'Filtered list of vouchers',
-    type: [VoucherEntity],
+    description: 'Filtered list of vouchers including assignment targets',
+    type: [VoucherWithAllTargetsEntity],
   })
   @ApiQuery({ name: 'code', required: false, type: String })
   @ApiQuery({

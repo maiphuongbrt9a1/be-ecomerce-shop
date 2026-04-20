@@ -553,6 +553,21 @@ export type VoucherWithAllAppliedProductVariantsDetailInformation =
   }>;
 
 /**
+ * Voucher with lean summaries of all four target relations (products, categories, variants, users).
+ * Used in the admin voucher list to show assignment info without heavy joins.
+ */
+export type VoucherWithAllTargets = Prisma.VouchersGetPayload<{
+  include: {
+    voucherForProduct: { select: { id: true; name: true } };
+    voucherForCategory: { select: { id: true; name: true } };
+    voucherForSpecialProductVariant: {
+      select: { id: true; variantName: true; variantSize: true; colorId: true };
+    };
+    userVouchers: { select: { userId: true; voucherStatus: true } };
+  };
+}>;
+
+/**
  * Customer service request with all associated media and staff information.
  *
  * Includes media attachments (photos, documents) and assigned staff member.

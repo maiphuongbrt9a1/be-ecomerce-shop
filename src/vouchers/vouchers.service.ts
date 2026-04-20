@@ -14,6 +14,7 @@ import {
   VoucherWithAllAppliedCategoriesDetailInformation,
   VoucherWithAllAppliedProductsDetailInformation,
   VoucherWithAllAppliedProductVariantsDetailInformation,
+  VoucherWithAllTargets,
 } from '@/helpers/types/types';
 import { NotificationService } from '@/notification/notification.service';
 import { Cron } from '@nestjs/schedule';
@@ -194,12 +195,24 @@ export class VouchersService {
    * - Results are ordered by voucher ID in ascending order
    * - Empty array returned for consistency
    */
-  async findAll(page: number, perPage: number): Promise<Vouchers[] | []> {
+  private readonly voucherTargetsInclude = {
+    voucherForProduct: { select: { id: true, name: true } },
+    voucherForCategory: { select: { id: true, name: true } },
+    voucherForSpecialProductVariant: {
+      select: { id: true, variantName: true, variantSize: true, colorId: true },
+    },
+    userVouchers: { select: { userId: true, voucherStatus: true } },
+  } as const;
+
+  async findAll(page: number, perPage: number): Promise<VoucherWithAllTargets[]> {
     try {
       const paginate = createPaginator({ perPage: perPage });
-      const result = await paginate<Vouchers, Prisma.VouchersFindManyArgs>(
+      const result = await paginate<
+        VoucherWithAllTargets,
+        Prisma.VouchersFindManyArgs
+      >(
         this.prismaService.vouchers,
-        { orderBy: { id: 'asc' } },
+        { orderBy: { createdAt: 'desc' }, include: this.voucherTargetsInclude },
         { page: page },
       );
 
@@ -218,7 +231,7 @@ export class VouchersService {
     dto: SearchVoucherDto,
     page: number,
     perPage: number,
-  ): Promise<Vouchers[] | []> {
+  ): Promise<VoucherWithAllTargets[]> {
     try {
       const where: Prisma.VouchersWhereInput = {};
 
@@ -233,9 +246,12 @@ export class VouchersService {
       }
 
       const paginate = createPaginator({ perPage });
-      const result = await paginate<Vouchers, Prisma.VouchersFindManyArgs>(
+      const result = await paginate<
+        VoucherWithAllTargets,
+        Prisma.VouchersFindManyArgs
+      >(
         this.prismaService.vouchers,
-        { where, orderBy: { id: 'asc' } },
+        { where, orderBy: { createdAt: 'desc' }, include: this.voucherTargetsInclude },
         { page },
       );
 

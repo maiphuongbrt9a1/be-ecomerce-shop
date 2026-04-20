@@ -42,7 +42,7 @@ export class UserVouchersController {
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
-  @Roles('USER')
+  @Roles('USER', 'ADMIN')
   @Post()
   async create(@Body() createUserVoucherDto: CreateUserVoucherDto) {
     return await this.userVouchersService.create(createUserVoucherDto);
