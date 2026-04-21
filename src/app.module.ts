@@ -35,6 +35,7 @@ import { mailerConfig } from './config/mailer.config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ChatModule } from './chat/chat.module';
 import { NotificationModule } from './notification/notification.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { NotificationModule } from './notification/notification.module';
     ColorModule,
     ChatModule,
     NotificationModule,
+    AnalyticsModule,
   ],
 
   controllers: [AppController],
