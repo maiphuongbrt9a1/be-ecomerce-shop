@@ -6,6 +6,9 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - TZ=Asia/Ho_Chi_Minh
+      - PGTZ=Asia/Ho_Chi_Minh
+    command: ['postgres', '-c', 'timezone=Asia/Ho_Chi_Minh']
     container_name: da-ecommerce-shop-postgres
     ports:
       - '${DB_PORT}:5432'
@@ -30,6 +33,7 @@ services:
       - PORT=${PORT}
       - DATABASE_URL=postgresql://${DB_USERNAME}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?schema=public
       - REDIS_HOST=redis
+      - TZ=Asia/Ho_Chi_Minh
     ports:
       - '${PORT}:${PORT}'
     depends_on:

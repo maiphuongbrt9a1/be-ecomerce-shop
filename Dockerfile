@@ -16,6 +16,7 @@ RUN yarn build
 FROM base AS runner
 ENV NODE_OPTIONS="--max-old-space-size=1024"
 ENV NODE_ENV=production
+ENV TZ=Asia/Ho_Chi_Minh
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma

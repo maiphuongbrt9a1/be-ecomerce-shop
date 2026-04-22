@@ -356,6 +356,17 @@ export class PaymentsService {
       data['vnp_ExpireDate'] = vnp_ExpireDate;
       data['vnp_IpAddr'] = clientIp;
 
+      // Debug logging for timezone and time calculation
+      this.logger.log(`
+        ===== VNPAY TIME DEBUG =====
+        Current Server Time (formatted): ${dayjs().format('YYYY-MM-DD HH:mm:ss Z')}
+        vnp_CreateDate (YYYYMMDDHHmmss): ${vnp_CreateDate}
+        vnp_ExpireDate (YYYYMMDDHHmmss): ${vnp_ExpireDate}
+        TIME_EXPIRE_VNPAY_PAYMENT_IN_MINUTES env: ${process.env.TIME_EXPIRE_VNPAY_PAYMENT_IN_MINUTES || 'NOT SET (using default 15)'}
+        TZ env: ${process.env.TZ || 'NOT SET'}
+        ===========================
+      `);
+
       this.logger.log(
         'Final data for VNPAY payment URL: ',
         JSON.stringify(data),
