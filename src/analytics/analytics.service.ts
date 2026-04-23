@@ -2,7 +2,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { TotalRevenueInRangeTime } from '@/helpers/types/analytics-total-revenue-in-range-time';
 import { AnalyticsDashboardCardMetric } from '@/helpers/types/analytics-dashboard-card-metric';
 import { Injectable, Logger } from '@nestjs/common';
-import { AnalyticsViewMode, OrderStatus } from '@prisma/client';
+import { AnalyticsViewMode, OrderStatus, PaymentStatus } from '@prisma/client';
 import dayjs from 'dayjs';
 
 @Injectable()
@@ -370,6 +370,177 @@ export class AnalyticsService {
   }
 
   /**
+   * Retrieves total count of payments with PAID status within a time range.
+   *
+   * This method counts payment records created between startDate (inclusive)
+   * and endDate (inclusive) that have PAID status.
+   *
+   * @param {Date} startDate - Start boundary of the time range (inclusive)
+   * @param {Date} endDate - End boundary of the time range (inclusive)
+   *
+   * @returns {Promise<number>} Total number of PAID payments during the period.
+   *
+   * @remarks
+   * - Counts only payments with PAID status
+   * - Uses inclusive boundaries for both startDate and endDate
+   * - Returns 0 if no matching payments are found
+   */
+  async getTotalPaidPaymentsInRangeTime(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
+    const totalPaidPayments = await this.prismaService.payments.count({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        status: PaymentStatus.PAID,
+      },
+    });
+    return totalPaidPayments;
+  }
+
+  /**
+   * Retrieves total count of payments with PENDING status within a time range.
+   *
+   * This method counts payment records created between startDate (inclusive)
+   * and endDate (inclusive) that have PENDING status.
+   *
+   * @param {Date} startDate - Start boundary of the time range (inclusive)
+   * @param {Date} endDate - End boundary of the time range (inclusive)
+   *
+   * @returns {Promise<number>} Total number of PENDING payments during the period.
+   *
+   * @remarks
+   * - Counts only payments with PENDING status
+   * - Uses inclusive boundaries for both startDate and endDate
+   * - Returns 0 if no matching payments are found
+   */
+  async getTotalPendingPaymentsInRangeTime(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
+    const totalPendingPayments = await this.prismaService.payments.count({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        status: PaymentStatus.PENDING,
+      },
+    });
+    return totalPendingPayments;
+  }
+
+  /**
+   * Retrieves total count of payments with FAILED status within a time range.
+   *
+   * This method counts payment records created between startDate (inclusive)
+   * and endDate (inclusive) that have FAILED status.
+   *
+   * @param {Date} startDate - Start boundary of the time range (inclusive)
+   * @param {Date} endDate - End boundary of the time range (inclusive)
+   *
+   * @returns {Promise<number>} Total number of FAILED payments during the period.
+   *
+   * @remarks
+   * - Counts only payments with FAILED status
+   * - Uses inclusive boundaries for both startDate and endDate
+   * - Returns 0 if no matching payments are found
+   */
+  async getTotalFailedPaymentsInRangeTime(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
+    const totalFailedPayments = await this.prismaService.payments.count({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        status: PaymentStatus.FAILED,
+      },
+    });
+    return totalFailedPayments;
+  }
+
+  /**
+   * Retrieves total count of payments with REFUNDED status within a time range.
+   *
+   * This method counts payment records created between startDate (inclusive)
+   * and endDate (inclusive) that have REFUNDED status.
+   *
+   * @param {Date} startDate - Start boundary of the time range (inclusive)
+   * @param {Date} endDate - End boundary of the time range (inclusive)
+   *
+   * @returns {Promise<number>} Total number of REFUNDED payments during the period.
+   *
+   * @remarks
+   * - Counts only payments with REFUNDED status
+   * - Uses inclusive boundaries for both startDate and endDate
+   * - Returns 0 if no matching payments are found
+   */
+  async getTotalRefundedPaymentsInRangeTime(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
+    const totalRefundedPayments = await this.prismaService.payments.count({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        status: PaymentStatus.REFUNDED,
+      },
+    });
+    return totalRefundedPayments;
+  }
+
+  /**
+   * Retrieves total count of payments with CANCELLED status within a time range.
+   *
+   * This method counts payment records created between startDate (inclusive)
+   * and endDate (inclusive) that have CANCELLED status.
+   *
+   * @param {Date} startDate - Start boundary of the time range (inclusive)
+   * @param {Date} endDate - End boundary of the time range (inclusive)
+   *
+   * @returns {Promise<number>} Total number of CANCELLED payments during the period.
+   *
+   * @remarks
+   * - Counts only payments with CANCELLED status
+   * - Uses inclusive boundaries for both startDate and endDate
+   * - Returns 0 if no matching payments are found
+   */
+  async getTotalCancelledPaymentsInRangeTime(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
+    const totalCancelledPayments = await this.prismaService.payments.count({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        status: PaymentStatus.CANCELLED,
+      },
+    });
+    return totalCancelledPayments;
+  }
+
+  async getTotalCustomersInRangeTime(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
+    const totalCustomers = await this.prismaService.user.count({
+      where: {
+        createdAt: {},
+      },
+    });
+  }
+
+  /**
    * Retrieves aggregated revenue metrics for a specific view mode period.
    *
    * This method calculates revenue analytics from a reference date backwards according to
@@ -622,6 +793,156 @@ export class AnalyticsService {
   }
 
   /**
+   * Retrieves count of PAID payments for a specific view mode period.
+   *
+   * This method counts payments with PAID status from a reference date backwards
+   * according to the specified view mode (weekly, monthly, yearly).
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - End date for the period calculation (inclusive)
+   *
+   * @returns {Promise<number>} Total number of PAID payments during the period.
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Calculates period backwards from referenceDate based on viewMode
+   * - Counts only PAID status payments
+   * - Returns 0 if no matching payments are found
+   */
+  async getTotalPaidPaymentsInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date,
+  ): Promise<number> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    return await this.getTotalPaidPaymentsInRangeTime(startDate, endDate);
+  }
+
+  /**
+   * Retrieves count of PENDING payments for a specific view mode period.
+   *
+   * This method counts payments with PENDING status from a reference date backwards
+   * according to the specified view mode (weekly, monthly, yearly).
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - End date for the period calculation (inclusive)
+   *
+   * @returns {Promise<number>} Total number of PENDING payments during the period.
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Calculates period backwards from referenceDate based on viewMode
+   * - Counts only PENDING status payments
+   * - Returns 0 if no matching payments are found
+   */
+  async getTotalPendingPaymentsInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date,
+  ): Promise<number> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    return await this.getTotalPendingPaymentsInRangeTime(startDate, endDate);
+  }
+
+  /**
+   * Retrieves count of FAILED payments for a specific view mode period.
+   *
+   * This method counts payments with FAILED status from a reference date backwards
+   * according to the specified view mode (weekly, monthly, yearly).
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - End date for the period calculation (inclusive)
+   *
+   * @returns {Promise<number>} Total number of FAILED payments during the period.
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Calculates period backwards from referenceDate based on viewMode
+   * - Counts only FAILED status payments
+   * - Returns 0 if no matching payments are found
+   */
+  async getTotalFailedPaymentsInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date,
+  ): Promise<number> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    return await this.getTotalFailedPaymentsInRangeTime(startDate, endDate);
+  }
+
+  /**
+   * Retrieves count of REFUNDED payments for a specific view mode period.
+   *
+   * This method counts payments with REFUNDED status from a reference date backwards
+   * according to the specified view mode (weekly, monthly, yearly).
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - End date for the period calculation (inclusive)
+   *
+   * @returns {Promise<number>} Total number of REFUNDED payments during the period.
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Calculates period backwards from referenceDate based on viewMode
+   * - Counts only REFUNDED status payments
+   * - Returns 0 if no matching payments are found
+   */
+  async getTotalRefundedPaymentsInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date,
+  ): Promise<number> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    return await this.getTotalRefundedPaymentsInRangeTime(startDate, endDate);
+  }
+
+  /**
+   * Retrieves count of CANCELLED payments for a specific view mode period.
+   *
+   * This method counts payments with CANCELLED status from a reference date backwards
+   * according to the specified view mode (weekly, monthly, yearly).
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - End date for the period calculation (inclusive)
+   *
+   * @returns {Promise<number>} Total number of CANCELLED payments during the period.
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Calculates period backwards from referenceDate based on viewMode
+   * - Counts only CANCELLED status payments
+   * - Returns 0 if no matching payments are found
+   */
+  async getTotalCancelledPaymentsInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date,
+  ): Promise<number> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    return await this.getTotalCancelledPaymentsInRangeTime(startDate, endDate);
+  }
+
+  /**
    * Retrieves revenue metrics comparing current period with previous period for dashboard display.
    *
    * This method calculates and compares total revenue between the current period and previous
@@ -629,6 +950,7 @@ export class AnalyticsService {
    * for dashboard card visualization.
    *
    * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
    *
    * @returns {Promise<AnalyticsDashboardCardMetric<TotalRevenueInRangeTime>>} Dashboard card metrics containing:
    *   - currentPeriod: Revenue metrics for the current period
@@ -644,8 +966,9 @@ export class AnalyticsService {
    */
   async getTotalRevenueForDashboardCard(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
   ): Promise<AnalyticsDashboardCardMetric<TotalRevenueInRangeTime>> {
-    const referenceDateForCurrentPeriod = new Date();
+    const referenceDateForCurrentPeriod = referenceDate;
     const referenceDateForPreviousPeriod: Date =
       this.calculateStartTimeOfViewMode(
         viewMode,
@@ -686,6 +1009,7 @@ export class AnalyticsService {
    * analysis for dashboard card visualization.
    *
    * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
    *
    * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
    *   - currentPeriod: Total order count for the current period
@@ -701,8 +1025,9 @@ export class AnalyticsService {
    */
   async getTotalOrdersForDashboardCard(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
   ): Promise<AnalyticsDashboardCardMetric<number>> {
-    const referenceDateForCurrentPeriod: Date = new Date();
+    const referenceDateForCurrentPeriod: Date = referenceDate;
     const referenceDateForPreviousPeriod: Date =
       this.calculateStartTimeOfViewMode(
         viewMode,
@@ -742,6 +1067,7 @@ export class AnalyticsService {
    * change for dashboard card visualization.
    *
    * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
    *
    * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
    *   - currentPeriod: PAYMENT_CONFIRMED order count for the current period
@@ -757,8 +1083,9 @@ export class AnalyticsService {
    */
   async getTotalPaymentConfirmedOrdersForDashboardCard(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
   ): Promise<AnalyticsDashboardCardMetric<number>> {
-    const referenceDateForCurrentPeriod: Date = new Date();
+    const referenceDateForCurrentPeriod: Date = referenceDate;
     const referenceDateForPreviousPeriod: Date =
       this.calculateStartTimeOfViewMode(
         viewMode,
@@ -799,6 +1126,7 @@ export class AnalyticsService {
    * change for dashboard card visualization.
    *
    * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
    *
    * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
    *   - currentPeriod: CANCELLED order count for the current period
@@ -814,8 +1142,9 @@ export class AnalyticsService {
    */
   async getTotalCancelledOrdersForDashboardCard(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
   ): Promise<AnalyticsDashboardCardMetric<number>> {
-    const referenceDateForCurrentPeriod: Date = new Date();
+    const referenceDateForCurrentPeriod: Date = referenceDate;
     const referenceDateForPreviousPeriod: Date =
       this.calculateStartTimeOfViewMode(
         viewMode,
@@ -854,6 +1183,7 @@ export class AnalyticsService {
    * change for dashboard card visualization.
    *
    * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
    *
    * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
    *   - currentPeriod: RETURNED order count for the current period
@@ -869,8 +1199,9 @@ export class AnalyticsService {
    */
   async getTotalReturnedOrdersForDashboardCard(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
   ): Promise<AnalyticsDashboardCardMetric<number>> {
-    const referenceDateForCurrentPeriod: Date = new Date();
+    const referenceDateForCurrentPeriod: Date = referenceDate;
     const referenceDateForPreviousPeriod: Date =
       this.calculateStartTimeOfViewMode(
         viewMode,
@@ -908,6 +1239,7 @@ export class AnalyticsService {
    * change for dashboard card visualization.
    *
    * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
    *
    * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
    *   - currentPeriod: DELIVERED order count for the current period
@@ -923,8 +1255,9 @@ export class AnalyticsService {
    */
   async getTotalDeliveredOrdersForDashboardCard(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
   ): Promise<AnalyticsDashboardCardMetric<number>> {
-    const referenceDateForCurrentPeriod: Date = new Date();
+    const referenceDateForCurrentPeriod: Date = referenceDate;
     const referenceDateForPreviousPeriod: Date =
       this.calculateStartTimeOfViewMode(
         viewMode,
@@ -962,6 +1295,7 @@ export class AnalyticsService {
    * change for dashboard card visualization.
    *
    * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
    *
    * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
    *   - currentPeriod: DELIVERED_FAILED order count for the current period
@@ -977,8 +1311,9 @@ export class AnalyticsService {
    */
   async getTotalDeliveryFailedOrdersForDashboardCard(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
   ): Promise<AnalyticsDashboardCardMetric<number>> {
-    const referenceDateForCurrentPeriod: Date = new Date();
+    const referenceDateForCurrentPeriod: Date = referenceDate;
     const referenceDateForPreviousPeriod: Date =
       this.calculateStartTimeOfViewMode(
         viewMode,
@@ -1016,6 +1351,7 @@ export class AnalyticsService {
    * change for dashboard card visualization.
    *
    * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
    *
    * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
    *   - currentPeriod: COMPLETED order count for the current period
@@ -1031,8 +1367,9 @@ export class AnalyticsService {
    */
   async getTotalCompletedOrdersForDashboardCard(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
   ): Promise<AnalyticsDashboardCardMetric<number>> {
-    const referenceDateForCurrentPeriod: Date = new Date();
+    const referenceDateForCurrentPeriod: Date = referenceDate;
     const referenceDateForPreviousPeriod: Date =
       this.calculateStartTimeOfViewMode(
         viewMode,
@@ -1058,6 +1395,286 @@ export class AnalyticsService {
     return {
       currentPeriod: totalCompletedOrdersInCurrentPeriod,
       previousPeriod: totalCompletedOrdersInPreviousPeriod,
+      percentageChange: percentageChange,
+    };
+  }
+
+  /**
+   * Retrieves PAID payment count metrics comparing current vs previous period for dashboard.
+   *
+   * This method calculates and compares the count of payments with PAID status
+   * between the current and previous period based on the view mode, computing percentage
+   * change for dashboard card visualization.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
+   *
+   * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
+   *   - currentPeriod: PAID payment count for the current period
+   *   - previousPeriod: PAID payment count for the previous period
+   *   - percentageChange: Calculated percentage change from previous to current period
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Uses current date as reference date
+   * - Percentage change: ((current - previous) / previous) * 100
+   * - Returns 0% change if previous period count is 0
+   * - Useful for tracking successful payment trends
+   */
+  async getTotalPaidPaymentsForDashboardCard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<AnalyticsDashboardCardMetric<number>> {
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalPaidPaymentsInCurrentPeriod =
+      await this.getTotalPaidPaymentsInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalPaidPaymentsInPreviousPeriod =
+      await this.getTotalPaidPaymentsInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+    const percentageChange = totalPaidPaymentsInPreviousPeriod
+      ? ((totalPaidPaymentsInCurrentPeriod -
+          totalPaidPaymentsInPreviousPeriod) /
+          totalPaidPaymentsInPreviousPeriod) *
+        100
+      : 0;
+
+    return {
+      currentPeriod: totalPaidPaymentsInCurrentPeriod,
+      previousPeriod: totalPaidPaymentsInPreviousPeriod,
+      percentageChange: percentageChange,
+    };
+  }
+
+  /**
+   * Retrieves PENDING payment count metrics comparing current vs previous period for dashboard.
+   *
+   * This method calculates and compares the count of payments with PENDING status
+   * between the current and previous period based on the view mode, computing percentage
+   * change for dashboard card visualization.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
+   *
+   * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
+   *   - currentPeriod: PENDING payment count for the current period
+   *   - previousPeriod: PENDING payment count for the previous period
+   *   - percentageChange: Calculated percentage change from previous to current period
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Uses current date as reference date
+   * - Percentage change: ((current - previous) / previous) * 100
+   * - Returns 0% change if previous period count is 0
+   * - Useful for tracking pending payment backlog trends
+   */
+  async getTotalPendingPaymentsForDashboardCard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<AnalyticsDashboardCardMetric<number>> {
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalPendingPaymentsInCurrentPeriod =
+      await this.getTotalPendingPaymentsInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalPendingPaymentsInPreviousPeriod =
+      await this.getTotalPendingPaymentsInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+    const percentageChange = totalPendingPaymentsInPreviousPeriod
+      ? ((totalPendingPaymentsInCurrentPeriod -
+          totalPendingPaymentsInPreviousPeriod) /
+          totalPendingPaymentsInPreviousPeriod) *
+        100
+      : 0;
+
+    return {
+      currentPeriod: totalPendingPaymentsInCurrentPeriod,
+      previousPeriod: totalPendingPaymentsInPreviousPeriod,
+      percentageChange: percentageChange,
+    };
+  }
+
+  /**
+   * Retrieves FAILED payment count metrics comparing current vs previous period for dashboard.
+   *
+   * This method calculates and compares the count of payments with FAILED status
+   * between the current and previous period based on the view mode, computing percentage
+   * change for dashboard card visualization.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
+   *
+   * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
+   *   - currentPeriod: FAILED payment count for the current period
+   *   - previousPeriod: FAILED payment count for the previous period
+   *   - percentageChange: Calculated percentage change from previous to current period
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Uses current date as reference date
+   * - Percentage change: ((current - previous) / previous) * 100
+   * - Returns 0% change if previous period count is 0
+   * - Useful for monitoring payment failure trends
+   */
+  async getTotalFailedPaymentsForDashboardCard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<AnalyticsDashboardCardMetric<number>> {
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalFailedPaymentsInCurrentPeriod =
+      await this.getTotalFailedPaymentsInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalFailedPaymentsInPreviousPeriod =
+      await this.getTotalFailedPaymentsInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+    const percentageChange = totalFailedPaymentsInPreviousPeriod
+      ? ((totalFailedPaymentsInCurrentPeriod -
+          totalFailedPaymentsInPreviousPeriod) /
+          totalFailedPaymentsInPreviousPeriod) *
+        100
+      : 0;
+
+    return {
+      currentPeriod: totalFailedPaymentsInCurrentPeriod,
+      previousPeriod: totalFailedPaymentsInPreviousPeriod,
+      percentageChange: percentageChange,
+    };
+  }
+
+  /**
+   * Retrieves REFUNDED payment count metrics comparing current vs previous period for dashboard.
+   *
+   * This method calculates and compares the count of payments with REFUNDED status
+   * between the current and previous period based on the view mode, computing percentage
+   * change for dashboard card visualization.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
+   *
+   * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
+   *   - currentPeriod: REFUNDED payment count for the current period
+   *   - previousPeriod: REFUNDED payment count for the previous period
+   *   - percentageChange: Calculated percentage change from previous to current period
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Uses current date as reference date
+   * - Percentage change: ((current - previous) / previous) * 100
+   * - Returns 0% change if previous period count is 0
+   * - Useful for tracking refund activity trends
+   */
+  async getTotalRefundedPaymentsForDashboardCard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<AnalyticsDashboardCardMetric<number>> {
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalRefundedPaymentsInCurrentPeriod =
+      await this.getTotalRefundedPaymentsInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalRefundedPaymentsInPreviousPeriod =
+      await this.getTotalRefundedPaymentsInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+    const percentageChange = totalRefundedPaymentsInPreviousPeriod
+      ? ((totalRefundedPaymentsInCurrentPeriod -
+          totalRefundedPaymentsInPreviousPeriod) /
+          totalRefundedPaymentsInPreviousPeriod) *
+        100
+      : 0;
+
+    return {
+      currentPeriod: totalRefundedPaymentsInCurrentPeriod,
+      previousPeriod: totalRefundedPaymentsInPreviousPeriod,
+      percentageChange: percentageChange,
+    };
+  }
+
+  /**
+   * Retrieves CANCELLED payment count metrics comparing current vs previous period for dashboard.
+   *
+   * This method calculates and compares the count of payments with CANCELLED status
+   * between the current and previous period based on the view mode, computing percentage
+   * change for dashboard card visualization.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
+   *
+   * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
+   *   - currentPeriod: CANCELLED payment count for the current period
+   *   - previousPeriod: CANCELLED payment count for the previous period
+   *   - percentageChange: Calculated percentage change from previous to current period
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Uses current date as reference date
+   * - Percentage change: ((current - previous) / previous) * 100
+   * - Returns 0% change if previous period count is 0
+   * - Useful for tracking cancelled payment trends
+   */
+  async getTotalCancelledPaymentsForDashboardCard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<AnalyticsDashboardCardMetric<number>> {
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalCancelledPaymentsInCurrentPeriod =
+      await this.getTotalCancelledPaymentsInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalCancelledPaymentsInPreviousPeriod =
+      await this.getTotalCancelledPaymentsInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+    const percentageChange = totalCancelledPaymentsInPreviousPeriod
+      ? ((totalCancelledPaymentsInCurrentPeriod -
+          totalCancelledPaymentsInPreviousPeriod) /
+          totalCancelledPaymentsInPreviousPeriod) *
+        100
+      : 0;
+
+    return {
+      currentPeriod: totalCancelledPaymentsInCurrentPeriod,
+      previousPeriod: totalCancelledPaymentsInPreviousPeriod,
       percentageChange: percentageChange,
     };
   }
