@@ -43,6 +43,12 @@ enum RequestType {
     CUSTOMER_SUPPORT // general customer support request, It can anything that is not return or cancel request, such as inquiry about product, order, shipment, payment, etc.
 }
 
+enum AnalyticsViewMode {
+    WEEKLY // view analytics by week, with startDate and endDate defining the week range (e.g. startDate = 2024-01-01, endDate = 2024-01-07)
+    MONTHLY // view analytics by month, with startDate and endDate defining the month range (e.g. startDate = 2024-01-01, endDate = 2024-01-31)
+    YEARLY // view analytics by year, with startDate and endDate defining the year range (e.g. startDate = 2024-01-01, endDate = 2024-12-31)
+}
+
 // Order lifecycle: PENDING → PAYMENT_PROCESSING (VNPay) → PAYMENT_CONFIRMED (payment success) 
 // → WAITING_FOR_PICKUP (shipment created) → SHIPPED → DELIVERED → COMPLETED
 enum OrderStatus {
