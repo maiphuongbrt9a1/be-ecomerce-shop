@@ -2193,9 +2193,9 @@ export class OrdersService {
   }
 
   /**
-   * Scan and cancel expired VNPay orders on a 5-minute cron schedule.
+   * Scan and cancel expired VNPay orders on a 15-minute cron schedule.
    *
-   * Cron expression: '0 *\5 * * * *'.
+   * Cron expression: '0 *\15 * * * *'.
    *
    * This method performs the following operations:
    * 1. Searches payment records where method is VNPay, status is PENDING,
@@ -2212,7 +2212,7 @@ export class OrdersService {
    * - Outer try/catch handles unexpected failures for the whole cron execution.
    * - Server IP is passed into cancellation flow for VNPay-related auditing fields.
    */
-  @Cron('0 */5 * * * *')
+  @Cron('0 */15 * * * *')
   async handleCancelExpiredOrders() {
     this.logger.log('Scanning for expired orders...');
 

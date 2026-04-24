@@ -49,16 +49,17 @@ export class VouchersService {
   /**
    * Scans and disables vouchers that are no longer valid.
    *
-   * Runs every 6 minutes and disables vouchers that are either past validTo
+   * Runs every day at 6am and disables vouchers that are either past validTo
    * or have timesUsed greater than or equal to usageLimit.
    *
    * @remarks
-   * - The cron schedule runs every 6 minutes at second 0.
+   * - The cron schedule runs every day at 6am at second 0.
    * - The job only touches vouchers that are currently active.
    * - isOverUsageLimit is set to true only when the usage limit is exceeded.
    * - Date-expired vouchers are still disabled, but they do not get marked as over-usage.
    */
-  @Cron('0 */6 * * * *')
+  // @Cron('0 */6 * * * *') // run every 6 minutes for testing
+  @Cron('0 0 6 * * *')
   async handleCancelExpiredVouchers() {
     this.logger.log('Scanning for expired vouchers...');
 
@@ -204,7 +205,10 @@ export class VouchersService {
     userVouchers: { select: { userId: true, voucherStatus: true } },
   } as const;
 
-  async findAll(page: number, perPage: number): Promise<VoucherWithAllTargets[]> {
+  async findAll(
+    page: number,
+    perPage: number,
+  ): Promise<VoucherWithAllTargets[]> {
     try {
       const paginate = createPaginator({ perPage: perPage });
       const result = await paginate<
@@ -251,7 +255,11 @@ export class VouchersService {
         Prisma.VouchersFindManyArgs
       >(
         this.prismaService.vouchers,
-        { where, orderBy: { createdAt: 'desc' }, include: this.voucherTargetsInclude },
+        {
+          where,
+          orderBy: { createdAt: 'desc' },
+          include: this.voucherTargetsInclude,
+        },
         { page },
       );
 
