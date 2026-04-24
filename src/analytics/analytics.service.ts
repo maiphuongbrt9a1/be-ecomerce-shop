@@ -535,6 +535,7 @@ export class AnalyticsService {
   ): Promise<number> {
     const totalCustomers = await this.prismaService.user.count({
       where: {
+        // customer has least one order in current period
         orders: {
           some: {
             createdAt: {
@@ -563,27 +564,65 @@ export class AnalyticsService {
   ): Promise<number> {
     const totalNewCustomers = await this.prismaService.user.count({
       where: {
-        createdAt: {
-          gte: startDate,
-          lte: endDate,
-        },
-        orders: {
-          some: {
-            createdAt: {
-              gte: startDate,
-              lte: endDate,
-            },
-            status: {
-              in: [
-                OrderStatus.PAYMENT_CONFIRMED,
-                OrderStatus.WAITING_FOR_PICKUP,
-                OrderStatus.SHIPPED,
-                OrderStatus.DELIVERED,
-                OrderStatus.COMPLETED,
-              ],
+        AND: [
+          // defined as customers who created their account in the current period
+          // OR created their account before current period
+          // but have no orders before current period
+          {
+            OR: [
+              // Customer created their account in the current period
+              {
+                createdAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+              },
+              // Customer created their account before the current period
+              // but has no orders before the current period
+              {
+                createdAt: {
+                  lt: startDate,
+                },
+                orders: {
+                  none: {
+                    createdAt: {
+                      lt: startDate,
+                    },
+                    status: {
+                      in: [
+                        OrderStatus.PAYMENT_CONFIRMED,
+                        OrderStatus.WAITING_FOR_PICKUP,
+                        OrderStatus.SHIPPED,
+                        OrderStatus.DELIVERED,
+                        OrderStatus.COMPLETED,
+                      ],
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          // CUSTOMER has least one order in current period
+          {
+            orders: {
+              some: {
+                createdAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+                status: {
+                  in: [
+                    OrderStatus.PAYMENT_CONFIRMED,
+                    OrderStatus.WAITING_FOR_PICKUP,
+                    OrderStatus.SHIPPED,
+                    OrderStatus.DELIVERED,
+                    OrderStatus.COMPLETED,
+                  ],
+                },
+              },
             },
           },
-        },
+        ],
       },
     });
     return totalNewCustomers;
@@ -640,6 +679,16 @@ export class AnalyticsService {
     });
     return totalReturningCustomers;
   }
+
+  // async getCustomerRetentionRate(
+  //   startDate: Date,
+  //   endDate: Date,
+  // ): Promise<number> {
+  //   const totalReturingCustomersInRangeTime =
+  //     await this.getTotalReturningCustomersInRangeTime(startDate, endDate);
+
+  //   const referenceDateForPr;
+  // }
 
   /**
    * Retrieves aggregated revenue metrics for a specific view mode period.
