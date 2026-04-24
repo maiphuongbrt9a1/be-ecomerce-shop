@@ -1404,8 +1404,6 @@ export class OrdersService {
           where: { id: orderId },
           data: {
             status: OrderStatus.SHIPPED,
-            processByStaffId:
-              updateOrderFromWaitingForPickupToShippedDto.processByStaffId,
           },
           include: OrdersWithFullInformationInclude,
         });
@@ -1525,8 +1523,6 @@ export class OrdersService {
           where: { id: orderId },
           data: {
             status: OrderStatus.DELIVERED,
-            processByStaffId:
-              updateOrderFromShippedToDeliveredDto.processByStaffId,
           },
           include: OrdersWithFullInformationInclude,
         });
@@ -1690,8 +1686,6 @@ export class OrdersService {
           where: { id: orderId },
           data: {
             status: OrderStatus.DELIVERED_FAILED,
-            processByStaffId:
-              updateOrderFromShippedToDeliveryFailedDto.processByStaffId,
           },
           include: OrdersWithFullInformationInclude,
         });

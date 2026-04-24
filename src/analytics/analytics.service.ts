@@ -1,14 +1,28 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { TotalRevenueInRangeTime } from '@/helpers/types/analytics-total-revenue-in-range-time';
 import { AnalyticsDashboardCardMetric } from '@/helpers/types/analytics-dashboard-card-metric';
-import { Injectable, Logger } from '@nestjs/common';
-import { AnalyticsViewMode, OrderStatus, PaymentStatus } from '@prisma/client';
+import { AnalyticsTopRevenueUsers } from '@/helpers/types/analytics-top-revenue-users';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  AnalyticsViewMode,
+  OrderStatus,
+  PaymentStatus,
+  Prisma,
+  ProductVariants,
+} from '@prisma/client';
 import dayjs from 'dayjs';
+import { createPaginator } from 'prisma-pagination';
+import { ProductVariantsWithMediaInformation } from '@/helpers/types/types';
+import { AwsS3Service } from '@/aws-s3/aws-s3.service';
+import { formatMediaFieldWithLogging } from '@/helpers/utils';
 
 @Injectable()
 export class AnalyticsService {
   private readonly logger = new Logger(AnalyticsService.name);
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly awsService: AwsS3Service,
+  ) {}
 
   /**
    * Calculates the start date of a period based on view mode and reference date.
@@ -529,6 +543,23 @@ export class AnalyticsService {
     return totalCancelledPayments;
   }
 
+  /**
+   * Retrieves total count of customers with at least one qualified order in a time range.
+   *
+   * This method counts users who have at least one order created between startDate
+   * (inclusive) and endDate (inclusive), considering only revenue-qualified order statuses.
+   *
+   * @param {Date} startDate - Start boundary of the time range (inclusive)
+   * @param {Date} endDate - End boundary of the time range (inclusive)
+   *
+   * @returns {Promise<number>} Total number of customers active in the specified period.
+   *
+   * @remarks
+   * - Requires at least one order in the current period
+   * - Counts only orders with statuses: PAYMENT_CONFIRMED, WAITING_FOR_PICKUP, SHIPPED, DELIVERED, COMPLETED
+   * - Uses inclusive boundaries for both startDate and endDate
+   * - Returns 0 if no matching customers are found
+   */
   async getTotalCustomersInRangeTime(
     startDate: Date,
     endDate: Date,
@@ -558,6 +589,26 @@ export class AnalyticsService {
     return totalCustomers;
   }
 
+  /**
+   * Retrieves total count of new customers in a time range.
+   *
+   * New customers are defined as users who either created their account in the
+   * current period, or created it before the current period but had no qualified
+   * orders before startDate. In both cases, they must have at least one qualified
+   * order in the current period.
+   *
+   * @param {Date} startDate - Start boundary of the time range (inclusive)
+   * @param {Date} endDate - End boundary of the time range (inclusive)
+   *
+   * @returns {Promise<number>} Total number of new customers during the period.
+   *
+   * @remarks
+   * - New customer criteria combines account creation time and prior order history
+   * - Requires at least one order in the current period
+   * - Uses qualified statuses: PAYMENT_CONFIRMED, WAITING_FOR_PICKUP, SHIPPED, DELIVERED, COMPLETED
+   * - Uses inclusive boundaries for both startDate and endDate
+   * - Returns 0 if no matching customers are found
+   */
   async getTotalNewCustomersInRangeTime(
     startDate: Date,
     endDate: Date,
@@ -628,6 +679,23 @@ export class AnalyticsService {
     return totalNewCustomers;
   }
 
+  /**
+   * Retrieves total count of returning customers in a time range.
+   *
+   * Returning customers are users who have at least one qualified order in the
+   * current period and at least one qualified order before the current period.
+   *
+   * @param {Date} startDate - Start boundary of the current period (inclusive)
+   * @param {Date} endDate - End boundary of the current period (inclusive)
+   *
+   * @returns {Promise<number>} Total number of returning customers during the period.
+   *
+   * @remarks
+   * - Requires at least one order in current period and at least one order before startDate
+   * - Uses qualified statuses: PAYMENT_CONFIRMED, WAITING_FOR_PICKUP, SHIPPED, DELIVERED, COMPLETED
+   * - Uses inclusive boundaries for the current period
+   * - Returns 0 if no matching customers are found
+   */
   async getTotalReturningCustomersInRangeTime(
     startDate: Date,
     endDate: Date,
@@ -679,16 +747,6 @@ export class AnalyticsService {
     });
     return totalReturningCustomers;
   }
-
-  // async getCustomerRetentionRate(
-  //   startDate: Date,
-  //   endDate: Date,
-  // ): Promise<number> {
-  //   const totalReturingCustomersInRangeTime =
-  //     await this.getTotalReturningCustomersInRangeTime(startDate, endDate);
-
-  //   const referenceDateForPr;
-  // }
 
   /**
    * Retrieves aggregated revenue metrics for a specific view mode period.
@@ -1090,6 +1148,142 @@ export class AnalyticsService {
     );
 
     return await this.getTotalCancelledPaymentsInRangeTime(startDate, endDate);
+  }
+
+  /**
+   * Retrieves total count of customers for a specific view mode period.
+   *
+   * This method counts customers from a reference date backwards according to the
+   * specified view mode (weekly, monthly, yearly), using the calculated period
+   * boundaries derived from the reference date.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - End date for the period calculation (inclusive)
+   *
+   * @returns {Promise<number>} Total number of customers in the specified period.
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Calculates period backwards from referenceDate based on viewMode
+   * - Returns 0 if no matching customers are found
+   */
+  async getTotalCustomersInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date,
+  ): Promise<number> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    return await this.getTotalCustomersInRangeTime(startDate, endDate);
+  }
+
+  /**
+   * Retrieves count of new customers for a specific view mode period.
+   *
+   * This method counts customers classified as new from a reference date backwards
+   * according to the specified view mode (weekly, monthly, yearly).
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - End date for the period calculation (inclusive)
+   *
+   * @returns {Promise<number>} Total number of new customers during the period.
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Calculates period backwards from referenceDate based on viewMode
+   * - Returns 0 if no matching new customers are found
+   */
+  async getTotalNewCustomersInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date,
+  ): Promise<number> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    return await this.getTotalNewCustomersInRangeTime(startDate, endDate);
+  }
+
+  /**
+   * Retrieves count of returning customers for a specific view mode period.
+   *
+   * This method counts customers classified as returning from a reference date
+   * backwards according to the specified view mode (weekly, monthly, yearly).
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - End date for the period calculation (inclusive)
+   *
+   * @returns {Promise<number>} Total number of returning customers during the period.
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Calculates period backwards from referenceDate based on viewMode
+   * - Returns 0 if no matching returning customers are found
+   */
+  async getTotalReturningCustomersInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date,
+  ): Promise<number> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    return await this.getTotalReturningCustomersInRangeTime(startDate, endDate);
+  }
+
+  /**
+   * Calculates customer retention rate for a specific view mode period.
+   *
+   * Retention rate is computed by dividing the number of returning customers in the
+   * current period by total customers in the previous period, then multiplying by 100.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - End date for the current period calculation (inclusive)
+   *
+   * @returns {Promise<number>} Customer retention rate percentage for the selected period.
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Returning customers: at least one order in current period and at least one order before it
+   * - Previous period end date is derived from current period start date
+   * - Formula: (returningCustomersCurrentPeriod / totalCustomersPreviousPeriod) * 100
+   * - Returns 0 when total customers in previous period is 0
+   */
+  async getCustomerRetentionRateByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date,
+  ): Promise<number> {
+    // returning customers are customers who have at least one order in the current period
+    // and have at least one order before the current period
+    const totalReturningCustomersInCurrentPeriod =
+      await this.getTotalReturningCustomersInRangeTimeByViewMode(
+        viewMode,
+        referenceDate,
+      );
+
+    // end date of previous period is the start date of current period
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(viewMode, referenceDate);
+
+    // total customer in previous period
+    const totalCustomersInPreviousPeriod =
+      await this.getTotalCustomersInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+
+    return totalCustomersInPreviousPeriod > 0
+      ? (totalReturningCustomersInCurrentPeriod /
+          totalCustomersInPreviousPeriod) *
+          100
+      : 0;
   }
 
   /**
@@ -1827,5 +2021,493 @@ export class AnalyticsService {
       previousPeriod: totalCancelledPaymentsInPreviousPeriod,
       percentageChange: percentageChange,
     };
+  }
+
+  /**
+   * Retrieves customer count metrics comparing current vs previous period for dashboard.
+   *
+   * This method calculates and compares the total number of customers between the
+   * current and previous period based on the selected view mode, then computes
+   * percentage change for dashboard card visualization.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
+   *
+   * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
+   *   - currentPeriod: Total customer count for the current period
+   *   - previousPeriod: Total customer count for the previous period
+   *   - percentageChange: Calculated percentage change from previous to current period
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Uses current date as reference date
+   * - Percentage change formula: ((current - previous) / previous) * 100
+   * - Returns 0% change if previous period count is 0
+   */
+  async getTotalCustomersForDashboardCard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<AnalyticsDashboardCardMetric<number>> {
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalCustomersInCurrentPeriod =
+      await this.getTotalCustomersInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalCustomersInPreviousPeriod =
+      await this.getTotalCustomersInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+    const percentageChange = totalCustomersInPreviousPeriod
+      ? ((totalCustomersInCurrentPeriod - totalCustomersInPreviousPeriod) /
+          totalCustomersInPreviousPeriod) *
+        100
+      : 0;
+
+    return {
+      currentPeriod: totalCustomersInCurrentPeriod,
+      previousPeriod: totalCustomersInPreviousPeriod,
+      percentageChange: percentageChange,
+    };
+  }
+
+  /**
+   * Retrieves new-customer metrics comparing current vs previous period for dashboard.
+   *
+   * This method calculates and compares the number of new customers between the
+   * current and previous period based on the selected view mode, then computes
+   * percentage change for dashboard card visualization.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
+   *
+   * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
+   *   - currentPeriod: New-customer count for the current period
+   *   - previousPeriod: New-customer count for the previous period
+   *   - percentageChange: Calculated percentage change from previous to current period
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Uses current date as reference date
+   * - Percentage change formula: ((current - previous) / previous) * 100
+   * - Returns 0% change if previous period count is 0
+   */
+  async getTotalNewCustomersForDashboardCard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<AnalyticsDashboardCardMetric<number>> {
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalNewCustomersInCurrentPeriod =
+      await this.getTotalNewCustomersInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalNewCustomersInPreviousPeriod =
+      await this.getTotalNewCustomersInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+    const percentageChange = totalNewCustomersInPreviousPeriod
+      ? ((totalNewCustomersInCurrentPeriod -
+          totalNewCustomersInPreviousPeriod) /
+          totalNewCustomersInPreviousPeriod) *
+        100
+      : 0;
+
+    return {
+      currentPeriod: totalNewCustomersInCurrentPeriod,
+      previousPeriod: totalNewCustomersInPreviousPeriod,
+      percentageChange: percentageChange,
+    };
+  }
+
+  /**
+   * Retrieves returning-customer metrics comparing current vs previous period for dashboard.
+   *
+   * This method calculates and compares the number of returning customers between
+   * the current and previous period based on the selected view mode, then computes
+   * percentage change for dashboard card visualization.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
+   *
+   * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
+   *   - currentPeriod: Returning-customer count for the current period
+   *   - previousPeriod: Returning-customer count for the previous period
+   *   - percentageChange: Calculated percentage change from previous to current period
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Uses current date as reference date
+   * - Percentage change formula: ((current - previous) / previous) * 100
+   * - Returns 0% change if previous period count is 0
+   */
+  async getTotalReturningCustomersForDashboardCard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<AnalyticsDashboardCardMetric<number>> {
+    // Implementation for getting total returning customers for dashboard card
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(viewMode, referenceDate);
+
+    const totalReturningCustomersInCurrentPeriod =
+      await this.getTotalReturningCustomersInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const totalReturningCustomersInPreviousPeriod =
+      await this.getTotalReturningCustomersInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+    const percentageChange = totalReturningCustomersInPreviousPeriod
+      ? ((totalReturningCustomersInCurrentPeriod -
+          totalReturningCustomersInPreviousPeriod) /
+          totalReturningCustomersInPreviousPeriod) *
+        100
+      : 0;
+
+    return {
+      currentPeriod: totalReturningCustomersInCurrentPeriod,
+      previousPeriod: totalReturningCustomersInPreviousPeriod,
+      percentageChange: percentageChange,
+    };
+  }
+
+  /**
+   * Retrieves customer-retention-rate metrics comparing current vs previous period for dashboard.
+   *
+   * This method calculates and compares customer retention rate percentages between
+   * the current and previous period based on the selected view mode, then computes
+   * percentage change for dashboard card visualization.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - Reference date for period calculation (defaults to current date if not provided)
+   *
+   * @returns {Promise<AnalyticsDashboardCardMetric<number>>} Dashboard card metrics containing:
+   *   - currentPeriod: Retention rate percentage for the current period
+   *   - previousPeriod: Retention rate percentage for the previous period
+   *   - percentageChange: Calculated percentage change from previous to current period
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Uses current date as reference date
+   * - Percentage change formula: ((current - previous) / previous) * 100
+   * - Returns 0% change if previous period retention rate is 0
+   */
+  async getCustomerRetentionRateForDashboardCard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<AnalyticsDashboardCardMetric<number>> {
+    // Implementation for getting customer retention rate for dashboard card
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(viewMode, referenceDate);
+    const retentionRateInCurrentPeriod =
+      await this.getCustomerRetentionRateByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const retentionRateInPreviousPeriod =
+      await this.getCustomerRetentionRateByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+    const percentageChange = retentionRateInPreviousPeriod
+      ? ((retentionRateInCurrentPeriod - retentionRateInPreviousPeriod) /
+          retentionRateInPreviousPeriod) *
+        100
+      : 0;
+
+    return {
+      currentPeriod: retentionRateInCurrentPeriod,
+      previousPeriod: retentionRateInPreviousPeriod,
+      percentageChange: percentageChange,
+    };
+  }
+
+  async getProductVariantsTopSellingForDashboardCard(
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<ProductVariants[] | []> {
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const productVariantList = await paginate<
+        ProductVariantsWithMediaInformation,
+        Prisma.ProductVariantsFindManyArgs
+      >(
+        this.prismaService.productVariants,
+        {
+          include: {
+            media: true,
+            product: true,
+          },
+          orderBy: { soldQuantity: 'desc' },
+        },
+        { page: page },
+      );
+
+      // generate full http url for media files
+      for (let i = 0; i < productVariantList.data.length; i++) {
+        const productVariant = productVariantList.data[i];
+        productVariant.media = formatMediaFieldWithLogging(
+          productVariant.media,
+          (url: string) => this.awsService.buildPublicMediaUrl(url),
+          'product variant',
+          productVariant.id,
+          this.logger,
+        );
+      }
+
+      this.logger.log(
+        `Retrieved ${productVariantList.data.length} product variants successfully`,
+      );
+      return productVariantList.data;
+    } catch (error) {
+      this.logger.error('Error retrieving product variants: ' + error);
+      throw new NotFoundException('Failed to retrieve product variants');
+    }
+  }
+
+  /**
+   * Retrieves users ranked by total revenue generated from their orders.
+   *
+   * This method aggregates order data by user to calculate total revenue and order count,
+   * then returns a paginated list of top-performing users ranked by total revenue in descending order.
+   * Only includes users with confirmed orders (status: PAYMENT_CONFIRMED, WAITING_FOR_PICKUP, SHIPPED, DELIVERED, or COMPLETED).
+   *
+   * @param {number} page - Page number for pagination (defaults to 1)
+   * @param {number} perPage - Number of users to return per page (defaults to 10)
+   *
+   * @returns {Promise<Array<{ userName: string; totalOrdersNumber: number; totalRevenue: number }>>}
+   * Returns array of user revenue objects containing:
+   *   - userName: User's full name (firstName + lastName concatenation)
+   *   - totalOrdersNumber: Count of orders placed by the user
+   *   - totalRevenue: Sum of totalAmount from all user orders
+   *
+   * @remarks
+   * - Uses pagination to limit results (e.g., page=1, perPage=10 returns first 10 users)
+   * - Orders results by totalRevenue in descending order
+   * - Filters orders by confirmed payment statuses to ensure accurate revenue calculation
+   * - If user has no firstName/lastName, returns empty string for that field
+   * - Returns empty array if no users found
+   *
+   * @example
+   * // Get top 10 revenue-generating users
+   * const topUsers = await analyticsService.getTopRevenueUsersForDashboardCard(1, 10);
+   * // Returns: [
+   * //   { userName: 'John Doe', totalOrdersNumber: 15, totalRevenue: 5000000 },
+   * //   { userName: 'Jane Smith', totalOrdersNumber: 12, totalRevenue: 4500000 }
+   * // ]
+   */
+  async getTopRevenueUsersForDashboardCard(
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<AnalyticsTopRevenueUsers> {
+    try {
+      const skip = (page - 1) * perPage;
+
+      // Aggregate orders by userId to get revenue and order count
+      const userOrderAggregates = await this.prismaService.orders.groupBy({
+        by: ['userId'],
+        where: {
+          status: {
+            in: [
+              OrderStatus.PAYMENT_CONFIRMED,
+              OrderStatus.WAITING_FOR_PICKUP,
+              OrderStatus.SHIPPED,
+              OrderStatus.DELIVERED,
+              OrderStatus.COMPLETED,
+            ],
+          },
+        },
+        _sum: {
+          totalAmount: true,
+        },
+        _count: true,
+        orderBy: {
+          _sum: {
+            totalAmount: 'desc',
+          },
+        },
+        skip: skip,
+        take: perPage,
+      });
+
+      // If no users found, return empty array
+      if (userOrderAggregates.length === 0) {
+        this.logger.log('No users found with orders');
+        return [];
+      }
+
+      // Extract user IDs to fetch user details
+      const userIds = userOrderAggregates.map((agg) => agg.userId);
+
+      // Fetch user details
+      const users = await this.prismaService.user.findMany({
+        where: {
+          id: { in: userIds },
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      });
+
+      // Map user IDs to user objects for easy lookup
+      const userMap = new Map(users.map((user) => [user.id, user]));
+
+      // Combine aggregated order data with user details and format response
+      const topRevenueUsers = userOrderAggregates.map((aggregate) => {
+        const user = userMap.get(aggregate.userId);
+        const firstName = user?.firstName || '';
+        const lastName = user?.lastName || '';
+        const userName = `${firstName} ${lastName}`.trim();
+
+        return {
+          userName: userName,
+          totalOrdersNumber: aggregate._count,
+          totalRevenue: aggregate._sum.totalAmount || 0,
+        };
+      });
+
+      this.logger.log(
+        `Retrieved ${topRevenueUsers.length} top revenue users successfully`,
+      );
+      return topRevenueUsers;
+    } catch (error) {
+      this.logger.error('Error retrieving top revenue users: ' + error);
+      throw new NotFoundException('Failed to retrieve top revenue users');
+    }
+  }
+
+  /**
+   * Retrieves staff ranked by total revenue from processed orders.
+   *
+   * This method aggregates orders by staff processor ID, calculates total revenue
+   * and total processed-order count for each staff member, then returns a paginated
+   * ranking sorted by revenue in descending order.
+   *
+   * @param {number} page - Page number for pagination (defaults to 1)
+   * @param {number} perPage - Number of staff records per page (defaults to 10)
+   *
+   * @returns {Promise<AnalyticsTopRevenueUsers>} A list of ranked staff entries containing:
+   *   - userName: Staff full name (firstName + lastName)
+   *   - totalOrdersNumber: Number of qualified orders processed by the staff
+   *   - totalRevenue: Sum of totalAmount from those orders
+   *
+   * @remarks
+   * - Includes only orders that have a non-null processByStaffId
+   * - Uses qualified statuses: PAYMENT_CONFIRMED, WAITING_FOR_PICKUP, SHIPPED, DELIVERED, COMPLETED
+   * - Results are ordered by total revenue in descending order
+   * - Returns an empty array when no matching staff/order aggregates exist
+   * - Name fields may be empty when staff profile names are missing
+   *
+   * @throws {NotFoundException} Thrown when the staff revenue query fails.
+   */
+  async getTopRevenueStaffsForDashboardCard(
+    page: number = 1,
+    perPage: number = 10,
+  ): Promise<AnalyticsTopRevenueUsers> {
+    try {
+      const skip = (page - 1) * perPage;
+
+      // Aggregate orders by userId to get revenue and order count
+      const staffOrderAggregates = await this.prismaService.orders.groupBy({
+        by: ['processByStaffId'],
+        where: {
+          processByStaffId: { not: null },
+          status: {
+            in: [
+              OrderStatus.PAYMENT_CONFIRMED,
+              OrderStatus.WAITING_FOR_PICKUP,
+              OrderStatus.SHIPPED,
+              OrderStatus.DELIVERED,
+              OrderStatus.COMPLETED,
+            ],
+          },
+        },
+        _sum: {
+          totalAmount: true,
+        },
+        _count: true,
+        orderBy: {
+          _sum: {
+            totalAmount: 'desc',
+          },
+        },
+        skip: skip,
+        take: perPage,
+      });
+
+      // If no staff found, return empty array
+      if (staffOrderAggregates.length === 0) {
+        this.logger.log('No staff found with orders');
+        return [];
+      }
+
+      // Extract staff IDs to fetch staff details
+      const staffIds: bigint[] = [];
+      for (const agg of staffOrderAggregates) {
+        if (agg.processByStaffId) {
+          staffIds.push(agg.processByStaffId);
+        }
+      }
+
+      // Fetch staff details
+      const staffs = await this.prismaService.user.findMany({
+        where: {
+          id: { in: staffIds },
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+      });
+
+      // Map staff IDs to staff objects for easy lookup
+      const staffMap = new Map(staffs.map((staff) => [staff.id, staff]));
+
+      // Combine aggregated order data with staff details and format response
+      const topRevenueStaffs: AnalyticsTopRevenueUsers = [];
+
+      for (const aggregate of staffOrderAggregates) {
+        if (aggregate.processByStaffId) {
+          const staff = staffMap.get(aggregate.processByStaffId);
+          const firstName = staff?.firstName || '';
+          const lastName = staff?.lastName || '';
+          const userName = `${firstName} ${lastName}`.trim();
+
+          topRevenueStaffs.push({
+            userName: userName,
+            totalOrdersNumber: aggregate._count,
+            totalRevenue: aggregate._sum.totalAmount || 0,
+          });
+        }
+      }
+
+      this.logger.log(
+        `Retrieved ${topRevenueStaffs.length} top revenue staff successfully`,
+      );
+
+      return topRevenueStaffs;
+    } catch (error) {
+      this.logger.error('Error retrieving top revenue staff: ' + error);
+      throw new NotFoundException('Failed to retrieve top revenue staff');
+    }
   }
 }
