@@ -2277,6 +2277,70 @@ export class OrdersService {
     }
   }
 
+  async getMyReviewsForOrder(orderId: number, userId: bigint) {
+    const order = await this.prismaService.orders.findFirst({
+      where: { id: orderId, userId: userId },
+      include: { orderItems: { select: { productVariantId: true } } },
+    });
+
+    if (!order) {
+      throw new NotFoundException(
+        `Order with ID ${orderId} not found for this user`,
+      );
+    }
+
+    const variantIds = order.orderItems.map((i) => i.productVariantId);
+    if (variantIds.length === 0) return [];
+
+    return await this.prismaService.reviews.findMany({
+      where: {
+        userId: userId,
+        productVariantId: { in: variantIds },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async userConfirmReceived(
+    orderId: number,
+    userId: bigint,
+  ): Promise<OrdersWithFullInformation> {
+    const order = await this.prismaService.orders.findFirst({
+      where: { id: orderId, userId: userId },
+      include: OrdersWithFullInformationInclude,
+    });
+
+    if (!order) {
+      throw new NotFoundException(
+        `Order with ID ${orderId} not found for this user`,
+      );
+    }
+
+    if (order.status !== OrderStatus.DELIVERED) {
+      throw new BadRequestException(
+        `Order ${orderId} cannot be confirmed — current status is ${order.status}, expected DELIVERED`,
+      );
+    }
+
+    const updated = await this.prismaService.orders.update({
+      where: { id: orderId },
+      data: { status: OrderStatus.COMPLETED },
+      include: OrdersWithFullInformationInclude,
+    });
+
+    await this.sendPersonalNotificationSafely(
+      userId,
+      'Đơn hàng hoàn thành',
+      `Đơn hàng #${orderId} của bạn đã được xác nhận hoàn thành.`,
+    );
+
+    this.logger.log(
+      `User ${userId} confirmed order ${orderId} as received (DELIVERED → COMPLETED)`,
+    );
+
+    return updated;
+  }
+
   /**
    * Auto-confirms delivered orders to completed status on a daily schedule.
    *
@@ -2965,6 +3029,61 @@ export class OrdersService {
       );
       throw new BadRequestException(
         'Failed to fetch all orders with detail information',
+      );
+    }
+  }
+
+  /**
+   * Retrieves paginated orders that currently have an unresolved return request
+   * (PENDING or IN_PROGRESS). Used by the admin orders page "Yêu cầu trả hàng"
+   * filter tab so staff can find and review pending returns without navigating
+   * to a separate page.
+   */
+  async getOrdersWithPendingReturnRequestOfShop(
+    page: number,
+    perPage: number,
+  ): Promise<OrdersWithFullInformation[] | []> {
+    try {
+      const paginate = createPaginator({ perPage: perPage });
+      const result = await paginate<
+        OrdersWithFullInformation,
+        Prisma.OrdersFindManyArgs
+      >(
+        this.prismaService.orders,
+        {
+          include: OrdersWithFullInformationInclude,
+          orderBy: { createdAt: 'desc' },
+          where: {
+            requests: {
+              some: {
+                subject: RequestType.RETURN_REQUEST,
+                status: {
+                  in: [RequestStatus.PENDING, RequestStatus.IN_PROGRESS],
+                },
+              },
+            },
+          },
+        },
+        { page: page },
+      );
+
+      result.data = formatMediaFieldWithLoggingForOrders(
+        result.data,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        this.logger,
+      );
+
+      this.logger.log(
+        `Fetched orders with pending return requests - Page: ${page}, Per Page: ${perPage}`,
+      );
+      return result.data;
+    } catch (error) {
+      this.logger.error(
+        'Failed to fetch orders with pending return requests: ',
+        error,
+      );
+      throw new BadRequestException(
+        'Failed to fetch orders with pending return requests',
       );
     }
   }

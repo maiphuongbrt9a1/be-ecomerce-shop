@@ -8,7 +8,9 @@ import {
   Query,
   UseGuards,
   Post,
+  Req,
 } from '@nestjs/common';
+import type { RequestWithUser } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 import { OrdersService } from './orders.service';
 import {
   UpdateOrderDto,
@@ -448,6 +450,44 @@ export class OrdersController {
     );
   }
 
+  @ApiOperation({
+    summary: 'Get all shop orders with a PENDING or IN_PROGRESS return request',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Retrieved orders that currently have an unresolved return request awaiting staff review',
+    type: [OrderFullInformationEntity],
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    example: 1,
+    description: 'Page number (starts from 1)',
+  })
+  @ApiQuery({
+    name: 'perPage',
+    required: false,
+    type: Number,
+    example: 10,
+    description: 'Number of items per page',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/shop/pending-return-request-list')
+  async getOrdersWithPendingReturnRequestOfShop(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return await this.ordersService.getOrdersWithPendingReturnRequestOfShop(
+      Number(page),
+      Number(perPage),
+    );
+  }
+
   @ApiOperation({ summary: 'Get one order' })
   @ApiResponse({
     status: 200,
@@ -614,6 +654,35 @@ export class OrdersController {
       +id,
       updateOrderFromShippedToDeliveryFailedDto,
     );
+  }
+
+  @ApiOperation({ summary: 'Get reviews by current user for items in this order' })
+  @ApiResponse({ status: 200, description: 'List of reviews by current user for variants in this order' })
+  @ApiResponse({ status: 404, description: 'Order not found for this user' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER')
+  @Get('/:id/my-reviews')
+  async getMyReviewsForOrder(
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ) {
+    return await this.ordersService.getMyReviewsForOrder(+id, req.user.id);
+  }
+
+  @ApiOperation({ summary: 'User confirms order received (DELIVERED → COMPLETED)' })
+  @ApiResponse({ status: 200, description: 'Order confirmed as completed', type: OrderFullInformationEntity })
+  @ApiResponse({ status: 400, description: 'Order is not in DELIVERED status' })
+  @ApiResponse({ status: 404, description: 'Order not found for this user' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER')
+  @Patch('/:id/user-confirm-received')
+  async userConfirmReceived(
+    @Param('id') id: string,
+    @Req() req: RequestWithUser,
+  ) {
+    return await this.ordersService.userConfirmReceived(+id, req.user.id);
   }
 
   @ApiOperation({ summary: 'Cancel one order with full rollback of resources' })
