@@ -535,9 +535,110 @@ export class AnalyticsService {
   ): Promise<number> {
     const totalCustomers = await this.prismaService.user.count({
       where: {
-        createdAt: {},
+        orders: {
+          some: {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+            status: {
+              in: [
+                OrderStatus.PAYMENT_CONFIRMED,
+                OrderStatus.WAITING_FOR_PICKUP,
+                OrderStatus.SHIPPED,
+                OrderStatus.DELIVERED,
+                OrderStatus.COMPLETED,
+              ],
+            },
+          },
+        },
       },
     });
+    return totalCustomers;
+  }
+
+  async getTotalNewCustomersInRangeTime(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
+    const totalNewCustomers = await this.prismaService.user.count({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+        orders: {
+          some: {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+            status: {
+              in: [
+                OrderStatus.PAYMENT_CONFIRMED,
+                OrderStatus.WAITING_FOR_PICKUP,
+                OrderStatus.SHIPPED,
+                OrderStatus.DELIVERED,
+                OrderStatus.COMPLETED,
+              ],
+            },
+          },
+        },
+      },
+    });
+    return totalNewCustomers;
+  }
+
+  async getTotalReturningCustomersInRangeTime(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
+    const totalReturningCustomers = await this.prismaService.user.count({
+      where: {
+        AND: [
+          // Customer has at least one order in the current period
+          {
+            orders: {
+              some: {
+                createdAt: {
+                  gte: startDate,
+                  lte: endDate,
+                },
+                status: {
+                  in: [
+                    OrderStatus.PAYMENT_CONFIRMED,
+                    OrderStatus.WAITING_FOR_PICKUP,
+                    OrderStatus.SHIPPED,
+                    OrderStatus.DELIVERED,
+                    OrderStatus.COMPLETED,
+                  ],
+                },
+              },
+            },
+          },
+          // Customer has at least one order before the current period
+          {
+            orders: {
+              some: {
+                createdAt: {
+                  lt: startDate,
+                },
+                status: {
+                  in: [
+                    OrderStatus.PAYMENT_CONFIRMED,
+                    OrderStatus.WAITING_FOR_PICKUP,
+                    OrderStatus.SHIPPED,
+                    OrderStatus.DELIVERED,
+                    OrderStatus.COMPLETED,
+                  ],
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+    return totalReturningCustomers;
   }
 
   /**
