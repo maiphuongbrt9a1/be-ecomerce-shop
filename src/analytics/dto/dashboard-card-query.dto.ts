@@ -14,7 +14,7 @@ export class DashboardCardQueryDto {
   viewMode?: AnalyticsViewMode;
 
   @ApiPropertyOptional({
-    example: '2026-04-24T00:00:00.000Z',
+    example: new Date().toISOString(),
     description:
       'Reference date for period calculation. Defaults to current date when omitted.',
   })

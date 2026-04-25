@@ -2,6 +2,9 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { TotalRevenueInRangeTime } from '@/helpers/types/analytics-total-revenue-in-range-time';
 import { AnalyticsDashboardCardMetric } from '@/helpers/types/analytics-dashboard-card-metric';
 import { AnalyticsTopRevenueUsers } from '@/helpers/types/analytics-top-revenue-users';
+import { RevenueChartData } from '@/helpers/types/analytics-revenue-chart-data';
+import { CustomerChartData } from '@/helpers/types/analytics-customer-chart-data';
+import { SoldProductVariantChartData } from '@/helpers/types/analytics-sold-product-variant-chart-data';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
   AnalyticsViewMode,
@@ -15,6 +18,7 @@ import { createPaginator } from 'prisma-pagination';
 import { ProductVariantsWithMediaInformation } from '@/helpers/types/types';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { formatMediaFieldWithLogging } from '@/helpers/utils';
+import { AnalyticsReportChartDataInPrimaryDashboard } from '@/helpers/types/analytics-report-chart-data-in-primary-dashboard';
 
 @Injectable()
 export class AnalyticsService {
@@ -54,17 +58,17 @@ export class AnalyticsService {
     referenceDate: Date,
   ): Date {
     const endDate: Date = dayjs(referenceDate).toDate();
-    let startDate: Date = dayjs(referenceDate).toDate();
+    let startDate: Date = dayjs(referenceDate).startOf('day').toDate();
 
     switch (viewMode) {
       case AnalyticsViewMode.WEEKLY:
-        startDate = dayjs(endDate).subtract(7, 'day').toDate();
+        startDate = dayjs(endDate).subtract(7, 'day').startOf('day').toDate();
         break;
       case AnalyticsViewMode.MONTHLY:
-        startDate = dayjs(endDate).subtract(1, 'month').toDate();
+        startDate = dayjs(endDate).subtract(1, 'month').startOf('day').toDate();
         break;
       case AnalyticsViewMode.YEARLY:
-        startDate = dayjs(endDate).subtract(1, 'year').toDate();
+        startDate = dayjs(endDate).subtract(1, 'year').startOf('day').toDate();
         break;
       default:
         this.logger.error(`Invalid view mode`);
@@ -749,6 +753,106 @@ export class AnalyticsService {
   }
 
   /**
+   * Retrieves total sold quantity of product variants within a time range.
+   *
+   * This method sums `orderItems.quantity` for order items whose parent orders
+   * were created within the provided date range and have revenue-qualified statuses.
+   *
+   * @param {Date} startDate - Start boundary of the time range (inclusive)
+   * @param {Date} endDate - End boundary of the time range (inclusive)
+   *
+   * @returns {Promise<number>} Total sold quantity of product variants in the range.
+   *
+   * @remarks
+   * - Uses order-level filter by `createdAt` and status
+   * - Qualified statuses: PAYMENT_CONFIRMED, WAITING_FOR_PICKUP, SHIPPED, DELIVERED, COMPLETED
+   * - Returns 0 when aggregate sum is null
+   */
+  async getTotalSoldProductVariantsInRangeTime(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
+    const totalSoldProductVariants =
+      await this.prismaService.orderItems.aggregate({
+        where: {
+          order: {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+            status: {
+              in: [
+                OrderStatus.PAYMENT_CONFIRMED,
+                OrderStatus.WAITING_FOR_PICKUP,
+                OrderStatus.SHIPPED,
+                OrderStatus.DELIVERED,
+                OrderStatus.COMPLETED,
+              ],
+            },
+          },
+        },
+        _sum: {
+          quantity: true,
+        },
+      });
+    return totalSoldProductVariants._sum.quantity
+      ? totalSoldProductVariants._sum.quantity
+      : 0;
+  }
+
+  /**
+   * Retrieves total in-stock units across all product variants.
+   *
+   * This method sums the `stock` field of all product variants to produce
+   * the current total inventory units available in the catalog.
+   *
+   * @returns {Promise<number>} Total number of in-stock units.
+   *
+   * @remarks
+   * - Aggregates stock from all product variants
+   * - Returns 0 when aggregate sum is null
+   */
+  async getTotalInStockProductVariants(): Promise<number> {
+    const totalInStockProductVariants =
+      await this.prismaService.productVariants.aggregate({
+        _sum: {
+          stock: true,
+        },
+      });
+    return totalInStockProductVariants._sum.stock
+      ? totalInStockProductVariants._sum.stock
+      : 0;
+  }
+
+  /**
+   * Retrieves total count of out-of-stock product variants.
+   *
+   * This method counts product variants where `stock` is less than or equal to 0.
+   *
+   * @returns {Promise<number>} Number of out-of-stock product variants.
+   *
+   * @remarks
+   * - Uses less-than-or-equal stock filter: `stock <= 0`
+   * - Returns 0 when aggregate count is null
+   */
+  async getTotalOutOfStockProductVariants(): Promise<number> {
+    const totalOutOfStockProductVariants =
+      await this.prismaService.productVariants.aggregate({
+        where: {
+          stock: {
+            lte: 0,
+          },
+        },
+        _count: {
+          id: true,
+        },
+      });
+    return totalOutOfStockProductVariants._count.id
+      ? totalOutOfStockProductVariants._count.id
+      : 0;
+  }
+
+  /**
    * Retrieves aggregated revenue metrics for a specific view mode period.
    *
    * This method calculates revenue analytics from a reference date backwards according to
@@ -1284,6 +1388,39 @@ export class AnalyticsService {
           totalCustomersInPreviousPeriod) *
           100
       : 0;
+  }
+
+  /**
+   * Retrieves total sold quantity of product variants for a specific view mode period.
+   *
+   * This method calculates a date range from the provided view mode and reference date,
+   * then delegates to the range-based sold-product-variant query to get the total sold quantity.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY (7 days), MONTHLY (1 month), or YEARLY (1 year)
+   * @param {Date} referenceDate - End date for the period calculation (inclusive)
+   *
+   * @returns {Promise<number>} Total sold quantity of product variants in the selected period.
+   *
+   * @remarks
+   * - Defaults to WEEKLY mode if viewMode is not specified
+   * - Calculates period backwards from referenceDate based on viewMode
+   * - Includes only revenue-qualified order statuses
+   * - Returns 0 if no matching sold quantity is found
+   */
+  async getTotalSoldProductVariantsInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date,
+  ): Promise<number> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    return await this.getTotalSoldProductVariantsInRangeTime(
+      startDate,
+      endDate,
+    );
   }
 
   /**
@@ -2509,5 +2646,168 @@ export class AnalyticsService {
       this.logger.error('Error retrieving top revenue staff: ' + error);
       throw new NotFoundException('Failed to retrieve top revenue staff');
     }
+  }
+
+  async getRevenueDataForChartInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<RevenueChartData> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    const result: RevenueChartData = await this.prismaService
+      .$queryRaw<RevenueChartData>`
+      SELECT
+        TO_CHAR(DATE_TRUNC('day', "createdAt"), 'YYYY-MM-DD') AS date,
+        SUM("totalAmount") AS revenue,
+        COUNT(*) AS "orderCount"
+      FROM "Orders"
+      WHERE "createdAt" >= ${startDate}
+        AND "createdAt" <= ${endDate}
+        AND "status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+      GROUP BY DATE_TRUNC('day', "createdAt")
+      ORDER BY DATE_TRUNC('day', "createdAt") ASC
+    `;
+
+    return result;
+  }
+
+  async getCustomerDataForChartInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<CustomerChartData> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    const result: CustomerChartData = await this.prismaService
+      .$queryRaw<CustomerChartData>`
+      SELECT
+        TO_CHAR(DATE_TRUNC('day', "Orders"."createdAt"), 'YYYY-MM-DD') AS date,
+        COUNT(DISTINCT "User"."id") AS "totalCustomers"
+      FROM "User"
+      JOIN "Orders" ON "User"."id" = "Orders"."userId"
+      WHERE "Orders"."createdAt" >= ${startDate}
+        AND "Orders"."createdAt" <= ${endDate}
+        AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+      GROUP BY DATE_TRUNC('day', "Orders"."createdAt")
+      ORDER BY DATE_TRUNC('day', "Orders"."createdAt") ASC
+    `;
+
+    return result;
+  }
+
+  async getSoldProductVariantDataForChartInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<SoldProductVariantChartData> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    const result: SoldProductVariantChartData = await this.prismaService
+      .$queryRaw<SoldProductVariantChartData>`
+      SELECT
+        TO_CHAR(DATE_TRUNC('day', "Orders"."createdAt"), 'YYYY-MM-DD') AS date,
+        SUM("OrderItems"."quantity") AS "totalSoldProductVariants"
+      FROM "OrderItems"
+      JOIN "Orders" ON "OrderItems"."orderId" = "Orders"."id"
+      WHERE "Orders"."createdAt" >= ${startDate}
+        AND "Orders"."createdAt" <= ${endDate}
+        AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+      GROUP BY DATE_TRUNC('day', "Orders"."createdAt")
+      ORDER BY DATE_TRUNC('day', "Orders"."createdAt") ASC
+    `;
+
+    return result;
+  }
+
+  async getReportChartDataInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ) {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    const totalCustomers = await this.getTotalCustomersInRangeTimeByViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    const totalSoldProductVariants =
+      await this.getTotalSoldProductVariantsInRangeTimeByViewMode(
+        viewMode,
+        referenceDate,
+      );
+
+    const totalRevenue = await this.getTotalRevenueInRangeTimeByViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    const chartData = {
+      startDate: dayjs(startDate).startOf('day').toDate(),
+      endDate: endDate,
+      customer: await this.getCustomerDataForChartInRangeTimeByViewMode(
+        viewMode,
+        referenceDate,
+      ),
+      soldProductVariant:
+        await this.getSoldProductVariantDataForChartInRangeTimeByViewMode(
+          viewMode,
+          referenceDate,
+        ),
+      revenue: await this.getRevenueDataForChartInRangeTimeByViewMode(
+        viewMode,
+        referenceDate,
+      ),
+    };
+
+    return {
+      totalCustomers: totalCustomers,
+      totalSoldProductVariants: totalSoldProductVariants,
+      totalRevenue: totalRevenue,
+      chartData: chartData,
+    };
+  }
+
+  async getPeriodReportChartDataInPrimaryDashboard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<AnalyticsReportChartDataInPrimaryDashboard> {
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+
+    const currentReportData =
+      await this.getReportChartDataInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+
+    const previousReportData =
+      await this.getReportChartDataInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+
+    return {
+      currentReportData: currentReportData,
+      previousReportData: previousReportData,
+    };
   }
 }

@@ -450,4 +450,52 @@ export class AnalyticsController {
       query.perPage,
     );
   }
+
+  @ApiOperation({
+    summary:
+      'Retrieves total in-stock units across all product variants for dashboard card metric',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Retrieves total in-stock units across all product variants successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        totalInStock: { type: 'number', example: 1250 },
+      },
+    },
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('dashboard-card/total-in-stock-product-variants')
+  async getTotalInStockProductVariantsForDashboardCard() {
+    const total = await this.analyticsService.getTotalInStockProductVariants();
+    return { totalInStock: total };
+  }
+
+  @ApiOperation({
+    summary: 'Get total out-of-stock product variants dashboard card metric',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Total out-of-stock product variants metric retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        totalOutOfStock: { type: 'number', example: 34 },
+      },
+    },
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('dashboard-card/total-out-of-stock-product-variants')
+  async getTotalOutOfStockProductVariantsForDashboardCard() {
+    const total =
+      await this.analyticsService.getTotalOutOfStockProductVariants();
+    return { totalOutOfStock: total };
+  }
 }
