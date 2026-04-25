@@ -16,6 +16,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { AnalyticsService } from './analytics.service';
+import { AnalyticsReportChartDataInPrimaryDashboardEntity } from './entities/analytics-report-chart-data-in-primary-dashboard.entity';
 
 @Controller('analytics')
 export class AnalyticsController {
@@ -31,7 +32,6 @@ export class AnalyticsController {
   @ApiQuery({
     name: 'referenceDate',
     required: false,
-    example: '2026-04-24T00:00:00.000Z',
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
@@ -54,7 +54,6 @@ export class AnalyticsController {
   @ApiQuery({
     name: 'referenceDate',
     required: false,
-    example: '2026-04-24T00:00:00.000Z',
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
@@ -497,5 +496,31 @@ export class AnalyticsController {
     const total =
       await this.analyticsService.getTotalOutOfStockProductVariants();
     return { totalOutOfStock: total };
+  }
+
+  @ApiOperation({
+    summary: 'Get period report chart data for primary dashboard',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Period report chart data retrieved successfully',
+    type: AnalyticsReportChartDataInPrimaryDashboardEntity,
+  })
+  @ApiQuery({ name: 'viewMode', required: false, example: 'WEEKLY' })
+  @ApiQuery({
+    name: 'referenceDate',
+    required: false,
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('primary-dashboard/period-report-chart-data')
+  async getPeriodReportChartDataInPrimaryDashboard(
+    @Query() query: DashboardCardQueryDto,
+  ) {
+    return await this.analyticsService.getPeriodReportChartDataInPrimaryDashboard(
+      query.viewMode,
+      query.referenceDate,
+    );
   }
 }
