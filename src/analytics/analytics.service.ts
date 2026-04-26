@@ -167,7 +167,7 @@ export class AnalyticsService {
    * @returns {Promise<number>} Total number of matched orders during the specified period.
    *
    * @remarks
-   * - Counts only orders with statuses: PAYMENT_CONFIRMED, WAITING_FOR_PICKUP, SHIPPED, DELIVERED, COMPLETED
+   * - Counts only orders with statuses: PAYMENT_CONFIRMED, WAITING_FOR_PICKUP, SHIPPED, DELIVERED, COMPLETED, RETURNED, DELIVERED_FAILED
    * - Uses inclusive boundaries for both startDate and endDate
    * - Returns 0 if no matching orders are found
    */
@@ -188,6 +188,8 @@ export class AnalyticsService {
             OrderStatus.SHIPPED,
             OrderStatus.DELIVERED,
             OrderStatus.COMPLETED,
+            OrderStatus.RETURNED,
+            OrderStatus.DELIVERED_FAILED,
           ],
         },
       },
