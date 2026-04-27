@@ -2707,16 +2707,22 @@ export class AnalyticsService {
 
     const result: RevenueChartData = await this.prismaService
       .$queryRaw<RevenueChartData>`
+      WITH base AS (
+        SELECT
+          DATE_TRUNC(${truncUnit}::text, "createdAt") AS period,
+          "totalAmount"
+        FROM "Orders"
+        WHERE "createdAt" >= ${startDate}
+          AND "createdAt" <= ${endDate}
+          AND "status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+      )
       SELECT
-        TO_CHAR(DATE_TRUNC(${truncUnit}::text, "createdAt"), ${groupByMode}::text) AS date,
+        TO_CHAR(period, ${groupByMode}::text) AS date,
         SUM("totalAmount") AS revenue,
         COUNT(*) AS "orderCount"
-      FROM "Orders"
-      WHERE "createdAt" >= ${startDate}
-        AND "createdAt" <= ${endDate}
-        AND "status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
-      GROUP BY DATE_TRUNC(${truncUnit}::text, "createdAt")
-      ORDER BY DATE_TRUNC(${truncUnit}::text, "createdAt") ASC
+      FROM base
+      GROUP BY period
+      ORDER BY period ASC
     `;
 
     return result;
@@ -2751,16 +2757,22 @@ export class AnalyticsService {
 
     const result: CustomerChartData = await this.prismaService
       .$queryRaw<CustomerChartData>`
+      WITH base AS (
+        SELECT
+          DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt") AS period,
+          "User"."id" AS user_id
+        FROM "User"
+        JOIN "Orders" ON "User"."id" = "Orders"."userId"
+        WHERE "Orders"."createdAt" >= ${startDate}
+          AND "Orders"."createdAt" <= ${endDate}
+          AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+      )
       SELECT
-        TO_CHAR(DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt"), ${groupByMode}::text) AS date,
-        COUNT(DISTINCT "User"."id") AS "totalCustomers"
-      FROM "User"
-      JOIN "Orders" ON "User"."id" = "Orders"."userId"
-      WHERE "Orders"."createdAt" >= ${startDate}
-        AND "Orders"."createdAt" <= ${endDate}
-        AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
-      GROUP BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt")
-      ORDER BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt") ASC
+        TO_CHAR(period, ${groupByMode}::text) AS date,
+        COUNT(DISTINCT user_id) AS "totalCustomers"
+      FROM base
+      GROUP BY period
+      ORDER BY period ASC
     `;
 
     return result;
@@ -2795,16 +2807,22 @@ export class AnalyticsService {
 
     const result: SoldProductVariantChartData = await this.prismaService
       .$queryRaw<SoldProductVariantChartData>`
+      WITH base AS (
+        SELECT
+          DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt") AS period,
+          "OrderItems"."quantity" AS quantity
+        FROM "OrderItems"
+        JOIN "Orders" ON "OrderItems"."orderId" = "Orders"."id"
+        WHERE "Orders"."createdAt" >= ${startDate}
+          AND "Orders"."createdAt" <= ${endDate}
+          AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+      )
       SELECT
-        TO_CHAR(DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt"), ${groupByMode}::text) AS date,
-        SUM("OrderItems"."quantity") AS "totalSoldProductVariants"
-      FROM "OrderItems"
-      JOIN "Orders" ON "OrderItems"."orderId" = "Orders"."id"
-      WHERE "Orders"."createdAt" >= ${startDate}
-        AND "Orders"."createdAt" <= ${endDate}
-        AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
-      GROUP BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt")
-      ORDER BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt") ASC
+        TO_CHAR(period, ${groupByMode}::text) AS date,
+        SUM(quantity) AS "totalSoldProductVariants"
+      FROM base
+      GROUP BY period
+      ORDER BY period ASC
     `;
 
     return result;
@@ -3028,28 +3046,34 @@ export class AnalyticsService {
     const customerChartDataForStackedColumnChart: CustomerChartDataForStackedColumnChart =
       await this.prismaService
         .$queryRaw<CustomerChartDataForStackedColumnChart>`
+    WITH base AS (
+      SELECT
+        DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt") AS period,
+        "User"."id" AS user_id
+      FROM "User"
+      JOIN "Orders" ON "User"."id" = "Orders"."userId"
+      WHERE "Orders"."createdAt" >= ${startDate}
+        AND "Orders"."createdAt" <= ${endDate}
+        AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+    )
     SELECT
-      TO_CHAR(DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt"), ${groupByMode}::text) AS date,
-      COUNT(DISTINCT "User"."id") AS "totalCustomers",
+      TO_CHAR(period, ${groupByMode}::text) AS date,
+      COUNT(DISTINCT user_id) AS "totalCustomers",
       COUNT(DISTINCT CASE WHEN NOT EXISTS (
         SELECT 1 FROM "Orders" o2
-        WHERE o2."userId" = "User"."id"
+        WHERE o2."userId" = user_id
           AND o2."createdAt" < ${startDate}
           AND o2."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
-      ) THEN "User"."id" END) AS "newCustomerCount",
+      ) THEN user_id END) AS "newCustomerCount",
       COUNT(DISTINCT CASE WHEN EXISTS (
         SELECT 1 FROM "Orders" o2
-        WHERE o2."userId" = "User"."id"
+        WHERE o2."userId" = user_id
           AND o2."createdAt" < ${startDate}
           AND o2."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
-      ) THEN "User"."id" END) AS "returningCustomerCount"
-    FROM "User"
-    JOIN "Orders" ON "User"."id" = "Orders"."userId"
-    WHERE "Orders"."createdAt" >= ${startDate}
-      AND "Orders"."createdAt" <= ${endDate}
-      AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
-    GROUP BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt")
-    ORDER BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt") ASC
+      ) THEN user_id END) AS "returningCustomerCount"
+    FROM base
+    GROUP BY period
+    ORDER BY period ASC
   `;
 
     const dailyReturningRateFromPreviousCustomerCohortChartData: DailyReturningRateFromPreviousCustomerCohortChartData =
