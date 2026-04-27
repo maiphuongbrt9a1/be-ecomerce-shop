@@ -523,4 +523,34 @@ export class AnalyticsController {
       query.referenceDate,
     );
   }
+
+  @ApiOperation({
+    summary: 'Get customers report chart data for secondary dashboard',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Secondary dashboard customer report data retrieved successfully',
+  })
+  @ApiQuery({ name: 'viewMode', required: false, example: 'WEEKLY' })
+  @ApiQuery({ name: 'referenceDate', required: false })
+  @ApiQuery({
+    name: 'numberOfRetentionRatePeriods',
+    required: false,
+    type: Number,
+    example: 12,
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('secondary-dashboard/customers-report-chart-data')
+  async getCustomersReportChartDataInSecondaryDashboard(
+    @Query() query: DashboardCardQueryDto,
+  ) {
+    return await this.analyticsService.getCustomersReportChartDataInSecondaryDashboard(
+      query.viewMode,
+      query.referenceDate,
+      query.numberOfRetentionRatePeriods ?? 12,
+    );
+  }
 }

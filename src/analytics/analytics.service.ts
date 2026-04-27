@@ -3,7 +3,10 @@ import { TotalRevenueInRangeTime } from '@/helpers/types/analytics-total-revenue
 import { AnalyticsDashboardCardMetric } from '@/helpers/types/analytics-dashboard-card-metric';
 import { AnalyticsTopRevenueUsers } from '@/helpers/types/analytics-top-revenue-users';
 import { RevenueChartData } from '@/helpers/types/analytics-revenue-chart-data';
-import { CustomerChartData } from '@/helpers/types/analytics-customer-chart-data';
+import {
+  CustomerChartData,
+  CustomerChartDataForStackedColumnChart,
+} from '@/helpers/types/analytics-customer-chart-data';
 import { SoldProductVariantChartData } from '@/helpers/types/analytics-sold-product-variant-chart-data';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import {
@@ -19,6 +22,17 @@ import { ProductVariantsWithMediaInformation } from '@/helpers/types/types';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { formatMediaFieldWithLogging } from '@/helpers/utils';
 import { AnalyticsReportChartDataInPrimaryDashboard } from '@/helpers/types/analytics-report-chart-data-in-primary-dashboard';
+import {
+  AnalyticsCustomersReportChartDataInSecondaryDashboard,
+  CustomersReportChartDataInSecondaryDashboardInRangeTime,
+} from '@/helpers/types/analytics-customer-report-chart-data-in-secondary-dashboard';
+import {
+  DailyReturningRateFromPreviousCustomerCohortChartData,
+  RetentionRateSeriesItem,
+} from '@/helpers/types/analytics-customer-retention-rate-chart-data';
+import isoWeek from 'dayjs/plugin/isoWeek';
+
+dayjs.extend(isoWeek);
 
 @Injectable()
 export class AnalyticsService {
@@ -2377,6 +2391,20 @@ export class AnalyticsService {
     };
   }
 
+  /**
+   * Retrieves top-selling product variants for dashboard display.
+   *
+   * This method paginates product variants ordered by sold quantity in descending
+   * order, includes related product and media information, then transforms media
+   * URLs to public S3 URLs before returning the dataset.
+   *
+   * @param {number} page - Page number for pagination (defaults to 1)
+   * @param {number} perPage - Number of product variants per page (defaults to 10)
+   *
+   * @returns {Promise<ProductVariants[] | []>} Paginated list of top-selling product variants.
+   *
+   * @throws {NotFoundException} Thrown when the product-variant query fails.
+   */
   async getProductVariantsTopSellingForDashboardCard(
     page: number = 1,
     perPage: number = 10,
@@ -2650,6 +2678,18 @@ export class AnalyticsService {
     }
   }
 
+  /**
+   * Retrieves revenue chart data grouped by period for a given view mode.
+   *
+   * This method calculates the date range from view mode and reference date,
+   * then returns aggregated revenue and order count grouped by day (weekly/monthly)
+   * or month (yearly).
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY, MONTHLY, or YEARLY
+   * @param {Date} referenceDate - End date for range calculation (defaults to current date)
+   *
+   * @returns {Promise<RevenueChartData>} Revenue chart points containing date, revenue, and order count.
+   */
   async getRevenueDataForChartInRangeTimeByViewMode(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
     referenceDate: Date = new Date(),
@@ -2660,23 +2700,40 @@ export class AnalyticsService {
       referenceDate,
     );
 
+    // Use DATE_TRUNC('day', ...) for WEEKLY/MONTHLY, and 'month' for YEARLY
+    const truncUnit = viewMode === AnalyticsViewMode.YEARLY ? 'month' : 'day';
+    const groupByMode =
+      viewMode === AnalyticsViewMode.YEARLY ? 'YYYY-MM' : 'YYYY-MM-DD';
+
     const result: RevenueChartData = await this.prismaService
       .$queryRaw<RevenueChartData>`
       SELECT
-        TO_CHAR(DATE_TRUNC('day', "createdAt"), 'YYYY-MM-DD') AS date,
+        TO_CHAR(DATE_TRUNC(${truncUnit}::text, "createdAt"), ${groupByMode}::text) AS date,
         SUM("totalAmount") AS revenue,
         COUNT(*) AS "orderCount"
       FROM "Orders"
       WHERE "createdAt" >= ${startDate}
         AND "createdAt" <= ${endDate}
         AND "status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
-      GROUP BY DATE_TRUNC('day', "createdAt")
-      ORDER BY DATE_TRUNC('day', "createdAt") ASC
+      GROUP BY DATE_TRUNC(${truncUnit}::text, "createdAt")
+      ORDER BY DATE_TRUNC(${truncUnit}::text, "createdAt") ASC
     `;
 
     return result;
   }
 
+  /**
+   * Retrieves customer chart data grouped by period for a given view mode.
+   *
+   * This method calculates the date range from view mode and reference date,
+   * then returns distinct customer counts grouped by day (weekly/monthly)
+   * or month (yearly).
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY, MONTHLY, or YEARLY
+   * @param {Date} referenceDate - End date for range calculation (defaults to current date)
+   *
+   * @returns {Promise<CustomerChartData>} Customer chart points containing date and total customers.
+   */
   async getCustomerDataForChartInRangeTimeByViewMode(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
     referenceDate: Date = new Date(),
@@ -2687,23 +2744,40 @@ export class AnalyticsService {
       referenceDate,
     );
 
+    // Use DATE_TRUNC('day', ...) for WEEKLY/MONTHLY, and 'month' for YEARLY
+    const truncUnit = viewMode === AnalyticsViewMode.YEARLY ? 'month' : 'day';
+    const groupByMode =
+      viewMode === AnalyticsViewMode.YEARLY ? 'YYYY-MM' : 'YYYY-MM-DD';
+
     const result: CustomerChartData = await this.prismaService
       .$queryRaw<CustomerChartData>`
       SELECT
-        TO_CHAR(DATE_TRUNC('day', "Orders"."createdAt"), 'YYYY-MM-DD') AS date,
+        TO_CHAR(DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt"), ${groupByMode}::text) AS date,
         COUNT(DISTINCT "User"."id") AS "totalCustomers"
       FROM "User"
       JOIN "Orders" ON "User"."id" = "Orders"."userId"
       WHERE "Orders"."createdAt" >= ${startDate}
         AND "Orders"."createdAt" <= ${endDate}
         AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
-      GROUP BY DATE_TRUNC('day', "Orders"."createdAt")
-      ORDER BY DATE_TRUNC('day', "Orders"."createdAt") ASC
+      GROUP BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt")
+      ORDER BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt") ASC
     `;
 
     return result;
   }
 
+  /**
+   * Retrieves sold-product-variant chart data grouped by period for a given view mode.
+   *
+   * This method calculates the date range from view mode and reference date,
+   * then returns total sold quantity grouped by day (weekly/monthly)
+   * or month (yearly).
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY, MONTHLY, or YEARLY
+   * @param {Date} referenceDate - End date for range calculation (defaults to current date)
+   *
+   * @returns {Promise<SoldProductVariantChartData>} Chart points containing date and sold quantity.
+   */
   async getSoldProductVariantDataForChartInRangeTimeByViewMode(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
     referenceDate: Date = new Date(),
@@ -2714,24 +2788,40 @@ export class AnalyticsService {
       referenceDate,
     );
 
+    // Use DATE_TRUNC('day', ...) for WEEKLY/MONTHLY, and 'month' for YEARLY
+    const truncUnit = viewMode === AnalyticsViewMode.YEARLY ? 'month' : 'day';
+    const groupByMode =
+      viewMode === AnalyticsViewMode.YEARLY ? 'YYYY-MM' : 'YYYY-MM-DD';
+
     const result: SoldProductVariantChartData = await this.prismaService
       .$queryRaw<SoldProductVariantChartData>`
       SELECT
-        TO_CHAR(DATE_TRUNC('day', "Orders"."createdAt"), 'YYYY-MM-DD') AS date,
+        TO_CHAR(DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt"), ${groupByMode}::text) AS date,
         SUM("OrderItems"."quantity") AS "totalSoldProductVariants"
       FROM "OrderItems"
       JOIN "Orders" ON "OrderItems"."orderId" = "Orders"."id"
       WHERE "Orders"."createdAt" >= ${startDate}
         AND "Orders"."createdAt" <= ${endDate}
         AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
-      GROUP BY DATE_TRUNC('day', "Orders"."createdAt")
-      ORDER BY DATE_TRUNC('day', "Orders"."createdAt") ASC
+      GROUP BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt")
+      ORDER BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt") ASC
     `;
 
     return result;
   }
 
-  async getReportChartDataInRangeTimeByViewMode(
+  /**
+   * Retrieves primary dashboard report data for a single period.
+   *
+   * This method builds aggregated totals and chart datasets (customer, sold product variants,
+   * and revenue) for the requested view mode and reference date.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY, MONTHLY, or YEARLY
+   * @param {Date} referenceDate - End date for range calculation (defaults to current date)
+   *
+   * @returns {Promise<object>} Primary dashboard period data with totals and chart data.
+   */
+  async getReportChartDataInPrimaryDashboardInRangeTimeByViewMode(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
     referenceDate: Date = new Date(),
   ) {
@@ -2783,6 +2873,17 @@ export class AnalyticsService {
     };
   }
 
+  /**
+   * Retrieves primary dashboard report data for current and previous periods.
+   *
+   * This method computes current-period and previous-period report payloads
+   * based on the selected view mode, then returns both for comparison.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY, MONTHLY, or YEARLY
+   * @param {Date} referenceDate - Reference date for current period (defaults to current date)
+   *
+   * @returns {Promise<AnalyticsReportChartDataInPrimaryDashboard>} Current and previous report datasets.
+   */
   async getPeriodReportChartDataInPrimaryDashboard(
     viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
     referenceDate: Date = new Date(),
@@ -2796,13 +2897,13 @@ export class AnalyticsService {
       );
 
     const currentReportData =
-      await this.getReportChartDataInRangeTimeByViewMode(
+      await this.getReportChartDataInPrimaryDashboardInRangeTimeByViewMode(
         viewMode,
         referenceDateForCurrentPeriod,
       );
 
     const previousReportData =
-      await this.getReportChartDataInRangeTimeByViewMode(
+      await this.getReportChartDataInPrimaryDashboardInRangeTimeByViewMode(
         viewMode,
         referenceDateForPreviousPeriod,
       );
@@ -2810,6 +2911,239 @@ export class AnalyticsService {
     return {
       currentReportData: currentReportData,
       previousReportData: previousReportData,
+    };
+  }
+
+  /**
+   * Get retention rate time series for N previous periods.
+   * @param viewMode - WEEKLY, MONTHLY, YEARLY
+   * @param referenceDate - the end date of the most recent period (e.g. today)
+   * @param periods - number of periods to retrieve (e.g. 12)
+   */
+  async getRetentionRateTimeSeries(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+    periods: number = 12,
+  ): Promise<RetentionRateSeriesItem[]> {
+    const result: RetentionRateSeriesItem[] = [];
+    let currentEnd = dayjs(referenceDate).toDate();
+
+    for (let i = 0; i < periods; i++) {
+      const currentStart = this.calculateStartTimeOfViewMode(
+        viewMode,
+        currentEnd,
+      );
+      const previousEnd = currentStart;
+      const previousStart = this.calculateStartTimeOfViewMode(
+        viewMode,
+        previousEnd,
+      );
+
+      // Count customers in previous period (mẫu số)
+      const previousCustomers = await this.getTotalCustomersInRangeTime(
+        previousStart,
+        previousEnd,
+      );
+
+      // Count returning customers in current period (tử số)
+      const returningCustomers =
+        await this.getTotalReturningCustomersInRangeTime(
+          currentStart,
+          currentEnd,
+        );
+
+      const rate =
+        previousCustomers > 0
+          ? Math.round((returningCustomers / previousCustomers) * 10000) / 100
+          : 0;
+
+      // Format period label
+      const periodLabel = this.formatPeriodLabel(viewMode, currentEnd);
+
+      result.unshift({ period: periodLabel, retentionRate: rate });
+
+      // Lùi về kỳ trước để tính tiếp
+      currentEnd = previousEnd;
+    }
+
+    return result;
+  }
+
+  /**
+   * Formats period labels used in retention-rate time-series output.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode determining label format
+   * @param {Date} date - Date used to derive the label
+   *
+   * @returns {string} Formatted period label.
+   */
+  private formatPeriodLabel(viewMode: AnalyticsViewMode, date: Date): string {
+    const d = dayjs(date);
+    switch (viewMode) {
+      case AnalyticsViewMode.WEEKLY:
+        return `W${d.isoWeek()}-${d.year()}`; // ISO week
+      case AnalyticsViewMode.MONTHLY:
+        return d.format('YYYY-MM');
+      case AnalyticsViewMode.YEARLY:
+        return d.format('YYYY');
+      default:
+        return d.format('YYYY-MM-DD');
+    }
+  }
+
+  /**
+   * Retrieves secondary dashboard customer report data for a single period.
+   *
+   * This method returns period boundaries, stacked customer composition chart
+   * (new vs returning vs total), and retention-related daily cohort rate data
+   * computed against the previous period customer baseline.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY, MONTHLY, or YEARLY
+   * @param {Date} referenceDate - End date for range calculation (defaults to current date)
+   *
+   * @returns {Promise<CustomersReportChartDataInSecondaryDashboardInRangeTime>} Secondary dashboard customer report payload for one period.
+   */
+  async getCustomersReportChartDataInSecondaryDashboardInRangeTimeByViewMode(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+  ): Promise<CustomersReportChartDataInSecondaryDashboardInRangeTime> {
+    const endDate: Date = dayjs(referenceDate).toDate();
+    const startDate: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      referenceDate,
+    );
+
+    const endDateOfPreviousPeriod: Date = startDate;
+    const startDateOfPreviousPeriod: Date = this.calculateStartTimeOfViewMode(
+      viewMode,
+      endDateOfPreviousPeriod,
+    );
+
+    // Use DATE_TRUNC('day', ...) for WEEKLY/MONTHLY, and 'month' for YEARLY
+    const truncUnit = viewMode === AnalyticsViewMode.YEARLY ? 'month' : 'day';
+    const groupByMode =
+      viewMode === AnalyticsViewMode.YEARLY ? 'YYYY-MM' : 'YYYY-MM-DD';
+
+    // Raw query để lấy newCustomer và returningCustomer trong cùng một lần truy vấn
+    const customerChartDataForStackedColumnChart: CustomerChartDataForStackedColumnChart =
+      await this.prismaService
+        .$queryRaw<CustomerChartDataForStackedColumnChart>`
+    SELECT
+      TO_CHAR(DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt"), ${groupByMode}::text) AS date,
+      COUNT(DISTINCT "User"."id") AS "totalCustomers",
+      COUNT(DISTINCT CASE WHEN NOT EXISTS (
+        SELECT 1 FROM "Orders" o2
+        WHERE o2."userId" = "User"."id"
+          AND o2."createdAt" < ${startDate}
+          AND o2."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+      ) THEN "User"."id" END) AS "newCustomerCount",
+      COUNT(DISTINCT CASE WHEN EXISTS (
+        SELECT 1 FROM "Orders" o2
+        WHERE o2."userId" = "User"."id"
+          AND o2."createdAt" < ${startDate}
+          AND o2."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+      ) THEN "User"."id" END) AS "returningCustomerCount"
+    FROM "User"
+    JOIN "Orders" ON "User"."id" = "Orders"."userId"
+    WHERE "Orders"."createdAt" >= ${startDate}
+      AND "Orders"."createdAt" <= ${endDate}
+      AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+    GROUP BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt")
+    ORDER BY DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt") ASC
+  `;
+
+    const dailyReturningRateFromPreviousCustomerCohortChartData: DailyReturningRateFromPreviousCustomerCohortChartData =
+      await this.prismaService
+        .$queryRaw<DailyReturningRateFromPreviousCustomerCohortChartData>`
+    WITH 
+    -- Tổng khách hàng duy nhất trong kỳ trước (một con số duy nhất)
+    previous_total AS (
+      SELECT COUNT(DISTINCT "User"."id") AS total_previous
+      FROM "User"
+      JOIN "Orders" ON "User"."id" = "Orders"."userId"
+      WHERE "Orders"."createdAt" >= ${startDateOfPreviousPeriod}::timestamp
+        AND "Orders"."createdAt" <= ${endDateOfPreviousPeriod}::timestamp  
+        AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+    ),
+    -- Số khách quay lại theo từng period trong kỳ hiện tại
+    daily_returning AS (
+      SELECT
+        DATE_TRUNC(${truncUnit}::text, "Orders"."createdAt") AS period,
+        COUNT(DISTINCT CASE WHEN EXISTS (
+          SELECT 1 FROM "Orders" o2
+          WHERE o2."userId" = "User"."id"
+            AND o2."createdAt" < ${startDate}::timestamp
+            AND o2."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+        ) THEN "User"."id" END) AS returning_customers
+      FROM "User"
+      JOIN "Orders" ON "User"."id" = "Orders"."userId"
+      WHERE "Orders"."createdAt" >= ${startDate}::timestamp
+        AND "Orders"."createdAt" <= ${endDate}::timestamp
+        AND "Orders"."status" IN ('PAYMENT_CONFIRMED', 'WAITING_FOR_PICKUP', 'SHIPPED', 'DELIVERED', 'COMPLETED')
+      GROUP BY period
+    )
+    SELECT
+      TO_CHAR(period, ${groupByMode}::text) AS date,
+      CASE 
+        WHEN (SELECT total_previous FROM previous_total) = 0 THEN 0
+        ELSE ROUND(returning_customers * 100.0 / (SELECT total_previous FROM previous_total), 2)
+      END AS "customerRetentionRate"
+    FROM daily_returning
+    ORDER BY period ASC
+  `;
+
+    return {
+      startDate: startDate,
+      endDate: endDate,
+      customerChartDataForStackedColumnChart:
+        customerChartDataForStackedColumnChart,
+      dailyReturningRateFromPreviousCustomerCohortChartData:
+        dailyReturningRateFromPreviousCustomerCohortChartData,
+    };
+  }
+
+  /**
+   * Retrieves secondary dashboard customer report data for current and previous periods.
+   *
+   * This method combines current-period and previous-period customer report payloads,
+   * and appends retention-rate time-series data for the requested number of periods.
+   *
+   * @param {AnalyticsViewMode} viewMode - Time period mode: WEEKLY, MONTHLY, or YEARLY
+   * @param {Date} referenceDate - Reference date for current period (defaults to current date)
+   * @param {number} numberOfRetentionRatePeriods - Number of periods in retention-rate time series
+   *
+   * @returns {Promise<AnalyticsCustomersReportChartDataInSecondaryDashboard>} Secondary dashboard customer report datasets.
+   */
+  async getCustomersReportChartDataInSecondaryDashboard(
+    viewMode: AnalyticsViewMode = AnalyticsViewMode.WEEKLY,
+    referenceDate: Date = new Date(),
+    numberOfRetentionRatePeriods: number = 12,
+  ): Promise<AnalyticsCustomersReportChartDataInSecondaryDashboard> {
+    const referenceDateForCurrentPeriod: Date = referenceDate;
+    const referenceDateForPreviousPeriod: Date =
+      this.calculateStartTimeOfViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const currentCustomerReportData =
+      await this.getCustomersReportChartDataInSecondaryDashboardInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForCurrentPeriod,
+      );
+    const previousCustomerReportData =
+      await this.getCustomersReportChartDataInSecondaryDashboardInRangeTimeByViewMode(
+        viewMode,
+        referenceDateForPreviousPeriod,
+      );
+
+    return {
+      currentCustomerReportData: currentCustomerReportData,
+      previousCustomerReportData: previousCustomerReportData,
+      customerRetentionRateTimeSeries: await this.getRetentionRateTimeSeries(
+        viewMode,
+        referenceDate,
+        numberOfRetentionRatePeriods,
+      ),
     };
   }
 }

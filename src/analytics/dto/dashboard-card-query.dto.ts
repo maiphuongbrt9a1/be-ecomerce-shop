@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { AnalyticsViewMode } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsOptional } from 'class-validator';
+import { IsDate, IsEnum, IsInt, IsOptional, Min } from 'class-validator';
 
 export class DashboardCardQueryDto {
   @ApiPropertyOptional({
@@ -22,4 +22,15 @@ export class DashboardCardQueryDto {
   @Type(() => Date)
   @IsDate()
   referenceDate?: Date;
+
+  @ApiPropertyOptional({
+    example: 12,
+    description:
+      'Number of periods to return for retention-rate time series. Defaults to 12 when omitted.',
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  numberOfRetentionRatePeriods?: number;
 }
