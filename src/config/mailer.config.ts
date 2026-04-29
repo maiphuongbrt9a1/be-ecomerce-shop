@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
@@ -19,7 +20,7 @@ export const mailerConfig = {
     },
     // preview: true,
     template: {
-      dir: process.cwd() + '/src/mail/templates/',
+      dir: join(__dirname, '..', 'mail', 'templates'),
       // or new PugAdapter() or new EjsAdapter()
       adapter: new HandlebarsAdapter(),
       options: {
