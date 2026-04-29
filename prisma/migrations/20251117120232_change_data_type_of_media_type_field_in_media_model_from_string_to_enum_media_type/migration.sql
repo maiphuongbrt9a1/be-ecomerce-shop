@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - The `type` column on the `Media` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-
-*/
--- CreateEnum
-CREATE TYPE "public"."MediaType" AS ENUM ('IMAGE', 'VIDEO', 'DOCUMENT');
-
--- AlterTable
-ALTER TABLE "public"."Media" DROP COLUMN "type",
-ADD COLUMN     "type" "public"."MediaType" NOT NULL DEFAULT 'IMAGE';
+version https://git-lfs.github.com/spec/v1
+oid sha256:276a5aa1a52dfdd1e96c1130ab3d46650b40ab69df70de5f989da16c7df24c78
+size 375

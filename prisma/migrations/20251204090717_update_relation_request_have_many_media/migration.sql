@@ -1,5 +1,3 @@
--- AlterTable
-ALTER TABLE "public"."Media" ADD COLUMN     "requestId" BIGINT;
-
--- AddForeignKey
-ALTER TABLE "public"."Media" ADD CONSTRAINT "Media_requestId_fkey" FOREIGN KEY ("requestId") REFERENCES "public"."Requests"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+version https://git-lfs.github.com/spec/v1
+oid sha256:19607241ead8386da9080337693ed2717d7df08b0da7a25ccf8721202d84dec2
+size 263

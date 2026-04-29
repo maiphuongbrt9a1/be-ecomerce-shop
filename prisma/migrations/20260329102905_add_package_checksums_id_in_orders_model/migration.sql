@@ -1,11 +1,3 @@
-/*
-  Warnings:
-
-  - Added the required column `packageChecksumsId` to the `Orders` table without a default value. This is not possible if the table is not empty.
-
-*/
--- AlterTable
-ALTER TABLE "public"."Orders" ADD COLUMN     "packageChecksumsId" BIGINT NOT NULL;
-
--- AddForeignKey
-ALTER TABLE "public"."Orders" ADD CONSTRAINT "Orders_packageChecksumsId_fkey" FOREIGN KEY ("packageChecksumsId") REFERENCES "public"."PackageChecksums"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+version https://git-lfs.github.com/spec/v1
+oid sha256:51c230c2f76ea3251a4e10c31f3db4c5b17a12eda92e9c3a11487bfd2c269f57
+size 477

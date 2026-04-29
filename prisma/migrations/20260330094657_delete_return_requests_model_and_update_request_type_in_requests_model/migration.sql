@@ -1,19 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `subject` on the `Requests` table. All the data in the column will be lost.
-  - You are about to drop the `ReturnRequests` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- CreateEnum
-CREATE TYPE "public"."RequestType" AS ENUM ('RETURN_REQUEST', 'CUSTOMER_SUPPORT', 'CANCEL_ORDER');
-
--- DropForeignKey
-ALTER TABLE "public"."ReturnRequests" DROP CONSTRAINT "ReturnRequests_requestId_fkey";
-
--- AlterTable
-ALTER TABLE "public"."Requests" DROP COLUMN "subject",
-ADD COLUMN     "requestType" "public"."RequestType" NOT NULL DEFAULT 'CUSTOMER_SUPPORT';
-
--- DropTable
-DROP TABLE "public"."ReturnRequests";
+version https://git-lfs.github.com/spec/v1
+oid sha256:88be99c18ca0bc36e6e3297ffd6622a96a92fa4f6d903e4e9603defa20bb6317
+size 683

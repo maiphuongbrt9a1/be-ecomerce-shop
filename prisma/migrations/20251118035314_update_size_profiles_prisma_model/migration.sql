@@ -1,15 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `hipsCm` on the `SizeProfiles` table. All the data in the column will be lost.
-
-*/
--- AlterTable
-ALTER TABLE "public"."SizeProfiles" DROP COLUMN "hipsCm",
-ALTER COLUMN "heightCm" DROP NOT NULL,
-ALTER COLUMN "weightKg" DROP NOT NULL,
-ALTER COLUMN "chestCm" DROP NOT NULL,
-ALTER COLUMN "hipCm" DROP NOT NULL,
-ALTER COLUMN "sleeveLengthCm" DROP NOT NULL,
-ALTER COLUMN "inseamCm" DROP NOT NULL,
-ALTER COLUMN "shoulderLengthCm" DROP NOT NULL;
+version https://git-lfs.github.com/spec/v1
+oid sha256:190044508dee24057f6af9254033c05c9547e27615c675de3c6fae14f0185207
+size 491

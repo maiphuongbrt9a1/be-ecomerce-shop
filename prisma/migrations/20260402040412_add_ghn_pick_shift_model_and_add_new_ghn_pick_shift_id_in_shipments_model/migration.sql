@@ -1,18 +1,3 @@
--- AlterTable
-ALTER TABLE "public"."Shipments" ADD COLUMN     "ghnPickShiftId" BIGINT;
-
--- CreateTable
-CREATE TABLE "public"."GhnPickShift" (
-    "id" BIGSERIAL NOT NULL,
-    "ghnShiftId" BIGINT NOT NULL,
-    "ghnTitle" VARCHAR(255) NOT NULL,
-    "ghnFromTime" BIGINT NOT NULL,
-    "ghnToTime" BIGINT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "GhnPickShift_pkey" PRIMARY KEY ("id")
-);
-
--- AddForeignKey
-ALTER TABLE "public"."Shipments" ADD CONSTRAINT "Shipments_ghnPickShiftId_fkey" FOREIGN KEY ("ghnPickShiftId") REFERENCES "public"."GhnPickShift"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+version https://git-lfs.github.com/spec/v1
+oid sha256:7576d7b89cef25aa067a24a0c14ba790c78c093e31cb5fa36af6388f4fb5ff5b
+size 681

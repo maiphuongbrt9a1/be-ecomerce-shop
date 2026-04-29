@@ -1,13 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `googleId` on the `User` table. All the data in the column will be lost.
-  - Made the column `password` on table `User` required. This step will fail if there are existing NULL values in that column.
-
-*/
--- DropIndex
-DROP INDEX "public"."User_googleId_key";
-
--- AlterTable
-ALTER TABLE "public"."User" DROP COLUMN "googleId",
-ALTER COLUMN "password" SET NOT NULL;
+version https://git-lfs.github.com/spec/v1
+oid sha256:c8682091abcebf526c48f71a306d680ed1524f156c628c2da5c82a707715259d
+size 416

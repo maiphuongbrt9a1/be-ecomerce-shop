@@ -1,8 +1,3 @@
-/*
-  Warnings:
-
-  - Added the required column `shopName` to the `ShopOffice` table without a default value. This is not possible if the table is not empty.
-
-*/
--- AlterTable
-ALTER TABLE "public"."ShopOffice" ADD COLUMN     "shopName" VARCHAR(255) NOT NULL;
+version https://git-lfs.github.com/spec/v1
+oid sha256:034c7eb721ecae92a1ec0323f1f4cb84b893d750d708cf51f65c5c39083549bf
+size 257

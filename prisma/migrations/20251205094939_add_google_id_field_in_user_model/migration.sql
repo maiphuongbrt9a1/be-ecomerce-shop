@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - A unique constraint covering the columns `[googleId]` on the table `User` will be added. If there are existing duplicate values, this will fail.
-
-*/
--- AlterTable
-ALTER TABLE "public"."User" ADD COLUMN     "googleId" VARCHAR(255),
-ALTER COLUMN "password" DROP NOT NULL;
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_googleId_key" ON "public"."User"("googleId");
+version https://git-lfs.github.com/spec/v1
+oid sha256:77c15dbe8eeb9a8dd47bb555a0d2499db97a09281377a47992ed66449739290a
+size 378
