@@ -4,12 +4,18 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 
 export const mailerConfig = {
   imports: [ConfigModule],
-  useFactory: async (configService: ConfigService) => ({
+  useFactory: async (configService: ConfigService) => {
+    const mailPort = +configService.get<string>('MAIL_PORT')!;
+    return {
     transport: {
       host: configService.get<string>('MAIL_HOST'),
-      port: +configService.get<string>('MAIL_PORT')!,
-      secure: true,
+      port: mailPort,
+      secure: mailPort === 465,
+      requireTLS: mailPort === 587,
       pool: true,
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 15_000,
       auth: {
         user: configService.get<string>('MAIL_USER'),
         pass: configService.get<string>('MAIL_PASSWORD'),
@@ -27,6 +33,7 @@ export const mailerConfig = {
         strict: true,
       },
     },
-  }),
+    };
+  },
   inject: [ConfigService],
 };
