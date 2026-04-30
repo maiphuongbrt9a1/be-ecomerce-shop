@@ -54,13 +54,16 @@ async function bootstrap() {
     return int ?? this.toString();
   };
 
+  const allowedOrigins = [
+    'http://localhost:3000',
+    process.env.FRONTEND_PUBLIC_URL_PRODUCTION,
+    process.env.FRONTEND_PUBLIC_URL_PRODUCTION_ALT,
+  ].filter(Boolean) as string[];
+
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      process.env.FRONTEND_PUBLIC_URL_PRODUCTION!,
-    ], // Allow your Next.js frontend
+    origin: allowedOrigins,
     methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
-    credentials: true, // Allow cookies/auth headers
+    credentials: true,
   });
 
   await app.listen(process.env.PORT! || 4000, '0.0.0.0');
