@@ -106,6 +106,33 @@ export class UserVouchersService {
    * - Returns empty array if no user vouchers exist
    * - Used for admin voucher usage management
    */
+  async findByUserId(
+    userId: number,
+    page: number,
+    perPage: number,
+  ): Promise<UserVoucherDetailInformation[]> {
+    try {
+      const paginate = createPaginator({ perPage });
+      const result = await paginate<
+        UserVoucherDetailInformation,
+        Prisma.UserVouchersFindManyArgs
+      >(
+        this.prismaService.userVouchers,
+        {
+          where: { userId: BigInt(userId) },
+          include: { voucher: true },
+          orderBy: { id: 'desc' },
+        },
+        { page },
+      );
+      this.logger.log(`User vouchers for userId ${userId} retrieved successfully`);
+      return result.data;
+    } catch (error) {
+      this.logger.error('Error retrieving user vouchers by userId', error);
+      throw new BadRequestException('Failed to retrieve user vouchers');
+    }
+  }
+
   async findAll(
     page: number,
     perPage: number,

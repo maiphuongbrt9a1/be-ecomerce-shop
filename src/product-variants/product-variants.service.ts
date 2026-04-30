@@ -393,6 +393,16 @@ export class ProductVariantsService {
    */
   async remove(id: number): Promise<ProductVariants> {
     try {
+      // Block deletion if variant is referenced by any order
+      const orderCount = await this.prismaService.orderItems.count({
+        where: { productVariantId: id },
+      });
+      if (orderCount > 0) {
+        throw new BadRequestException(
+          `Cannot delete variant: it is referenced by ${orderCount} order(s). Remove those orders first or keep the variant.`,
+        );
+      }
+
       // delete media files from s3 first
       const mediaFilesToDelete = await this.prismaService.media.findMany({
         where: { productVariantId: id },

@@ -104,8 +104,17 @@ export class ReviewsController {
   })
   @Public()
   @Get()
-  async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
-    return await this.reviewsService.findAll(Number(page), Number(perPage));
+  async findAll(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('rating') rating?: string,
+  ) {
+    const ratingNum = rating != null ? Number(rating) : undefined;
+    return await this.reviewsService.findAll(
+      Number(page),
+      Number(perPage),
+      ratingNum,
+    );
   }
 
   @ApiOperation({ summary: 'Get a review' })

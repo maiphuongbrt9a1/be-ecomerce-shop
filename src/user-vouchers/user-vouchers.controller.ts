@@ -7,8 +7,10 @@ import {
   Param,
   Delete,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
+import type { RequestWithUserInJWTStrategy } from '@/helpers/auth/interfaces/RequestWithUser.interface';
 import { UserVouchersService } from './user-vouchers.service';
 import { CreateUserVoucherDto } from './dto/create-user-voucher.dto';
 import { UpdateUserVoucherDto } from './dto/update-user-voucher.dto';
@@ -76,6 +78,31 @@ export class UserVouchersController {
   @Get()
   async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
     return await this.userVouchersService.findAll(
+      Number(page),
+      Number(perPage),
+    );
+  }
+
+  @ApiOperation({ summary: 'Get all vouchers for the authenticated user' })
+  @ApiResponse({
+    status: 200,
+    description: 'User vouchers retrieved successfully',
+    type: [UserSavedVoucherDetailEntity],
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'perPage', required: false, type: Number, example: 20 })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('USER', 'ADMIN', 'OPERATOR')
+  @Get('/me')
+  async findMine(
+    @Req() req: RequestWithUserInJWTStrategy,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 20,
+  ) {
+    return await this.userVouchersService.findByUserId(
+      Number(req.user.userId),
       Number(page),
       Number(perPage),
     );

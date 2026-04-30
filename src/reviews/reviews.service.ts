@@ -138,15 +138,43 @@ export class ReviewsService {
   async findAll(
     page: number,
     perPage: number,
+    rating?: number,
   ): Promise<ReviewsWithMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
+      const where: Prisma.ReviewsWhereInput = {};
+      if (rating != null && rating >= 1 && rating <= 5) {
+        where.rating = rating;
+      }
       const result = await paginate<
         ReviewsWithMedia,
         Prisma.ReviewsFindManyArgs
       >(
         this.prismaService.reviews,
-        { include: { media: true }, orderBy: { id: 'asc' } },
+        {
+          where,
+          include: {
+            media: true,
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+            product: { select: { id: true, name: true } },
+            productVariant: {
+              select: {
+                id: true,
+                variantName: true,
+                variantColor: true,
+                variantSize: true,
+              },
+            },
+          },
+          orderBy: { id: 'desc' },
+        },
         { page: page },
       );
 

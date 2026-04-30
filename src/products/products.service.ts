@@ -193,6 +193,14 @@ export class ProductsService {
               },
             },
             media: true,
+            voucher: {
+              select: {
+                id: true,
+                isActive: true,
+                validFrom: true,
+                validTo: true,
+              },
+            },
           },
           orderBy: { id: 'asc' },
         },
@@ -234,6 +242,22 @@ export class ProductsService {
       this.logger.error(`Error fetching products: ${error}`);
       throw new BadRequestException('Failed to fetch products');
     }
+  }
+
+  async generateUniqueSku(): Promise<{ sku: string }> {
+    const products = await this.prismaService.products.findMany({
+      select: { stockKeepingUnit: true },
+    });
+    const usedCodes = new Set<string>();
+    for (const p of products) {
+      const m = p.stockKeepingUnit.match(/^SKU-(\d{4})$/);
+      if (m) usedCodes.add(m[1]);
+    }
+    let code: number;
+    do {
+      code = Math.floor(1000 + Math.random() * 9000);
+    } while (usedCodes.has(String(code)));
+    return { sku: `SKU-${code}` };
   }
 
   /**

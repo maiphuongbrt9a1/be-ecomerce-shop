@@ -289,6 +289,23 @@ export class NotificationService {
    * @throws {NotFoundException} If notification is not found
    * @throws {BadRequestException} If user is unauthorized or update fails
    */
+  async getUnreadCountForUser(userId: number): Promise<number> {
+    try {
+      const count = await this.prismaService.notification.count({
+        where: {
+          recipientId: BigInt(userId),
+          type: NotificationType.PERSONAL_NOTIFICATION,
+          isRead: false,
+        },
+      });
+      this.logger.log(`Unread notification count for user id ${userId}: ${count}`);
+      return count;
+    } catch (error) {
+      this.logger.error('Error fetching unread notification count', error);
+      throw new BadRequestException('Failed to fetch unread notification count');
+    }
+  }
+
   async updatePersonalNotificationStatus(
     notificationId: number,
     userId: number,

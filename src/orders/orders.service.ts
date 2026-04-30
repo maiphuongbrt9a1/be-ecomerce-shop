@@ -934,8 +934,8 @@ export class OrdersService {
 
         await this.sendPersonalNotificationSafely(
           returnOrderWithFullInformation.userId,
-          'Order placed successfully',
-          `Your order #${returnOrderWithFullInformation.id.toString()} has been created and is waiting for processing.`,
+          'Đặt hàng thành công',
+          `Đơn hàng #${returnOrderWithFullInformation.id.toString()} của bạn đã được tạo và đang chờ xử lý.`,
         );
 
         return returnOrderWithFullInformation;
@@ -1302,8 +1302,8 @@ export class OrdersService {
 
       await this.sendPersonalNotificationSafely(
         returnResult.userId,
-        'Order is waiting for pickup',
-        `Your order #${returnResult.id.toString()} is now prepared and waiting for carrier pickup.`,
+        'Đơn hàng đang chờ lấy hàng',
+        `Đơn hàng #${returnResult.id.toString()} của bạn đã được chuẩn bị và đang chờ đơn vị vận chuyển lấy hàng.`,
       );
 
       this.logger.log(`Updated order with ID: ${id}`);
@@ -1422,8 +1422,8 @@ export class OrdersService {
 
       await this.sendPersonalNotificationSafely(
         returnResult.userId,
-        'Order has been shipped',
-        `Your order #${returnResult.id.toString()} is on the way.`,
+        'Đơn hàng đang được giao',
+        `Đơn hàng #${returnResult.id.toString()} của bạn đang trên đường giao đến bạn.`,
       );
 
       return returnResult;
@@ -1542,8 +1542,8 @@ export class OrdersService {
 
       await this.sendPersonalNotificationSafely(
         returnResult.userId,
-        'Order delivered successfully',
-        `Your order #${returnResult.id.toString()} has been delivered successfully.`,
+        'Giao hàng thành công',
+        `Đơn hàng #${returnResult.id.toString()} của bạn đã được giao thành công.`,
       );
 
       return returnResult;
@@ -1705,8 +1705,8 @@ export class OrdersService {
 
       await this.sendPersonalNotificationSafely(
         returnResult.userId,
-        'Order delivery failed',
-        `Delivery for order #${returnResult.id.toString()} failed. Our team will support you with next steps.`,
+        'Giao hàng thất bại',
+        `Giao hàng cho đơn hàng #${returnResult.id.toString()} thất bại. Đội ngũ của chúng tôi sẽ hỗ trợ bạn các bước tiếp theo.`,
       );
 
       return returnResult;
@@ -2181,8 +2181,8 @@ export class OrdersService {
 
       await this.sendPersonalNotificationSafely(
         cancelledOrderWithFullInformation.userId,
-        'Order cancelled',
-        `Your order #${cancelledOrderWithFullInformation.id.toString()} has been cancelled.`,
+        'Đơn hàng đã bị hủy',
+        `Đơn hàng #${cancelledOrderWithFullInformation.id.toString()} của bạn đã được hủy.`,
       );
 
       return cancelledOrderWithFullInformation;
@@ -2292,13 +2292,26 @@ export class OrdersService {
     const variantIds = order.orderItems.map((i) => i.productVariantId);
     if (variantIds.length === 0) return [];
 
-    return await this.prismaService.reviews.findMany({
+    const reviews = await this.prismaService.reviews.findMany({
       where: {
         userId: userId,
         productVariantId: { in: variantIds },
       },
+      include: { media: true },
       orderBy: { createdAt: 'desc' },
     });
+
+    for (const r of reviews) {
+      r.media = formatMediaFieldWithLogging(
+        r.media,
+        (url: string) => this.awsService.buildPublicMediaUrl(url),
+        'review',
+        r.id,
+        this.logger,
+      );
+    }
+
+    return reviews;
   }
 
   async userConfirmReceived(
@@ -2407,8 +2420,8 @@ export class OrdersService {
 
           await this.sendPersonalNotificationSafely(
             order.userId,
-            'Order completed',
-            `Your order #${order.id.toString()} has been auto-confirmed as completed.`,
+            'Đơn hàng hoàn thành',
+            `Đơn hàng #${order.id.toString()} của bạn đã được tự động xác nhận hoàn thành.`,
           );
 
           this.logger.log(`Auto-confirmed order with ID: ${order.id}`);

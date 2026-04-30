@@ -90,6 +90,19 @@ export class NotificationController {
     );
   }
 
+  @ApiOperation({ summary: 'Get unread personal notification count for authenticated user' })
+  @ApiResponse({ status: 200, description: 'Return unread notification count' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @Get('/me/unread-count')
+  async getUnreadCount(
+    @Req() req: RequestWithUserInJWTStrategy,
+  ): Promise<{ count: number }> {
+    const count = await this.notificationService.getUnreadCountForUser(
+      Number(req.user.userId),
+    );
+    return { count };
+  }
+
   @ApiOperation({
     summary: 'Get all notifications for authenticated user with pagination',
   })

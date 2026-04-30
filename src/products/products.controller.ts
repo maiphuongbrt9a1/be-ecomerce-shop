@@ -140,6 +140,20 @@ export class ProductsController {
     return await this.productsService.findAll(Number(page), Number(perPage));
   }
 
+  @ApiOperation({ summary: 'Generate a unique 4-digit SKU code for a new product' })
+  @ApiResponse({
+    status: 200,
+    description: 'Unique SKU generated successfully',
+    schema: { type: 'object', properties: { sku: { type: 'string', example: 'SKU-4521' } } },
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  @Get('generate-sku')
+  async generateSku(): Promise<{ sku: string }> {
+    return this.productsService.generateUniqueSku();
+  }
+
   @ApiOperation({ summary: 'Filter product variants' })
   @ApiResponse({
     status: 200,

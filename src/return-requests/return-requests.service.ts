@@ -151,8 +151,8 @@ export class ReturnRequestsService {
 
       await this.sendPersonalNotificationSafely(
         createReturnRequestDto.userId,
-        'Return request created',
-        `Your return request #${result.id.toString()} has been created and is pending review.`,
+        'Yêu cầu hoàn trả đã được tạo',
+        `Yêu cầu hoàn trả #${result.id.toString()} của bạn đã được tạo và đang chờ xem xét.`,
       );
 
       return result;
@@ -415,8 +415,8 @@ export class ReturnRequestsService {
 
       await this.sendPersonalNotificationSafely(
         userId,
-        'Return request updated',
-        `Your return request #${result.id.toString()} has been updated.`,
+        'Yêu cầu hoàn trả đã được cập nhật',
+        `Yêu cầu hoàn trả #${result.id.toString()} của bạn đã được cập nhật.`,
       );
 
       return result;
@@ -641,10 +641,17 @@ export class ReturnRequestsService {
       );
 
       if (updatedRequest) {
+        const statusVi: Record<string, string> = {
+          PENDING: 'đang chờ xử lý',
+          IN_PROGRESS: 'đang được xử lý',
+          APPROVED: 'đã được chấp thuận',
+          REJECTED: 'đã bị từ chối',
+        };
+        const statusLabel = statusVi[updatedRequest.request.status] ?? updatedRequest.request.status;
         await this.sendPersonalNotificationSafely(
           updatedRequest.request.userId,
-          'Return request status updated',
-          `Your return request #${updatedRequest.id.toString()} is now ${updatedRequest.request.status}.`,
+          'Trạng thái yêu cầu hoàn trả đã thay đổi',
+          `Yêu cầu hoàn trả #${updatedRequest.id.toString()} của bạn ${statusLabel}.`,
         );
       }
 

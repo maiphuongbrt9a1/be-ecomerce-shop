@@ -254,6 +254,7 @@ export const OrdersWithFullInformationInclude =
           },
         },
         media: true,
+        returnRequest: true,
       },
     },
     orderItems: {

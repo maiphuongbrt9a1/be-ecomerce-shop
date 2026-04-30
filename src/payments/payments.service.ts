@@ -606,8 +606,8 @@ export class PaymentsService {
 
       await this.sendPaymentNotificationSafely(
         Number(foundOrder.id),
-        'Payment confirmed',
-        `Your payment for order #${foundOrder.id.toString()} has been confirmed successfully.`,
+        'Thanh toán thành công',
+        `Thanh toán cho đơn hàng #${foundOrder.id.toString()} của bạn đã được xác nhận thành công.`,
       );
 
       return IpnSuccess;
@@ -700,8 +700,8 @@ export class PaymentsService {
       if (!Number.isNaN(orderId)) {
         await this.sendPaymentNotificationSafely(
           orderId,
-          'Refund processed',
-          `A refund request for order #${orderId.toString()} has been processed. Please check your payment status.`,
+          'Hoàn tiền đã được xử lý',
+          `Yêu cầu hoàn tiền cho đơn hàng #${orderId.toString()} đã được xử lý. Vui lòng kiểm tra trạng thái thanh toán của bạn.`,
         );
       }
 

@@ -164,8 +164,8 @@ export class VouchersService {
 
       await this.sendShopNotificationSafely(
         createVoucherDto.createdBy,
-        'New voucher is available',
-        `A new voucher ${result.code} is now available. Check details and validity in the voucher section.`,
+        'Voucher mới đã có sẵn',
+        `Voucher ${result.code} mới đã có sẵn. Kiểm tra chi tiết và thời hạn trong phần voucher.`,
       );
 
       this.logger.log('Voucher created successfully', result.id);
@@ -345,8 +345,8 @@ export class VouchersService {
 
       await this.sendShopNotificationSafely(
         existingVoucher.createdBy,
-        'Voucher has been updated',
-        `Voucher ${result.code} has updated settings. Please review its current discount and validity period.`,
+        'Voucher đã được cập nhật',
+        `Voucher ${result.code} đã được cập nhật. Vui lòng kiểm tra mức giảm giá và thời hạn hiện tại.`,
       );
 
       this.logger.log('Voucher updated successfully', id);
@@ -391,8 +391,8 @@ export class VouchersService {
 
       await this.sendShopNotificationSafely(
         voucher.createdBy,
-        'Voucher has ended',
-        `Voucher ${deletedVoucher.code} is no longer available.`,
+        'Voucher đã hết hạn',
+        `Voucher ${deletedVoucher.code} đã không còn hiệu lực.`,
       );
 
       return deletedVoucher;

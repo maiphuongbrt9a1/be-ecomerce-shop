@@ -19,7 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "export:postman": "node scripts/export-postman-collection.js",
-    "gen-docs": "ts-node -r tsconfig-paths/register src/generate-openapi.ts"
+    "gen-docs": "ts-node -r tsconfig-paths/register src/generate-openapi.ts",
+    "backfill-sku": "ts-node -r tsconfig-paths/register scripts/backfill-sku.ts",
+    "backfill-notification-vi": "ts-node -r tsconfig-paths/register scripts/backfill-notification-vi.ts"
   },
   "dependencies": {
     "@bull-board/api": "^6.20.5",
