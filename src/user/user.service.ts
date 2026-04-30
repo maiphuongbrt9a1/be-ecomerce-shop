@@ -992,21 +992,23 @@ export class UserService {
       });
 
       //send email
-      await this.mailerService.sendMail({
-        to: user.email, // list of receivers
-        subject: 'Activate your account at BK E-commerce shop', // Subject line
-        template: 'register',
-        context: {
-          name: user?.lastName ?? user.email,
-          activationCode: codeActive,
-        },
-      });
+      this.mailerService
+        .sendMail({
+          to: user.email,
+          subject: 'Activate your account at BK E-commerce shop',
+          template: 'register',
+          context: {
+            name: user?.lastName ?? user.email,
+            activationCode: codeActive,
+          },
+        })
+        .then(() => this.logger.log('User re-activation email sent', user.id))
+        .catch((err) => this.logger.error('Re-activation email failed', err));
 
-      this.logger.log('User re-activation email sent successfully', user.id);
       return userAfterUpdate;
     } catch (error) {
       this.logger.error('Error re-activating user', error);
-      throw new BadRequestException('Failed to re-activate user');
+      throw error;
     }
   }
 
@@ -1066,21 +1068,23 @@ export class UserService {
       });
 
       //send email
-      await this.mailerService.sendMail({
-        to: user.email, // list of receivers
-        subject: 'Change your password account at BK E-commerce shop', // Subject line
-        template: 'register',
-        context: {
-          name: user?.lastName ?? user.email,
-          activationCode: codeActive,
-        },
-      });
+      this.mailerService
+        .sendMail({
+          to: user.email,
+          subject: 'Change your password account at BK E-commerce shop',
+          template: 'register',
+          context: {
+            name: user?.lastName ?? user.email,
+            activationCode: codeActive,
+          },
+        })
+        .then(() => this.logger.log('User retry-password email sent', user.id))
+        .catch((err) => this.logger.error('Retry-password email failed', err));
 
-      this.logger.log('User retry-password email sent successfully', user.id);
       return userAfterUpdate;
     } catch (error) {
       this.logger.error('Error retry-password user', error);
-      throw new BadRequestException('Failed to retry-password user');
+      throw error;
     }
   }
 
