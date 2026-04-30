@@ -36,6 +36,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ChatModule } from './chat/chat.module';
 import { NotificationModule } from './notification/notification.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { RecommendationModule } from './recommendation/recommendation.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     ChatModule,
     NotificationModule,
     AnalyticsModule,
+    RecommendationModule,
   ],
 
   controllers: [AppController],
