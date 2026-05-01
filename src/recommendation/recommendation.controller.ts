@@ -1,34 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RecommendationService } from './recommendation.service';
-import { CreateRecommendationDto } from './dto/create-recommendation.dto';
-import { UpdateRecommendationDto } from './dto/update-recommendation.dto';
+import { Public } from '@/decorator/customize';
 
+@ApiTags('Recommendation')
 @Controller('recommendation')
 export class RecommendationController {
   constructor(private readonly recommendationService: RecommendationService) {}
 
-  @Post()
-  create(@Body() createRecommendationDto: CreateRecommendationDto) {
-    return this.recommendationService.create(createRecommendationDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.recommendationService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.recommendationService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRecommendationDto: UpdateRecommendationDto) {
-    return this.recommendationService.update(+id, updateRecommendationDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.recommendationService.remove(+id);
+  @ApiOperation({
+    summary: 'Get outfit recommendation for a product variant',
+  })
+  @ApiParam({
+    name: 'productVariantId',
+    required: true,
+    type: Number,
+    example: 123,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Outfit recommendation retrieved successfully',
+  })
+  @Public()
+  @Get('outfit/:productVariantId')
+  async getOutfitRecommendation(
+    @Param('productVariantId', ParseIntPipe) productVariantId: number,
+  ) {
+    return await this.recommendationService.getOutfitRecommendation(
+      productVariantId,
+    );
   }
 }

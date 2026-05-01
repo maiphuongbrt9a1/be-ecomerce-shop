@@ -150,6 +150,10 @@ enum NotificationType {
     PERSONAL_NOTIFICATION
 }
 
+enum RecommendationType {
+    OUTFIT // suggest product variants that can be bought together to create a complete outfit (e.g. shirt + pants + shoes)
+}
+
 model User {
     // Base user fields
     id          BigInt      @db.BigInt @id @default(autoincrement())
@@ -340,6 +344,8 @@ model Category {
     voucher Vouchers? @relation(fields: [voucherId], references: [id], onDelete: SetNull, onUpdate: Cascade)
     voucherId BigInt? @db.BigInt
     
+    baseCategoryMappings CategoryMapping[] @relation("BaseCategory")
+    suggestCategoryMappings CategoryMapping[] @relation("SuggestCategory")
     
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
@@ -381,10 +387,82 @@ model ProductVariants {
     productVariantColor Color @relation(fields: [colorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
     colorId BigInt @db.BigInt
 
+    sourceProductVariantRecommendations ProductVariantRecommendations[] @relation("SourceRec")
+    targetProductVariantRecommendations ProductVariantRecommendations[] @relation("TargetRec")
+
     @@index([productId], name: "idx_productVariant_product_id")
     @@index([voucherId], name: "idx_productVariant_voucher_id")
     @@index([colorId], name: "idx_productVariant_color_id")
     @@index([createByUserId], name: "idx_productVariant_created_by_user_id")
+}
+
+// f1 - điểm số thể hiện cho danh mục phù hợp giữa sản phẩm gốc và sản phẩm được đề xuất,
+// Ví dụ nếu sản phẩm A là áo thì sản phẩm B phải là Quần hoặc danh mục gì khác của A.
+// 0 thể hiện cho việc cùng danh mục, 1 thể hiện cho việc không cùng danh mục.
+
+// f2 - điểm số thể hiện cho mức độ phổ biến của sản phẩm được đề xuất, 
+// có thể dựa trên số lượng bán ra, 
+// Điểm số này giúp ưu tiên đề xuất những sản phẩm đang được ưa chuộng trên thị trường.
+// Điểm này trong khoảng 0 đến 1, 
+// với 0 thể hiện cho sản phẩm không phổ biến 
+// và 1 thể hiện cho sản phẩm rất phổ biến.
+
+// f3 - điểm số thể hiện cho mức độ phù hợp về đánh giá của sản phẩm được đề xuất,
+// có thể dựa trên số lượng đánh giá và điểm đánh giá trung bình của sản phẩm đó.
+// điểm số này nằm trong khoảng 0 đến 1, 
+// với 0 thể hiện cho sản phẩm có đánh giá kém 
+// và 1 thể hiện cho sản phẩm có đánh giá tốt.
+
+// f4 - điểm số được thể hiện cho việc hai sản phẩm mua cùng nhau nhiều hay ít,
+// có thể dựa trên dữ liệu lịch sử mua hàng của khách hàng, 
+// nếu sản phẩm A và sản phẩm B thường được mua cùng nhau, thì điểm số này sẽ cao, 
+// ngược lại nếu hai sản phẩm hiếm khi được mua cùng nhau thì điểm số này sẽ thấp.
+// điểm này cũng nằm trong khoảng 0 đến 1, 
+// với 0 thể hiện cho việc hai sản phẩm hiếm khi được mua cùng nhau
+// và 1 thể hiện cho việc hai sản phẩm thường được mua cùng nhau.
+
+// tổng hợp - điểm số tổng hợp được tính dựa trên công thức kết hợp các điểm số f1, f2, f3, f4,
+// sử dụng các trọng số khác nhau để điều chỉnh tầm quan trọng của từng yếu tố trong việc đề xuất sản phẩm,
+// và chỉ lấy những vector có độ dài > t (vd t = 0.5) 
+// để đảm bảo rằng chỉ những sản phẩm có mức độ tương đồng đủ cao mới được đề xuất cho khách hàng.
+// giải thuật knn với hàm tương đồng là cosine similarity có thể được sử dụng để tính toán điểm số tổng hợp này,
+// điểm số tổng hợp này giúp xếp hạng các sản phẩm được đề xuất, 
+// ưu tiên những sản phẩm có điểm số cao hơn để hiển thị cho khách hàng, 
+// từ đó tăng khả năng khách hàng sẽ chọn mua sản phẩm được đề xuất.
+model ProductVariantRecommendations {
+  id                   BigInt   @id @default(autoincrement()) @db.BigInt
+  sourceProductVariantId      BigInt   @db.BigInt
+  recommendedProductVariantId BigInt   @db.BigInt
+
+  suitableCategoryScore                Float    @db.DoublePrecision // f1
+  popularityScore Float @db.DoublePrecision        // f2
+  ratingScore Float @db.DoublePrecision            // f3
+  coPurchaseScore Float @db.DoublePrecision       // f4
+  finalScore Float @db.DoublePrecision             // tổng hợp
+  recommendationType                 RecommendationType   @default(OUTFIT)
+  
+  sourceProductVariant        ProductVariants @relation("SourceRec", fields: [sourceProductVariantId], references: [id], onDelete: Cascade)
+  recommendedProductVariant   ProductVariants @relation("TargetRec", fields: [recommendedProductVariantId], references: [id], onDelete: Cascade)
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  @@unique([sourceProductVariantId, recommendedProductVariantId])
+  @@index([sourceProductVariantId])
+}
+
+// Quy tắc phối đồ động: Category A đi với Category B
+// Dùng để quy định quy tắc đề xuất sản phẩm, 
+// ví dụ: áo sơ mi đi với quần tây, áo thun đi với quần jeans, váy đi với giày cao gót, v.v.
+model CategoryMapping {
+  id                Int      @id @default(autoincrement())
+  baseCategoryId    BigInt   @db.BigInt
+  suggestCategoryId BigInt   @db.BigInt
+  
+  baseCategory      Category @relation("BaseCategory", fields: [baseCategoryId], references: [id])
+  suggestCategory   Category @relation("SuggestCategory", fields: [suggestCategoryId], references: [id])
+
+  @@unique([baseCategoryId, suggestCategoryId])
 }
 
 model Color {
