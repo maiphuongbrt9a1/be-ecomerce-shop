@@ -1,2 +1,5 @@
-*.sql filter=lfs diff=lfs merge=lfs -text
-*.backup filter=lfs diff=lfs merge=lfs -text
+# Đảm bảo các file migration của Prisma luôn là văn bản thuần túy (Plain Text)
+prisma/migrations/**/*.sql text
+
+db_backup_files/**/*.sql filter=lfs diff=lfs merge=lfs -text
+db_backup_files/**/*.backup filter=lfs diff=lfs merge=lfs -text
