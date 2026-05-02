@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:7e9eea7a3ea6a16668ca28656a941d33785766e27f536bacdebaf243ff9ec2d6
-size 822
+-- CreateTable
+CREATE TABLE "public"."CategoryMapping" (
+    "id" SERIAL NOT NULL,
+    "baseCategoryId" BIGINT NOT NULL,
+    "suggestCategoryId" BIGINT NOT NULL,
+
+    CONSTRAINT "CategoryMapping_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "CategoryMapping_baseCategoryId_suggestCategoryId_key" ON "public"."CategoryMapping"("baseCategoryId", "suggestCategoryId");
+
+-- AddForeignKey
+ALTER TABLE "public"."CategoryMapping" ADD CONSTRAINT "CategoryMapping_baseCategoryId_fkey" FOREIGN KEY ("baseCategoryId") REFERENCES "public"."Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."CategoryMapping" ADD CONSTRAINT "CategoryMapping_suggestCategoryId_fkey" FOREIGN KEY ("suggestCategoryId") REFERENCES "public"."Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

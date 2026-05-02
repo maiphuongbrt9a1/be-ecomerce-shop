@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0e8e08e90304e8534ca9f8cbb5f1d9f42d993f7eb1392bcec3e47d2fdb463bfe
-size 571
+-- AlterTable
+ALTER TABLE "public"."OrderItems" ADD COLUMN     "currencyUnit" VARCHAR(10) NOT NULL DEFAULT 'VND';
+
+-- AlterTable
+ALTER TABLE "public"."Orders" ADD COLUMN     "currencyUnit" VARCHAR(10) NOT NULL DEFAULT 'VND';
+
+-- AlterTable
+ALTER TABLE "public"."Payments" ADD COLUMN     "currencyUnit" VARCHAR(10) NOT NULL DEFAULT 'VND';
+
+-- AlterTable
+ALTER TABLE "public"."ProductVariants" ADD COLUMN     "currencyUnit" VARCHAR(10) NOT NULL DEFAULT 'VND';
+
+-- AlterTable
+ALTER TABLE "public"."Products" ADD COLUMN     "currencyUnit" VARCHAR(10) NOT NULL DEFAULT 'VND';

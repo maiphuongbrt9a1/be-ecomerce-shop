@@ -1,3 +1,3 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:10cb81a955dd64f1f1d45531fee11b1a07fad59cf8f9c813fc0c752d0c8a31dc
-size 179
+-- AlterTable
+ALTER TABLE "public"."ProductVariants" ADD COLUMN     "isNewProductVariant" BOOLEAN NOT NULL DEFAULT true,
+ADD COLUMN     "soldQuantity" INTEGER NOT NULL DEFAULT 0;

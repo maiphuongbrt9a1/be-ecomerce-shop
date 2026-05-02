@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:797b9057f301e3381b61e9f32464a4554828b4888bcf8ca4dc4093799e79c7a7
-size 651
+-- CreateEnum
+CREATE TYPE "public"."Role" AS ENUM ('USER', 'ADMIN');
+
+-- CreateTable
+CREATE TABLE "public"."User" (
+    "id" BIGSERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "email" TEXT NOT NULL,
+    "phone" VARCHAR(10) NOT NULL,
+    "firstName" VARCHAR(255) NOT NULL,
+    "lastName" VARCHAR(255) NOT NULL,
+    "role" "public"."Role" NOT NULL DEFAULT 'USER',
+    "password" VARCHAR(16) NOT NULL,
+    "username" VARCHAR(32) NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_username_key" ON "public"."User"("username");

@@ -1,3 +1,8 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:837879790fe4f910669842fcf8a6db6d14c6e74612c22d5fd10c382d4ea3ff1e
-size 259
+/*
+  Warnings:
+
+  - Added the required column `userId` to the `PackageChecksums` table without a default value. This is not possible if the table is not empty.
+
+*/
+-- AlterTable
+ALTER TABLE "public"."PackageChecksums" ADD COLUMN     "userId" BIGINT NOT NULL;

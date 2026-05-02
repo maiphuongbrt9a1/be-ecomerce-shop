@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:c08a6c3e7a73ed73848bebcb248b92fd0cf1454c9bb51932c35745e359fcf499
-size 431
+/*
+  Warnings:
+
+  - The `subject` column on the `Requests` table would be dropped and recreated. This will lead to data loss if there is data in the column.
+
+*/
+-- CreateEnum
+CREATE TYPE "public"."RequestType" AS ENUM ('RETURN_REQUEST', 'CANCEL_REQUEST', 'CUSTOMER_SUPPORT');
+
+-- AlterTable
+ALTER TABLE "public"."Requests" DROP COLUMN "subject",
+ADD COLUMN     "subject" "public"."RequestType" NOT NULL DEFAULT 'CUSTOMER_SUPPORT';

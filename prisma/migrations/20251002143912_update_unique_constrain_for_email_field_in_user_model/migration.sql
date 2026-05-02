@@ -1,3 +1,8 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:63befaade6400e7f26a2703b8d1c7b04ccec4000a1b37f273e6afe1573ed2435
-size 247
+/*
+  Warnings:
+
+  - A unique constraint covering the columns `[email]` on the table `User` will be added. If there are existing duplicate values, this will fail.
+
+*/
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");

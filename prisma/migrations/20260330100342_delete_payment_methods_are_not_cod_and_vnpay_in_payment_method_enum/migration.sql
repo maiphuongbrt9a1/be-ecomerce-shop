@@ -1,3 +1,16 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:fe68c3deada655440fba97cfa81bf20e35246e9dd439a71a5c661838af46c94c
-size 767
+/*
+  Warnings:
+
+  - The values [MOMO,ZALOPAY,CREDIT_CARD,BANK_TRANSFER] on the enum `PaymentMethod` will be removed. If these variants are still used in the database, this will fail.
+
+*/
+-- AlterEnum
+BEGIN;
+CREATE TYPE "public"."PaymentMethod_new" AS ENUM ('COD', 'VNPAY');
+ALTER TABLE "public"."Payments" ALTER COLUMN "paymentMethod" DROP DEFAULT;
+ALTER TABLE "public"."Payments" ALTER COLUMN "paymentMethod" TYPE "public"."PaymentMethod_new" USING ("paymentMethod"::text::"public"."PaymentMethod_new");
+ALTER TYPE "public"."PaymentMethod" RENAME TO "PaymentMethod_old";
+ALTER TYPE "public"."PaymentMethod_new" RENAME TO "PaymentMethod";
+DROP TYPE "public"."PaymentMethod_old";
+ALTER TABLE "public"."Payments" ALTER COLUMN "paymentMethod" SET DEFAULT 'COD';
+COMMIT;

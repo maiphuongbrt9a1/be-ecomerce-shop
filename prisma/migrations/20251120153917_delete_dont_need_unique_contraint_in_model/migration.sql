@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6b9f0085b4276233d3c74a15291a281cc69594f70a97698d488c13b79e0ab009
-size 309
+-- DropIndex
+DROP INDEX "public"."OrderItems_productVariantId_key";
+
+-- DropIndex
+DROP INDEX "public"."Payments_orderId_key";
+
+-- DropIndex
+DROP INDEX "public"."Requests_orderId_key";
+
+-- DropIndex
+DROP INDEX "public"."Shipments_orderId_key";
+
+-- DropIndex
+DROP INDEX "public"."Shipments_trackingNumber_key";

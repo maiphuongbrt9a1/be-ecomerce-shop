@@ -1,3 +1,11 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:7f07e4c2171fb49ba4cae042afb2f537993692d95c0fa525521dc726c5119283
-size 498
+/*
+  Warnings:
+
+  - Added the required column `codeActive` to the `User` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `codeActiveExpire` to the `User` table without a default value. This is not possible if the table is not empty.
+
+*/
+-- AlterTable
+ALTER TABLE "public"."User" ADD COLUMN     "codeActive" UUID NOT NULL,
+ADD COLUMN     "codeActiveExpire" TIMESTAMP(3) NOT NULL,
+ADD COLUMN     "isActive" BOOLEAN NOT NULL DEFAULT false;
