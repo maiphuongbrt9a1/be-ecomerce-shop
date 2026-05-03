@@ -1,6 +1,6 @@
 import { comparePasswordHelper } from '@/helpers/utils';
 import { UserService } from '@/user/user.service';
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   ChangePasswordAuthDto,
@@ -65,7 +65,7 @@ export class AuthService {
     try {
       const user = await this.userService.getUserByEmail(username);
       if (!user) {
-        throw new UnauthorizedException('Invalid Username or Password');
+        throw new NotFoundException('Email không tồn tại trong hệ thống');
       }
 
       if (!user.password) {
@@ -96,6 +96,11 @@ export class AuthService {
       );
       throw new UnauthorizedException('Invalid Username or Password');
     }
+  }
+
+  async checkEmailExists(email: string): Promise<boolean> {
+    const count = await this.prismaService.user.count({ where: { email } });
+    return count > 0;
   }
 
   /**

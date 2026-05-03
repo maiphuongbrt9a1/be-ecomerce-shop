@@ -72,6 +72,14 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
+  @Post('check-email')
+  @Public()
+  @ResponseMessage('Check email')
+  async checkEmail(@Body() body: { email: string }) {
+    const exists = await this.authService.checkEmailExists(body.email);
+    return { exists };
+  }
+
   @ApiOperation({ summary: 'Get profile of account' })
   @ApiResponse({
     status: 200,
