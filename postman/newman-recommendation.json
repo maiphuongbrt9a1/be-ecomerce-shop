@@ -1,0 +1,57 @@
+{
+  "info": {
+    "name": "Recommendation Module",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get outfit recommendation for variant",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/recommendation/outfit/1",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["recommendation","outfit","1"]
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+        "pm.test('Response has data', function () { pm.expect(pm.response.json()).to.have.property('statusCode', 200); });"
+      ]}}]
+    },
+    {
+      "name": "Get recommendation for non-existent variant",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/recommendation/outfit/999999",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["recommendation","outfit","999999"]
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200 — empty result', function () { pm.response.to.have.status(200); });"
+      ]}}]
+    },
+    {
+      "name": "Get recommendation with valid product variant",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/recommendation/outfit/5",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["recommendation","outfit","5"]
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+      ]}}]
+    }
+  ]
+}

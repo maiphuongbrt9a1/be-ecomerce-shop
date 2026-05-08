@@ -1,0 +1,94 @@
+{
+  "info": {
+    "name": "Chat Module",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [{ "key": "access_token", "value": "" }],
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/auth/login",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["auth","login"]
+        },
+        "body": { "mode": "raw", "raw": "{\"username\":\"vomaiphuonghhvt@gmail.com\",\"password\":\"123456789\"}" }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Login success', function () { pm.response.to.have.status(201); });",
+        "var d = pm.response.json(); if (d.data && d.data.access_token) { pm.collectionVariables.set('access_token', d.data.access_token); }"
+      ]}}]
+    },
+    {
+      "name": "Get admin support rooms",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/chat/admin/rooms",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["chat","admin","rooms"]
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+      ]}}]
+    },
+    {
+      "name": "Get all rooms for user",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/chat/rooms",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["chat","rooms"]
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+        "pm.test('Response has data', function () { pm.expect(pm.response.json()).to.have.property('statusCode', 200); });"
+      ]}}]
+    },
+    {
+      "name": "Get room messages",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/chat/messages?roomName=support-sangbeo245@gmail.com&page=1&perPage=10",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["chat","messages"],
+          "query": [{"key":"roomName","value":"support-sangbeo245@gmail.com"},{"key":"page","value":"1"},{"key":"perPage","value":"10"}]
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200 or 404', function () { pm.expect(pm.response.code).to.be.oneOf([200, 404]); });"
+      ]}}]
+    },
+    {
+      "name": "Send private message",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/chat/messages/private",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["chat","messages","private"]
+        },
+        "body": { "mode": "raw", "raw": "{\"receiver\":1,\"text\":\"Integration test message\"}" }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201 or 400', function () { pm.expect(pm.response.code).to.be.oneOf([201, 400]); });"
+      ]}}]
+    }
+  ]
+}

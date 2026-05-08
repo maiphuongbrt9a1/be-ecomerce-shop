@@ -1,0 +1,95 @@
+{
+  "info": {
+    "name": "Notification Module",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [{ "key": "access_token", "value": "" }],
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/auth/login",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["auth","login"]
+        },
+        "body": { "mode": "raw", "raw": "{\"username\":\"vomaiphuonghhvt@gmail.com\",\"password\":\"123456789\"}" }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Login success', function () { pm.response.to.have.status(201); });",
+        "var d = pm.response.json(); if (d.data && d.data.access_token) { pm.collectionVariables.set('access_token', d.data.access_token); }"
+      ]}}]
+    },
+    {
+      "name": "Get unread count",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/notification/me/unread-count",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["notification","me","unread-count"]
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+      ]}}]
+    },
+    {
+      "name": "Get my notifications",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/notification/me?page=1&perPage=10",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["notification","me"],
+          "query": [{"key":"page","value":"1"},{"key":"perPage","value":"10"}]
+        }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+        "pm.test('Response has data', function () { pm.expect(pm.response.json()).to.have.property('statusCode', 200); });"
+      ]}}]
+    },
+    {
+      "name": "Send personal notification",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/notification/personal",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["notification","personal"]
+        },
+        "body": { "mode": "raw", "raw": "{\"receiverId\":1,\"title\":\"Integration Test\",\"content\":\"Test notification\"}" }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201 or 400', function () { pm.expect(pm.response.code).to.be.oneOf([201, 400]); });"
+      ]}}]
+    },
+    {
+      "name": "Send shop notification",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }, { "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "https://be-ecomerce-shop-production.up.railway.app/notification/shop",
+          "protocol": "https",
+          "host": ["be-ecomerce-shop-production","up","railway","app"],
+          "path": ["notification","shop"]
+        },
+        "body": { "mode": "raw", "raw": "{\"title\":\"Shop Test\",\"content\":\"Shop notification test\"}" }
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Status 201', function () { pm.response.to.have.status(201); });"
+      ]}}]
+    }
+  ]
+}
