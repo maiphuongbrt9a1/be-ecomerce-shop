@@ -124,7 +124,7 @@ export class ChatController {
       'Return all public rooms whose name starts with "support-", ordered by creation date descending. Used by admins to discover incoming customer support requests.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'OPERATOR')
   @Get('/admin/rooms')
   async getAdminRooms(): Promise<RoomChat[]> {
     return await this.chatService.getAdminRooms();
