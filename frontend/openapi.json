@@ -2811,6 +2811,20 @@
         ]
       }
     },
+    "/auth/check-email": {
+      "post": {
+        "operationId": "AuthController_checkEmail",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/auth/profile": {
       "get": {
         "operationId": "AuthController_getProfile",
@@ -3323,6 +3337,39 @@
           }
         },
         "summary": "Get all products",
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/products/generate-sku": {
+      "get": {
+        "operationId": "ProductsController_generateSku",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Unique SKU generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sku": {
+                      "type": "string",
+                      "example": "SKU-4521"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate a unique 4-digit SKU code for a new product",
         "tags": [
           "Products"
         ]
@@ -5150,6 +5197,14 @@
         "operationId": "ReviewsController_findAll",
         "parameters": [
           {
+            "name": "rating",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "perPage",
             "required": false,
             "in": "query",
@@ -6274,6 +6329,60 @@
         ]
       }
     },
+    "/orders/shop/pending-return-request-list": {
+      "get": {
+        "operationId": "OrdersController_getOrdersWithPendingReturnRequestOfShop",
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrieved orders that currently have an unresolved return request awaiting staff review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderFullInformationEntity"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all shop orders with a PENDING or IN_PROGRESS return request",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
     "/orders/{id}": {
       "get": {
         "operationId": "OrdersController_findOne",
@@ -6563,6 +6672,80 @@
           }
         ],
         "summary": "Update one order from shipped to delivery failed",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/my-reviews": {
+      "get": {
+        "operationId": "OrdersController_getMyReviewsForOrder",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of reviews by current user for variants in this order"
+          },
+          "404": {
+            "description": "Order not found for this user"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get reviews by current user for items in this order",
+        "tags": [
+          "Orders"
+        ]
+      }
+    },
+    "/orders/{id}/user-confirm-received": {
+      "patch": {
+        "operationId": "OrdersController_userConfirmReceived",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order confirmed as completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderFullInformationEntity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Order is not in DELIVERED status"
+          },
+          "404": {
+            "description": "Order not found for this user"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "User confirms order received (DELIVERED → COMPLETED)",
         "tags": [
           "Orders"
         ]
@@ -7512,6 +7695,29 @@
         ]
       }
     },
+    "/notification/me/unread-count": {
+      "get": {
+        "operationId": "NotificationController_getUnreadCount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return unread notification count"
+          },
+          "400": {
+            "description": "Bad Request."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get unread personal notification count for authenticated user",
+        "tags": [
+          "notification"
+        ]
+      }
+    },
     "/notification/me": {
       "get": {
         "operationId": "NotificationController_getNotificationsForMe",
@@ -8454,13 +8660,13 @@
         ],
         "responses": {
           "200": {
-            "description": "List of all vouchers",
+            "description": "List of all vouchers including assignment targets",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VoucherEntity"
+                    "$ref": "#/components/schemas/VoucherWithAllTargetsEntity"
                   }
                 }
               }
@@ -8473,7 +8679,7 @@
             "description": "Not Found."
           }
         },
-        "summary": "Get all vouchers",
+        "summary": "Get all vouchers with their assigned targets (products, categories, variants, users)",
         "tags": [
           "Vouchers"
         ]
@@ -8532,20 +8738,20 @@
         ],
         "responses": {
           "200": {
-            "description": "Filtered list of vouchers",
+            "description": "Filtered list of vouchers including assignment targets",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/VoucherEntity"
+                    "$ref": "#/components/schemas/VoucherWithAllTargetsEntity"
                   }
                 }
               }
             }
           }
         },
-        "summary": "Search and filter vouchers",
+        "summary": "Search and filter vouchers with their assigned targets",
         "tags": [
           "Vouchers"
         ]
@@ -8953,6 +9159,58 @@
           }
         ],
         "summary": "Get all user vouchers",
+        "tags": [
+          "UserVouchers"
+        ]
+      }
+    },
+    "/user-vouchers/me": {
+      "get": {
+        "operationId": "UserVouchersController_findMine",
+        "parameters": [
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User vouchers retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserSavedVoucherDetailEntity"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all vouchers for the authenticated user",
         "tags": [
           "UserVouchers"
         ]
@@ -9993,6 +10251,62 @@
         ]
       }
     },
+    "/chat/public-rooms/add-user": {
+      "post": {
+        "operationId": "ChatController_addUserToRoom",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddUserToRoomDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User added to room."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a specific user to a public room (admin only)",
+        "tags": [
+          "chat"
+        ]
+      }
+    },
+    "/chat/admin/rooms": {
+      "get": {
+        "operationId": "ChatController_getAdminRooms",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all public rooms whose name starts with \"support-\", ordered by creation date descending. Used by admins to discover incoming customer support requests."
+          },
+          "400": {
+            "description": "Bad Request."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all customer support rooms (admin only)",
+        "tags": [
+          "chat"
+        ]
+      }
+    },
     "/chat/rooms": {
       "get": {
         "operationId": "ChatController_getAllRooms",
@@ -10144,6 +10458,1484 @@
         "summary": "Send a private message",
         "tags": [
           "chat"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-revenue": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalRevenueForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Revenue metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardRevenueMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get total revenue dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-orders": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalOrdersForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Total orders metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get total orders dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-payment-confirmed-orders": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalPaymentConfirmedOrdersForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment-confirmed orders metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get payment-confirmed orders dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-cancelled-orders": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalCancelledOrdersForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cancelled orders metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get cancelled orders dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-returned-orders": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalReturnedOrdersForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returned orders metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get returned orders dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-delivered-orders": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalDeliveredOrdersForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivered orders metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get delivered orders dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-delivery-failed-orders": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalDeliveryFailedOrdersForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery-failed orders metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get delivery-failed orders dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-completed-orders": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalCompletedOrdersForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Completed orders metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get completed orders dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-paid-payments": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalPaidPaymentsForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paid payments metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get paid payments dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-pending-payments": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalPendingPaymentsForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pending payments metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get pending payments dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-failed-payments": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalFailedPaymentsForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Failed payments metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get failed payments dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-refunded-payments": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalRefundedPaymentsForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Refunded payments metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get refunded payments dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-cancelled-payments": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalCancelledPaymentsForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cancelled payments metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get cancelled payments dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-customers": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalCustomersForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Total customers metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get total customers dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-new-customers": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalNewCustomersForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New customers metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get new customers dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-returning-customers": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalReturningCustomersForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returning customers metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get returning customers dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/customer-retention-rate": {
+      "get": {
+        "operationId": "AnalyticsController_getCustomerRetentionRateForDashboardCard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer retention rate metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardCardNumberMetricEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get customer retention rate dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/top-selling-product-variants": {
+      "get": {
+        "operationId": "AnalyticsController_getProductVariantsTopSellingForDashboardCard",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top selling product variants retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductVariantWithMediaEntity"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get top selling product variants for dashboard card",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/top-revenue-users": {
+      "get": {
+        "operationId": "AnalyticsController_getTopRevenueUsersForDashboardCard",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top revenue users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnalyticsTopRevenueUserEntity"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get top revenue users for dashboard card",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/top-revenue-staffs": {
+      "get": {
+        "operationId": "AnalyticsController_getTopRevenueStaffsForDashboardCard",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top revenue staffs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnalyticsTopRevenueUserEntity"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get top revenue staffs for dashboard card",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-in-stock-product-variants": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalInStockProductVariantsForDashboardCard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Retrieves total in-stock units across all product variants successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalInStock": {
+                      "type": "number",
+                      "example": 1250
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Retrieves total in-stock units across all product variants for dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/dashboard-card/total-out-of-stock-product-variants": {
+      "get": {
+        "operationId": "AnalyticsController_getTotalOutOfStockProductVariantsForDashboardCard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Total out-of-stock product variants metric retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalOutOfStock": {
+                      "type": "number",
+                      "example": 34
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get total out-of-stock product variants dashboard card metric",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/primary-dashboard/period-report-chart-data": {
+      "get": {
+        "operationId": "AnalyticsController_getPeriodReportChartDataInPrimaryDashboard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Period report chart data retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsReportChartDataInPrimaryDashboardEntity"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get period report chart data for primary dashboard",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/analytics/secondary-dashboard/customers-report-chart-data": {
+      "get": {
+        "operationId": "AnalyticsController_getCustomersReportChartDataInSecondaryDashboard",
+        "parameters": [
+          {
+            "name": "viewMode",
+            "required": false,
+            "in": "query",
+            "description": "Analytics period view mode",
+            "schema": {
+              "default": "WEEKLY",
+              "example": "WEEKLY",
+              "type": "string",
+              "enum": [
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY"
+              ]
+            }
+          },
+          {
+            "name": "referenceDate",
+            "required": false,
+            "in": "query",
+            "description": "Reference date for period calculation. Defaults to current date when omitted.",
+            "schema": {
+              "format": "date-time",
+              "example": "2026-05-04T00:42:45.779Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "numberOfRetentionRatePeriods",
+            "required": false,
+            "in": "query",
+            "description": "Number of periods to return for retention-rate time series. Defaults to 12 when omitted.",
+            "schema": {
+              "example": 12,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Secondary dashboard customer report data retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get customers report chart data for secondary dashboard",
+        "tags": [
+          "Analytics"
+        ]
+      }
+    },
+    "/recommendation/outfit/{productVariantId}": {
+      "get": {
+        "operationId": "RecommendationController_getOutfitRecommendation",
+        "parameters": [
+          {
+            "name": "productVariantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": 123,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Outfit recommendation retrieved successfully"
+          }
+        },
+        "summary": "Get outfit recommendation for a product variant",
+        "tags": [
+          "Recommendation"
         ]
       }
     }
@@ -10536,7 +12328,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:03.139Z"
+            "example": "2026-05-04T00:42:43.109Z"
           },
           "isActive": {
             "type": "boolean",
@@ -10544,16 +12336,16 @@
           },
           "codeActive": {
             "type": "string",
-            "example": "dfbef8a9-6974-4424-a6f3-7c7510aec1c7"
+            "example": "e2f3e0a3-aa55-4ce5-9c3f-f447a09b6b79"
           },
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:03.140Z"
+            "example": "2026-05-04T00:42:43.109Z"
           },
           "staffCode": {
             "type": "string",
-            "example": "833a540b-4cc3-4147-bee8-57c6ea4cd1e8"
+            "example": "89945f56-f863-4128-aa73-85d56098d427"
           },
           "loyaltyCard": {
             "type": "string",
@@ -10636,7 +12428,7 @@
           "createdAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:03.139Z"
+            "example": "2026-05-04T00:42:43.109Z"
           },
           "isActive": {
             "type": "boolean",
@@ -10644,16 +12436,16 @@
           },
           "codeActive": {
             "type": "string",
-            "example": "dfbef8a9-6974-4424-a6f3-7c7510aec1c7"
+            "example": "e2f3e0a3-aa55-4ce5-9c3f-f447a09b6b79"
           },
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:03.140Z"
+            "example": "2026-05-04T00:42:43.109Z"
           },
           "staffCode": {
             "type": "string",
-            "example": "833a540b-4cc3-4147-bee8-57c6ea4cd1e8"
+            "example": "89945f56-f863-4128-aa73-85d56098d427"
           },
           "loyaltyCard": {
             "type": "string",
@@ -10737,7 +12529,7 @@
           },
           "staffCode": {
             "type": "string",
-            "example": "833a540b-4cc3-4147-bee8-57c6ea4cd1e8"
+            "example": "89945f56-f863-4128-aa73-85d56098d427"
           },
           "loyaltyCard": {
             "type": "string",
@@ -12186,7 +13978,7 @@
           "codeActiveExpire": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:04.801Z"
+            "example": "2026-05-04T00:42:43.577Z"
           }
         },
         "required": [
@@ -13923,7 +15715,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.098Z"
+            "example": "2026-05-04T00:42:44.877Z"
           },
           "amount": {
             "type": "number",
@@ -14663,7 +16455,7 @@
           "paymentDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.098Z"
+            "example": "2026-05-04T00:42:44.877Z"
           },
           "amount": {
             "type": "number",
@@ -14848,25 +16640,25 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.403Z",
+            "example": "2026-05-04T00:42:44.960Z",
             "description": "at shop, estimate time when leave from shop"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.403Z",
+            "example": "2026-05-04T00:42:44.960Z",
             "description": "at shop, actual time when leave from shop"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.403Z",
+            "example": "2026-05-04T00:42:44.960Z",
             "description": "at customer, estimate time when arrive to customer"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.403Z",
+            "example": "2026-05-04T00:42:44.960Z",
             "description": "at customer, actual time when arrive to customer"
           },
           "carrier": {
@@ -15493,25 +17285,25 @@
           "estimatedDelivery": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.403Z",
+            "example": "2026-05-04T00:42:44.960Z",
             "description": "at shop, estimate time when leave from shop"
           },
           "deliveredAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.403Z",
+            "example": "2026-05-04T00:42:44.960Z",
             "description": "at shop, actual time when leave from shop"
           },
           "estimatedShipDate": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.403Z",
+            "example": "2026-05-04T00:42:44.960Z",
             "description": "at customer, estimate time when arrive to customer"
           },
           "shippedAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.403Z",
+            "example": "2026-05-04T00:42:44.960Z",
             "description": "at customer, actual time when arrive to customer"
           },
           "carrier": {
@@ -15756,12 +17548,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.948Z"
+            "example": "2026-05-04T00:42:45.120Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.948Z"
+            "example": "2026-05-04T00:42:45.120Z"
           },
           "usageLimit": {
             "type": "number",
@@ -15794,6 +17586,206 @@
           "createdBy"
         ]
       },
+      "VoucherTargetProductEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Áo thun nam"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "VoucherTargetCategoryEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Áo"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "VoucherTargetVariantEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "variantName": {
+            "type": "string",
+            "example": "Áo thun nam - Đỏ - XL"
+          },
+          "variantSize": {
+            "type": "string",
+            "example": "XL"
+          },
+          "colorId": {
+            "type": "number",
+            "example": 3
+          }
+        },
+        "required": [
+          "id",
+          "variantName",
+          "variantSize",
+          "colorId"
+        ]
+      },
+      "VoucherTargetUserVoucherEntity": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "format": "int64",
+            "type": "integer",
+            "example": 42
+          },
+          "voucherStatus": {
+            "type": "string",
+            "example": "AVAILABLE",
+            "enum": [
+              "AVAILABLE",
+              "SAVED",
+              "USED",
+              "EXPIRED"
+            ]
+          }
+        },
+        "required": [
+          "userId",
+          "voucherStatus"
+        ]
+      },
+      "VoucherWithAllTargetsEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "code": {
+            "type": "string",
+            "example": "SAVE20"
+          },
+          "description": {
+            "type": "object",
+            "example": "20% off on all items",
+            "nullable": true
+          },
+          "discountType": {
+            "type": "string",
+            "enum": [
+              "PERCENTAGE",
+              "FIXED_AMOUNT"
+            ],
+            "example": "FIXED_AMOUNT"
+          },
+          "discountValue": {
+            "type": "number",
+            "example": 20
+          },
+          "validFrom": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "validTo": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-12-31T23:59:59.999Z"
+          },
+          "usageLimit": {
+            "type": "object",
+            "example": 100,
+            "nullable": true
+          },
+          "timesUsed": {
+            "type": "number",
+            "example": 5
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "createdBy": {
+            "format": "int64",
+            "type": "integer",
+            "example": 1
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "voucherForProduct": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VoucherTargetProductEntity"
+            }
+          },
+          "voucherForCategory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VoucherTargetCategoryEntity"
+            }
+          },
+          "voucherForSpecialProductVariant": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VoucherTargetVariantEntity"
+            }
+          },
+          "userVouchers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VoucherTargetUserVoucherEntity"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "description",
+          "discountType",
+          "discountValue",
+          "validFrom",
+          "validTo",
+          "usageLimit",
+          "timesUsed",
+          "isActive",
+          "createdBy",
+          "createdAt",
+          "updatedAt",
+          "voucherForProduct",
+          "voucherForCategory",
+          "voucherForSpecialProductVariant",
+          "userVouchers"
+        ]
+      },
       "UpdateVoucherDto": {
         "type": "object",
         "properties": {
@@ -15816,12 +17808,12 @@
           "validFrom": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.948Z"
+            "example": "2026-05-04T00:42:45.120Z"
           },
           "validTo": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:09.948Z"
+            "example": "2026-05-04T00:42:45.120Z"
           },
           "usageLimit": {
             "type": "number",
@@ -16131,12 +18123,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:10.118Z"
+            "example": "2026-05-04T00:42:45.175Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:10.118Z"
+            "example": "2026-05-04T00:42:45.175Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -16167,12 +18159,12 @@
           "useVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:10.118Z"
+            "example": "2026-05-04T00:42:45.175Z"
           },
           "saveVoucherAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-04-15T15:01:10.118Z"
+            "example": "2026-05-04T00:42:45.175Z"
           },
           "voucherStatus": {
             "type": "string",
@@ -16513,6 +18505,23 @@
           "name"
         ]
       },
+      "AddUserToRoomDto": {
+        "type": "object",
+        "properties": {
+          "roomName": {
+            "type": "string",
+            "description": "Name of the room to add the user to"
+          },
+          "userId": {
+            "type": "number",
+            "description": "ID of the user to add"
+          }
+        },
+        "required": [
+          "roomName",
+          "userId"
+        ]
+      },
       "CreateMessageDto": {
         "type": "object",
         "properties": {
@@ -16549,6 +18558,257 @@
         "required": [
           "text",
           "receiver"
+        ]
+      },
+      "AnalyticsRevenueAmountEntity": {
+        "type": "object",
+        "properties": {
+          "totalAmount": {
+            "type": "number",
+            "example": 2500000
+          }
+        },
+        "required": [
+          "totalAmount"
+        ]
+      },
+      "AnalyticsCountEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 15
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "AnalyticsTotalRevenueEntity": {
+        "type": "object",
+        "properties": {
+          "_sum": {
+            "$ref": "#/components/schemas/AnalyticsRevenueAmountEntity"
+          },
+          "_count": {
+            "$ref": "#/components/schemas/AnalyticsCountEntity"
+          },
+          "_avg": {
+            "$ref": "#/components/schemas/AnalyticsRevenueAmountEntity"
+          },
+          "_min": {
+            "$ref": "#/components/schemas/AnalyticsRevenueAmountEntity"
+          },
+          "_max": {
+            "$ref": "#/components/schemas/AnalyticsRevenueAmountEntity"
+          }
+        },
+        "required": [
+          "_sum",
+          "_count",
+          "_avg",
+          "_min",
+          "_max"
+        ]
+      },
+      "AnalyticsDashboardCardRevenueMetricEntity": {
+        "type": "object",
+        "properties": {
+          "currentPeriod": {
+            "$ref": "#/components/schemas/AnalyticsTotalRevenueEntity"
+          },
+          "previousPeriod": {
+            "$ref": "#/components/schemas/AnalyticsTotalRevenueEntity"
+          },
+          "percentageChange": {
+            "type": "number",
+            "example": 12.3
+          }
+        },
+        "required": [
+          "currentPeriod",
+          "previousPeriod",
+          "percentageChange"
+        ]
+      },
+      "AnalyticsDashboardCardNumberMetricEntity": {
+        "type": "object",
+        "properties": {
+          "currentPeriod": {
+            "type": "number",
+            "example": 120
+          },
+          "previousPeriod": {
+            "type": "number",
+            "example": 98
+          },
+          "percentageChange": {
+            "type": "number",
+            "example": 22.45
+          }
+        },
+        "required": [
+          "currentPeriod",
+          "previousPeriod",
+          "percentageChange"
+        ]
+      },
+      "AnalyticsTopRevenueUserEntity": {
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "totalOrdersNumber": {
+            "type": "number",
+            "example": 12
+          },
+          "totalRevenue": {
+            "type": "number",
+            "example": 8500000
+          }
+        },
+        "required": [
+          "userName",
+          "totalOrdersNumber",
+          "totalRevenue"
+        ]
+      },
+      "CustomerChartDataItem": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-04-20"
+          },
+          "totalCustomers": {
+            "type": "number",
+            "example": 125
+          }
+        },
+        "required": [
+          "date",
+          "totalCustomers"
+        ]
+      },
+      "SoldProductVariantChartDataItem": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-04-20"
+          },
+          "totalSoldProductVariants": {
+            "type": "number",
+            "example": 340
+          }
+        },
+        "required": [
+          "date",
+          "totalSoldProductVariants"
+        ]
+      },
+      "RevenueChartDataItem": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "example": "2026-04-20"
+          },
+          "revenue": {
+            "type": "number",
+            "example": 12500000
+          },
+          "orderCount": {
+            "type": "number",
+            "example": 45
+          }
+        },
+        "required": [
+          "date",
+          "revenue",
+          "orderCount"
+        ]
+      },
+      "ChartDataBlock": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-05-04T00:42:45.804Z"
+          },
+          "endDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-05-04T00:42:45.804Z"
+          },
+          "customer": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerChartDataItem"
+            }
+          },
+          "soldProductVariant": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SoldProductVariantChartDataItem"
+            }
+          },
+          "revenue": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RevenueChartDataItem"
+            }
+          }
+        },
+        "required": [
+          "startDate",
+          "endDate",
+          "customer",
+          "soldProductVariant",
+          "revenue"
+        ]
+      },
+      "ReportDataItem": {
+        "type": "object",
+        "properties": {
+          "totalCustomers": {
+            "type": "number",
+            "example": 480
+          },
+          "totalSoldProductVariants": {
+            "type": "number",
+            "example": 1350
+          },
+          "totalRevenue": {
+            "$ref": "#/components/schemas/AnalyticsTotalRevenueEntity"
+          },
+          "chartData": {
+            "$ref": "#/components/schemas/ChartDataBlock"
+          }
+        },
+        "required": [
+          "totalCustomers",
+          "totalSoldProductVariants",
+          "totalRevenue",
+          "chartData"
+        ]
+      },
+      "AnalyticsReportChartDataInPrimaryDashboardEntity": {
+        "type": "object",
+        "properties": {
+          "currentReportData": {
+            "$ref": "#/components/schemas/ReportDataItem"
+          },
+          "previousReportData": {
+            "$ref": "#/components/schemas/ReportDataItem"
+          }
+        },
+        "required": [
+          "currentReportData",
+          "previousReportData"
         ]
       }
     }
