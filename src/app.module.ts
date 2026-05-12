@@ -37,6 +37,7 @@ import { ChatModule } from './chat/chat.module';
 import { NotificationModule } from './notification/notification.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
+import { CategoryMappingModule } from './category-mapping/category-mapping.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { RecommendationModule } from './recommendation/recommendation.module';
     NotificationModule,
     AnalyticsModule,
     RecommendationModule,
+    CategoryMappingModule,
   ],
 
   controllers: [AppController],

@@ -7,7 +7,7 @@ import {
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Category, Prisma, Products } from '@prisma/client';
+import { Category, Prisma } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
 import { AwsS3Service } from '@/aws-s3/aws-s3.service';
 import { formatMediaField, formatMediaFieldWithLogging } from '@/helpers/utils';
@@ -267,7 +267,10 @@ export class CategoryService {
     id: number,
     page: number,
     perPage: number,
-  ): Promise<Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia[] | []> {
+  ): Promise<
+    | Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia[]
+    | []
+  > {
     try {
       const paginate = createPaginator({ perPage: perPage });
       const result = await paginate<
@@ -293,9 +296,8 @@ export class CategoryService {
       // Format S3 URLs — same pattern as ProductsService.findAll
       for (const product of result.data) {
         for (const variant of product.productVariants) {
-          variant.media = formatMediaField(
-            variant.media,
-            (url: string) => this.awsService.buildPublicMediaUrl(url),
+          variant.media = formatMediaField(variant.media, (url: string) =>
+            this.awsService.buildPublicMediaUrl(url),
           );
         }
         product.media = formatMediaFieldWithLogging(
