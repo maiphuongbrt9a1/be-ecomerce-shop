@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { CreateCategoryMappingDto } from './dto/create-category-mapping.dto';
 import { UpdateCategoryMappingDto } from './dto/update-category-mapping.dto';
+import { SyncCategoryMappingDto } from './dto/sync-category-mapping.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CategoryMapping, Prisma } from '@prisma/client';
 import { createPaginator } from 'prisma-pagination';
@@ -34,31 +35,37 @@ export class CategoryMappingService {
   }
 
   /**
-   * Retrieve all category mappings with pagination
+   * Retrieve all category mappings with pagination, optionally scoped by baseCategoryId
    * @param {number} page - Page number (default: 1)
    * @param {number} perPage - Number of items per page (default: 10)
+   * @param {number | undefined} baseCategoryId - Optional baseCategoryId to scope results to one base category
    * @returns {Promise<CategoryMapping[] | []>} Array of category mappings for the requested page
    * @throws {BadRequestException} When fetching category mappings fails
    */
   async findAll(
     page: number = 1,
     perPage: number = 10,
+    baseCategoryId?: number,
   ): Promise<CategoryMapping[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
+      const where: Prisma.CategoryMappingWhereInput = baseCategoryId
+        ? { baseCategoryId: BigInt(baseCategoryId) }
+        : {};
       const result = await paginate<
         CategoryMapping,
         Prisma.CategoryMappingFindManyArgs
       >(
         this.prismaService.categoryMapping,
         {
+          where,
           orderBy: { id: 'asc' },
         },
         { page: page },
       );
 
       this.logger.log(
-        `Fetched all category mappings - Page: ${page}, Per Page: ${perPage}`,
+        `Fetched all category mappings - Page: ${page}, Per Page: ${perPage}, Base: ${baseCategoryId ?? 'all'}`,
       );
       return result.data;
     } catch (error) {
@@ -127,6 +134,129 @@ export class CategoryMappingService {
     } catch (error) {
       this.logger.error('Failed to remove category mapping', error);
       throw new BadRequestException('Failed to remove category mapping');
+    }
+  }
+
+  /**
+   * Replace all outgoing mappings for one base category in a single transaction.
+   * When `symmetric` is true, also keeps each reverse mapping (suggest -> base)
+   * in sync so the storefront can recommend mixes from either side.
+   * @param {SyncCategoryMappingDto} dto - sync payload
+   * @returns {Promise<CategoryMapping[]>} The full outgoing list after the sync
+   * @throws {BadRequestException} When sync fails or self-mix is requested
+   */
+  async sync(dto: SyncCategoryMappingDto): Promise<CategoryMapping[]> {
+    const baseId = BigInt(dto.baseCategoryId);
+    const suggestIds = (dto.suggestCategoryIds ?? []).map((n) => BigInt(n));
+    const symmetric = dto.symmetric ?? false;
+
+    if (suggestIds.some((id) => id === baseId)) {
+      throw new BadRequestException(
+        'A category cannot be mapped to mix with itself',
+      );
+    }
+
+    try {
+      const result = await this.prismaService.$transaction(async (tx) => {
+        // Outgoing: base -> *
+        const existingOutgoing = await tx.categoryMapping.findMany({
+          where: { baseCategoryId: baseId },
+        });
+        const desiredOutgoing = new Set(suggestIds.map((id) => id.toString()));
+        const outgoingToDelete = existingOutgoing
+          .filter((m) => !desiredOutgoing.has(m.suggestCategoryId.toString()))
+          .map((m) => m.id);
+        const existingOutgoingSet = new Set(
+          existingOutgoing.map((m) => m.suggestCategoryId.toString()),
+        );
+        const outgoingToCreate = suggestIds.filter(
+          (id) => !existingOutgoingSet.has(id.toString()),
+        );
+
+        if (outgoingToDelete.length > 0) {
+          await tx.categoryMapping.deleteMany({
+            where: { id: { in: outgoingToDelete } },
+          });
+        }
+        if (outgoingToCreate.length > 0) {
+          await tx.categoryMapping.createMany({
+            data: outgoingToCreate.map((suggestCategoryId) => ({
+              baseCategoryId: baseId,
+              suggestCategoryId,
+            })),
+            skipDuplicates: true,
+          });
+        }
+
+        if (symmetric) {
+          // Incoming: * -> base. After sync, the only "* -> base" rows that
+          // should exist are those where * is one of the new suggestIds.
+          const existingIncoming = await tx.categoryMapping.findMany({
+            where: { suggestCategoryId: baseId },
+          });
+          const desiredIncoming = new Set(suggestIds.map((id) => id.toString()));
+          const incomingToDelete = existingIncoming
+            .filter((m) => !desiredIncoming.has(m.baseCategoryId.toString()))
+            .map((m) => m.id);
+          const existingIncomingSet = new Set(
+            existingIncoming.map((m) => m.baseCategoryId.toString()),
+          );
+          const incomingToCreate = suggestIds.filter(
+            (id) => !existingIncomingSet.has(id.toString()),
+          );
+
+          if (incomingToDelete.length > 0) {
+            await tx.categoryMapping.deleteMany({
+              where: { id: { in: incomingToDelete } },
+            });
+          }
+          if (incomingToCreate.length > 0) {
+            await tx.categoryMapping.createMany({
+              data: incomingToCreate.map((otherBaseId) => ({
+                baseCategoryId: otherBaseId,
+                suggestCategoryId: baseId,
+              })),
+              skipDuplicates: true,
+            });
+          }
+        }
+
+        return tx.categoryMapping.findMany({
+          where: { baseCategoryId: baseId },
+          orderBy: { id: 'asc' },
+        });
+      });
+
+      this.logger.log(
+        `Synced category mapping for base ${dto.baseCategoryId} -> [${dto.suggestCategoryIds.join(',')}] symmetric=${symmetric}`,
+      );
+      return result;
+    } catch (error) {
+      this.logger.error('Failed to sync category mapping', error);
+      throw new BadRequestException('Failed to sync category mapping');
+    }
+  }
+
+  /**
+   * Count outgoing mappings grouped by base category. Used by the admin
+   * Categories page to render the "N gợi ý mix" chip without N round-trips.
+   * @returns {Promise<{ baseCategoryId: string; count: number }[]>}
+   *   baseCategoryId is serialized as a string because Category.id is BigInt.
+   * @throws {BadRequestException} When the aggregate query fails
+   */
+  async getCounts(): Promise<{ baseCategoryId: string; count: number }[]> {
+    try {
+      const groups = await this.prismaService.categoryMapping.groupBy({
+        by: ['baseCategoryId'],
+        _count: { _all: true },
+      });
+      return groups.map((g) => ({
+        baseCategoryId: g.baseCategoryId.toString(),
+        count: g._count._all,
+      }));
+    } catch (error) {
+      this.logger.error('Failed to fetch category mapping counts', error);
+      throw new BadRequestException('Failed to fetch category mapping counts');
     }
   }
 }

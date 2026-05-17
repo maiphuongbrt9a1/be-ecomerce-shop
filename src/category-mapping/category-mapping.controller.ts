@@ -4,6 +4,7 @@ import {
   Post,
   Body,
   Patch,
+  Put,
   Param,
   Delete,
   UseGuards,
@@ -12,6 +13,7 @@ import {
 import { CategoryMappingService } from './category-mapping.service';
 import { CreateCategoryMappingDto } from './dto/create-category-mapping.dto';
 import { UpdateCategoryMappingDto } from './dto/update-category-mapping.dto';
+import { SyncCategoryMappingDto } from './dto/sync-category-mapping.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -69,15 +71,66 @@ export class CategoryMappingController {
     example: 10,
     description: 'Number of items per page',
   })
+  @ApiQuery({
+    name: 'baseCategoryId',
+    required: false,
+    type: Number,
+    example: 3,
+    description:
+      'Optional base category id to filter outgoing mappings for one category',
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN')
   @Get()
-  async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
+  async findAll(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('baseCategoryId') baseCategoryId?: string,
+  ) {
     return await this.categoryMappingService.findAll(
       Number(page),
       Number(perPage),
+      baseCategoryId ? Number(baseCategoryId) : undefined,
     );
+  }
+
+  @ApiOperation({
+    summary:
+      'Get outgoing mapping counts grouped by base category (for admin UI badges)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Per-base-category count of outgoing mappings',
+  })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  @Get('/counts')
+  async counts() {
+    return await this.categoryMappingService.getCounts();
+  }
+
+  @ApiOperation({
+    summary:
+      'Replace all outgoing mappings for one base category atomically; optionally also sync reverse mappings',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Updated outgoing list after sync',
+    type: [CategoryMappingEntity],
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  @ApiBody({
+    description: 'CategoryMapping sync data',
+    type: SyncCategoryMappingDto,
+  })
+  @Put('/sync')
+  async sync(@Body() dto: SyncCategoryMappingDto) {
+    return await this.categoryMappingService.sync(dto);
   }
 
   @ApiOperation({ summary: 'Get a category mapping' })
