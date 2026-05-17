@@ -134,10 +134,25 @@ export class ProductsController {
     example: 10,
     description: 'Number of items per page',
   })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description:
+      'Case-insensitive substring match against product name OR stockKeepingUnit',
+  })
   @Public()
   @Get()
-  async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
-    return await this.productsService.findAll(Number(page), Number(perPage));
+  async findAll(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+  ) {
+    return await this.productsService.findAll(
+      Number(page),
+      Number(perPage),
+      search,
+    );
   }
 
   @ApiOperation({ summary: 'Generate a unique 4-digit SKU code for a new product' })

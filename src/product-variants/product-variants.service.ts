@@ -135,15 +135,44 @@ export class ProductVariantsService {
   async findAll(
     page: number,
     perPage: number,
+    search?: string,
   ): Promise<ProductVariantsWithMediaInformation[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
+      const trimmedSearch = search?.trim();
+      const where: Prisma.ProductVariantsWhereInput = trimmedSearch
+        ? {
+            OR: [
+              {
+                variantName: {
+                  contains: trimmedSearch,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                stockKeepingUnit: {
+                  contains: trimmedSearch,
+                  mode: 'insensitive',
+                },
+              },
+              {
+                product: {
+                  name: {
+                    contains: trimmedSearch,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+            ],
+          }
+        : {};
       const productVariantList = await paginate<
         ProductVariantsWithMediaInformation,
         Prisma.ProductVariantsFindManyArgs
       >(
         this.prismaService.productVariants,
         {
+          where,
           include: {
             media: true,
             product: true,

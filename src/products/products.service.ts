@@ -174,18 +174,34 @@ export class ProductsService {
   async findAll(
     page: number,
     perPage: number,
+    search?: string,
   ): Promise<
     | Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia[]
     | []
   > {
     try {
       const paginate = createPaginator({ perPage: perPage });
+      const trimmedSearch = search?.trim();
+      const where: Prisma.ProductsWhereInput = trimmedSearch
+        ? {
+            OR: [
+              { name: { contains: trimmedSearch, mode: 'insensitive' } },
+              {
+                stockKeepingUnit: {
+                  contains: trimmedSearch,
+                  mode: 'insensitive',
+                },
+              },
+            ],
+          }
+        : {};
       const result = await paginate<
         Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia,
         Prisma.ProductsFindManyArgs
       >(
         this.prismaService.products,
         {
+          where,
           include: {
             productVariants: {
               include: {

@@ -128,6 +128,13 @@ export class ProductVariantsController {
     example: 10,
     description: 'Number of items per page',
   })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description:
+      'Case-insensitive substring match against variantName, stockKeepingUnit, or parent product name',
+  })
   @ApiResponse({
     status: 200,
     description:
@@ -136,10 +143,15 @@ export class ProductVariantsController {
   })
   @Public()
   @Get()
-  async findAll(@Query('page') page = 1, @Query('perPage') perPage = 10) {
+  async findAll(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+  ) {
     return await this.productVariantsService.findAll(
       Number(page),
       Number(perPage),
+      search,
     );
   }
 
