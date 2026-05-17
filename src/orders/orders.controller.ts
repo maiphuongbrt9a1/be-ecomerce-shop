@@ -130,6 +130,29 @@ export class OrdersController {
     example: 10,
     description: 'Number of items per page',
   })
+  @ApiQuery({
+    name: 'statusFilter',
+    required: false,
+    type: String,
+    enum: [
+      'all',
+      'waiting',
+      'shipping',
+      'delivered',
+      'pending_return',
+      'returned',
+      'cancelled',
+    ],
+    description:
+      'Admin Orders page tab filter. Each value maps to a grouping of OrderStatus values (or to a relation filter for pending_return).',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description:
+      'Case-insensitive substring match against the order id, user firstName, lastName, or email.',
+  })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'OPERATOR')
@@ -137,10 +160,14 @@ export class OrdersController {
   async getAllOrdersWithDetailInformation(
     @Query('page') page = 1,
     @Query('perPage') perPage = 10,
+    @Query('statusFilter') statusFilter?: string,
+    @Query('search') search?: string,
   ) {
     return await this.ordersService.getAllOrdersWithDetailInformation(
       Number(page),
       Number(perPage),
+      statusFilter,
+      search,
     );
   }
 

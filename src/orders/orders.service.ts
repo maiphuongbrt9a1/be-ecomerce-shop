@@ -2537,9 +2537,89 @@ export class OrdersService {
   async getAllOrdersWithDetailInformation(
     page: number,
     perPage: number,
+    statusFilter?: string,
+    search?: string,
   ): Promise<OrdersWithFullInformation[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
+
+      // Translate the admin Orders page tabs into Prisma where-clauses. Mirrors
+      // applyTabFilter() in fe-ecomerce-shop/src/components/admin/orders/OrdersClient.tsx.
+      const tabWhere: Prisma.OrdersWhereInput = {};
+      switch (statusFilter) {
+        case 'waiting':
+          tabWhere.status = {
+            in: [
+              OrderStatus.PENDING,
+              OrderStatus.PAYMENT_PROCESSING,
+              OrderStatus.PAYMENT_CONFIRMED,
+            ],
+          };
+          break;
+        case 'shipping':
+          tabWhere.status = {
+            in: [OrderStatus.WAITING_FOR_PICKUP, OrderStatus.SHIPPED],
+          };
+          break;
+        case 'delivered':
+          tabWhere.status = {
+            in: [OrderStatus.DELIVERED, OrderStatus.COMPLETED],
+          };
+          break;
+        case 'pending_return':
+          tabWhere.requests = {
+            some: {
+              subject: RequestType.RETURN_REQUEST,
+              status: {
+                in: [RequestStatus.PENDING, RequestStatus.IN_PROGRESS],
+              },
+            },
+          };
+          break;
+        case 'returned':
+          tabWhere.status = OrderStatus.RETURNED;
+          break;
+        case 'cancelled':
+          tabWhere.status = {
+            in: [OrderStatus.CANCELLED, OrderStatus.DELIVERED_FAILED],
+          };
+          break;
+        // 'all' or undefined → no tab filter
+      }
+
+      // Search across order id (numeric) and the linked user's name / email.
+      const trimmedSearch = search?.trim();
+      const searchWhere: Prisma.OrdersWhereInput = {};
+      if (trimmedSearch) {
+        const orFilters: Prisma.OrdersWhereInput[] = [];
+        const asNumber = Number(trimmedSearch);
+        if (
+          Number.isInteger(asNumber) &&
+          asNumber > 0 &&
+          asNumber <= Number.MAX_SAFE_INTEGER
+        ) {
+          orFilters.push({ id: BigInt(asNumber) });
+        }
+        orFilters.push({
+          user: {
+            firstName: { contains: trimmedSearch, mode: 'insensitive' },
+          },
+        });
+        orFilters.push({
+          user: {
+            lastName: { contains: trimmedSearch, mode: 'insensitive' },
+          },
+        });
+        orFilters.push({
+          user: { email: { contains: trimmedSearch, mode: 'insensitive' } },
+        });
+        searchWhere.OR = orFilters;
+      }
+
+      const combinedWhere: Prisma.OrdersWhereInput = {
+        AND: [tabWhere, searchWhere],
+      };
+
       const result = await paginate<
         OrdersWithFullInformation,
         Prisma.OrdersFindManyArgs
@@ -2548,6 +2628,7 @@ export class OrdersService {
         {
           include: OrdersWithFullInformationInclude,
           orderBy: { createdAt: 'desc' },
+          where: combinedWhere,
         },
         { page: page },
       );
