@@ -132,6 +132,68 @@ export class UserService {
   }
 
   /**
+   * Returns aggregate order stats for a single user.
+   *
+   * Replaces the FE-side loop that paginated through every order to derive
+   * four scalars. Computed via one `groupBy(status)` + one `aggregate(sum)`
+   * pair, so the cost is independent of the user's order count.
+   *
+   * @returns `{ orderCount, completedCount, cancelledCount, totalSpend }`.
+   *   `totalSpend` sums every order's `totalAmount` regardless of status —
+   *   matches the legacy FE definition. Switch to status-gated sum if/when
+   *   the product team confirms cancelled orders should not count.
+   */
+  async getUserOrderStats(userId: number): Promise<{
+    orderCount: number;
+    completedCount: number;
+    cancelledCount: number;
+    totalSpend: number;
+  }> {
+    try {
+      const [groups, sumResult] = await Promise.all([
+        this.prismaService.orders.groupBy({
+          by: ['status'],
+          where: { userId: BigInt(userId) },
+          _count: { _all: true },
+        }),
+        this.prismaService.orders.aggregate({
+          where: { userId: BigInt(userId) },
+          _sum: { totalAmount: true },
+        }),
+      ]);
+
+      let orderCount = 0;
+      let completedCount = 0;
+      let cancelledCount = 0;
+      for (const g of groups) {
+        const n = g._count._all;
+        orderCount += n;
+        if (
+          g.status === OrderStatus.COMPLETED ||
+          g.status === OrderStatus.DELIVERED
+        ) {
+          completedCount += n;
+        } else if (g.status === OrderStatus.CANCELLED) {
+          cancelledCount += n;
+        }
+      }
+
+      return {
+        orderCount,
+        completedCount,
+        cancelledCount,
+        totalSpend: sumResult._sum.totalAmount ?? 0,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error computing order stats for user ${userId}`,
+        error,
+      );
+      throw new BadRequestException('Failed to compute user order stats');
+    }
+  }
+
+  /**
    * Retrieves a single user by ID with avatar media.
    *
    * This method performs the following operations:

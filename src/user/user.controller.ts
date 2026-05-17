@@ -46,6 +46,7 @@ import { CartDetailEntity } from '@/cart/entities/cart-detail.entity';
 import { UserSavedVoucherDetailEntity } from '@/user-vouchers/entities/user-saved-voucher-detail.entity';
 import { UserWithMediaEntity } from './entities/user-with-media.entity';
 import { UserEntity } from './entities/user.entity';
+import { UserOrderStatsEntity } from './entities/user-order-stats.entity';
 import { AddressEntity } from '@/address/entities/address.entity';
 import { VoucherEntity } from '@/vouchers/entities/voucher.entity';
 
@@ -116,6 +117,28 @@ export class UserController {
   @Get('/:id')
   async getUserDetailById(@Param('id', ParseIntPipe) id: number) {
     return await this.userService.getUserDetail(id);
+  }
+
+  @ApiOperation({
+    summary: 'Get aggregate order stats for a user (admin/operator view)',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns { orderCount, completedCount, cancelledCount, totalSpend } via a single groupBy+aggregate — independent of the user\'s order count.',
+    type: UserOrderStatsEntity,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiParam({ name: 'id', type: Number, example: 1, description: 'User ID' })
+  @ApiBearerAuth()
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN', 'OPERATOR')
+  @Get('/:id/order-stats')
+  async getUserOrderStatsById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UserOrderStatsEntity> {
+    return await this.userService.getUserOrderStats(id);
   }
 
   @ApiOperation({ summary: 'Delete a user' })
