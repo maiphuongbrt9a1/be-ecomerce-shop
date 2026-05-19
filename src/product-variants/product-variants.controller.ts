@@ -223,7 +223,7 @@ export class ProductVariantsController {
   })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
-  @Roles('ADMIN')
+  @Roles('ADMIN','OPERATOR')
   @Patch('/:id')
   @UseInterceptors(FilesInterceptor('files', 10))
   async update(
