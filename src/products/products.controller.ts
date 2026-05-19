@@ -292,7 +292,7 @@ export class ProductsController {
   @ApiResponse({ status: 404, description: 'Not Found.' })
   @ApiBearerAuth()
   @UseGuards(RolesGuard)
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'OPERATOR')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description:
