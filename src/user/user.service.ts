@@ -904,8 +904,8 @@ export class UserService {
         .sendMail({
           to: user.email,
           from: this.configService.get<string>('MAIL_FROM'),
-          subject: 'Activate your account at E-commerce shop',
-          text: 'Please use the code to activate your account',
+          subject: 'Kích hoạt tài khoản Paple',
+          text: 'Vui lòng sử dụng mã dưới đây để kích hoạt tài khoản Paple.',
           template: 'register',
           context: {
             name: fullname,
@@ -913,7 +913,7 @@ export class UserService {
           },
         })
         .then(() => {
-          return 'Send email from ecommerce shop successfully!';
+          return 'Đã gửi email từ Paple';
         })
         .catch(() => {
           throw new Error('Send email failed!');
@@ -1057,7 +1057,7 @@ export class UserService {
       this.mailerService
         .sendMail({
           to: user.email,
-          subject: 'Activate your account at BK E-commerce shop',
+          subject: 'Kích hoạt tài khoản Paple',
           template: 'register',
           context: {
             name: user?.lastName ?? user.email,
@@ -1133,7 +1133,7 @@ export class UserService {
       this.mailerService
         .sendMail({
           to: user.email,
-          subject: 'Change your password account at BK E-commerce shop',
+          subject: 'Đặt lại mật khẩu Paple',
           template: 'register',
           context: {
             name: user?.lastName ?? user.email,

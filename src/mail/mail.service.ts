@@ -51,7 +51,7 @@ export class MailService {
 
       this.logger.log('Hello email sent successfully');
       return {
-        message: 'Hello world. This is hello email from ecommerce shop!',
+        message: 'Email kiểm tra Paple',
       };
     } catch (error) {
       this.logger.error('Failed to send hello email: ', error);
@@ -106,14 +106,14 @@ export class MailService {
           },
         })
         .then(() => {
-          return 'Send email from ecommerce shop successfully!';
+          return 'Đã gửi email từ Paple';
         })
         .catch(() => {
           throw new Error('Send email failed!');
         });
       this.logger.log('Email sent successfully to ' + createMailDto.to_email);
       return {
-        message: 'Send email from ecommerce shop successfully!',
+        message: 'Đã gửi email từ Paple',
       };
     } catch (error) {
       this.logger.error(

@@ -1,47 +1,103 @@
-<html>
+<!DOCTYPE html>
+<html lang='vi'>
 
   <head>
-    <title>E-commerce Shop Activation Email</title>
-    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Paple</title>
   </head>
 
   <body
-    style='margin: 0; padding: 0; min-width: 100%; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; background-color: #FAFAFA; color: #222222;'
+    style="margin: 0; padding: 0; min-width: 100%; background-color: #f4f4f4; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #000000;"
   >
-    <div style='max-width: 600px; margin: 0 auto;'>
-      <div style='background-color: #0070f3; padding: 24px; color: #ffffff;'>
-        <h1
-          style='font-size: 24px; font-weight: 700; line-height: 1.25; margin-top: 0; margin-bottom: 15px; text-align: center;'
-        >
-          Welcome to E-commerce Shop</h1>
-      </div>
-      <div style='padding: 24px; background-color: #ffffff;'>
-        <p style='margin-top: 0; margin-bottom: 24px;'>Hello {{name}},</p>
-        <p style='margin-top: 0; margin-bottom: 24px;'>Thank you for registering
-          with E-commerce Shop. To activate your account, please use the
-          following activation code:</p>
-        <h2
-          style='font-size: 20px; font-weight: 700; line-height: 1.25; margin-top: 0; margin-bottom: 15px; text-align: center;'
-        >
-          {{activationCode}}</h2>
-        <p style='margin-top: 0; margin-bottom: 24px;'>Please enter this code on
-          the activation page within the next 5 minutes.</p>
-        <p style='margin-top: 0; margin-bottom: 24px;'>If you did not register
-          for a E-commerce Shop account, please ignore this email.</p>
-      </div>
-      <div style='background-color: #f6f6f6; padding: 24px;'>
-        <p style='margin-top: 0; margin-bottom: 24px;'>
-          If you have any questions, please don't hesitate to contact us at
-          <a
-            href=''
-            target='_blank'
-            style='color: #000; text-decoration:none;'
-          >E-commerce Shop
-          </a>
-        </p>
-      </div>
-    </div>
+    <table
+      role='presentation'
+      cellpadding='0'
+      cellspacing='0'
+      border='0'
+      width='100%'
+      style='background-color: #f4f4f4; padding: 40px 16px;'
+    >
+      <tr>
+        <td align='center'>
+          <table
+            role='presentation'
+            cellpadding='0'
+            cellspacing='0'
+            border='0'
+            width='100%'
+            style='max-width: 560px; background-color: #ffffff; border: 1px solid #000000;'
+          >
+            <tr>
+              <td
+                style='background-color: #000000; padding: 24px 32px; text-align: left;'
+              >
+                <h1
+                  style='margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0.08em; color: #ffffff; text-transform: uppercase;'
+                >
+                  Paple
+                </h1>
+              </td>
+            </tr>
+            <tr>
+              <td style='padding: 32px;'>
+                <p
+                  style='margin: 0 0 16px 0; font-size: 16px; line-height: 1.5; color: #000000;'
+                >
+                  Xin chào
+                  <strong>{{name}}</strong>,
+                </p>
+                <p
+                  style='margin: 0 0 24px 0; font-size: 16px; line-height: 1.5; color: #000000;'
+                >
+                  Vui lòng sử dụng mã xác thực dưới đây để hoàn tất thao tác
+                  trên Paple:
+                </p>
+                <table
+                  role='presentation'
+                  cellpadding='0'
+                  cellspacing='0'
+                  border='0'
+                  width='100%'
+                >
+                  <tr>
+                    <td
+                      align='center'
+                      style='padding: 20px 16px; background-color: #fafafa; border: 1px solid #000000;'
+                    >
+                      <div
+                        style="font-size: 28px; font-weight: 700; letter-spacing: 0.05em; color: #000000; font-family: 'SF Mono', 'Menlo', 'Consolas', 'Courier New', monospace; white-space: nowrap;"
+                      >
+                        {{activationCode}}
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                <p
+                  style='margin: 24px 0 0 0; font-size: 14px; line-height: 1.5; color: #555555;'
+                >
+                  Mã có hiệu lực trong vòng
+                  <strong style='color: #000000;'>5 phút</strong>. Nếu bạn không
+                  yêu cầu mã này, vui lòng bỏ qua email.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style='background-color: #fafafa; padding: 20px 32px; border-top: 1px solid #000000;'
+              >
+                <p
+                  style='margin: 0; font-size: 12px; line-height: 1.5; color: #666666;'
+                >
+                  Email này được gửi tự động từ Paple. Vui lòng không trả
+                  lời trực tiếp email này.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 
 </html>
