@@ -91,8 +91,18 @@ export class UserController {
   @UseGuards(RolesGuard) // insert roles guard and check role is admin. If true can access this api
   @Roles('ADMIN', 'OPERATOR') // please check role is in Role enum of prisma schema
   @Get()
-  async getAllUsers(@Query('page') page = 1, @Query('perPage') perPage = 10) {
-    return await this.userService.getAllUser(Number(page), Number(perPage));
+  async getAllUsers(
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('role') role?: string,
+  ) {
+    return await this.userService.getAllUser(
+      Number(page),
+      Number(perPage),
+      search,
+      role,
+    );
   }
 
   @ApiOperation({ summary: 'Get user detail by ID' })

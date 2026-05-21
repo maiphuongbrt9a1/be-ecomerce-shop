@@ -94,12 +94,46 @@ export class UserService {
   async getAllUser(
     page: number,
     perPage: number,
+    search?: string,
+    role?: string,
   ): Promise<UserWithUserMedia[] | []> {
     try {
+      const trimmed = search?.trim();
+      let where: Prisma.UserWhereInput | undefined;
+      // Role filter (validated against the Prisma enum).
+      const ALLOWED_ROLES = ['USER', 'OPERATOR', 'ADMIN'] as const;
+      const roleFilter = role && (ALLOWED_ROLES as readonly string[]).includes(role)
+        ? (role as 'USER' | 'OPERATOR' | 'ADMIN')
+        : undefined;
+      if (trimmed) {
+        const orClauses: Prisma.UserWhereInput[] = [
+          { firstName: { contains: trimmed, mode: 'insensitive' } },
+          { lastName: { contains: trimmed, mode: 'insensitive' } },
+          { username: { contains: trimmed, mode: 'insensitive' } },
+          { email: { contains: trimmed, mode: 'insensitive' } },
+          { phone: { contains: trimmed } },
+        ];
+        // Match by id when the query looks like an id reference: "42",
+        // "0042", "#0042". Strip the optional "#" and any leading zeros,
+        // then attempt to parse as bigint.
+        const idCandidate = trimmed.replace(/^#/, '').replace(/^0+/, '') || '0';
+        if (/^\d+$/.test(idCandidate)) {
+          try {
+            orClauses.push({ id: BigInt(idCandidate) });
+          } catch {
+            // unparseable — ignore
+          }
+        }
+        where = { OR: orClauses };
+      }
+      if (roleFilter) {
+        where = { ...(where ?? {}), role: roleFilter };
+      }
       const paginate = createPaginator({ perPage: perPage });
       const result = await paginate<UserWithUserMedia, Prisma.UserFindManyArgs>(
         this.prismaService.user,
         {
+          where,
           include: {
             userMedia: {
               where: {
