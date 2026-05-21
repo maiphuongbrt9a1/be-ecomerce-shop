@@ -141,17 +141,35 @@ export class ProductVariantsController {
       'Retrieved all product variants with media information successfully',
     type: [ProductVariantWithMediaEntity],
   })
+  @ApiQuery({
+    name: 'inStock',
+    required: false,
+    type: Boolean,
+    description: 'true → stock > 0, false → stock = 0, omit for both',
+  })
+  @ApiQuery({
+    name: 'onSale',
+    required: false,
+    type: Boolean,
+    description: 'true → variant has an active voucher within validity window now',
+  })
   @Public()
   @Get()
   async findAll(
     @Query('page') page = 1,
     @Query('perPage') perPage = 10,
     @Query('search') search?: string,
+    @Query('inStock') inStock?: string,
+    @Query('onSale') onSale?: string,
   ) {
+    const parseBool = (v?: string): boolean | undefined =>
+      v === undefined ? undefined : v === 'true';
     return await this.productVariantsService.findAll(
       Number(page),
       Number(perPage),
       search,
+      parseBool(inStock),
+      parseBool(onSale),
     );
   }
 

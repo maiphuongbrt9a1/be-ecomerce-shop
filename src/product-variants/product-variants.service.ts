@@ -136,36 +136,50 @@ export class ProductVariantsService {
     page: number,
     perPage: number,
     search?: string,
+    inStock?: boolean,
+    onSale?: boolean,
   ): Promise<ProductVariantsWithMediaInformation[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
       const trimmedSearch = search?.trim();
-      const where: Prisma.ProductVariantsWhereInput = trimmedSearch
-        ? {
-            OR: [
-              {
-                variantName: {
-                  contains: trimmedSearch,
-                  mode: 'insensitive',
-                },
+      const where: Prisma.ProductVariantsWhereInput = {};
+      if (trimmedSearch) {
+        where.OR = [
+          {
+            variantName: {
+              contains: trimmedSearch,
+              mode: 'insensitive',
+            },
+          },
+          {
+            stockKeepingUnit: {
+              contains: trimmedSearch,
+              mode: 'insensitive',
+            },
+          },
+          {
+            product: {
+              name: {
+                contains: trimmedSearch,
+                mode: 'insensitive',
               },
-              {
-                stockKeepingUnit: {
-                  contains: trimmedSearch,
-                  mode: 'insensitive',
-                },
-              },
-              {
-                product: {
-                  name: {
-                    contains: trimmedSearch,
-                    mode: 'insensitive',
-                  },
-                },
-              },
-            ],
-          }
-        : {};
+            },
+          },
+        ];
+      }
+      if (inStock === true) {
+        where.stock = { gt: 0 };
+      } else if (inStock === false) {
+        where.stock = 0;
+      }
+      if (onSale === true) {
+        const now = new Date();
+        where.voucher = {
+          isActive: true,
+          validFrom: { lte: now },
+          validTo: { gte: now },
+        };
+      }
       const productVariantList = await paginate<
         ProductVariantsWithMediaInformation,
         Prisma.ProductVariantsFindManyArgs

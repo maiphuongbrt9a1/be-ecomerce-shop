@@ -141,17 +141,44 @@ export class ProductsController {
     description:
       'Case-insensitive substring match against product name OR stockKeepingUnit',
   })
+  @ApiQuery({
+    name: 'categoryId',
+    required: false,
+    type: Number,
+    description: 'Restrict to a single category id',
+  })
+  @ApiQuery({
+    name: 'inStock',
+    required: false,
+    type: Boolean,
+    description: 'true → stock > 0, false → stock = 0, omit for both',
+  })
+  @ApiQuery({
+    name: 'onSale',
+    required: false,
+    type: Boolean,
+    description:
+      'true → product has an active voucher within validity window now',
+  })
   @Public()
   @Get()
   async findAll(
     @Query('page') page = 1,
     @Query('perPage') perPage = 10,
     @Query('search') search?: string,
+    @Query('categoryId') categoryId?: string,
+    @Query('inStock') inStock?: string,
+    @Query('onSale') onSale?: string,
   ) {
+    const parseBool = (v?: string): boolean | undefined =>
+      v === undefined ? undefined : v === 'true';
     return await this.productsService.findAll(
       Number(page),
       Number(perPage),
       search,
+      categoryId !== undefined ? Number(categoryId) : undefined,
+      parseBool(inStock),
+      parseBool(onSale),
     );
   }
 

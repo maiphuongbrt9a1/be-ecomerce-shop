@@ -175,6 +175,9 @@ export class ProductsService {
     page: number,
     perPage: number,
     search?: string,
+    categoryId?: number,
+    inStock?: boolean,
+    onSale?: boolean,
   ): Promise<
     | Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia[]
     | []
@@ -182,19 +185,34 @@ export class ProductsService {
     try {
       const paginate = createPaginator({ perPage: perPage });
       const trimmedSearch = search?.trim();
-      const where: Prisma.ProductsWhereInput = trimmedSearch
-        ? {
-            OR: [
-              { name: { contains: trimmedSearch, mode: 'insensitive' } },
-              {
-                stockKeepingUnit: {
-                  contains: trimmedSearch,
-                  mode: 'insensitive',
-                },
-              },
-            ],
-          }
-        : {};
+      const where: Prisma.ProductsWhereInput = {};
+      if (trimmedSearch) {
+        where.OR = [
+          { name: { contains: trimmedSearch, mode: 'insensitive' } },
+          {
+            stockKeepingUnit: {
+              contains: trimmedSearch,
+              mode: 'insensitive',
+            },
+          },
+        ];
+      }
+      if (categoryId !== undefined) {
+        where.categoryId = BigInt(categoryId);
+      }
+      if (inStock === true) {
+        where.stock = { gt: 0 };
+      } else if (inStock === false) {
+        where.stock = 0;
+      }
+      if (onSale === true) {
+        const now = new Date();
+        where.voucher = {
+          isActive: true,
+          validFrom: { lte: now },
+          validTo: { gte: now },
+        };
+      }
       const result = await paginate<
         Products_And_ProductsMedia_With_ProductVariants_And_ProductVariantsMedia,
         Prisma.ProductsFindManyArgs
