@@ -102,18 +102,27 @@ export class ReviewsController {
     example: 10,
     description: 'Number of items per page',
   })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description:
+      'Case-insensitive substring match against comment, product name, user firstName/lastName/email, or exact review id',
+  })
   @Public()
   @Get()
   async findAll(
     @Query('page') page = 1,
     @Query('perPage') perPage = 10,
     @Query('rating') rating?: string,
+    @Query('search') search?: string,
   ) {
     const ratingNum = rating != null ? Number(rating) : undefined;
     return await this.reviewsService.findAll(
       Number(page),
       Number(perPage),
       ratingNum,
+      search,
     );
   }
 

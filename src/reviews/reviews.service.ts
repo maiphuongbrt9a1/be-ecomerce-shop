@@ -139,12 +139,40 @@ export class ReviewsService {
     page: number,
     perPage: number,
     rating?: number,
+    search?: string,
   ): Promise<ReviewsWithMedia[] | []> {
     try {
       const paginate = createPaginator({ perPage: perPage });
       const where: Prisma.ReviewsWhereInput = {};
       if (rating != null && rating >= 1 && rating <= 5) {
         where.rating = rating;
+      }
+      const trimmed = search?.trim();
+      if (trimmed) {
+        const orClauses: Prisma.ReviewsWhereInput[] = [
+          { comment: { contains: trimmed, mode: 'insensitive' } },
+          { product: { name: { contains: trimmed, mode: 'insensitive' } } },
+          {
+            user: {
+              OR: [
+                { firstName: { contains: trimmed, mode: 'insensitive' } },
+                { lastName: { contains: trimmed, mode: 'insensitive' } },
+                { email: { contains: trimmed, mode: 'insensitive' } },
+              ],
+            },
+          },
+        ];
+        // Match by exact id when the query looks like one (raw "12", "#12",
+        // or padded "0012").
+        const idCandidate = trimmed.replace(/^#/, '').replace(/^0+/, '') || '0';
+        if (/^\d+$/.test(idCandidate)) {
+          try {
+            orClauses.push({ id: BigInt(idCandidate) });
+          } catch {
+            // unparseable — ignore
+          }
+        }
+        where.OR = orClauses;
       }
       const result = await paginate<
         ReviewsWithMedia,
