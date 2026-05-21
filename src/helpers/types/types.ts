@@ -564,7 +564,21 @@ export type VoucherWithAllTargets = Prisma.VouchersGetPayload<{
     voucherForSpecialProductVariant: {
       select: { id: true; variantName: true; variantSize: true; colorId: true };
     };
-    userVouchers: { select: { userId: true; voucherStatus: true } };
+    userVouchers: {
+      select: {
+        id: true;
+        userId: true;
+        voucherStatus: true;
+        user: {
+          select: {
+            firstName: true;
+            lastName: true;
+            username: true;
+            email: true;
+          };
+        };
+      };
+    };
   };
 }>;
 

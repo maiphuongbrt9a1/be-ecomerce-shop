@@ -156,10 +156,24 @@ export class VouchersService {
    * - Vouchers can be applied to categories, products, or specific variants
    * - Supports both percentage and fixed amount discounts
    */
-  async create(createVoucherDto: CreateVoucherDto): Promise<Vouchers> {
+  async create(
+    createVoucherDto: CreateVoucherDto,
+  ): Promise<VoucherWithAllTargets> {
+    const { categoryIds, productIds, variantIds, userIds, ...voucherData } =
+      createVoucherDto;
     try {
-      const result = await this.prismaService.vouchers.create({
-        data: { ...createVoucherDto },
+      const result = await this.prismaService.$transaction(async (tx) => {
+        const created = await tx.vouchers.create({ data: voucherData });
+        await this.syncVoucherTargets(tx, created.id, {
+          categoryIds,
+          productIds,
+          variantIds,
+          userIds,
+        });
+        return tx.vouchers.findUniqueOrThrow({
+          where: { id: created.id },
+          include: this.voucherTargetsInclude,
+        });
       });
 
       await this.sendShopNotificationSafely(
@@ -202,8 +216,111 @@ export class VouchersService {
     voucherForSpecialProductVariant: {
       select: { id: true, variantName: true, variantSize: true, colorId: true },
     },
-    userVouchers: { select: { userId: true, voucherStatus: true } },
+    userVouchers: {
+      select: {
+        id: true,
+        userId: true,
+        voucherStatus: true,
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            username: true,
+            email: true,
+          },
+        },
+      },
+    },
   } as const;
+
+  /**
+   * Synchronizes the four target scopes for a voucher inside an existing
+   * Prisma transaction. Each scope is independent: omitting an array (undefined)
+   * leaves that scope alone; passing `[]` clears it.
+   *
+   * For the 1-FK scopes (category / product / variant) a `connect` here will
+   * silently move the item off any voucher it was previously bound to — see
+   * the `Vouchers` schema where each child carries a single `voucherId`.
+   */
+  private async syncVoucherTargets(
+    tx: Prisma.TransactionClient,
+    voucherId: bigint,
+    targets: {
+      categoryIds?: number[];
+      productIds?: number[];
+      variantIds?: number[];
+      userIds?: number[];
+    },
+  ): Promise<void> {
+    const { categoryIds, productIds, variantIds, userIds } = targets;
+
+    if (categoryIds !== undefined) {
+      const ids = categoryIds.map((n) => BigInt(n));
+      await tx.category.updateMany({
+        where: { voucherId, id: { notIn: ids } },
+        data: { voucherId: null },
+      });
+      if (ids.length > 0) {
+        await tx.category.updateMany({
+          where: { id: { in: ids } },
+          data: { voucherId },
+        });
+      }
+    }
+
+    if (productIds !== undefined) {
+      const ids = productIds.map((n) => BigInt(n));
+      await tx.products.updateMany({
+        where: { voucherId, id: { notIn: ids } },
+        data: { voucherId: null },
+      });
+      if (ids.length > 0) {
+        await tx.products.updateMany({
+          where: { id: { in: ids } },
+          data: { voucherId },
+        });
+      }
+    }
+
+    if (variantIds !== undefined) {
+      const ids = variantIds.map((n) => BigInt(n));
+      await tx.productVariants.updateMany({
+        where: { voucherId, id: { notIn: ids } },
+        data: { voucherId: null },
+      });
+      if (ids.length > 0) {
+        await tx.productVariants.updateMany({
+          where: { id: { in: ids } },
+          data: { voucherId },
+        });
+      }
+    }
+
+    if (userIds !== undefined) {
+      const ids = userIds.map((n) => BigInt(n));
+      await tx.userVouchers.deleteMany({
+        where: { voucherId, userId: { notIn: ids } },
+      });
+      if (ids.length > 0) {
+        const existing = await tx.userVouchers.findMany({
+          where: { voucherId },
+          select: { userId: true },
+        });
+        const existingIds = new Set(existing.map((e) => e.userId));
+        const missing = ids.filter((uid) => !existingIds.has(uid));
+        if (missing.length > 0) {
+          await tx.userVouchers.createMany({
+            data: missing.map((uid) => ({
+              userId: uid,
+              voucherId,
+              voucherStatus: 'SAVED' as const,
+            })),
+            skipDuplicates: true,
+          });
+        }
+      }
+    }
+  }
 
   async findAll(
     page: number,
@@ -216,7 +333,7 @@ export class VouchersService {
         Prisma.VouchersFindManyArgs
       >(
         this.prismaService.vouchers,
-        { orderBy: { createdAt: 'desc' }, include: this.voucherTargetsInclude },
+        { orderBy: [{ createdAt: 'desc' }, { id: 'desc' }], include: this.voucherTargetsInclude },
         { page: page },
       );
 
@@ -257,7 +374,7 @@ export class VouchersService {
         this.prismaService.vouchers,
         {
           where,
-          orderBy: { createdAt: 'desc' },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
           include: this.voucherTargetsInclude,
         },
         { page },
@@ -289,10 +406,11 @@ export class VouchersService {
    * @remarks
    * - Useful for fetching voucher details for editing or display
    */
-  async findOne(id: number): Promise<Vouchers | null> {
+  async findOne(id: number): Promise<VoucherWithAllTargets> {
     try {
       const result = await this.prismaService.vouchers.findFirst({
         where: { id: id },
+        include: this.voucherTargetsInclude,
       });
 
       if (!result) {
@@ -328,7 +446,9 @@ export class VouchersService {
   async update(
     id: number,
     updateVoucherDto: UpdateVoucherDto,
-  ): Promise<Vouchers> {
+  ): Promise<VoucherWithAllTargets> {
+    const { categoryIds, productIds, variantIds, userIds, ...voucherData } =
+      updateVoucherDto;
     try {
       const existingVoucher = await this.prismaService.vouchers.findUnique({
         where: { id: id },
@@ -338,9 +458,21 @@ export class VouchersService {
         throw new NotFoundException('Voucher not found!');
       }
 
-      const result = await this.prismaService.vouchers.update({
-        where: { id: id },
-        data: { ...updateVoucherDto },
+      const result = await this.prismaService.$transaction(async (tx) => {
+        await tx.vouchers.update({
+          where: { id },
+          data: voucherData,
+        });
+        await this.syncVoucherTargets(tx, BigInt(id), {
+          categoryIds,
+          productIds,
+          variantIds,
+          userIds,
+        });
+        return tx.vouchers.findUniqueOrThrow({
+          where: { id },
+          include: this.voucherTargetsInclude,
+        });
       });
 
       await this.sendShopNotificationSafely(
